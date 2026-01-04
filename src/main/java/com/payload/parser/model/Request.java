@@ -1,6 +1,6 @@
 package com.payload.parser.model;
 
-import com.payload.parser.Type;
+import com.payload.parser.enumration.Type;
 
 public class Request {
     private Type type;

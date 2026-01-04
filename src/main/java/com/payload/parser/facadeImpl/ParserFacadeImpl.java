@@ -1,6 +1,5 @@
 package com.payload.parser.facadeImpl;
 
-import com.payload.parser.Type;
 import com.payload.parser.facade.ParserFacade;
 import com.payload.parser.model.Request;
 import com.payload.parser.model.Response;
