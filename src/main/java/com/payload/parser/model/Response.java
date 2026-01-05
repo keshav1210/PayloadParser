@@ -6,6 +6,15 @@ public class Response {
     private String parsedData;
     private String code;
 
+    public Response(){}
+
+    public Response(boolean success, String message, String parsedData, String code) {
+        this.success = success;
+        this.message = message;
+        this.parsedData = parsedData;
+        this.code = code;
+    }
+
     public boolean isSuccess() {
         return success;
     }

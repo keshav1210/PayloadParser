@@ -11,5 +11,9 @@ public class JsonToXmlParserServiceImpl implements ParserService {
     public Response parse(Request request) {
         return null;
     }
+    @Override
+    public String getType() {
+        return "JSON_TO_XML";
+    }
 }
 

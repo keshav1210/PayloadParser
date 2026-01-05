@@ -5,4 +5,5 @@ import com.payload.parser.model.Response;
 
 public interface ParserService {
     public Response parse(Request request);
+    String getType();
 }
