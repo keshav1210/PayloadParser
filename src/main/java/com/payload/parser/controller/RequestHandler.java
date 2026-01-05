@@ -18,8 +18,8 @@ public class RequestHandler {
     private ParserFacade parserFacade;
 
     @PostMapping("/parse")
-    public ResponseEntity<Response> convert(@RequestBody Request request){
-        Response response=parserFacade.parse(request);
+    public ResponseEntity<Response> convert(@RequestBody Request request) {
+        Response response = parserFacade.parse(request);
         return ResponseEntity.ok(response);
     }
 }

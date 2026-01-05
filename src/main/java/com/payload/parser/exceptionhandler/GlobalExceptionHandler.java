@@ -11,14 +11,14 @@ import org.springframework.web.client.HttpServerErrorException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response> exceptionHandler(Exception ex){
+    public ResponseEntity<Response> exceptionHandler(Exception ex) {
         return ResponseEntity.ok(errorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
-    public Response errorResponse(String ex,HttpStatus code){
-        Response response=new Response();
+    public Response errorResponse(String ex, HttpStatus code) {
+        Response response = new Response();
         response.setSuccess(false);
-        response.setMessage("Failed to Parse "+ex);
+        response.setMessage("Failed to Parse " + ex);
         response.setCode(code.toString());
         return response;
     }
