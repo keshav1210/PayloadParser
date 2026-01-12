@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class ParserFacadeImpl implements ParserFacade {
 
     private final Map<String, ParserService> parserMap;
+    ParserService service;
 
     public ParserFacadeImpl(List<ParserService> services) {
         this.parserMap = services.stream()
@@ -27,10 +28,12 @@ public class ParserFacadeImpl implements ParserFacade {
             case JSON_TO_XML:
                 break;
             case JSON_FORMAT:
-                ParserService service = parserMap.get(request.getType().name());
-                response = service.parse(request);
+                 service = parserMap.get(request.getType().name());
+                response=  service.parse(request);
                 break;
             case XML_FORMAT:
+                 service=parserMap.get(request.getType().name());
+                response=  service.parse(request);
                 break;
             case XML_TO_JSON:
                 break;
