@@ -1,0 +1,273 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #2d2d2d;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 100%);
+    padding: 15px 20px;
+    border-bottom: 2px solid #555;
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.controls {
+    background: #3a3a3a;
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #555;
+}
+
+.btn {
+    /*background: #5a9f5a;*/
+    background: #607d8b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: #4a8f4a;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #6a6a6a;
+}
+
+.btn-secondary:hover {
+    background: #7a7a7a;
+}
+
+select {
+    background: #4a4a4a;
+    color: white;
+    border: 1px solid #666;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 130px);
+    gap: 2px;
+    background: #555;
+}
+
+.panel {
+    flex: 1;
+    min-width: 0;
+    max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    background: #2d2d2d;
+}
+
+.panel-header {
+    background: #181f40;
+    padding: 12px 15px;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.editor-wrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    background: #1e1e1e;
+}
+
+.line-numbers-area {
+    display: flex;
+    background: #252525;
+    border-right: 1px solid #3a3a3a;
+}
+
+.fold-icons {
+    min-width: 20px;
+    padding: 15px 5px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: center;
+    user-select: none;
+    overflow: hidden;
+}
+
+.fold-arrow {
+    cursor: pointer;
+    color: #858585;
+    display: block;
+    height: 21px;
+}
+
+.fold-arrow:hover {
+    color: #fff;
+}
+
+.line-numbers {
+    min-width: 35px;
+    padding: 15px 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 21px;
+    text-align: right;
+    color: #858585;
+    user-select: none;
+    overflow: hidden;
+    white-space: pre;
+}
+
+.code-editor {
+    flex: 1;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 21px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    tab-size: 2;
+}
+
+.code-line {
+    min-height: 21px;
+}
+
+.key {
+    color: #9cdcfe;
+}
+
+.string {
+    color: #ce9178;
+}
+
+.number {
+    color: #b5cea8;
+}
+
+.boolean {
+    color: #569cd6;
+}
+
+.null {
+    color: #569cd6;
+}
+
+.bracket {
+    color: #ffd700;
+}
+
+.tree-view {
+    width: 100%;
+    height: 100%;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow: auto;
+}
+
+.tree-expand {
+    cursor: pointer;
+    color: #858585;
+    user-select: none;
+    display: inline-block;
+    width: 15px;
+}
+
+.tree-expand:hover {
+    color: #fff;
+}
+
+.tree-count {
+    color: #858585;
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.tree-key {
+    color: #9cdcfe;
+}
+
+.tree-string {
+    color: #ce9178;
+}
+
+.tree-number {
+    color: #b5cea8;
+}
+
+.tree-boolean {
+    color: #569cd6;
+}
+
+.tree-null {
+    color: #569cd6;
+}
+
+.error {
+    background: #3a1a1a;
+    color: #ff6b6b;
+    padding: 15px;
+    margin: 15px;
+    border-left: 3px solid #ff6b6b;
+    border-radius: 4px;
+}
+
+.status {
+    background: #2a2a2a;
+    padding: 8px 15px;
+    font-size: 12px;
+    color: #858585;
+    border-top: 1px solid #3a3a3a;
+}
+
+.success {
+    color: #5a9f5a;
+}
+
+.warning {
+    color: #f4a742;
+}
+
+.xml-tag {
+    color: #569cd6;  /* Blue for tags */
+}
+
+.xml-attr {
+    color: #9cdcfe;  /* Blue for attributes */
+}
+
+.xml-attr-value {
+    color: #ce9178;  /* Orange for values */
+}
+
+.xml-text {
+    color: #d4d4d4;  /* White for text content */
+}
