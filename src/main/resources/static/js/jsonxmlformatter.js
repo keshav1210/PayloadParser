@@ -802,6 +802,9 @@
  function formatData(type) {
      const selectedtype = document.getElementById('formatType').value;
      input= (codeEditor.textContent || codeEditor.innerText || '').trim();
+     if(type==='JSON_FORMAT' && selectedtype==='xml'){
+         type='XML_FORMAT';
+     }
      fetch("/data/parse", {
          method: "POST",
          headers: {
@@ -817,7 +820,7 @@
              if (res.success) {
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
-                 formatCode(true,formatted,type==='XML_TO_JSON' || (type==='JSON_FORMAT' && selectedType==='xml')?'json':'xml');
+                 formatCode(true,formatted,type==='XML_TO_JSON' || type==='JSON_FORMAT'?'json':'xml');
 
              } else {
                  if(type==='XML_TO_JSON' || type=== 'JSON_TO_XML'){
