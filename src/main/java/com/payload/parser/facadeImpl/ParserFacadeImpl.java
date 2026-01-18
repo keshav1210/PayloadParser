@@ -23,26 +23,8 @@ public class ParserFacadeImpl implements ParserFacade {
 
     @Override
     public Response parse(Request request) {
-        Response response = null;
-        switch (request.getType()) {
-            case JSON_TO_XML:
-                service = parserMap.get(request.getType().name());
-                response=  service.parse(request);
-                break;
-            case JSON_FORMAT:
-                 service = parserMap.get(request.getType().name());
-                response=  service.parse(request);
-                break;
-            case XML_FORMAT:
-                 service=parserMap.get(request.getType().name());
-                response=  service.parse(request);
-                break;
-            case XML_TO_JSON:
-                service = parserMap.get(request.getType().name());
-                response=  service.parse(request);
-                break;
-        }
-        return response;
+        service = parserMap.get(request.getType().name());
+        return service.parse(request);
     }
 
 }

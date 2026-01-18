@@ -400,7 +400,7 @@
 
     inputStatus.innerHTML = '<span class="success">✓ JSON formatted successfully!</span>';
     document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view generated</span>';
-} else {
+} else if(type === 'xml'){
 
 
         if(input.startsWith('"{') || input.startsWith('{') || input.startsWith('[') || input.startsWith('"[')){
@@ -436,6 +436,9 @@
         }
     inputStatus.innerHTML = '<span class="success">✓ XML formatted successfully!</span>';
     document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view generated</span>';
+} else{
+    codeEditor.innerHTML = input;
+    document.getElementById('treeView').innerHTML = input;
 }
 } catch (e) {
     inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + e.message + '</span>';
@@ -818,9 +821,17 @@
          .then(res => res.json())
          .then(res => {
              if (res.success) {
+                let format = 'json';
+                if(type==='XML_FORMAT' || type==='JSON_TO_XML' || type==='XML_SORT') {
+                    format = 'xml';
+                }else if(type==='JSON_TO_YAML' || type==='XML_TO_YAML') {
+                    format = 'yaml';
+                }else if(type==='JSON_TO_TOML' || type==='XML_TO_TOML') {
+                    format = 'toml';
+                }
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
-                 formatCode(true,formatted,type==='XML_TO_JSON' || type==='JSON_FORMAT'?'json':'xml');
+                 formatCode(true,formatted, format);
 
              } else {
                  if(type==='XML_TO_JSON' || type=== 'JSON_TO_XML'){
