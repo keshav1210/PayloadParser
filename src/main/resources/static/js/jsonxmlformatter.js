@@ -800,6 +800,7 @@
 }
 
  function formatData(type) {
+     const selectedtype = document.getElementById('formatType').value;
      input= (codeEditor.textContent || codeEditor.innerText || '').trim();
      fetch("/data/parse", {
          method: "POST",
@@ -807,7 +808,7 @@
              "Content-Type": "application/json"
          },
          body: JSON.stringify({
-             type: type,
+             type: type==='JSON_TO_XML' || (type==='XML_TO_JSON') || selectedtype==='json'?type:'XML_FORMAT',
              data: input   // ✅ ALWAYS CLEAN DATA
          })
      })
@@ -816,11 +817,14 @@
              if (res.success) {
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
-                 formatCode(true,formatted,type==='XML_TO_JSON'?'json':'xml');
+                 formatCode(true,formatted,type==='XML_TO_JSON' || (type==='JSON_FORMAT' && selectedType==='xml')?'json':'xml');
 
              } else {
-                 outputEl.textContent = res.message;
-                 outputLines.textContent = "";
+                 if(type==='XML_TO_JSON' || type=== 'JSON_TO_XML'){
+                     document.getElementById('treeView').innerHTML = '<div class="error">Failed to convert: ' + res.message + '</div>';
+                 }else{
+                     document.getElementById('treeView').innerHTML = '<div class="error">Failed to repair: ' + res.message + '</div>';
+                 }
              }
          })
          .catch(() => {
