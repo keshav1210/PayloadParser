@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <title>Payload Parser - Home</title>
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+<div id="header"></div>
+
+<div class="hero">
+    <h1>Powerful Data Parsing & Conversion</h1>
+    <p>Transform, format, and convert your JSON, XML, YAML, and TOML data with ease. Professional tools for developers.</p>
+</div>
+
+<div class="cards-container">
+    <div class="card" onclick="navigateTo('json-parser')">
+        <div class="card-icon">{ }</div>
+        <h3>JSON Parser</h3>
+        <p>Format, minify, validate and repair JSON data. Includes tree view and syntax highlighting.</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('xml-parser')">
+        <div class="card-icon">&lt;/&gt;</div>
+        <h3>XML Parser</h3>
+        <p>Parse and format XML documents with validation. Clean structure visualization.</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('json-to-xml')">
+        <div class="card-icon">🔄</div>
+        <h3>JSON to XML</h3>
+        <p>Convert JSON data to XML format instantly. Preserve data structure and hierarchy.</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('xml-to-json')">
+        <div class="card-icon">↔️</div>
+        <h3>XML to JSON</h3>
+        <p>Transform XML documents into JSON format. Fast and accurate conversion.</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('yaml-converter')">
+        <div class="card-icon">📄</div>
+        <h3>YAML Converter</h3>
+        <p>Convert between JSON/XML and YAML format. Perfect for config files.</p>
+    </div>
+
+    <div class="card" onclick="navigateTo('toml-converter')">
+        <div class="card-icon">⚙️</div>
+        <h3>TOML Converter</h3>
+        <p>Convert JSON/XML to TOML format and vice versa. Configuration made simple.</p>
+    </div>
+</div>
+
+<section class="features">
+    <h2>Features & Capabilities</h2>
+    <p class="features-subtitle">Everything you need for data transformation and parsing</p>
+
+    <div class="features-grid">
+        <div class="feature-item">
+            <h4>🎨 Format & Beautify</h4>
+            <p>Automatically format and indent your JSON, XML, and other data structures for better readability.</p>
+        </div>
+
+        <div class="feature-item">
+            <h4>🔍 Validate & Repair</h4>
+            <p>Detect syntax errors and fix common issues in your data files automatically.</p>
+        </div>
+
+        <div class="feature-item">
+            <h4>🌳 Tree View</h4>
+            <p>Visualize complex data structures in an interactive tree format for easy navigation.</p>
+        </div>
+
+        <div class="feature-item">
+            <h4>⚡ Fast Processing</h4>
+            <p>Handle large files efficiently with optimized parsing algorithms and instant results.</p>
+        </div>
+
+        <div class="feature-item">
+            <h4>🔄 Multi-Format</h4>
+            <p>Support for JSON, XML, YAML, and TOML with seamless conversion between formats.</p>
+        </div>
+
+        <div class="feature-item">
+            <h4>💾 Sort & Minify</h4>
+            <p>Organize data alphabetically and compress files by removing unnecessary whitespace.</p>
+        </div>
+    </div>
+</section>
+<section class="seo-content">
+   <h4> A Comprehensive Guide to Modern Data Parsing and Conversion</h4>
+    In the modern era of web development, data is the backbone of every application. Whether you are building a mobile app, a web platform, or a microservice, you are constantly dealing with different data serialization formats like JSON, XML, YAML, and TOML. However, raw data is often minified and difficult to interpret. This is where Payload Parser becomes an essential part of your developer toolkit.
+
+    <h4>The Importance of JSON and XML Beautification</h4>
+    When developers fetch data from APIs, the response is usually a single-line string to save bandwidth. While efficient for machines, it is a nightmare for human debugging. Our JSON and XML Parsers allow you to instantly transform this "ugly" code into a structured, color-coded format. By using a Tree View, developers can collapse nested objects and focus only on the data points that matter, significantly reducing debugging time.
+
+    <h4>Smart Data Repair: Beyond Simple Formatting</h4>
+    One of the most frustrating experiences for a developer is a "Syntax Error" due to a missing comma or an unquoted key. Unlike standard formatters, our tool includes a Smart Repair feature. It intelligently identifies common human errors in JSON strings and fixes them on the fly, ensuring your workflow remains uninterrupted.
+
+    <h4>Multi-Format Conversions for Modern Workflows</h4>
+    Different environments require different formats. While JSON is the king of APIs, YAML and TOML are preferred for configuration files due to their readability. Our Universal Converter allows you to seamlessly switch between:
+
+    JSON to XML for legacy system compatibility.
+
+    XML to JSON for easier frontend integration.
+
+    YAML and TOML conversions for DevOps and server-side configurations.
+
+    <h4> Privacy-First</h4>: Why Client-Side Processing Matters
+    In an age of data breaches, privacy is paramount. Many online tools send your data to their servers for processing, which is a massive security risk for sensitive API keys or user data. Payload Parser is built on a 100% client-side architecture. All formatting, minification, and conversion happen directly within your browser’s V8 engine. Your data never touches a server, giving you complete peace of mind.
+
+    <h4>Optimizing for Production: Sorting and Minification</h4>
+    Before deploying your code, it is crucial to optimize. Our tool allows you to Sort JSON/XML keys alphabetically for better organization and Minify the final output to reduce file size. This ensures your application loads faster while maintaining a clean codebase.
+</section>
+
+<div id="footer"></div>
+<script>
+    function navigateTo(name){
+        window.location.href = '/payload-parser';
+    }
+</script>
+
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>

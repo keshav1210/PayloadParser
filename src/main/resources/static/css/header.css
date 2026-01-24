@@ -1,0 +1,44 @@
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #2e2e2e, #252525);
+    border-bottom: 1px solid #444;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.nav-links {
+    display: flex;
+    gap: 18px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #cfcfcf;
+    font-size: 13.5px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.nav-links a:hover {
+    background: #3d3d3d;
+    color: #ffffff;
+}
+
+/* Mobile toggle */
+.menu-toggle {
+    display: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #ffffff;
+}

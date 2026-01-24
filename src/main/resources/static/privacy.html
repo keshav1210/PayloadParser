@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Payload Parser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #2b2d42;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: #2b2d42;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /*nav {*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    align-items: center;*/
+        /*    max-width: 1400px;*/
+        /*    margin: 0 auto;*/
+        /*}*/
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #e2e8f0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Privacy Content */
+        .privacy-content {
+            background: #3a3d5c;
+            padding: 3rem;
+            border-radius: 12px;
+            line-height: 1.8;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        .last-updated {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: #f1f5f9;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: #cbd5e1;
+        }
+
+        .highlight-box {
+            background: rgba(96, 165, 250, 0.1);
+            border-left: 4px solid #60a5fa;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+
+        .highlight-box h3 {
+            color: #93c5fd;
+            margin-bottom: 0.75rem;
+            font-size: 1.3rem;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        ul {
+            margin: 1rem 0 1.5rem 2rem;
+            color: #cbd5e1;
+        }
+
+        ul li {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info {
+            background: #2b2d42;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.5rem;
+        }
+
+        strong {
+            color: #f1f5f9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .privacy-content {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <div class="privacy-content">
+        <div class="icon">🔒</div>
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last Updated: January 24, 2026</p>
+
+        <div class="highlight-box">
+            <h3>🎯 Our Core Privacy Principle</h3>
+            <p><strong>We don't store your data. Ever.</strong></p>
+            <p>Your data is processed only temporarily and immediately discarded after processing.</p>
+        </div>
+
+        <h2>What We Don't Do</h2>
+        <p>Payload Parser is designed with privacy as the top priority. Here's what we explicitly DON'T do:</p>
+        <ul>
+            <li><strong>No Data Storage:</strong> We don't store any of your JSON, XML, YAML, or TOML data in databases or files</li>
+            <li><strong>No Data Logging:</strong> We don't log or record your data anywhere on our servers</li>
+            <li><strong>No User Accounts:</strong> We don't require login or collect personal information</li>
+            <li><strong>No Tracking:</strong> We don't use cookies, analytics, or tracking scripts to monitor your activity</li>
+            <li><strong>No Third-Party Sharing:</strong> We never share your data with third parties</li>
+        </ul>
+
+        <h2>How Our Tools Work</h2>
+        <p>Most of our tools operate client-side (in your browser), but some features require server processing:</p>
+
+        <h3>Client-Side Processing (Browser)</h3>
+        <p>The majority of our tools process data entirely in your browser:</p>
+        <ul>
+            <li>JSON/XML/YAML/TOML parsing and formatting</li>
+            <li>Basic validation and syntax highlighting</li>
+            <li>Simple conversions between formats</li>
+        </ul>
+        <p>For these features, your data never leaves your device.</p>
+
+        <h3>Server-Side Processing (Temporary)</h3>
+        <p>Some advanced features require server processing:</p>
+        <ul>
+            <li>Complex format conversions</li>
+            <li>Advanced data repair and correction</li>
+            <li>Large file processing</li>
+        </ul>
+        <p><strong>Important:</strong> When server processing is used:</p>
+        <ul>
+            <li>Your data is sent to our server over a secure HTTPS connection</li>
+            <li>Data is processed immediately in server memory</li>
+            <li>Results are sent back to you</li>
+            <li>Your data is <strong>immediately discarded</strong> from server memory</li>
+            <li><strong>Nothing is saved to disk, database, or logs</strong></li>
+            <li>The entire process takes only milliseconds</li>
+        </ul>
+
+        <h2>Browser Storage</h2>
+        <p>Our tools may use your browser's local storage for the following purposes only:</p>
+        <ul>
+            <li>Saving your preference settings (theme, default format, etc.)</li>
+            <li>Temporarily caching the tool interface for better performance</li>
+        </ul>
+        <p><strong>Important:</strong> We never store your actual data (JSON, XML, etc.) in browser storage. You can clear this at any time through your browser settings.</p>
+
+        <h2>External Links</h2>
+        <p>Our blog and documentation may contain links to external websites. We are not responsible for the privacy practices of those websites. We encourage you to read their privacy policies.</p>
+
+        <h2>Security</h2>
+        <p>We take your data security seriously:</p>
+        <ul>
+            <li><strong>HTTPS Encryption:</strong> All data transmission is encrypted using industry-standard SSL/TLS</li>
+            <li><strong>No Persistence:</strong> Server processes data in memory only - never written to disk</li>
+            <li><strong>Immediate Disposal:</strong> Data is discarded immediately after processing</li>
+            <li><strong>No Logs:</strong> We don't log the content of your data</li>
+            <li><strong>Secure Infrastructure:</strong> Our servers follow security best practices</li>
+        </ul>
+        <p>Your data security also depends on:</p>
+        <ul>
+            <li>Your device security</li>
+            <li>Your browser security</li>
+            <li>Your network connection security</li>
+        </ul>
+
+        <h2>Children's Privacy</h2>
+        <p>Our tools are available to users of all ages. Since we don't collect any personal information, there are no special considerations for children's privacy.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>If we ever change our privacy practices, we will update this page with the new information and update the "Last Updated" date at the top.</p>
+
+        <div class="highlight-box">
+            <h3>💡 Your Privacy, Guaranteed</h3>
+            <p>We built Payload Parser as a tool for developers who value privacy and security. Our commitment is simple:</p>
+            <p><strong>Zero Data Retention.</strong> Whether processing happens in your browser or on our server, we never store, log, or retain your data. Once processing is complete, your data is gone forever.</p>
+        </div>
+
+        <h2>Questions or Concerns?</h2>
+        <div class="contact-info">
+            <p>If you have any questions about this privacy policy or our practices, please feel free to contact us:</p>
+            <p><strong>Email:</strong> privacy@payloadparser.com</p>
+            <p><strong>Website:</strong> www.payloadparser.com</p>
+        </div>
+
+        <p style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(148, 163, 184, 0.2); color: #94a3b8; font-size: 0.9rem;">
+            This privacy policy is effective as of January 24, 2026, and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
+        </p>
+    </div>
+</div>
+<div id="footer"></div>
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn - Payload Parser</title>
+    <link rel="stylesheet" href="/css/learning.css">
+</head>
+<body>
+<div class="nav" id="header"></div>
+
+<div class="container">
+    <div class="page-title">
+        <h1>📚 Learning Center</h1>
+        <p>Master data formats and parsing functions with detailed examples</p>
+    </div>
+
+    <div class="toc">
+        <h2>📑 Table of Contents</h2>
+        <ul>
+            <li><a href="#json">→ JSON Format</a></li>
+            <li><a href="#xml">→ XML Format</a></li>
+            <li><a href="#yaml">→ YAML Format</a></li>
+            <li><a href="#toml">→ TOML Format</a></li>
+            <li><a href="#format">→ Format Function</a></li>
+            <li><a href="#minify">→ Minify Function</a></li>
+            <li><a href="#repair">→ Repair Function</a></li>
+            <li><a href="#sort">→ Sort JSON/XML</a></li>
+            <li><a href="#conversions">→ Format Conversions</a></li>
+        </ul>
+    </div>
+
+    <!-- JSON Section -->
+    <div class="section" id="json">
+        <h2>{ } JSON - JavaScript Object Notation</h2>
+
+        <p>JSON (JavaScript Object Notation) ek lightweight data-interchange format hai jo human-readable aur machine-parsable dono hai. Ye web APIs aur configuration files mein sabse zyada use hota hai.</p>
+
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Simple Syntax:</strong> Key-value pairs mein data store karta hai</li>
+            <li><strong>Language Independent:</strong> Almost sab programming languages JSON ko support karte hain</li>
+            <li><strong>Lightweight:</strong> Minimal syntax, fast parsing</li>
+            <li><strong>Web Standard:</strong> REST APIs ka primary format</li>
+        </ul>
+
+        <h3>Data Types:</h3>
+        <ul>
+            <li><span class="highlight">String</span> - Text values in double quotes</li>
+            <li><span class="highlight">Number</span> - Integer ya decimal numbers</li>
+            <li><span class="highlight">Boolean</span> - true ya false</li>
+            <li><span class="highlight">Array</span> - Ordered list of values</li>
+            <li><span class="highlight">Object</span> - Key-value pairs ka collection</li>
+            <li><span class="highlight">null</span> - Empty value</li>
+        </ul>
+
+        <h3>Example:</h3>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul Kumar",
+  "age": 28,
+  "isStudent": false,
+  "skills": ["JavaScript", "Python", "React"],
+  "address": {
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": 400001
+  },
+  "projects": [
+    {
+      "title": "E-commerce Website",
+      "status": "completed",
+      "year": 2023
+    },
+    {
+      "title": "Mobile App",
+      "status": "in-progress",
+      "year": 2024
+    }
+  ]
+}</pre>
+        </div>
+
+        <h3>Common Use Cases:</h3>
+        <ul>
+            <li>REST API responses aur requests</li>
+            <li>Configuration files (package.json, tsconfig.json)</li>
+            <li>Data storage aur transfer</li>
+            <li>NoSQL databases (MongoDB)</li>
+        </ul>
+    </div>
+
+    <!-- XML Section -->
+    <div class="section" id="xml">
+        <h2>&lt;/&gt; XML - Extensible Markup Language</h2>
+
+        <p>XML ek markup language hai jo data ko structured aur hierarchical format mein store karta hai. Ye tags use karta hai jo HTML ki tarah dikhte hain lekin khud ke custom tags bana sakte hain.</p>
+
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Self-Descriptive:</strong> Tags data ko describe karte hain</li>
+            <li><strong>Hierarchical Structure:</strong> Parent-child relationships</li>
+            <li><strong>Extensible:</strong> Apne custom tags define kar sakte hain</li>
+            <li><strong>Platform Independent:</strong> Any system mein use ho sakta hai</li>
+        </ul>
+
+        <h3>Syntax Rules:</h3>
+        <ul>
+            <li>Must have a root element</li>
+            <li>Tags are case-sensitive</li>
+            <li>Properly nested and closed</li>
+            <li>Attributes in quotes</li>
+        </ul>
+
+        <h3>Example:</h3>
+        <div class="code-block">
+                <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;employee&gt;
+  &lt;name&gt;Rahul Kumar&lt;/name&gt;
+  &lt;age&gt;28&lt;/age&gt;
+  &lt;department id="IT-001"&gt;
+    &lt;name&gt;Information Technology&lt;/name&gt;
+    &lt;location&gt;Mumbai&lt;/location&gt;
+  &lt;/department&gt;
+  &lt;skills&gt;
+    &lt;skill level="expert"&gt;JavaScript&lt;/skill&gt;
+    &lt;skill level="intermediate"&gt;Python&lt;/skill&gt;
+    &lt;skill level="expert"&gt;React&lt;/skill&gt;
+  &lt;/skills&gt;
+  &lt;projects&gt;
+    &lt;project status="completed"&gt;
+      &lt;title&gt;E-commerce Website&lt;/title&gt;
+      &lt;year&gt;2023&lt;/year&gt;
+    &lt;/project&gt;
+  &lt;/projects&gt;
+&lt;/employee&gt;</pre>
+        </div>
+
+        <h3>Common Use Cases:</h3>
+        <ul>
+            <li>SOAP web services</li>
+            <li>Configuration files (web.xml, pom.xml)</li>
+            <li>Document storage (Office files)</li>
+            <li>RSS feeds aur sitemaps</li>
+        </ul>
+    </div>
+
+    <!-- YAML Section -->
+    <div class="section" id="yaml">
+        <h2>📄 YAML - YAML Ain't Markup Language</h2>
+
+        <p>YAML ek human-friendly data serialization format hai jo configuration files ke liye bahut popular hai. Ye indentation use karta hai structure define karne ke liye, brackets ya braces ki zarurat nahi hoti.</p>
+
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Human Readable:</strong> Sabse easy to read format</li>
+            <li><strong>Indentation-Based:</strong> Whitespace se structure define hota hai</li>
+            <li><strong>No Brackets:</strong> Clean aur minimal syntax</li>
+            <li><strong>Comments Support:</strong> # se comments add kar sakte hain</li>
+        </ul>
+
+        <h3>Syntax Features:</h3>
+        <ul>
+            <li>Colon (:) for key-value pairs</li>
+            <li>Hyphen (-) for lists</li>
+            <li>Indentation (2 or 4 spaces) for nesting</li>
+            <li>Quotes optional for strings</li>
+        </ul>
+
+        <h3>Example:</h3>
+        <div class="code-block">
+                <pre># Employee Configuration
+name: Rahul Kumar
+age: 28
+isStudent: false
+
+# Skills List
+skills:
+  - JavaScript
+  - Python
+  - React
+
+# Nested Address Object
+address:
+  city: Mumbai
+  state: Maharashtra
+  pincode: 400001
+
+# Array of Objects
+projects:
+  - title: E-commerce Website
+    status: completed
+    year: 2023
+    technologies:
+      - React
+      - Node.js
+      - MongoDB
+
+  - title: Mobile App
+    status: in-progress
+    year: 2024
+    technologies:
+      - React Native
+      - Firebase</pre>
+        </div>
+
+        <h3>Common Use Cases:</h3>
+        <ul>
+            <li>Docker Compose files</li>
+            <li>Kubernetes configurations</li>
+            <li>CI/CD pipelines (GitHub Actions, GitLab CI)</li>
+            <li>Application configuration files</li>
+        </ul>
+    </div>
+
+    <!-- TOML Section -->
+    <div class="section" id="toml">
+        <h2>⚙️ TOML - Tom's Obvious Minimal Language</h2>
+
+        <p>TOML ek configuration file format hai jo INI files se inspired hai. Ye human-readable hai aur unambiguous parsing ke liye design kiya gaya hai. Rust aur Python projects mein bahut popular hai.</p>
+
+        <h3>Key Features:</h3>
+        <ul>
+            <li><strong>Obvious Semantics:</strong> Clear aur unambiguous syntax</li>
+            <li><strong>Minimal:</strong> Simple aur easy to parse</li>
+            <li><strong>Type Safety:</strong> Strong typing support</li>
+            <li><strong>Comments:</strong> # se comments support karta hai</li>
+        </ul>
+
+        <h3>Data Types:</h3>
+        <ul>
+            <li>String, Integer, Float, Boolean</li>
+            <li>Datetime</li>
+            <li>Arrays</li>
+            <li>Tables (objects)</li>
+        </ul>
+
+        <h3>Example:</h3>
+        <div class="code-block">
+                <pre># Employee Configuration File
+
+name = "Rahul Kumar"
+age = 28
+isStudent = false
+
+# Skills Array
+skills = ["JavaScript", "Python", "React"]
+
+# Address Table
+[address]
+city = "Mumbai"
+state = "Maharashtra"
+pincode = 400001
+
+# Array of Tables - Projects
+[[projects]]
+title = "E-commerce Website"
+status = "completed"
+year = 2023
+technologies = ["React", "Node.js", "MongoDB"]
+
+[[projects]]
+title = "Mobile App"
+status = "in-progress"
+year = 2024
+technologies = ["React Native", "Firebase"]
+
+# Nested Table Example
+[database]
+server = "192.168.1.1"
+port = 5432
+connection_max = 5000
+enabled = true
+
+[database.credentials]
+username = "admin"
+password = "secure_password"</pre>
+        </div>
+
+        <h3>Common Use Cases:</h3>
+        <ul>
+            <li>Cargo.toml (Rust package manager)</li>
+            <li>pyproject.toml (Python projects)</li>
+            <li>Application configuration files</li>
+            <li>Build system configurations</li>
+        </ul>
+    </div>
+
+    <!-- Parser Functions Section -->
+    <div class="section" id="format">
+        <h2>🎨 Format Function</h2>
+
+        <p>Format function data ko human-readable format mein convert karta hai. Ye proper indentation aur line breaks add karta hai taaki code easy to read ho jaye.</p>
+
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>Minified ya unformatted data ko properly indented aur readable banata hai</p>
+
+            <h4>How it Works:</h4>
+            <ul>
+                <li>Whitespace aur line breaks add karta hai</li>
+                <li>Proper indentation levels maintain karta hai</li>
+                <li>Nested structures ko visually organize karta hai</li>
+            </ul>
+        </div>
+
+        <h3>Before Format (Minified):</h3>
+        <div class="code-block">
+            <pre>{"name":"Rahul","age":28,"skills":["JS","Python"],"address":{"city":"Mumbai"}}</pre>
+        </div>
+
+        <h3>After Format:</h3>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul",
+  "age": 28,
+  "skills": [
+    "JS",
+    "Python"
+  ],
+  "address": {
+    "city": "Mumbai"
+  }
+}</pre>
+        </div>
+
+        <span class="tag">Beautify</span>
+        <span class="tag">Pretty Print</span>
+        <span class="tag">Indent</span>
+    </div>
+
+    <!-- Minify Function -->
+    <div class="section" id="minify">
+        <h2>📦 Minify Function</h2>
+
+        <p>Minify function data ko compress karta hai by removing unnecessary whitespace, line breaks, aur indentation. Ye file size ko reduce karta hai jo network transfer ke liye beneficial hai.</p>
+
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>File size reduce karke faster loading aur less bandwidth usage</p>
+
+            <h4>How it Works:</h4>
+            <ul>
+                <li>Sab whitespace remove karta hai</li>
+                <li>Line breaks aur indentation hatata hai</li>
+                <li>Data integrity maintain rakhte hue size minimize karta hai</li>
+            </ul>
+        </div>
+
+        <h3>Before Minify (Formatted):</h3>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul Kumar",
+  "age": 28,
+  "skills": [
+    "JavaScript",
+    "Python",
+    "React"
+  ]
+}</pre>
+        </div>
+
+        <h3>After Minify:</h3>
+        <div class="code-block">
+            <pre>{"name":"Rahul Kumar","age":28,"skills":["JavaScript","Python","React"]}</pre>
+        </div>
+
+        <h4>Benefits:</h4>
+        <ul>
+            <li>Reduced file size (often 40-60% smaller)</li>
+            <li>Faster network transfer</li>
+            <li>Less bandwidth usage</li>
+            <li>Improved load times</li>
+        </ul>
+
+        <span class="tag">Compress</span>
+        <span class="tag">Optimize</span>
+        <span class="tag">Reduce Size</span>
+    </div>
+
+    <!-- Repair Function -->
+    <div class="section" id="repair">
+        <h2>🔧 Repair Function</h2>
+
+        <p>Repair function broken ya invalid data ko fix karta hai. Common syntax errors ko automatically detect aur correct karta hai.</p>
+
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>Invalid syntax wale data ko valid format mein convert karna</p>
+
+            <h4>Common Issues it Fixes:</h4>
+            <ul>
+                <li>Missing commas between elements</li>
+                <li>Trailing commas</li>
+                <li>Missing quotes around strings</li>
+                <li>Unclosed brackets or braces</li>
+                <li>Single quotes instead of double quotes (JSON)</li>
+            </ul>
+        </div>
+
+        <h3>Example 1 - Missing Commas:</h3>
+        <h4>Before Repair:</h4>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul"
+  "age": 28
+  "city": "Mumbai"
+}</pre>
+        </div>
+
+        <h4>After Repair:</h4>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul",
+  "age": 28,
+  "city": "Mumbai"
+}</pre>
+        </div>
+
+        <h3>Example 2 - Single Quotes:</h3>
+        <h4>Before Repair:</h4>
+        <div class="code-block">
+            <pre>{'name': 'Rahul', 'age': 28}</pre>
+        </div>
+
+        <h4>After Repair:</h4>
+        <div class="code-block">
+            <pre>{"name": "Rahul", "age": 28}</pre>
+        </div>
+
+        <span class="tag">Fix Errors</span>
+        <span class="tag">Auto-correct</span>
+        <span class="tag">Validate</span>
+    </div>
+
+    <!-- Sort Function -->
+    <div class="section" id="sort">
+        <h2>🔤 Sort JSON/XML Function</h2>
+
+        <p>Sort function data ke keys ko alphabetically arrange karta hai. Ye data ko organized aur easy to compare banata hai.</p>
+
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>Keys ko alphabetical order mein sort karke data ko organized banana</p>
+
+            <h4>Features:</h4>
+            <ul>
+                <li>Keys alphabetically sort hote hain</li>
+                <li>Nested objects bhi sort hote hain</li>
+                <li>Arrays ki order preserve rehti hai</li>
+                <li>Data comparison easy ho jata hai</li>
+            </ul>
+        </div>
+
+        <h3>Before Sort:</h3>
+        <div class="code-block">
+                <pre>{
+  "name": "Rahul",
+  "city": "Mumbai",
+  "age": 28,
+  "email": "rahul@example.com",
+  "country": "India"
+}</pre>
+        </div>
+
+        <h3>After Sort:</h3>
+        <div class="code-block">
+                <pre>{
+  "age": 28,
+  "city": "Mumbai",
+  "country": "India",
+  "email": "rahul@example.com",
+  "name": "Rahul"
+}</pre>
+        </div>
+
+        <h4>Use Cases:</h4>
+        <ul>
+            <li>Comparing two JSON files</li>
+            <li>Version control (consistent ordering)</li>
+            <li>Generating checksums</li>
+            <li>Data organization</li>
+        </ul>
+
+        <span class="tag">Alphabetical</span>
+        <span class="tag">Organize</span>
+        <span class="tag">Compare</span>
+    </div>
+
+    <!-- Conversion Functions -->
+    <div class="section" id="conversions">
+        <h2>🔄 Format Conversion Functions</h2>
+
+        <h3>1. JSON to XML Conversion</h3>
+        <p>JSON data ko XML format mein convert karta hai. Objects XML elements ban jate hain aur arrays repeated elements ban jate hain.</p>
+
+        <h4>Example:</h4>
+        <strong>JSON Input:</strong>
+        <div class="code-block">
+                <pre>{
+  "employee": {
+    "name": "Rahul",
+    "age": 28,
+    "skills": ["JavaScript", "Python"]
+  }
+}</pre>
+        </div>
+
+        <strong>XML Output:</strong>
+        <div class="code-block">
+                <pre>&lt;employee&gt;
+  &lt;name&gt;Rahul&lt;/name&gt;
+  &lt;age&gt;28&lt;/age&gt;
+  &lt;skills&gt;JavaScript&lt;/skills&gt;
+  &lt;skills&gt;Python&lt;/skills&gt;
+&lt;/employee&gt;</pre>
+        </div>
+
+        <h3>2. XML to JSON Conversion</h3>
+        <p>XML data ko JSON format mein convert karta hai. Elements objects ban jate hain aur repeated elements arrays ban jate hain.</p>
+
+        <h4>Example:</h4>
+        <strong>XML Input:</strong>
+        <div class="code-block">
+                <pre>&lt;person&gt;
+  &lt;name&gt;Rahul&lt;/name&gt;
+  &lt;age&gt;28&lt;/age&gt;
+&lt;/person&gt;</pre>
+        </div>
+
+        <strong>JSON Output:</strong>
+        <div class="code-block">
+                <pre>{
+  "person": {
+    "name": "Rahul",
+    "age": "28"
+  }
+}</pre>
+        </div>
+
+        <h3>3. JSON to YAML Conversion</h3>
+        <p>JSON ko YAML's human-friendly syntax mein convert karta hai.</p>
+
+        <h4>Example:</h4>
+        <strong>JSON Input:</strong>
+        <div class="code-block">
+            <pre>{"name": "Rahul", "age": 28, "skills": ["JS", "Python"]}</pre>
+        </div>
+
+        <strong>YAML Output:</strong>
+        <div class="code-block">
+                <pre>name: Rahul
+age: 28
+skills:
+  - JS
+  - Python</pre>
+        </div>
+
+        <h3>4. JSON to TOML Conversion</h3>
+        <p>JSON data ko TOML configuration format mein convert karta hai.</p>
+
+        <h4>Example:</h4>
+        <strong>JSON Input:</strong>
+        <div class="code-block">
+                <pre>{
+  "database": {
+    "server": "localhost",
+    "port": 5432
+  }
+}</pre>
+        </div>
+
+        <strong>TOML Output:</strong>
+        <div class="code-block">
+                <pre>[database]
+server = "localhost"
+port = 5432</pre>
+        </div>
+
+        <h3>5. XML to YAML Conversion</h3>
+        <p>XML ko YAML format mein convert karta hai, making it more readable.</p>
+
+        <h3>6. XML to TOML Conversion</h3>
+        <p>XML configuration ko TOML format mein convert karta hai for modern build tools.</p>
+
+        <div class="function-card">
+            <h4>Conversion Benefits:</h4>
+            <ul>
+                <li>Different systems ke beech data exchange</li>
+                <li>Format migration (legacy to modern)</li>
+                <li>Tool compatibility</li>
+                <li>Human readability improvement</li>
+            </ul>
+        </div>
+
+        <span class="tag">Transform</span>
+        <span class="tag">Convert</span>
+        <span class="tag">Migrate</span>
+        <span class="tag">Interchange</span>
+    </div>
+
+    <!-- Additional Tips Section -->
+    <div class="section">
+        <h2>💡 Pro Tips & Best Practices</h2>
+
+        <h3>JSON Best Practices:</h3>
+        <ul>
+            <li>Always use double quotes for strings</li>
+            <li>No trailing commas allowed</li>
+            <li>Use consistent indentation (2 or 4 spaces)</li>
+            <li>Validate JSON using online validators</li>
+        </ul>
+
+        <h3>XML Best Practices:</h3>
+        <ul>
+            <li>Use meaningful tag names</li>
+            <li>Close all tags properly</li>
+            <li>Use attributes for metadata only</li>
+            <li>Include XML declaration at top</li>
+        </ul>
+
+        <h3>YAML Best Practices:</h3>
+        <ul>
+            <li>Use 2 spaces for indentation (not tabs)</li>
+            <li>Quote strings with special characters</li>
+            <li>Use comments to explain complex sections</li>
+            <li>Keep nesting levels reasonable</li>
+        </ul>
+
+        <h3>TOML Best Practices:</h3>
+        <ul>
+            <li>Group related configuration together</li>
+            <li>Use tables for nested data</li>
+            <li>Prefer arrays of tables for repeated data</li>
+            <li>Add comments for important settings</li>
+        </ul>
+    </div>
+
+</div>
+
+<div id="footer"></div>
+
+    <script src="/js/layout-loader.js"></script>
+    <script src="/js/learning.js"></script>

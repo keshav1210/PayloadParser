@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payload Parser - Blog</title>
+    <link rel="stylesheet" href="/css/blogs.css">
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <!-- Blog List View -->
+    <div id="blogList">
+        <h1>Blog & Articles</h1>
+        <p class="subtitle">Learn about data formats, parsing techniques, and best practices for modern web development</p>
+        <div class="blog-grid">
+            <!-- Blog Post 1 -->
+            <article class="blog-card">
+                <div class="blog-image">📄</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">JSON</span>
+                        <span>Jan 15, 2026</span>
+                    </div>
+                    <h2 class="blog-title">Understanding JSON Schema Validation</h2>
+                    <p class="blog-excerpt">
+                        Learn how to validate your JSON data structures using JSON Schema. This comprehensive guide covers schema design patterns and validation strategies.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article1')">Read More →</a>
+                </div>
+            </article>
+
+            <!-- Blog Post 2 -->
+            <article class="blog-card">
+                <div class="blog-image">🔄</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">XML</span>
+                        <span>Jan 10, 2026</span>
+                    </div>
+                    <h2 class="blog-title">XML to JSON Conversion Best Practices</h2>
+                    <p class="blog-excerpt">
+                        Discover the best approaches for converting XML data to JSON format while preserving data integrity and structure.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article2')">Read More →</a>
+                </div>
+            </article>
+
+            <!-- Blog Post 3 -->
+            <article class="blog-card">
+                <div class="blog-image">⚡</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">Performance</span>
+                        <span>Jan 5, 2026</span>
+                    </div>
+                    <h2 class="blog-title">Optimizing Large Payload Processing</h2>
+                    <p class="blog-excerpt">
+                        Tips and techniques for efficiently handling and parsing large data payloads in web applications.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article3')">Read More →</a>
+                </div>
+            </article>
+
+            <!-- Blog Post 4 -->
+            <article class="blog-card">
+                <div class="blog-image">🛠️</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">YAML</span>
+                        <span>Dec 28, 2025</span>
+                    </div>
+                    <h2 class="blog-title">YAML vs JSON: When to Use Which</h2>
+                    <p class="blog-excerpt">
+                        A practical comparison of YAML and JSON formats, helping you choose the right format for your configuration and data needs.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article4')">Read More →</a>
+                </div>
+            </article>
+
+            <!-- Blog Post 5 -->
+            <article class="blog-card">
+                <div class="blog-image">🔐</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">Security</span>
+                        <span>Dec 20, 2025</span>
+                    </div>
+                    <h2 class="blog-title">Secure Data Parsing: Avoiding Common Pitfalls</h2>
+                    <p class="blog-excerpt">
+                        Learn about security considerations when parsing external data and how to protect your applications from malicious payloads.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article5')">Read More →</a>
+                </div>
+            </article>
+
+            <!-- Blog Post 6 -->
+            <article class="blog-card">
+                <div class="blog-image">📊</div>
+                <div class="blog-content">
+                    <div class="blog-meta">
+                        <span class="blog-tag">TOML</span>
+                        <span>Dec 15, 2025</span>
+                    </div>
+                    <h2 class="blog-title">Introduction to TOML for Configuration Files</h2>
+                    <p class="blog-excerpt">
+                        Explore TOML as a human-friendly configuration file format and learn when it's the best choice for your projects.
+                    </p>
+                    <a class="read-more" onclick="showArticle('article6')">Read More →</a>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Article 1: JSON Schema Validation -->
+    <div id="article1" class="article-view">
+        <a class="back-button" onclick="showBlogList()">← Back to Blog</a>
+        <div class="article-header">
+            <h1 class="article-title">Understanding JSON Schema Validation</h1>
+            <div class="article-meta">
+                <span class="blog-tag">JSON</span>
+                <span>January 15, 2026</span>
+                <span>8 min read</span>
+            </div>
+        </div>
+        <div class="article-content">
+            <p>JSON Schema is a powerful tool for validating the structure and content of JSON data. Whether you're building APIs, working with configuration files, or processing user input, JSON Schema helps ensure your data meets expected requirements.</p>
+
+            <h2>What is JSON Schema?</h2>
+            <p>JSON Schema is a vocabulary that allows you to annotate and validate JSON documents. It provides a contract for your JSON data, defining what properties are required, what data types are acceptable, and what values are valid.</p>
+
+            <h3>Basic Structure</h3>
+            <p>A simple JSON Schema looks like this:</p>
+            <pre><code>{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "required": ["name"]
+}</code></pre>
+
+            <h2>Key Benefits of JSON Schema</h2>
+            <ul>
+                <li><strong>Validation:</strong> Automatically verify that JSON data conforms to expected structure</li>
+                <li><strong>Documentation:</strong> Self-documenting code that describes data structure</li>
+                <li><strong>Code Generation:</strong> Generate type definitions and validation code automatically</li>
+                <li><strong>Testing:</strong> Create reliable tests based on schema definitions</li>
+            </ul>
+
+            <h2>Common Validation Patterns</h2>
+
+            <h3>1. String Validation</h3>
+            <p>Validate strings with patterns, length constraints, and formats:</p>
+            <pre><code>{
+  "email": {
+    "type": "string",
+    "format": "email"
+  },
+  "username": {
+    "type": "string",
+    "minLength": 3,
+    "maxLength": 20,
+    "pattern": "^[a-zA-Z0-9_]+$"
+  }
+}</code></pre>
+
+            <h3>2. Number Validation</h3>
+            <p>Define numeric ranges and precision:</p>
+            <pre><code>{
+  "price": {
+    "type": "number",
+    "minimum": 0,
+    "multipleOf": 0.01
+  },
+  "quantity": {
+    "type": "integer",
+    "minimum": 1,
+    "maximum": 100
+  }
+}</code></pre>
+
+            <h3>3. Array Validation</h3>
+            <p>Control array length and item types:</p>
+            <pre><code>{
+  "tags": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "minItems": 1,
+    "maxItems": 5,
+    "uniqueItems": true
+  }
+}</code></pre>
+
+            <h2>Advanced Features</h2>
+
+            <h3>Conditional Validation</h3>
+            <p>Use <code>if</code>, <code>then</code>, and <code>else</code> for conditional schemas:</p>
+            <pre><code>{
+  "if": {
+    "properties": { "country": { "const": "USA" } }
+  },
+  "then": {
+    "properties": { "zipCode": { "pattern": "^[0-9]{5}$" } }
+  }
+}</code></pre>
+
+            <h3>Schema Composition</h3>
+            <p>Combine schemas using <code>allOf</code>, <code>anyOf</code>, and <code>oneOf</code>:</p>
+            <pre><code>{
+  "allOf": [
+    { "type": "object" },
+    { "properties": { "name": { "type": "string" } } }
+  ]
+}</code></pre>
+
+            <h2>Best Practices</h2>
+            <ol>
+                <li><strong>Start Simple:</strong> Begin with basic validation and add complexity as needed</li>
+                <li><strong>Use Descriptive Properties:</strong> Add <code>title</code> and <code>description</code> fields</li>
+                <li><strong>Version Your Schemas:</strong> Use <code>$id</code> to track schema versions</li>
+                <li><strong>Reuse Definitions:</strong> Use <code>$ref</code> to reference common patterns</li>
+                <li><strong>Test Thoroughly:</strong> Validate both valid and invalid data against your schema</li>
+            </ol>
+
+            <h2>Conclusion</h2>
+            <p>JSON Schema is an essential tool for any developer working with JSON data. It provides robust validation, improves code quality, and serves as living documentation for your data structures. By implementing JSON Schema in your projects, you can catch errors early, ensure data consistency, and make your APIs more reliable.</p>
+
+            <p>Start incorporating JSON Schema into your workflow today, and you'll quickly see the benefits of having well-validated, documented data structures.</p>
+        </div>
+    </div>
+
+    <!-- Article 2: XML to JSON Conversion -->
+    <div id="article2" class="article-view">
+        <a class="back-button" onclick="showBlogList()">← Back to Blog</a>
+        <div class="article-header">
+            <h1 class="article-title">XML to JSON Conversion Best Practices</h1>
+            <div class="article-meta">
+                <span class="blog-tag">XML</span>
+                <span>January 10, 2026</span>
+                <span>7 min read</span>
+            </div>
+        </div>
+        <div class="article-content">
+            <p>Converting XML to JSON is a common task in modern web development, especially when integrating legacy systems with modern APIs. However, the structural differences between these formats can lead to data loss or misrepresentation if not handled carefully.</p>
+
+            <h2>Understanding the Challenges</h2>
+            <p>XML and JSON have fundamentally different structures:</p>
+            <ul>
+                <li>XML supports attributes, while JSON does not have a direct equivalent</li>
+                <li>XML allows mixed content (text and elements), which is complex in JSON</li>
+                <li>XML namespaces don't have a standard JSON representation</li>
+                <li>XML order of elements matters, while JSON object properties are unordered</li>
+            </ul>
+
+            <h2>Conversion Strategies</h2>
+
+            <h3>1. Handling XML Attributes</h3>
+            <p>There are several approaches to convert XML attributes:</p>
+            <pre><code><!-- XML -->
+&lt;person id="123" name="John"&gt;
+  &lt;age&gt;30&lt;/age&gt;
+&lt;/person&gt;
+
+// Approach 1: Prefix attributes with @
+{
+  "person": {
+    "@id": "123",
+    "@name": "John",
+    "age": "30"
+  }
+}
+
+// Approach 2: Separate attributes object
+{
+  "person": {
+    "attributes": {
+      "id": "123",
+      "name": "John"
+    },
+    "age": "30"
+  }
+}</code></pre>
+
+            <h3>2. Handling Text Content</h3>
+            <p>When an element has both text and attributes:</p>
+            <pre><code><!-- XML -->
+&lt;price currency="USD"&gt;99.99&lt;/price&gt;
+
+// JSON representation
+{
+  "price": {
+    "@currency": "USD",
+    "#text": "99.99"
+  }
+}</code></pre>
+
+            <h3>3. Array Detection</h3>
+            <p>XML doesn't distinguish between single elements and arrays. Always convert repeated elements to arrays:</p>
+            <pre><code><!-- XML -->
+&lt;items&gt;
+  &lt;item&gt;Apple&lt;/item&gt;
+  &lt;item&gt;Banana&lt;/item&gt;
+&lt;/items&gt;
+
+// JSON
+{
+  "items": {
+    "item": ["Apple", "Banana"]
+  }
+}</code></pre>
+
+            <h2>Best Practices</h2>
+
+            <h3>1. Choose a Consistent Convention</h3>
+            <p>Decide on a convention for attributes and stick to it throughout your application. Document your choices clearly.</p>
+
+            <h3>2. Preserve Data Types</h3>
+            <p>XML treats everything as strings. During conversion, infer and convert appropriate data types:</p>
+            <pre><code>// Convert numbers
+"age": 30  // Not "30"
+
+// Convert booleans
+"active": true  // Not "true"
+
+// Handle null/empty
+"middle_name": null  // Not ""</code></pre>
+
+            <h3>3. Handle Namespaces Carefully</h3>
+            <p>If your XML uses namespaces, preserve them in the JSON structure:</p>
+            <pre><code>{
+  "soap:Envelope": {
+    "@xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
+    "soap:Body": { ... }
+  }
+}</code></pre>
+
+            <h3>4. Validate Both Formats</h3>
+            <p>Always validate your XML before conversion and your JSON after conversion to ensure data integrity.</p>
+
+            <h2>Common Pitfalls to Avoid</h2>
+            <ol>
+                <li><strong>Losing attribute information:</strong> Don't discard attributes during conversion</li>
+                <li><strong>Incorrect array handling:</strong> Ensure repeated elements become arrays</li>
+                <li><strong>Data type loss:</strong> Convert strings to appropriate types when possible</li>
+                <li><strong>Namespace confusion:</strong> Preserve namespace information for accurate representation</li>
+            </ol>
+
+            <h2>Tools and Libraries</h2>
+            <p>Popular libraries for XML to JSON conversion include:</p>
+            <ul>
+                <li><strong>xml2js (Node.js):</strong> Flexible XML to JavaScript object conversion</li>
+                <li><strong>xmltodict (Python):</strong> Simple XML to dictionary conversion</li>
+                <li><strong>Jackson (Java):</strong> Powerful data binding for XML and JSON</li>
+            </ul>
+
+            <h2>Conclusion</h2>
+            <p>Converting XML to JSON requires careful consideration of structural differences and potential data loss. By following these best practices and choosing appropriate conventions for your use case, you can ensure accurate and reliable conversions that preserve your data's integrity.</p>
+        </div>
+    </div>
+
+    <!-- Article 3: Large Payload Processing -->
+    <div id="article3" class="article-view">
+        <a class="back-button" onclick="showBlogList()">← Back to Blog</a>
+        <div class="article-header">
+            <h1 class="article-title">Optimizing Large Payload Processing</h1>
+            <div class="article-meta">
+                <span class="blog-tag">Performance</span>
+                <span>January 5, 2026</span>
+                <span>9 min read</span>
+            </div>
+        </div>
+        <div class="article-content">
+            <p>Processing large data payloads efficiently is crucial for maintaining responsive web applications. Whether you're dealing with API responses, file uploads, or data exports, understanding how to handle large datasets can make the difference between a smooth user experience and a frozen browser.</p>
+
+            <h2>The Challenge</h2>
+            <p>Large payloads can cause several problems:</p>
+            <ul>
+                <li>Browser memory exhaustion leading to crashes</li>
+                <li>UI freezing during parsing and processing</li>
+                <li>Slow network transfers affecting user experience</li>
+                <li>Increased server load and bandwidth costs</li>
+            </ul>
+
+            <h2>Optimization Strategies</h2>
+
+            <h3>1. Streaming and Chunking</h3>
+            <p>Instead of loading entire payloads into memory, process data in chunks:</p>
+            <pre><code>async function processLargeFile(file) {
+  const chunkSize = 1024 * 1024; // 1MB chunks
+  const reader = file.stream().getReader();
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    // Process chunk
+    await processChunk(value);
+  }
+}</code></pre>
+
+            <h3>2. Pagination and Lazy Loading</h3>
+            <p>Request data in smaller batches rather than all at once:</p>
+            <pre><code>async function fetchPaginatedData(page = 1, limit = 100) {
+  const response = await fetch(
+    `api/data?page=${page}&limit=${limit}`
+  );
+  return response.json();
+}
+
+// Load more as needed
+let currentPage = 1;
+while (hasMore) {
+  const data = await fetchPaginatedData(currentPage);
+  displayData(data);
+  currentPage++;
+}</code></pre>
+
+            <h3>3. Web Workers for Heavy Processing</h3>
+            <p>Offload intensive parsing to background threads:</p>
+            <pre><code>// main.js
+const worker = new Worker('parser-worker.js');
+
+worker.postMessage({ data: largePayload });
+
+worker.onmessage = (e) => {
+  const parsedData = e.data;
+  updateUI(parsedData);
+};
+
+// parser-worker.js
+self.onmessage = (e) => {
+  const result = processLargeData(e.data);
+  self.postMessage(result);
+};</code></pre>
+
+            <h3>4. Compression</h3>
+            <p>Reduce payload size during transfer:</p>
+            <pre><code>// Server-side (Express.js)
+const compression = require('compression');
+app.use(compression());
+
+// Client-side: Accept compressed responses
+fetch('api/data', {
+  headers: {
+    'Accept-Encoding': 'gzip, deflate, br'
+  }
+});</code></pre>
+
+            <h2>JSON Parsing Optimization</h2>
+
+            <h3>Streaming JSON Parsers</h3>
+            <p>Use streaming parsers for very large JSON files:</p>
+            <pre><code>import { parser } from 'stream-json';
+import { streamArray } from 'stream-json/streamers/StreamArray';
+
+const pipeline = fs.createReadStream('large-file.json')
+  .pipe(parser())
+  .pipe(streamArray());
+
+pipeline.on('data', ({ value }) => {
+  // Process each array element as it arrives
+  processItem(value);
+});</code></pre>
+
+            <h3>Selective Parsing</h3>
+            <p>Only parse the data you need:</p>
+            <pre><code>// Instead of parsing everything
+const allData = JSON.parse(largeResponse);
+const needed = allData.items.slice(0, 10);
+
+// Parse strategically using JSON.parse replacer
+const needed = JSON.parse(largeResponse, (key, value) => {
+  if (key === 'items') {
+    return value.slice(0, 10); // Only keep first 10
+  }
+  return value;
+});</code></pre>
+
+            <h2>Memory Management</h2>
+
+            <h3>1. Garbage Collection Awareness</h3>
+            <p>Help the garbage collector by clearing references:</p>
+            <pre><code>function processBatch(data) {
+  const processed = transform(data);
+  displayResults(processed);
+
+  // Clear references
+  data = null;
+  processed = null;
+}</code></pre>
+
+            <h3>2. Object Pooling</h3>
+            <p>Reuse objects instead of creating new ones:</p>
+            <pre><code>class ObjectPool {
+  constructor(factory, reset, size = 100) {
+    this.factory = factory;
+    this.reset = reset;
+    this.pool = Array(size).fill(null).map(factory);
+    this.available = [...this.pool];
+  }
+
+  acquire() {
+    return this.available.pop() || this.factory();
+  }
+
+  release(obj) {
+    this.reset(obj);
+    this.available.push(obj);
+  }
+}</code></pre>
+
+            <h2>Network Optimization</h2>
+
+            <h3>1. Request Debouncing</h3>
+            <p>Prevent excessive requests during user interaction:</p>
+            <pre><code>function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+const debouncedFetch = debounce(fetchData, 300);</code></pre>
+
+            <h3>2. Caching Strategies</h3>
+            <p>Cache responses to avoid redundant requests:</p>
+            <pre><code>const cache = new Map();
+
+async function fetchWithCache(url) {
+  if (cache.has(url)) {
+    return cache.get(url);
+  }
+
+  const data = await fetch(url).then(r => r.json());
+  cache.set(url, data);
+  return data;
+}</code></pre>
+
+            <h2>Monitoring and Profiling</h2>
+
+            <h3>Performance Metrics</h3>
+            <p>Track key performance indicators:</p>
+            <pre><code>// Measure parsing time
+const start = performance.now();
+const data = JSON.parse(largePayload);
+const parseTime = performance.now() - start;
+console.log(`Parsing took ${parseTime}ms`);
+
+// Monitor memory usage
+if (performance.memory) {
+  console.log(`Memory: ${performance.memory.usedJSHeapSize / 1048576} MB`);
+}
+
+// Track operation performance
+performance.mark('parse-start');
+const result = processData(largePayload);
+performance.mark('parse-end');
+performance.measure('parse-duration', 'parse-start', 'parse-end');
+
+const measure = performance.getEntriesByName('parse-duration')[0];
+console.log(`Process took ${measure.duration}ms`);</code></pre>
+
+            <h3>Real-time Monitoring Dashboard</h3>
+            <p>Implement monitoring for production environments:</p>
+            <pre><code>class PerformanceMonitor {
+  constructor() {
+    this.metrics = {
+      parseTime: [],
+      memoryUsage: [],
+      errors: []
+    };
+  }
+
+  startOperation(name) {
+    performance.mark(`${name}-start`);
+  }
+
+  endOperation(name) {
+    performance.mark(`${name}-end`);
+    performance.measure(name, `${name}-start`, `${name}-end`);
+
+    const measure = performance.getEntriesByName(name)[0];
+    this.metrics.parseTime.push({
+      operation: name,
+      duration: measure.duration,
+      timestamp: Date.now()
+    });
+
+    // Alert if too slow
+    if (measure.duration > 1000) {
+      console.warn(`Slow operation detected: ${name} took ${measure.duration}ms`);
+    }
+  }
+
+  checkMemory() {
+    if (performance.memory) {
+      const usage = performance.memory.usedJSHeapSize;
+      this.metrics.memoryUsage.push({
+        usage: usage,
+        timestamp: Date.now()
+      });
+
+      // Alert if memory is high
+      if (usage > 100 * 1024 * 1024) { // 100MB
+        console.warn('High memory usage detected');
+      }
+    }
+  }
+
+  getReport() {
+    return {
+      averageParseTime: this.getAverage(this.metrics.parseTime.map(m => m.duration)),
+      maxParseTime: Math.max(...this.metrics.parseTime.map(m => m.duration)),
+      averageMemory: this.getAverage(this.metrics.memoryUsage.map(m => m.usage)),
+      errorCount: this.metrics.errors.length
+    };
+  }
+
+  getAverage(arr) {
+    return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+  }
+}
+
+// Usage
+const monitor = new PerformanceMonitor();
+
+monitor.startOperation('json-parse');
+const data = JSON.parse(largePayload);
+monitor.endOperation('json-parse');
+monitor.checkMemory();
+
+console.log(monitor.getReport());</code></pre>
+
+            <h2>Best Practices Summary</h2>
+        </div>
+    </div>
+</div>
+<div id="footer"></div>
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>
