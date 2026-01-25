@@ -247,6 +247,7 @@ select {
     font-size: 13px;
     line-height: 1.8;
     overflow: auto;
+    white-space: pre-wrap;
 }
 
 .tree-expand {

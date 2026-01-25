@@ -805,8 +805,11 @@
  function formatData(type) {
      const selectedtype = document.getElementById('formatType').value;
      input= (codeEditor.textContent || codeEditor.innerText || '').trim();
-     if(type==='JSON_FORMAT' && selectedtype==='xml'){
-         type='XML_FORMAT';
+     if(type==='REPAIR'){
+         type = (selectedtype==='xml') ? "XML_FORMAT" : "JSON_FORMAT"
+     }
+     if(type === 'TOML' || type === 'YAML' || type === 'CSV') {
+         type = selectedtype.toUpperCase() + "_TO_" + type;
      }
      fetch("/data/parse", {
          method: "POST",
@@ -814,7 +817,7 @@
              "Content-Type": "application/json"
          },
          body: JSON.stringify({
-             type: type==='JSON_TO_XML' || (type==='XML_TO_JSON') || selectedtype==='json'?type:'XML_FORMAT',
+             type: type,
              data: input   // ✅ ALWAYS CLEAN DATA
          })
      })
@@ -828,6 +831,8 @@
                     format = 'yaml';
                 }else if(type==='JSON_TO_TOML' || type==='XML_TO_TOML') {
                     format = 'toml';
+                }else if(type==='JSON_TO_CSV' || type==='XML_TO_CSV') {
+                    format = 'csv';
                 }
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
