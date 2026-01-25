@@ -22,8 +22,15 @@ public class ViewHandler {
     public String  learnings(){
         return "learning.html";
     }
+
     @GetMapping("/blogs")
     public String  blogs(){
         return "blogs.html";
+    }
+
+
+    @GetMapping("/privacy")
+    public String  privacy(){
+        return "privacy.html";
     }
 }
