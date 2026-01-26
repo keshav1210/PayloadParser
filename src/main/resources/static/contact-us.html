@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Payload Parser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1a2e;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: #2b2d42;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /*nav {*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    align-items: center;*/
+        /*    max-width: 1400px;*/
+        /*    margin: 0 auto;*/
+        /*}*/
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #e2e8f0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            color: #f1f5f9;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Contact Grid */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: #2d2d44;
+            padding: 2.5rem;
+            border-radius: 12px;
+        }
+
+        .contact-form h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: #2b2d42;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            padding: 0.875rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Email Buttons */
+        .email-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .email-btn {
+            background: #2b2d42;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            padding: 1.25rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .email-btn:hover {
+            background: #383a5c;
+            border-color: #60a5fa;
+            transform: translateX(5px);
+        }
+
+        .email-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .email-btn-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: #f1f5f9;
+        }
+
+        .email-btn-subtitle {
+            font-size: 0.9rem;
+            color: #60a5fa;
+        }
+
+        .submit-btn {
+            background: #607d8b;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: #4a8f4a;
+            transform: translateY(-2px);
+        }
+
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: #2d2d44;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #60a5fa;
+        }
+
+        .info-card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: #f1f5f9;
+        }
+
+        .info-card p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        .info-card a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .info-card a:hover {
+            color: #93c5fd;
+        }
+
+        /* Social Links */
+        .social-links {
+            background: #3a3d5c;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .social-links h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            background: #2b2d42;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-icon:hover {
+            background: #607d8b;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            margin-top: 4rem;
+            background: #3a3d5c;
+            padding: 3rem;
+            border-radius: 12px;
+        }
+
+        .faq-section h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #f1f5f9;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #93c5fd;
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-answer {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .contact-form,
+            .info-card,
+            .faq-section {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .page-title h1 {
+                font-size: 1.75rem;
+            }
+
+            .social-icons {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+
+<div class="container">
+    <div class="page-title">
+        <h1>Get In Touch</h1>
+        <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    </div>
+
+    <div class="contact-grid">
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <h2>Send Us a Message</h2>
+            <p style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.6;">
+                Currently, we don't have a database to store messages. Please reach out to us directly via email for the fastest response.
+            </p>
+            <div class="email-buttons">
+                <a href="mailto:support@payloadparser.com?subject=General%20Inquiry" class="email-btn">
+                    <span class="email-icon">📧</span>
+                    <div>
+                        <div class="email-btn-title">General Support</div>
+                        <div class="email-btn-subtitle">support@payloadparser.com</div>
+                    </div>
+                </a>
+                <a href="mailto:support@payloadparser.com?subject=Bug%20Report" class="email-btn">
+                    <span class="email-icon">🐛</span>
+                    <div>
+                        <div class="email-btn-title">Report a Bug</div>
+                        <div class="email-btn-subtitle">support@payloadparser.com</div>
+                    </div>
+                </a>
+                <a href="mailto:support@payloadparser.com?subject=Feature%20Request" class="email-btn">
+                    <span class="email-icon">💡</span>
+                    <div>
+                        <div class="email-btn-title">Feature Request</div>
+                        <div class="email-btn-subtitle">support@payloadparser.com</div>
+                    </div>
+                </a>
+                <a href="mailto:business@payloadparser.com?subject=Business%20Inquiry" class="email-btn">
+                    <span class="email-icon">💼</span>
+                    <div>
+                        <div class="email-btn-title">Business Inquiry</div>
+                        <div class="email-btn-subtitle">business@payloadparser.com</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="contact-info">
+            <div class="info-card">
+                <div class="info-card-icon">📧</div>
+                <h3>Email Us</h3>
+                <p>For general inquiries and support:</p>
+                <p><a href="mailto:support@payloadparser.com">support@payloadparser.com</a></p>
+                <p style="margin-top: 1rem;">For business inquiries:</p>
+                <p><a href="mailto:business@payloadparser.com">business@payloadparser.com</a></p>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-icon">💬</div>
+                <h3>Response Time</h3>
+                <p>We typically respond to all inquiries within 24-48 hours during business days.</p>
+                <p style="margin-top: 1rem;">For urgent issues, please mark your subject line with [URGENT].</p>
+            </div>
+
+<!--            <div class="social-links">-->
+<!--                <h3>Follow Us</h3>-->
+<!--                <div class="social-icons">-->
+<!--                    <a href="#" class="social-icon" title="Twitter">𝕏</a>-->
+<!--                    <a href="#" class="social-icon" title="GitHub">⚙</a>-->
+<!--                    <a href="#" class="social-icon" title="LinkedIn">in</a>-->
+<!--                    <a href="#" class="social-icon" title="Discord">💬</a>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: Is Payload Parser free to use?</div>
+            <div class="faq-answer">Yes! Payload Parser is completely free to use. All features are available without any cost or registration.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: Do you store my data?</div>
+            <div class="faq-answer">No, we don't store any of your data. All processing happens in your browser or temporarily on our server for specific conversions, but nothing is saved to disk or database. Check our Privacy Policy for more details.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: How can I report a bug?</div>
+            <div class="faq-answer">You can report bugs by selecting "Bug Report" as the subject. Please include as much detail as possible, including the input data that caused the issue (if safe to share).</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: Can I suggest new features?</div>
+            <div class="faq-answer">Absolutely! We love hearing feature requests from our users. Use the contact form and select "Feature Request" to share your ideas.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: Do you offer API access?</div>
+            <div class="faq-answer">Currently, Payload Parser is a web-based tool only. If you're interested in API access for integration purposes, please contact us via the business email above.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">Q: Can I use Payload Parser offline?</div>
+            <div class="faq-answer">Most features work client-side in your browser and can work offline once the page is loaded. However, some advanced conversions and repairs require server processing and need an internet connection.</div>
+        </div>
+    </div>
+</div>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>

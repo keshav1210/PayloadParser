@@ -33,4 +33,9 @@ public class ViewHandler {
     public String  privacy(){
         return "privacy.html";
     }
+
+    @GetMapping("/contact")
+    public String  contact(){
+        return "contact-us.html";
+    }
 }

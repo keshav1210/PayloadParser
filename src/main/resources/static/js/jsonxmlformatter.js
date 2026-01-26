@@ -35,18 +35,18 @@
 }
 }
 
-    function toggleFold(foldId) {
-    foldStates[foldId] = !foldStates[foldId];
-
-    const arrow = document.getElementById('arrow_' + foldId);
-    if (foldStates[foldId]) {
-    arrow.textContent = '▶';
-    hideAllDescendants(foldId);
-} else {
-    arrow.textContent = '▼';
-    showDirectChildren(foldId);
-}
-}
+//     function toggleFold(foldId) {
+//     foldStates[foldId] = !foldStates[foldId];
+//
+//     const arrow = document.getElementById('arrow_' + foldId);
+//     if (foldStates[foldId]) {
+//     arrow.textContent = '▶';
+//     hideAllDescendants(foldId);
+// } else {
+//     arrow.textContent = '▼';
+//     showDirectChildren(foldId);
+// }
+// }
 
     function hideAllDescendants(foldId) {
     // Hide all direct children lines
@@ -131,11 +131,11 @@
 }
 
     // Icon with fold arrow
-    if (currentParent) {
-    iconsHtml += `<div class="fold-arrow" data-parent="${currentParent}" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
-} else {
-    iconsHtml += `<div class="fold-arrow" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
-}
+//     if (currentParent) {
+//     iconsHtml += `<div class="fold-arrow" data-parent="${currentParent}" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
+// } else {
+//     iconsHtml += `<div class="fold-arrow" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
+// }
 
 } else if (trimmed === '}' || trimmed === '},' || trimmed === ']' || trimmed === '],') {
     stack.pop();
@@ -724,40 +724,32 @@
       let type=  document.getElementById('formatType').value;
         let sample;
         if(type==='json') {
-            sample   = `[
-  {
-    "label": "Activity",
-    "parameterName": "Activity.any_other_intervention_1",
-    "type": "text",
-    "parameterValue": "qdasdcasdc",
-    "stepName": "Management Interventions",
-    "required": true
-  },
-  {
-    "label": "Activity",
-    "parameterName": "Activity.Any_other_intervention_1",
-    "type": "text",
-    "parameterValue": "qdasdcasdc",
-    "stepName": "Projected Benefits",
-    "required": false
-  },
-  {
-    "label": "Activity",
-    "parameterName": "Activity.biodiversity_conservation_1",
-    "type": "text",
-    "parameterValue": "Assessment of habitat quality and species interactions",
-    "stepName": "Management Interventions",
-    "required": true
-  },
-  {
-    "label": "Activity",
-    "parameterName": "Activity.Biodiversity_Conservation_1",
-    "type": "text",
-    "parameterValue": "Assessment of habitat quality and species interactions",
-    "stepName": "Monitoring & Evaluation",
-    "required": false
-  }
-]`;
+            sample   = `{
+  "customer": {
+    "id": "55000",
+    "name": "Charter Group",
+    "address": [
+      {
+        "street": "100 Main",
+        "city": "Framingham",
+        "state": "MA",
+        "zip": "01701"
+      },
+      {
+        "street": "720 Prospect",
+        "city": "Framingham",
+        "state": "MA",
+        "zip": "01701"
+      },
+      {
+        "street": "120 Ridge",
+        "state": "MA",
+        "zip": "01760"
+      }
+    ]
+    }
+    }`;
+            formatCode(true,sample,'json');
         }else{
         sample=    '<?xml version="1.0"?>\n' +
             '<customers>\n' +
@@ -782,10 +774,11 @@
             '      </address>\n' +
             '   </customer>\n' +
             '</customers>'
+            formatCode(true,sample,'xml');
         }
-    codeEditor.textContent = sample;
-    updateLineNumbers();
-    document.getElementById('inputStatus').innerHTML = '<span class="success">✓ Sample loaded - Click Format</span>';
+    // codeEditor.textContent = sample;
+    // updateLineNumbers();
+    // document.getElementById('inputStatus').innerHTML = '<span class="success">✓ Sample loaded - Click Format</span>';
 }
 
     // Initialize

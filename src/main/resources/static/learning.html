@@ -34,14 +34,14 @@
     <div class="section" id="json">
         <h2>{ } JSON - JavaScript Object Notation</h2>
 
-        <p>JSON (JavaScript Object Notation) ek lightweight data-interchange format hai jo human-readable aur machine-parsable dono hai. Ye web APIs aur configuration files mein sabse zyada use hota hai.</p>
+        <p>JSON is a <strong>lightweight data-interchange format</strong> that is easy for humans to read and write, and easy for machines to parse and generate. It is the most widely used format for web APIs, mobile app communication, and software configuration files.</p>
 
-        <h3>Key Features:</h3>
+        <h3>Key Features of JSON:</h3>
         <ul>
-            <li><strong>Simple Syntax:</strong> Key-value pairs mein data store karta hai</li>
-            <li><strong>Language Independent:</strong> Almost sab programming languages JSON ko support karte hain</li>
-            <li><strong>Lightweight:</strong> Minimal syntax, fast parsing</li>
-            <li><strong>Web Standard:</strong> REST APIs ka primary format</li>
+            <li><strong>Simple Structure:</strong> Data is stored in clear key and value pairs, which makes it easy to read.</li>
+            <li><strong>Works with Any Language:</strong> JSON is supported by almost all programming languages.</li>
+            <li><strong>Lightweight:</strong> It uses less data and loads quickly.</li>
+            <li><strong>Very Popular:</strong> JSON is the most commonly used format for REST APIs and web communication.</li>
         </ul>
 
         <h3>Data Types:</h3>
@@ -83,9 +83,9 @@
 
         <h3>Common Use Cases:</h3>
         <ul>
-            <li>REST API responses aur requests</li>
+            <li>REST API responses and requests</li>
             <li>Configuration files (package.json, tsconfig.json)</li>
-            <li>Data storage aur transfer</li>
+            <li>Data storage and transfer</li>
             <li>NoSQL databases (MongoDB)</li>
         </ul>
     </div>
@@ -94,15 +94,19 @@
     <div class="section" id="xml">
         <h2>&lt;/&gt; XML - Extensible Markup Language</h2>
 
-        <p>XML ek markup language hai jo data ko structured aur hierarchical format mein store karta hai. Ye tags use karta hai jo HTML ki tarah dikhte hain lekin khud ke custom tags bana sakte hain.</p>
+        <p>
+            XML is a markup language used to store data in a structured and hierarchical format.
+            It uses tags that look similar to HTML, but it allows you to create your own custom tags.
+        </p>
 
         <h3>Key Features:</h3>
         <ul>
-            <li><strong>Self-Descriptive:</strong> Tags data ko describe karte hain</li>
-            <li><strong>Hierarchical Structure:</strong> Parent-child relationships</li>
-            <li><strong>Extensible:</strong> Apne custom tags define kar sakte hain</li>
-            <li><strong>Platform Independent:</strong> Any system mein use ho sakta hai</li>
+            <li><strong>Self-Descriptive:</strong> Tags clearly describe the data they contain.</li>
+            <li><strong>Hierarchical Structure:</strong> Data is organized in parent and child relationships.</li>
+            <li><strong>Extensible:</strong> You can define your own custom tags.</li>
+            <li><strong>Platform Independent:</strong> It can be used on any system or platform.</li>
         </ul>
+
 
         <h3>Syntax Rules:</h3>
         <ul>
@@ -149,14 +153,17 @@
     <div class="section" id="yaml">
         <h2>📄 YAML - YAML Ain't Markup Language</h2>
 
-        <p>YAML ek human-friendly data serialization format hai jo configuration files ke liye bahut popular hai. Ye indentation use karta hai structure define karne ke liye, brackets ya braces ki zarurat nahi hoti.</p>
+        <p>
+            YAML is a human-friendly data serialization format that is widely used for configuration files.
+            It uses indentation to define structure, so there is no need for brackets or braces.
+        </p>
 
         <h3>Key Features:</h3>
         <ul>
-            <li><strong>Human Readable:</strong> Sabse easy to read format</li>
-            <li><strong>Indentation-Based:</strong> Whitespace se structure define hota hai</li>
-            <li><strong>No Brackets:</strong> Clean aur minimal syntax</li>
-            <li><strong>Comments Support:</strong> # se comments add kar sakte hain</li>
+            <li><strong>Easy to Read:</strong> One of the easiest formats for humans to understand.</li>
+            <li><strong>Indentation-Based:</strong> Structure is defined using spaces and indentation.</li>
+            <li><strong>No Brackets:</strong> Clean and minimal syntax.</li>
+            <li><strong>Supports Comments:</strong> You can add comments using the <code>#</code> symbol.</li>
         </ul>
 
         <h3>Syntax Features:</h3>
@@ -217,14 +224,18 @@ projects:
     <div class="section" id="toml">
         <h2>⚙️ TOML - Tom's Obvious Minimal Language</h2>
 
-        <p>TOML ek configuration file format hai jo INI files se inspired hai. Ye human-readable hai aur unambiguous parsing ke liye design kiya gaya hai. Rust aur Python projects mein bahut popular hai.</p>
+        <p>
+            TOML is a configuration file format inspired by INI files.
+            It is human-readable and designed to be easy and unambiguous to parse.
+            TOML is very popular in Rust and Python projects.
+        </p>
 
         <h3>Key Features:</h3>
         <ul>
-            <li><strong>Obvious Semantics:</strong> Clear aur unambiguous syntax</li>
-            <li><strong>Minimal:</strong> Simple aur easy to parse</li>
-            <li><strong>Type Safety:</strong> Strong typing support</li>
-            <li><strong>Comments:</strong> # se comments support karta hai</li>
+            <li><strong>Clear Meaning:</strong> The syntax is easy to understand and has no confusion.</li>
+            <li><strong>Minimal:</strong> Simple structure that is easy to read and parse.</li>
+            <li><strong>Type Safety:</strong> Supports clear data types.</li>
+            <li><strong>Supports Comments:</strong> You can add comments using the <code>#</code> symbol.</li>
         </ul>
 
         <h3>Data Types:</h3>
@@ -290,17 +301,22 @@ password = "secure_password"</pre>
     <div class="section" id="format">
         <h2>🎨 Format Function</h2>
 
-        <p>Format function data ko human-readable format mein convert karta hai. Ye proper indentation aur line breaks add karta hai taaki code easy to read ho jaye.</p>
+        <p>
+            The Format function converts data into a human-readable format.
+            It adds proper indentation and line breaks to make the code easy to read.
+        </p>
 
         <div class="function-card">
             <h4>Purpose:</h4>
-            <p>Minified ya unformatted data ko properly indented aur readable banata hai</p>
+            <p>
+                Converts minified or unformatted data into a properly indented and readable format.
+            </p>
 
             <h4>How it Works:</h4>
             <ul>
-                <li>Whitespace aur line breaks add karta hai</li>
-                <li>Proper indentation levels maintain karta hai</li>
-                <li>Nested structures ko visually organize karta hai</li>
+                <li>Adds whitespace and line breaks</li>
+                <li>Maintains proper indentation levels</li>
+                <li>Organizes nested structures in a clear and visual way</li>
             </ul>
         </div>
 
@@ -333,17 +349,23 @@ password = "secure_password"</pre>
     <div class="section" id="minify">
         <h2>📦 Minify Function</h2>
 
-        <p>Minify function data ko compress karta hai by removing unnecessary whitespace, line breaks, aur indentation. Ye file size ko reduce karta hai jo network transfer ke liye beneficial hai.</p>
+        <p>
+            The Minify function compresses data by removing unnecessary whitespace,
+            line breaks, and indentation. This reduces the file size and helps in
+            faster network transfer.
+        </p>
 
         <div class="function-card">
             <h4>Purpose:</h4>
-            <p>File size reduce karke faster loading aur less bandwidth usage</p>
+            <p>
+                Reduces file size to improve loading speed and minimize bandwidth usage.
+            </p>
 
             <h4>How it Works:</h4>
             <ul>
-                <li>Sab whitespace remove karta hai</li>
-                <li>Line breaks aur indentation hatata hai</li>
-                <li>Data integrity maintain rakhte hue size minimize karta hai</li>
+                <li>Removes extra whitespace</li>
+                <li>Eliminates line breaks and indentation</li>
+                <li>Reduces size while keeping the data unchanged</li>
             </ul>
         </div>
 
@@ -382,19 +404,24 @@ password = "secure_password"</pre>
     <div class="section" id="repair">
         <h2>🔧 Repair Function</h2>
 
-        <p>Repair function broken ya invalid data ko fix karta hai. Common syntax errors ko automatically detect aur correct karta hai.</p>
+        <p>
+            The Repair function fixes broken or invalid data.
+            It automatically detects and corrects common syntax errors.
+        </p>
 
         <div class="function-card">
             <h4>Purpose:</h4>
-            <p>Invalid syntax wale data ko valid format mein convert karna</p>
+            <p>
+                Converts data with invalid syntax into a valid format.
+            </p>
 
-            <h4>Common Issues it Fixes:</h4>
+            <h4>Common Issues It Fixes:</h4>
             <ul>
                 <li>Missing commas between elements</li>
                 <li>Trailing commas</li>
-                <li>Missing quotes around strings</li>
+                <li>Missing quotes around string values</li>
                 <li>Unclosed brackets or braces</li>
-                <li>Single quotes instead of double quotes (JSON)</li>
+                <li>Single quotes instead of double quotes (for JSON)</li>
             </ul>
         </div>
 
@@ -437,18 +464,23 @@ password = "secure_password"</pre>
     <div class="section" id="sort">
         <h2>🔤 Sort JSON/XML Function</h2>
 
-        <p>Sort function data ke keys ko alphabetically arrange karta hai. Ye data ko organized aur easy to compare banata hai.</p>
+        <p>
+            The Sort function arranges data keys in alphabetical order.
+            This helps keep the data organized and makes it easier to compare.
+        </p>
 
         <div class="function-card">
             <h4>Purpose:</h4>
-            <p>Keys ko alphabetical order mein sort karke data ko organized banana</p>
+            <p>
+                Organizes data by sorting keys in alphabetical order.
+            </p>
 
             <h4>Features:</h4>
             <ul>
-                <li>Keys alphabetically sort hote hain</li>
-                <li>Nested objects bhi sort hote hain</li>
-                <li>Arrays ki order preserve rehti hai</li>
-                <li>Data comparison easy ho jata hai</li>
+                <li>Sorts keys alphabetically</li>
+                <li>Also sorts keys inside nested objects</li>
+                <li>Keeps the original order of arrays</li>
+                <li>Makes data comparison easier</li>
             </ul>
         </div>
 
@@ -492,8 +524,18 @@ password = "secure_password"</pre>
         <h2>🔄 Format Conversion Functions</h2>
 
         <h3>1. JSON to XML Conversion</h3>
-        <p>JSON data ko XML format mein convert karta hai. Objects XML elements ban jate hain aur arrays repeated elements ban jate hain.</p>
+        <p>
+            Our tool seamlessly transforms <strong>JSON structures into valid XML documents</strong>. During this process, JSON objects are mapped to XML elements, while arrays are converted into repeated child nodes to maintain data integrity.
+        </p>
 
+        <div class="info-box">
+            <h4>How the Mapping Works:</h4>
+            <ul>
+                <li><strong>Objects to Elements:</strong> Each key-value pair in your JSON becomes a corresponding XML tag.</li>
+                <li><strong>Array Handling:</strong> JSON arrays are transformed into repetitive XML tags, ensuring your list data is perfectly preserved.</li>
+                <li><strong>Structural Hierarchy:</strong> Nested JSON objects are converted into parent-child XML relationships, keeping your data tree intact.</li>
+            </ul>
+        </div>
         <h4>Example:</h4>
         <strong>JSON Input:</strong>
         <div class="code-block">
@@ -517,7 +559,10 @@ password = "secure_password"</pre>
         </div>
 
         <h3>2. XML to JSON Conversion</h3>
-        <p>XML data ko JSON format mein convert karta hai. Elements objects ban jate hain aur repeated elements arrays ban jate hain.</p>
+        <p>
+            Converts XML data into JSON format.
+            XML elements are converted into objects, and repeated elements are converted into arrays.
+        </p>
 
         <h4>Example:</h4>
         <strong>XML Input:</strong>
@@ -539,8 +584,21 @@ password = "secure_password"</pre>
         </div>
 
         <h3>3. JSON to YAML Conversion</h3>
-        <p>JSON ko YAML's human-friendly syntax mein convert karta hai.</p>
+        <p>
+            Converts JSON data into YAML using a clean and human-friendly syntax.
+            This makes configuration files easier to read and maintain.
+        </p>
+        <h4>Purpose:</h4>
+        <p>
+            Converts JSON into YAML for better readability and simpler configuration management.
+        </p>
 
+        <h4>How it Works:</h4>
+        <ul>
+            <li>JSON objects are converted into YAML key-value pairs</li>
+            <li>Arrays are represented using YAML list syntax</li>
+            <li>Indentation is used to define structure</li>
+        </ul>
         <h4>Example:</h4>
         <strong>JSON Input:</strong>
         <div class="code-block">
@@ -557,8 +615,24 @@ skills:
         </div>
 
         <h3>4. JSON to TOML Conversion</h3>
-        <p>JSON data ko TOML configuration format mein convert karta hai.</p>
+        <p>
+            Converts JSON data into the TOML configuration format.
+            This is useful for projects that use TOML-based configuration files.
+        </p>
 
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>
+                Converts JSON into TOML for clean, readable, and strongly typed configuration files.
+            </p>
+
+            <h4>How it Works:</h4>
+            <ul>
+                <li>JSON objects are converted into TOML key-value pairs</li>
+                <li>Nested objects are converted into TOML tables</li>
+                <li>Arrays are preserved in TOML array format</li>
+                <li>Data types are maintained during conversion</li>
+            </ul>
         <h4>Example:</h4>
         <strong>JSON Input:</strong>
         <div class="code-block">
@@ -576,20 +650,60 @@ skills:
 server = "localhost"
 port = 5432</pre>
         </div>
+        </div>
 
         <h3>5. XML to YAML Conversion</h3>
-        <p>XML ko YAML format mein convert karta hai, making it more readable.</p>
+        <p>
+            Converts XML data into YAML format, making it easier to read and understand.
+        </p>
+
+        <div class="function-card">
+            <h4>Purpose:</h4>
+            <p>
+                Converts XML into YAML for better readability and cleaner configuration files.
+            </p>
+
+            <h4>How it Works:</h4>
+            <ul>
+                <li>XML elements are converted into YAML key-value pairs</li>
+                <li>Nested XML elements are represented using indentation</li>
+                <li>Repeated XML elements are converted into YAML lists</li>
+                <li>Attributes are mapped as key-value entries</li>
+            </ul>
+
+            <h4>Example:</h4>
+            <p><strong>XML Input:</strong></p>
+            <pre>
+&lt;user&gt;
+  &lt;name&gt;Keshav&lt;/name&gt;
+  &lt;skills&gt;Java&lt;/skills&gt;
+  &lt;skills&gt;Spring&lt;/skills&gt;
+&lt;/user&gt;
+    </pre>
+
+            <p><strong>YAML Output:</strong></p>
+            <pre>
+user:
+  name: Keshav
+  skills:
+    - Java
+    - Spring
+    </pre>
+        </div>
+
 
         <h3>6. XML to TOML Conversion</h3>
-        <p>XML configuration ko TOML format mein convert karta hai for modern build tools.</p>
+        <p>
+            Converts XML configuration into TOML format for modern build tools.
+        </p>
 
         <div class="function-card">
             <h4>Conversion Benefits:</h4>
             <ul>
-                <li>Different systems ke beech data exchange</li>
-                <li>Format migration (legacy to modern)</li>
-                <li>Tool compatibility</li>
-                <li>Human readability improvement</li>
+                <li>Enables data exchange between different systems</li>
+                <li>Migrates configuration from legacy XML to modern TOML format</li>
+                <li>Improves compatibility with modern tools</li>
+                <li>Enhances human readability of configuration files</li>
             </ul>
         </div>
 
