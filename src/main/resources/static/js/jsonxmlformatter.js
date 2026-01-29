@@ -386,14 +386,17 @@
 
     try {
     if (type === 'json') {
-    const parsed = JSON.parse(input);
+    let parsed = JSON.parse(input);
     currentData = parsed;
+        if (typeof parsed === "string") {
+            parsed = JSON.parse(parsed);
+        }
     const formatted = JSON.stringify(parsed, null, 2);
 
     const rendered = renderColoredCode(formatted);
     codeEditor.innerHTML = rendered.code;
     document.getElementById('lineNumbers').innerHTML = rendered.numbers;
-    document.getElementById('foldIcons').innerHTML = rendered.icons;
+    // document.getElementById('foldIcons').innerHTML = rendered.icons;
 
     foldStates = {};
     renderTree(parsed);
@@ -401,8 +404,6 @@
     inputStatus.innerHTML = '<span class="success">✓ JSON formatted successfully!</span>';
     document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view generated</span>';
 } else if(type === 'xml'){
-
-
         if(input.startsWith('"{') || input.startsWith('{') || input.startsWith('[') || input.startsWith('"[')){
             document.getElementById('treeView').innerHTML = '<span class="error">Invalid XML</span>';
         return;
