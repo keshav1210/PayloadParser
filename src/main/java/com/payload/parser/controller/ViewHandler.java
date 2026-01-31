@@ -13,7 +13,7 @@ public class ViewHandler {
         return "home.html";
     }
 
-@GetMapping("/payload-parser")
+@GetMapping("/parser")
     public String  viewParserPage(){
     return "jsonxmlformater.html";
 }
