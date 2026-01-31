@@ -38,4 +38,39 @@ public class ViewHandler {
     public String  contact(){
         return "contact-us.html";
     }
+
+    @GetMapping("/json-parser")
+    public String  jsonParser(){
+        return "jsoneditor.html";
+    }
+    @GetMapping("/xml-parser")
+    public String  xmlParser(){
+        return "xmleditor.html";
+    }
+
+    @GetMapping("/json-xml-converter")
+    public String  jsonXmlConverter(){
+        return "xmleditor.html";
+    }
+
+    @GetMapping("/xml-json-converter")
+    public String  xmlJSONParser(){
+        return "xmleditor.html";
+    }
+
+    @GetMapping("/toml-converter")
+    public String  tomlConverter(){
+        return "tomconverter.html";
+    }
+
+    @GetMapping("/yaml-converter")
+    public String  yamlConverter(){
+        return "ymlconverter.html";
+    }
+
+    @GetMapping("/health")
+    public String  healthChecker(){
+        return "health.html";
+    }
+
 }

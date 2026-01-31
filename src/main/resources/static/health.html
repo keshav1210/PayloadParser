@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Application Health</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
+        }
+
+        .card {
+            max-width: 600px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .status {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .UP {
+            color: #2e7d32;
+        }
+
+        .DOWN {
+            color: #c62828;
+        }
+
+        .component {
+            border-left: 4px solid #1976d2;
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .component h4 {
+            margin: 0 0 5px 0;
+            text-transform: capitalize;
+        }
+
+        table {
+            width: 100%;
+            font-size: 14px;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        td {
+            padding: 4px 6px;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Application Health Status</h2>
+    <div id="overallStatus" class="status"></div>
+    <div id="components"></div>
+</div>
+
+<script>
+    fetch('/actuator/health')
+        .then(response => response.json())
+        .then(data => {
+            // Overall status
+            const statusDiv = document.getElementById('overallStatus');
+            statusDiv.textContent = 'Overall Status: ' + data.status;
+            statusDiv.classList.add(data.status);
+
+            // Components
+            const componentsDiv = document.getElementById('components');
+            for (const [key, value] of Object.entries(data.components)) {
+
+                let html = `
+                <div class="component">
+                    <h4>${key}</h4>
+                    <p>Status: <b>${value.status}</b></p>
+            `;
+
+                if (value.details) {
+                    html += '<table>';
+                    for (const [dKey, dVal] of Object.entries(value.details)) {
+                        html += `
+                        <tr>
+                            <td>${dKey}</td>
+                            <td>${dVal}</td>
+                        </tr>
+                    `;
+                    }
+                    html += '</table>';
+                }
+
+                html += '</div>';
+                componentsDiv.innerHTML += html;
+            }
+        })
+        .catch(err => {
+            document.getElementById('overallStatus').innerText =
+                'Failed to load health status';
+            console.error(err);
+        });
+</script>
+
+</body>
+</html>

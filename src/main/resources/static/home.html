@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>Payload Parser - Home</title>
+    <title>JSON/XML Editor - Home</title>
     <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
@@ -90,7 +90,7 @@
 </section>
 <section class="seo-content">
    <h4> A Comprehensive Guide to Modern Data Parsing and Conversion</h4>
-    In the modern era of web development, data is the backbone of every application. Whether you are building a mobile app, a web platform, or a microservice, you are constantly dealing with different data serialization formats like JSON, XML, YAML, and TOML. However, raw data is often minified and difficult to interpret. This is where Payload Parser becomes an essential part of your developer toolkit.
+    In the modern era of web development, data is the backbone of every application. Whether you are building a mobile app, a web platform, or a microservice, you are constantly dealing with different data serialization formats like JSON, XML, YAML, and TOML. However, raw data is often minified and difficult to interpret. This is where JSON XML Editor becomes an essential part of your developer toolkit.
 
     <h4>The Importance of JSON and XML Beautification</h4>
     When developers fetch data from APIs, the response is usually a single-line string to save bandwidth. While efficient for machines, it is a nightmare for human debugging. Our JSON and XML Parsers allow you to instantly transform this "ugly" code into a structured, color-coded format. By using a Tree View, developers can collapse nested objects and focus only on the data points that matter, significantly reducing debugging time.
@@ -120,7 +120,22 @@
 <div id="footer"></div>
 <script>
     function navigateTo(name){
-        window.location.href = '/parser';
+        if(name==='xml-parser'){
+            window.location.href = '/xml-parser';
+        }else if(name==='json-parser'){
+            window.location.href = '/json-parser';
+        }else if(name==='json-xml-converter'){
+            window.location.href = '/parser';
+        }else if(name==='xml-json-converter'){
+            window.location.href = '/parser';
+        }else if(name==='toml-converter'){
+            window.location.href = '/toml-converter';
+        }else if(name==='yaml-converter'){
+            window.location.href = '/yaml-converter';
+        }else{
+            window.location.href = '/parser';
+        }
+
     }
 </script>
 
