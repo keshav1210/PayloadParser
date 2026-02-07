@@ -3,6 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+  <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
+  <meta name="author" content="JSON XML EDITOR">
+
+  <!-- Open Graph (For WhatsApp, Facebook Preview) -->
+  <meta property="og:title" content="JSON/XML EDITOR">
+  <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jsonxmleditor.com">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
   <title>JSON/XML Editor</title>
   <link rel="stylesheet" href="/css/jsonxmlformatter.css">
 </head>
@@ -32,9 +51,14 @@
   <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
 </div>
 
-<div class="container">
-  <div class="panel">
-    <div class="panel-header">Editor (Formatted View)</div>
+<div class="container" id="mainContainer">
+  <div class="panel" id="leftPanel">
+    <div class="panel-header"><span>Editor (Formatted View)</span>
+      <button class="expand-btn" onclick="toggleExpand('left')" title="Expand/Collapse">
+        <span id="leftExpandIcon">⛶</span>
+      </button>
+    </div>
+
     <div class="editor-wrapper">
       <div class="line-numbers-area">
         <div class="fold-icons" id="foldIcons"></div>
@@ -44,7 +68,7 @@
     </div>
     <div class="status" id="inputStatus">Ready - Type or paste JSON/XML here</div>
   </div>
-  <div class="middle-controls">
+  <div class="middle-controls" id="middleControls">
     <select id="formatType">
       <option value="json">JSON</option>
       <option value="xml">XML</option>
@@ -56,8 +80,11 @@
       <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
   </div>
 
-  <div class="panel">
-    <div class="panel-header">Viewer (Tree View for JSON and XML)</div>
+  <div class="panel" id="rightPanel">
+    <div class="panel-header"><span>Viewer (Tree View for JSON and XML)</span>
+      <button class="expand-btn" onclick="toggleExpand('right')" title="Expand/Collapse">
+        <span id="rightExpandIcon">⛶</span>
+      </button></div>
     <div class="editor-wrapper">
       <div class="tree-view" id="treeView"></div>
     </div>
