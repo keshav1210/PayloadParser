@@ -50,6 +50,12 @@
         <h3>TOML Converter</h3>
         <p>Convert JSON/XML to TOML format and vice versa. Configuration made simple.</p>
     </div>
+
+    <div class="card" onclick="navigateTo('csv-converter')">
+        <div class="card-icon">📊</div>
+        <h3>CSV Converter</h3>
+        <p>Convert CSV to JSON/XML format and vice versa. Configuration made simple.</p>
+    </div>
 </div>
 
 <section class="features">
@@ -132,6 +138,8 @@
             window.location.href = '/toml-converter';
         }else if(name==='yaml-converter'){
             window.location.href = '/yaml-converter';
+        }else if(name==='csv-converter'){
+            window.location.href = '/csv-converter';
         }else{
             window.location.href = '/parser';
         }

@@ -13,7 +13,7 @@ public class ViewHandler {
         return "home.html";
     }
 
-@GetMapping("/parser")
+    @GetMapping("/parser")
     public String  viewParserPage(){
     return "jsonxmlformater.html";
 }
@@ -66,6 +66,11 @@ public class ViewHandler {
     @GetMapping("/yaml-converter")
     public String  yamlConverter(){
         return "ymlconverter.html";
+    }
+
+    @GetMapping("/csv-converter")
+    public String  csvConverter(){
+        return "csvconverter.html";
     }
 
     @GetMapping("/health")
