@@ -78,4 +78,9 @@ public class ViewHandler {
         return "health.html";
     }
 
+    @GetMapping("/mapper")
+    public String  objectMapper(){
+        return "objectConverter.html";
+    }
+
 }
