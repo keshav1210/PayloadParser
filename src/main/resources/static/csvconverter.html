@@ -3,8 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
+    <meta name="author" content="JSON XML EDITOR">
+
+    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
+    <meta property="og:title" content="Contact">
+    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jsonxmleditor.com">
     <title>CSV Converter</title>
     <link rel="stylesheet" href="/css/jsonxmlformatter.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+    <script>
+        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', 'G-LPTNYNJB94');
+        }
+    </script>
 </head>
 <body>
 <!--<div class="header">-->
@@ -28,8 +47,8 @@
     <!--  <button class="btn" onclick="formatData('XML_TO_YAML')">Convert XML TO YAML</button>-->
 <!--    <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>-->
 <!--    <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>-->
-    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+
+<!--    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>-->
 </div>
 
 <div class="container">
@@ -54,6 +73,7 @@
         <!-- <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>-->
         <button class="btn" onclick="formatData('CSV_TO_JSON')">Convert TO JSON</button>
         <button class="btn" onclick="formatData('CSV_TO_XML')">Convert TO XML</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
         <!--        <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>-->
     </div>
 
