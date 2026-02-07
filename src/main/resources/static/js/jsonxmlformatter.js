@@ -819,7 +819,7 @@
          .then(res => {
              if (res.success) {
                 let format = 'json';
-                if(type==='XML_FORMAT' || type==='JSON_TO_XML' || type==='XML_SORT') {
+                if(type==='XML_FORMAT' || type==='JSON_TO_XML' || type==='XML_SORT' || type==='CSV_TO_XML') {
                     format = 'xml';
                 }else if(type==='JSON_TO_YAML' || type==='XML_TO_YAML') {
                     format = 'yaml';
