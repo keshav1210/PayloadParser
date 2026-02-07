@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
+    <meta name="author" content="JSON XML EDITOR">
+
+    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
+    <meta property="og:title" content="Home">
+    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+    <meta property="og:type" content="Object Mapper">
+    <meta property="og:url" content="https://jsonxmleditor.com">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+    <script>
+        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', 'G-LPTNYNJB94');
+        }
+    </script>
+    <title>Code Converter</title>
+    <link rel="stylesheet" href="/css/objectmapper.css">
+</head>
+<body>
+<div id="header">
+</div>
+
+<div class="toolbar">
+<!--    <button class="btn btn-primary" onclick="convertCode()">Convert</button>-->
+<!--    <button class="btn" onclick="formatInput()">Format Input</button>-->
+    <button class="btn" onclick="copyOutput()">Copy Output</button>
+    <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+    <button class="btn" onclick="loadSample()">Load Sample</button>
+</div>
+
+<div class="main-container">
+    <!-- Left Panel: Input Code -->
+    <div class="editor-panel">
+        <div class="panel-header">
+            <div class="panel-title">Input Code</div>
+            <div class="select-group">
+                <label>Language:</label>
+                <select id="inputLang" onchange="updatePlaceholder()">
+                    <option value="java">Java</option>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+            <!--        <option value="csharp">C#</option>
+                    <option value="cpp">C++</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>-->
+                </select>
+            </div>
+            <div class="select-group">
+                <label>Task:</label>
+                <select id="inputTask">
+                    <option value="object">Object/Class</option>
+<!--                    <option value="function">Function</option>-->
+<!--                    <option value="interface">Interface</option>-->
+<!--                    <option value="enum">Enum</option>-->
+<!--                    <option value="struct">Struct</option>-->
+                </select>
+            </div>
+        </div>
+        <div class="editor-wrapper">
+            <textarea
+                    id="inputEditor"
+                    class="editor"
+                    placeholder="Type or paste your code here..."
+                    spellcheck="false"
+            ></textarea>
+        </div>
+        <div class="status-bar">
+            <span>Ready - Type or paste code in the left panel</span>
+        </div>
+    </div>
+
+    <!-- Middle: Convert Button -->
+    <div class="middle-gap">
+        <button class="convert-btn" onclick="convertCode()">
+            <span>Convert</span>
+            <span class="arrow">→</span>
+        </button>
+    </div>
+
+    <!-- Right Panel: Output Code -->
+    <div class="editor-panel">
+        <div class="panel-header">
+            <div class="panel-title">Output Code</div>
+            <div class="select-group">
+                <label>Language:</label>
+                <select id="outputLang" onchange="updateOutputPlaceholder()">
+                    <option value="json">JSON</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="csharp">C#</option>
+                  <!--  <option value="cpp">C++</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>-->
+
+                </select>
+            </div>
+            <div class="select-group">
+                <label>Format:</label>
+                <select id="outputFormat">
+                    <option value="class">Class/Object</option>
+                  <!--  <option value="function">Function</option>
+                    <option value="interface">Interface</option>
+                    <option value="type">Type Definition</option>
+                    <option value="schema">Schema</option>-->
+                </select>
+            </div>
+        </div>
+        <div class="editor-wrapper">
+            <textarea
+                    id="outputEditor"
+                    class="editor"
+                    placeholder="Converted code will appear here..."
+                    spellcheck="false"
+                    readonly
+            ></textarea>
+        </div>
+        <div class="status-bar">
+            <span id="status">Ready - Type or paste code in the left panel</span>
+        </div>
+    </div>
+</div>
+<div class="content-section">
+    <h2>What This Tool Does</h2>
+    <p>This tool helps developers convert code objects from one language to another and also generate JSON from objects. You can paste your class or object code, choose the input and output language, and the tool will convert it instantly.</p>
+
+    <p>It supports multiple programming languages and works with both simple and nested objects. This makes it useful when working with APIs, data mapping, or when switching between different technologies.</p>
+
+    <p><strong>You can use this tool to:</strong></P>
+    <ul>
+        <li> Convert Java DTO to JSON</li>
+
+        <li> Convert JSON to object classes</li>
+
+        <li>Convert objects between different programming languages</li>
+
+        <li>Understand object structure easily<P>
+    </ul>
+        <p>The tool is fast, simple to use, and runs directly in your browser without needing installation.</P>
+</div>
+<br>
+<div id="footer"></div>
+<script src="/js/layout-loader.js"></script>
+<script src="/js/objectmapper.js"></script>
+</body>
+</html>

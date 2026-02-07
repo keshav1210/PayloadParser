@@ -845,3 +845,44 @@
              outputLines.textContent = "";
          });
  }
+
+ let expandedPanel = null;
+
+ function toggleExpand(side) {
+   const container = document.getElementById('mainContainer');
+   const leftPanel = document.getElementById('leftPanel');
+   const middleControls = document.getElementById('middleControls');
+   const rightPanel = document.getElementById('rightPanel');
+   const leftIcon = document.getElementById('leftExpandIcon');
+   const rightIcon = document.getElementById('rightExpandIcon');
+
+   if (expandedPanel === side) {
+     // Collapse - return to normal view
+     container.classList.remove('expanded-left', 'expanded-right');
+     leftPanel.classList.remove('hidden');
+     middleControls.classList.remove('hidden');
+     rightPanel.classList.remove('hidden');
+     leftIcon.textContent = '⛶';
+     rightIcon.textContent = '⛶';
+     expandedPanel = null;
+   } else {
+     // Expand selected panel
+     container.classList.remove('expanded-left', 'expanded-right');
+
+     if (side === 'left') {
+       container.classList.add('expanded-left');
+       middleControls.classList.add('hidden');
+       rightPanel.classList.add('hidden');
+       leftIcon.textContent = '⛶';
+       rightIcon.textContent = '⛶';
+       expandedPanel = 'left';
+     } else {
+       container.classList.add('expanded-right');
+       leftPanel.classList.add('hidden');
+       middleControls.classList.add('hidden');
+       leftIcon.textContent = '⛶';
+       rightIcon.textContent = '⛶';
+       expandedPanel = 'right';
+     }
+   }
+ }
