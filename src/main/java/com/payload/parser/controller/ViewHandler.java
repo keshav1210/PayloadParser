@@ -80,7 +80,7 @@ public class ViewHandler {
 
     @GetMapping("/mapper")
     public String  objectMapper(){
-        return "objectConverter.html";
+        return "objectconverter.html";
     }
 
 }
