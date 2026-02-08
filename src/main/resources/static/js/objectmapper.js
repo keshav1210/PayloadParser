@@ -14,6 +14,20 @@ function updatePlaceholder() {
     function updateOutputPlaceholder() {
         const outputEditor = document.getElementById('outputEditor');
         outputEditor.placeholder = 'Converted code will appear here...';
+         const outputLang = document.getElementById('outputLang').value;
+                   if (outputLang !== 'json') {
+                       document.getElementById('object').hidden = false;
+                        document.getElementById('camelcase').style.display='none';
+                        document.getElementById('snakecase').style.display='none';
+                        document.getElementById('outputFormat').value='class';
+                   }else{
+                   if(document.getElementById('outputFormat').value==='class'){
+                   document.getElementById('outputFormat').value='CamelCase';
+                   }
+                   document.getElementById('object').hidden = true;
+                                   document.getElementById('camelcase').style.display='block';
+                                   document.getElementById('snakecase').style.display='block';
+                   }
     }
 
     function formatInput() {
