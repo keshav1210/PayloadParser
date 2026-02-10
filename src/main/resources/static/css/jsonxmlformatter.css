@@ -441,7 +441,7 @@ select {
 }
 
 /* Expanded States */
-.container.expanded-left .panel:first-child {
+/*.container.expanded-left .panel:first-child {
          flex: 1;
          max-width: 100% !important;
          min-width: 100%;
@@ -451,7 +451,7 @@ select {
 .container.expanded-right .panel:last-child {
     flex: 1;
     max-width: 100%;
-}
+}*/
 
 .panel.hidden {
     display: none !important;;
@@ -503,4 +503,67 @@ select {
 
 .middle-controls {
     transition: all 0.3s ease;  /* ADD THIS */
+}
+/* Full Screen Expansion Styles */
+.container.expanded-left,
+.container.expanded-right {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #2d2d2d;
+}
+
+.container.expanded-left .panel:first-child,
+.container.expanded-right .panel:last-child {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    z-index: 10000;
+}
+
+/* Hide header and controls when expanded */
+body.panel-expanded .header,
+body.panel-expanded .controls {
+    display: none;
+}
+
+/* Expanded Panel Header with Controls */
+.panel-header.expanded-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #181f40;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.panel-header-controls {
+    display: none;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.panel-header.expanded-header .panel-header-controls {
+    display: flex;
+}
+
+.panel-header-controls .btn,
+.panel-header-controls select {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-width: auto;
+}
+
+/* Adjust editor height when expanded */
+.container.expanded-left .editor-wrapper,
+.container.expanded-right .editor-wrapper {
+    height: calc(100vh - 50px);
 }

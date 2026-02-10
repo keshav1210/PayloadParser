@@ -846,6 +846,7 @@
          });
  }
 
+/*
  let expandedPanel = null;
 
  function toggleExpand(side) {
@@ -882,6 +883,65 @@
        middleControls.classList.add('hidden');
        leftIcon.textContent = '⛶';
        rightIcon.textContent = '⛶';
+       expandedPanel = 'right';
+     }
+   }
+ }*/
+
+ let expandedPanel = null;
+
+ function toggleExpand(side) {
+   const container = document.getElementById('mainContainer');
+   const leftPanel = document.getElementById('leftPanel');
+   const middleControls = document.getElementById('middleControls');
+   const rightPanel = document.getElementById('rightPanel');
+   const leftIcon = document.getElementById('leftExpandIcon');
+   const rightIcon = document.getElementById('rightExpandIcon');
+   const leftHeader = document.getElementById('leftPanelHeader');
+   const rightHeader = document.getElementById('rightPanelHeader');
+   const formatTypeExpanded = document.getElementById('formatType');
+   const formatType = document.getElementById('formatType');
+
+   if (expandedPanel === side) {
+     // Collapse - return to normal view
+     container.classList.remove('expanded-left', 'expanded-right');
+     document.body.classList.remove('panel-expanded');
+     leftPanel.classList.remove('hidden');
+     middleControls.classList.remove('hidden');
+     rightPanel.classList.remove('hidden');
+     leftHeader.classList.remove('expanded-header');
+     rightHeader.classList.remove('expanded-header');
+     leftIcon.textContent = '⛶';
+     rightIcon.textContent = '⛶';
+     expandedPanel = null;
+   } else {
+     // Expand selected panel
+     container.classList.remove('expanded-left', 'expanded-right');
+     document.body.classList.add('panel-expanded');
+
+     if (side === 'left') {
+       container.classList.add('expanded-left');
+       middleControls.classList.add('hidden');
+       rightPanel.classList.add('hidden');
+       leftHeader.classList.add('expanded-header');
+       rightHeader.classList.remove('expanded-header');
+       leftIcon.textContent = '✕';
+       rightIcon.textContent = '⛶';
+
+       // Sync dropdown value
+       if (formatTypeExpanded) {
+         formatTypeExpanded.value = formatType===null?null:formatType.value;
+       }
+
+       expandedPanel = 'left';
+     } else {
+       container.classList.add('expanded-right');
+       leftPanel.classList.add('hidden');
+       middleControls.classList.add('hidden');
+       leftHeader.classList.remove('expanded-header');
+       rightHeader.classList.add('expanded-header');
+       leftIcon.textContent = '⛶';
+       rightIcon.textContent = '✕';
        expandedPanel = 'right';
      }
    }

@@ -26,45 +26,60 @@
     <link rel="stylesheet" href="/css/jsonxmlformatter.css">
 </head>
 <body>
-<!--<div class="header">-->
-<!--  <h1>Payload Parser</h1>-->
-<!--</div>-->
 <div id="header"></div>
-
+<!-- Controls -->
 <div class="controls">
-    <!--  <select id="formatType">-->
-    <!--    <option value="json">JSON</option>-->
-    <!--    <option value="xml">XML</option>-->
-    <!--  </select>-->
     <button class="btn" onclick="formatCode(false,null,null)">Format</button>
     <button class="btn" onclick="minifyCode()">Minify</button>
     <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-    <!--  <button class="btn" onclick="formatData('JSON_TO_XML')">Convert To XML</button>-->
-    <!--  <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>-->
-    <!--  <button class="btn" onclick="formatData('JSON_TO_TOML')">Convert JSON TO TOML</button>-->
-    <!--  <button class="btn" onclick="formatData('XML_TO_TOML')">Convert XML TO TOML</button>-->
-    <!--  <button class="btn" onclick="formatData('JSON_TO_YAML')">Convert JSON TO YAML</button>-->
-    <!--  <button class="btn" onclick="formatData('XML_TO_YAML')">Convert XML TO YAML</button>-->
 <!--    <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>-->
     <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>
     <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
     <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
 </div>
 
-<div class="container">
-    <div class="panel">
-        <div class="panel-header">Editor (Formatted View)</div>
+<!-- Main Container -->
+<div class="container" id="mainContainer">
+
+    <!-- Left Panel - Editor -->
+    <div class="panel" id="leftPanel">
+        <div class="panel-header" id="leftPanelHeader">
+            <span>Editor (Formatted View)</span>
+
+            <!-- Controls for expanded mode -->
+            <div class="panel-header-controls" id="leftPanelControls">
+                <button class="btn" onclick="formatCode(false,null,null)">Format</button>
+                <button class="btn" onclick="minifyCode()">Minify</button>
+                <button class="btn" onclick="formatData('REPAIR')">Repair</button>
+                <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>
+                <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+                <select  id="formatType">
+<!--                    <option value="json">JSON</option>-->
+                    <option value="xml">XML</option>
+                </select>
+            </div>
+
+            <button class="expand-btn" onclick="toggleExpand('left')" id="leftExpandBtn">
+                <span id="leftExpandIcon">⛶</span>
+            </button>
+        </div>
+
         <div class="editor-wrapper">
             <div class="line-numbers-area">
                 <div class="fold-icons" id="foldIcons"></div>
-                <div class="line-numbers" id="lineNumbers"></div>
+                <div class="line-numbers" id="lineNumbers">1</div>
             </div>
             <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>
         </div>
+
         <div class="status" id="inputStatus">Ready - Type or paste JSON/XML here</div>
     </div>
-    <div class="middle-controls">
-        <select id="formatType">
+
+    <!-- Middle Controls -->
+    <div class="middle-controls" id="middleControls">
+        <select id="formatType2" onchange="document.getElementById('formatType').value = this.value;">
 <!--            <option value="json">JSON</option>-->
             <option value="xml">XML</option>
         </select>
@@ -75,24 +90,44 @@
         <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
     </div>
 
-    <div class="panel">
-        <div class="panel-header">Viewer (Tree View for JSON and XML)</div>
-        <div class="editor-wrapper">
-            <div class="tree-view" id="treeView"></div>
+    <!-- Right Panel - Tree View -->
+    <div class="panel" id="rightPanel">
+        <div class="panel-header" id="rightPanelHeader">
+            <span>Viewer (Tree View for JSON and XML)</span>
+
+            <!-- Controls for expanded mode -->
+            <div class="panel-header-controls" id="rightPanelControls">
+                <button class="btn" onclick="formatData('JSON_TO_XML')">Convert To XML</button>
+                <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>
+                <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>
+                <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>
+                <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
+            </div>
+
+            <button class="expand-btn" onclick="toggleExpand('right')" id="rightExpandBtn">
+                <span id="rightExpandIcon">⛶</span>
+            </button>
         </div>
+
+        <div class="tree-view" id="treeView">
+            <div style="padding: 20px; color: #858585;">Tree view will appear here after formatting</div>
+        </div>
+
         <div class="status" id="outputStatus">Ready</div>
     </div>
+
 </div>
-</br>
+
+<!-- Content Section -->
 <div class="content-section">
-    <h2>What is XML Parser?</h2>
-    <p>XML Parser is a simple, browser-based tool built for developers who deal with XML data daily.</p>
+    <h2>What is JSON XML Editor?</h2>
+    <p>JSON XML Editor is a simple, browser-based tool built for developers who deal with JSON and XML data daily.</p>
     <p>When you're working with APIs, the data you get back is often just a huge "blob" of text that’s hard to read or debug. Our tool helps you clean that up, visualize it, and even fix it when it's broken.</p>
 
     <h6>How it Helps You</h6>
 
     <div class="feature-box">
-        <p><strong>No More "Ugly" Code:</strong> Just paste your XML and the tool instantly beautifies it with proper spacing and colors. We use a color-coding system that makes it easy to tell apart keys, strings, and numbers at a single glance.</p>
+        <p><strong>No More "Ugly" Code:</strong> Just paste your messy JSON or XML, and the tool instantly beautifies it with proper spacing and colors. We use a color-coding system that makes it easy to tell apart keys, strings, and numbers at a single glance.</p>
     </div>
 
     <div class="feature-box">
@@ -111,5 +146,6 @@
 <div id="footer"></div>
 
 <script src="/js/layout-loader.js"></script>
-<script src="/js/jsonxmlformatter.js"></script>
+<script src="js/jsonxmlformatter.js"></script>
 </body>
+</html>
