@@ -6,16 +6,37 @@ function updatePlaceholder() {
             java: 'public class Person {\n    private String name;\n    private int age;\n}',
             python: 'class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age',
             javascript: 'class Person {\n    constructor(name, age) {\n        this.name = name;\n        this.age = age;\n    }\n}',
+             json: '{\n    "name": "John",\n    "age": 30,\n    "address": {\n        "city": "New York",\n        "zipCode": "10001"\n    }\n}',
         };
 
         editor.placeholder = placeholders[lang] || 'Type or paste your code here...';
+
+        const outputLang = document.getElementById('outputLang').value;
+                 const inputLang = document.getElementById('inputLang').value;
+                           if (outputLang !== 'json' && inputLang!=='json') {
+                               document.getElementById('object').hidden = false;
+                                document.getElementById('camelcase').style.display='none';
+                                document.getElementById('snakecase').style.display='none';
+                                document.getElementById('outputFormat').value='class';
+                           }else{
+                           if(document.getElementById('outputFormat').value==='class'){
+                           document.getElementById('outputFormat').value='CamelCase';
+                           }
+                           document.getElementById('object').hidden = true;
+                                           document.getElementById('camelcase').style.display='block';
+                                           document.getElementById('snakecase').style.display='block';
+                           }
     }
 
+
+
     function updateOutputPlaceholder() {
+
         const outputEditor = document.getElementById('outputEditor');
         outputEditor.placeholder = 'Converted code will appear here...';
          const outputLang = document.getElementById('outputLang').value;
-                   if (outputLang !== 'json') {
+         const inputLang = document.getElementById('inputLang').value;
+                   if (outputLang !== 'json' && inputLang!=='json') {
                        document.getElementById('object').hidden = false;
                         document.getElementById('camelcase').style.display='none';
                         document.getElementById('snakecase').style.display='none';
@@ -61,6 +82,18 @@ function updatePlaceholder() {
         const inputEditor = document.getElementById('inputEditor');
 
         const samples = {
+         json: `{"id": 1,
+    "username": "john_doe",
+    "email": "john@example.com",
+    "age": 30,
+    "address": {
+       "city": "New York",
+       "state": "NY",
+        "zipCode": "10001"
+         },
+    "tags": ["developer", "tech"],
+    "active": true
+}`,
             java: `public class UserDTO {
     private int id;
     private String name;
@@ -169,7 +202,10 @@ public class Address
     public string State { get; set; }
     public string ZipCode { get; set; }
 }`
+
         };
+
+
 
         inputEditor.value = samples[inputLang] || samples.java;
         updateStatus('Sample code loaded with nested types');

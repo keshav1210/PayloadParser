@@ -17,14 +17,14 @@ public class ObjectConverterServiceImpl implements ObjectConverter {
 @Override
 public String converter(ConvertRequest request) {
 
-    Map<String, ClassInfo> classes = parseCode(request.getInputCode(), request.getInputLang());
+    Map<String, ClassInfo> classes = parseCode(request.getInputCode(), request.getInputLang(),request.getOutputFormat());
 
     // Convert to output language
     return generateCode(classes, request.getOutputLang(), request.getOutputFormat());
 }
 
 
-    private Map<String, ClassInfo> parseCode(String code, String language) {
+    private Map<String, ClassInfo> parseCode(String code, String language,String format) {
         switch (language.toLowerCase()) {
             case "java":
                 return parseJavaCode(code);
@@ -33,6 +33,8 @@ public String converter(ConvertRequest request) {
             case "javascript":
             case "typescript":
                 return parseJavaScriptCode(code);
+            case "json":
+                return parseJSONCode(code,format);
             default:
                 throw new IllegalArgumentException("Unsupported input language: " + language);
         }
@@ -536,5 +538,146 @@ public String converter(ConvertRequest request) {
 
         // Convert to lowercase
         return result.toLowerCase();
+    }
+
+
+    /*private Map<String, ClassInfo> parseJSONCode(String code) {
+        Map<String, ClassInfo> classes = new LinkedHashMap<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> jsonMap = objectMapper.readValue(code, Map.class);
+
+            // Generate a root class from the JSON
+            ClassInfo rootClass = new ClassInfo("RootObject");
+            analyzeJSONStructure(jsonMap, rootClass, classes, "RootObject");
+            classes.put("RootObject", rootClass);
+
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid JSON format: " + e.getMessage());
+        }
+
+        return classes;
+    }*/
+
+    private Map<String, ClassInfo> parseJSONCode(String code, String format) {
+        Map<String, ClassInfo> classes = new LinkedHashMap<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> jsonMap = objectMapper.readValue(code, Map.class);
+
+            // Generate a root class from the JSON
+            ClassInfo rootClass = new ClassInfo("RootObject");
+            analyzeJSONStructure(jsonMap, rootClass, classes, "RootObject", format);
+            classes.put("RootObject", rootClass);
+
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid JSON format: " + e.getMessage());
+        }
+
+        return classes;
+    }
+
+    private void analyzeJSONStructure(Map<String, Object> jsonMap, ClassInfo currentClass,
+                                      Map<String, ClassInfo> allClasses, String currentClassName, String format) {
+        for (Map.Entry<String, Object> entry : jsonMap.entrySet()) {
+            String fieldName = entry.getKey();
+            Object value = entry.getValue();
+
+            // Convert field name based on format
+            String convertedFieldName = convertFieldNameByFormat(fieldName, format);
+
+            String fieldType = inferTypeFromValue(value, fieldName, allClasses, format);
+            currentClass.addField(convertedFieldName, fieldType);
+        }
+    }
+
+    private String inferTypeFromValue(Object value, String fieldName, Map<String, ClassInfo> allClasses, String format) {
+        if (value == null) {
+            return "Object";
+        } else if (value instanceof String) {
+            return "String";
+        } else if (value instanceof Integer) {
+            return "int";
+        } else if (value instanceof Long) {
+            return "long";
+        } else if (value instanceof Double || value instanceof Float) {
+            return "double";
+        } else if (value instanceof Boolean) {
+            return "boolean";
+        } else if (value instanceof List) {
+            List<?> list = (List<?>) value;
+            if (!list.isEmpty()) {
+                Object firstElement = list.get(0);
+                if (firstElement instanceof Map) {
+                    // Nested object in array
+                    String nestedClassName = capitalize(toCamelCase(fieldName)) + "Item";
+                    ClassInfo nestedClass = new ClassInfo(nestedClassName);
+                    analyzeJSONStructure((Map<String, Object>) firstElement, nestedClass, allClasses, nestedClassName, format);
+                    allClasses.put(nestedClassName, nestedClass);
+                    return "List<" + nestedClassName + ">";
+                } else {
+                    String elementType = inferTypeFromValue(firstElement, fieldName, allClasses, format);
+                    return "List<" + elementType + ">";
+                }
+            }
+            return "List<Object>";
+        } else if (value instanceof Map) {
+            // Nested object
+            String nestedClassName = capitalize(toCamelCase(fieldName));
+            ClassInfo nestedClass = new ClassInfo(nestedClassName);
+            analyzeJSONStructure((Map<String, Object>) value, nestedClass, allClasses, nestedClassName, format);
+            allClasses.put(nestedClassName, nestedClass);
+            return nestedClassName;
+        }
+
+        return "Object";
+    }
+
+    private String convertFieldNameByFormat(String fieldName, String format) {
+        if (format == null) {
+            return fieldName;
+        }
+
+        if (format.equalsIgnoreCase("CamelCase")) {
+            return toCamelCase(fieldName);
+        } else if (format.equalsIgnoreCase("SnakeCase")) {
+            return toSnakeCase(fieldName);
+        }
+
+        return fieldName;
+    }
+
+    private String toCamelCase(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+
+        // If already in camelCase, return as is
+        if (!str.contains("_") && !str.contains("-")) {
+            return str;
+        }
+
+        // Convert snake_case or kebab-case to camelCase
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = false;
+
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(i);
+
+            if (ch == '_' || ch == '-') {
+                capitalizeNext = true;
+            } else {
+                if (capitalizeNext) {
+                    result.append(Character.toUpperCase(ch));
+                    capitalizeNext = false;
+                } else {
+                    result.append(Character.toLowerCase(ch));
+                }
+            }
+        }
+
+        return result.toString();
     }
 }
