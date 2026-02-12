@@ -802,7 +802,7 @@
      if(type==='REPAIR'){
          type = (selectedtype==='xml') ? "XML_FORMAT" : "JSON_FORMAT"
      }
-     if(type === 'TOML' || type === 'YAML' || type === 'CSV') {
+     if(type === 'TOML' || type === 'YAML' || type === 'CSV' || type === 'SQL') {
          type = selectedtype.toUpperCase() + "_TO_" + type;
      }
      fetch("/data/parse", {
@@ -821,12 +821,14 @@
                 let format = 'json';
                 if(type==='XML_FORMAT' || type==='JSON_TO_XML' || type==='XML_SORT' || type==='CSV_TO_XML') {
                     format = 'xml';
-                }else if(type==='JSON_TO_YAML' || type==='XML_TO_YAML') {
+                }else if(type==='JSON_TO_YAML' || type==='XML_TO_YAML' || type==='PROPERTY_TO_YAML') {
                     format = 'yaml';
                 }else if(type==='JSON_TO_TOML' || type==='XML_TO_TOML') {
                     format = 'toml';
                 }else if(type==='JSON_TO_CSV' || type==='XML_TO_CSV') {
                     format = 'csv';
+                }else if(type==='JSON_TO_SQL' || type==='XML_TO_SQL') {
+                    format = 'sql';
                 }
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
