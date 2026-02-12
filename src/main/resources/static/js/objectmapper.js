@@ -26,6 +26,7 @@ function updatePlaceholder() {
                                            document.getElementById('camelcase').style.display='block';
                                            document.getElementById('snakecase').style.display='block';
                            }
+                            updateJavaOptionsVisibility();
     }
 
 
@@ -49,6 +50,7 @@ function updatePlaceholder() {
                                    document.getElementById('camelcase').style.display='block';
                                    document.getElementById('snakecase').style.display='block';
                    }
+                   updateJavaOptionsVisibility();
     }
 
     function formatInput() {
@@ -214,7 +216,7 @@ public class Address
     // Configure your backend URL here
 
 
-    async function convertCode() {
+   /* async function convertCode() {
         const inputCode = document.getElementById('inputEditor').value;
         const inputLang = document.getElementById('inputLang').value;
         const outputLang = document.getElementById('outputLang').value;
@@ -264,10 +266,96 @@ public class Address
             updateStatus('Error: Cannot connect to backend server');
             console.error('Conversion error:', error);
         }
+    }*/
+
+
+    async function convertCode() {
+        const inputCode = document.getElementById('inputEditor').value;
+        const inputLang = document.getElementById('inputLang').value;
+        const outputLang = document.getElementById('outputLang').value;
+        const outputFormat = document.getElementById('outputFormat').value;
+        const outputEditor = document.getElementById('outputEditor');
+
+        // Get Java-specific options
+        const javaOptions = document.getElementById('javaOptions') ? document.getElementById('javaOptions').value : 'standard';
+        const constructorOptions = document.getElementById('constructorOptions') ? document.getElementById('constructorOptions').value : 'noargs';
+
+        if (!inputCode.trim()) {
+            updateStatus('Please enter code to convert');
+            return;
+        }
+
+        updateStatus('Converting...');
+        outputEditor.value = '// Converting...';
+
+        try {
+            const response = await fetch(`/data/object-to-json`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    inputCode: inputCode,
+                    inputLang: inputLang,
+                    outputLang: outputLang,
+                    outputFormat: outputFormat,
+                    javaOptions: javaOptions,
+                    constructorOptions: constructorOptions
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.convertedCode) {
+                outputEditor.value = data.convertedCode;
+                updateStatus('Conversion complete! All nested types converted.');
+            } else if (data.error) {
+                outputEditor.value = `// Error: ${data.error}`;
+                updateStatus('Conversion failed: ' + data.error);
+            } else {
+                outputEditor.value = '// Conversion failed';
+                updateStatus('Conversion failed');
+            }
+        } catch (error) {
+            outputEditor.value = `// Error: ${error.message}`;
+            updateStatus('Error: Cannot connect to backend server');
+            console.error('Conversion error:', error);
+        }
     }
 
     function updateStatus(message) {
         document.getElementById('status').textContent = message;
+    }
+
+    function updateJavaOptionsVisibility() {
+        const inputLang = document.getElementById('inputLang').value;
+        const outputLang = document.getElementById('outputLang').value;
+
+        const javaOptionsGroup = document.getElementById('javaOptionsGroup');
+        const constructorOptionsGroup = document.getElementById('constructorOptionsGroup');
+
+        if (inputLang === 'json' && outputLang === 'java') {
+            javaOptionsGroup.style.display = 'block';
+            updateJavaSubOptions();
+        } else {
+            javaOptionsGroup.style.display = 'none';
+            constructorOptionsGroup.style.display = 'none';
+        }
+    }
+
+    function updateJavaSubOptions() {
+        const javaOptions = document.getElementById('javaOptions').value;
+        const constructorOptionsGroup = document.getElementById('constructorOptionsGroup');
+
+        if (javaOptions === 'standard') {
+            constructorOptionsGroup.style.display = 'block';
+        } else {
+            constructorOptionsGroup.style.display = 'none';
+        }
     }
 
     // Initialize

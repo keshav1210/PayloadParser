@@ -20,7 +20,7 @@ public String converter(ConvertRequest request) {
     Map<String, ClassInfo> classes = parseCode(request.getInputCode(), request.getInputLang(),request.getOutputFormat());
 
     // Convert to output language
-    return generateCode(classes, request.getOutputLang(), request.getOutputFormat());
+    return generateCode(classes, request.getOutputLang(), request.getOutputFormat(),request.getJavaOptions(), request.getConstructorOptions());
 }
 
 
@@ -44,33 +44,60 @@ public String converter(ConvertRequest request) {
     private Map<String, ClassInfo> parseJavaCode(String code) {
         Map<String, ClassInfo> classes = new LinkedHashMap<>();
 
-        // Pattern to match Java classes
+        // Enhanced pattern to match Java classes with optional access modifiers and extends clause
         Pattern classPattern = Pattern.compile(
-                "public\\s+class\\s+(\\w+)\\s*\\{([\\s\\S]*?)\\n\\}"
+                "(?:public|protected|private)?\\s*class\\s+(\\w+)(?:\\s+extends\\s+(\\w+))?\\s*\\{([\\s\\S]*?)\\n\\}"
         );
 
         Matcher classMatcher = classPattern.matcher(code);
 
         while (classMatcher.find()) {
             String className = classMatcher.group(1);
-            String classBody = classMatcher.group(2);
+            String parentClass = classMatcher.group(2); // Can be null if no extends
+            String classBody = classMatcher.group(3);
 
             ClassInfo classInfo = new ClassInfo(className);
+            if (parentClass != null) {
+                classInfo.setParentClass(parentClass);
+            }
 
-            // Parse fields
+            // Parse fields - need to distinguish from methods
+            // Look for field declarations that end with semicolon, not methods with parentheses
             Pattern fieldPattern = Pattern.compile(
-                    "private\\s+([\\w<>]+)\\s+(\\w+)\\s*;"
+                    "^\\s*(?:public|protected|private)?\\s+(?:static\\s+)?(?:final\\s+)?([\\w<>,\\s\\[\\]]+)\\s+(\\w+)\\s*(?:=\\s*[^;]+)?\\s*;",
+                    Pattern.MULTILINE
             );
 
             Matcher fieldMatcher = fieldPattern.matcher(classBody);
 
             while (fieldMatcher.find()) {
-                String type = fieldMatcher.group(1);
+                String type = fieldMatcher.group(1).trim();
                 String name = fieldMatcher.group(2);
-                classInfo.addField(name, type);
+
+                // Additional check: make sure the line doesn't contain method-like patterns
+                String matchedLine = fieldMatcher.group(0);
+                if (!matchedLine.contains("(") && !matchedLine.contains(")")) {
+                    classInfo.addField(name, type);
+                }
             }
 
             classes.put(className, classInfo);
+        }
+
+        // Handle inheritance - merge parent fields into child classes
+        for (ClassInfo classInfo : classes.values()) {
+            if (classInfo.getParentClass() != null) {
+                ClassInfo parentInfo = classes.get(classInfo.getParentClass());
+                if (parentInfo != null) {
+                    // Add parent fields to child class
+                    for (Map.Entry<String, String> parentField : parentInfo.getFields().entrySet()) {
+                        // Only add if not already present (child can override)
+                        if (!classInfo.getFields().containsKey(parentField.getKey())) {
+                            classInfo.addField(parentField.getKey(), parentField.getValue());
+                        }
+                    }
+                }
+            }
         }
 
         return classes;
@@ -155,10 +182,10 @@ public String converter(ConvertRequest request) {
         return classes;
     }
 
-    private String generateCode(Map<String, ClassInfo> classes, String language, String format) {
+    private String generateCode(Map<String, ClassInfo> classes, String language, String format, String javaOptions, String constructorOptions) {
         switch (language.toLowerCase()) {
             case "java":
-                return generateJavaCode(classes);
+                return generateJavaCode(classes, javaOptions, constructorOptions);
             case "python":
                 return generatePythonCode(classes);
             case "javascript":
@@ -174,7 +201,7 @@ public String converter(ConvertRequest request) {
         }
     }
 
-    private String generateJavaCode(Map<String, ClassInfo> classes) {
+    /*private String generateJavaCode(Map<String, ClassInfo> classes) {
         StringBuilder sb = new StringBuilder();
 
         for (ClassInfo classInfo : classes.values()) {
@@ -209,6 +236,95 @@ public String converter(ConvertRequest request) {
                 sb.append("    public void set").append(capitalizedName).append("(").append(javaType).append(" ").append(fieldName).append(") {\n");
                 sb.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
                 sb.append("    }\n\n");
+            }
+
+            sb.append("}\n\n");
+        }
+
+        return sb.toString().trim();
+    }*/
+
+    private String generateJavaCode(Map<String, ClassInfo> classes, String javaOptions, String constructorOptions) {
+        boolean useLombok = "lombok".equalsIgnoreCase(javaOptions);
+        StringBuilder sb = new StringBuilder();
+
+        for (ClassInfo classInfo : classes.values()) {
+            // Add Lombok annotations if selected
+            if (useLombok) {
+                sb.append("import lombok.Data;\n");
+                sb.append("import lombok.NoArgsConstructor;\n");
+                sb.append("import lombok.AllArgsConstructor;\n\n");
+
+                sb.append("@Data\n");
+                sb.append("@NoArgsConstructor\n");
+                sb.append("@AllArgsConstructor\n");
+            }
+
+            sb.append("public class ").append(classInfo.getName()).append(" {\n");
+
+            // Fields
+            for (Map.Entry<String, String> field : classInfo.getFields().entrySet()) {
+                String fieldName = field.getKey();
+                String fieldType = field.getValue();
+                String javaType = convertToJavaType(fieldType, classes);
+                sb.append("    private ").append(javaType).append(" ").append(fieldName).append(";\n");
+            }
+
+            sb.append("\n");
+
+            // If NOT using Lombok, generate constructors and getters/setters
+            if (!useLombok) {
+                // Generate constructors based on selection
+                if ("noargs".equalsIgnoreCase(constructorOptions) || "both".equalsIgnoreCase(constructorOptions)) {
+                    // No-args constructor
+                    sb.append("    public ").append(classInfo.getName()).append("() {\n");
+                    sb.append("    }\n\n");
+                }
+
+                if ("allargs".equalsIgnoreCase(constructorOptions) || "both".equalsIgnoreCase(constructorOptions)) {
+                    // All-args constructor
+                    sb.append("    public ").append(classInfo.getName()).append("(");
+
+                    List<Map.Entry<String, String>> fieldList = new ArrayList<>(classInfo.getFields().entrySet());
+                    for (int i = 0; i < fieldList.size(); i++) {
+                        Map.Entry<String, String> field = fieldList.get(i);
+                        String fieldName = field.getKey();
+                        String fieldType = field.getValue();
+                        String javaType = convertToJavaType(fieldType, classes);
+
+                        sb.append(javaType).append(" ").append(fieldName);
+                        if (i < fieldList.size() - 1) {
+                            sb.append(", ");
+                        }
+                    }
+
+                    sb.append(") {\n");
+
+                    for (Map.Entry<String, String> field : classInfo.getFields().entrySet()) {
+                        String fieldName = field.getKey();
+                        sb.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
+                    }
+
+                    sb.append("    }\n\n");
+                }
+
+                // Getters and Setters
+                for (Map.Entry<String, String> field : classInfo.getFields().entrySet()) {
+                    String fieldName = field.getKey();
+                    String fieldType = field.getValue();
+                    String javaType = convertToJavaType(fieldType, classes);
+                    String capitalizedName = capitalize(fieldName);
+
+                    // Getter
+                    sb.append("    public ").append(javaType).append(" get").append(capitalizedName).append("() {\n");
+                    sb.append("        return ").append(fieldName).append(";\n");
+                    sb.append("    }\n\n");
+
+                    // Setter
+                    sb.append("    public void set").append(capitalizedName).append("(").append(javaType).append(" ").append(fieldName).append(") {\n");
+                    sb.append("        this.").append(fieldName).append(" = ").append(fieldName).append(";\n");
+                    sb.append("    }\n\n");
+                }
             }
 
             sb.append("}\n\n");
@@ -504,8 +620,31 @@ public String converter(ConvertRequest request) {
     }
 
     // Inner class to hold class information
+//    private static class ClassInfo {
+//        private String name;
+//        private Map<String, String> fields;
+//
+//        public ClassInfo(String name) {
+//            this.name = name;
+//            this.fields = new LinkedHashMap<>();
+//        }
+//
+//        public void addField(String name, String type) {
+//            fields.put(name, type);
+//        }
+//
+//        public String getName() {
+//            return name;
+//        }
+//
+//        public Map<String, String> getFields() {
+//            return fields;
+//        }
+//    }
+
     private static class ClassInfo {
         private String name;
+        private String parentClass;
         private Map<String, String> fields;
 
         public ClassInfo(String name) {
@@ -523,6 +662,14 @@ public String converter(ConvertRequest request) {
 
         public Map<String, String> getFields() {
             return fields;
+        }
+
+        public String getParentClass() {
+            return parentClass;
+        }
+
+        public void setParentClass(String parentClass) {
+            this.parentClass = parentClass;
         }
     }
     private String toSnakeCase(String str) {
