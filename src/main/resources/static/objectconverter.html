@@ -120,6 +120,22 @@
                     <option value="schema">Schema</option>-->
                 </select>
             </div>
+            <div class="select-group" id="javaOptionsGroup" style="display: none;">
+                <label>Java Options:</label>
+                <select id="javaOptions" onchange="updateJavaSubOptions()">
+                    <option value="lombok">Lombok</option>
+                    <option value="standard">Standard (POJO)</option>
+                </select>
+            </div>
+
+            <div class="select-group" id="constructorOptionsGroup" style="display: none;">
+                <label>Constructor:</label>
+                <select id="constructorOptions">
+                    <option value="noargs">No Args Constructor</option>
+                    <option value="allargs">All Args Constructor</option>
+                    <option value="both">Both Constructors</option>
+                </select>
+            </div>
         </div>
         <div class="editor-wrapper">
             <textarea

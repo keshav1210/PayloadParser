@@ -6,6 +6,8 @@ public class ConvertRequest {
     private String inputLang;
     private String outputLang;
     private String outputFormat;
+    private String javaOptions;      // "lombok" or "standard"
+    private String constructorOptions;
 
     // Constructors
     public ConvertRequest() {
@@ -49,5 +51,21 @@ public class ConvertRequest {
 
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
+    }
+
+    public String getJavaOptions() {
+        return javaOptions;
+    }
+
+    public void setJavaOptions(String javaOptions) {
+        this.javaOptions = javaOptions;
+    }
+
+    public String getConstructorOptions() {
+        return constructorOptions;
+    }
+
+    public void setConstructorOptions(String constructorOptions) {
+        this.constructorOptions = constructorOptions;
     }
 }
