@@ -1,4 +1,4 @@
- let currentData = null;
+let currentData = null;
  let selectedType="JSON";
     let expandedStates = {};
     let foldStates = {};
@@ -21,18 +21,107 @@
     document.getElementById('foldIcons').scrollTop = codeEditor.scrollTop;
 }
 
+    // Helper function to get text from contenteditable preserving line breaks
+    function getEditorText() {
+        // If editor has formatted code-line divs, extract from those
+        const codeLines = codeEditor.querySelectorAll('.code-line');
+        if (codeLines.length > 0) {
+            // Already formatted - get text from each code-line div
+            let text = '';
+            codeLines.forEach((line, index) => {
+                if (index > 0) text += '\n';
+                text += line.textContent;
+            });
+            console.log('Extracted from code-lines, count:', codeLines.length);
+            console.log('Text ends with newline:', text.endsWith('\n'));
+            return text;
+        }
+
+        // For plain text editing, we need to handle the contenteditable structure
+        // Different browsers handle contenteditable differently
+        let text = '';
+        const children = Array.from(codeEditor.childNodes);
+
+        console.log('Editor childNodes count:', children.length);
+        console.log('Editor innerHTML:', codeEditor.innerHTML);
+
+        if (children.length === 0) {
+            return '';
+        }
+
+        // If there's only one text node, return it
+        if (children.length === 1 && children[0].nodeType === Node.TEXT_NODE) {
+            return children[0].textContent;
+        }
+
+        // Process each child node
+        for (let i = 0; i < children.length; i++) {
+            const node = children[i];
+
+            if (node.nodeType === Node.TEXT_NODE) {
+                text += node.textContent;
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.nodeName === 'BR') {
+                    text += '\n';
+                } else if (node.nodeName === 'DIV') {
+                    // Add newline before div (except for first div)
+                    if (text.length > 0 && !text.endsWith('\n')) {
+                        text += '\n';
+                    }
+                    // Get text content of the div, including nested elements
+                    text += node.textContent || '';
+                }
+            }
+        }
+
+        console.log('Extracted text:', text);
+        console.log('Newlines found:', (text.match(/\n/g) || []).length);
+
+        return text;
+    }
+
     function updateLineNumbers() {
-    const text = codeEditor.textContent || codeEditor.innerText || '';
-    const lines = text.split('\n').length;
+    // Count actual div.code-line elements if they exist (formatted view)
+    const codeLines = codeEditor.querySelectorAll('.code-line');
+
+    let lineCount;
+    if (codeLines.length > 0) {
+        // Formatted view - count the divs
+        lineCount = codeLines.length;
+    } else {
+        // Plain text view - count actual rendered lines
+        // Get the innerHTML and count line breaks more accurately
+        const content = codeEditor.innerHTML;
+
+        // Count <div> tags (created by Enter key in most browsers)
+        const divMatches = content.match(/<div[^>]*>/gi);
+        const divCount = divMatches ? divMatches.length : 0;
+
+        // Count <br> tags (created by Shift+Enter or in some browsers)
+        const brMatches = content.match(/<br[^>]*>/gi);
+        const brCount = brMatches ? brMatches.length : 0;
+
+        // If no divs or brs, check if there's any content
+        if (divCount === 0 && brCount === 0) {
+            // Single line or empty
+            const text = codeEditor.textContent || '';
+            lineCount = text ? 1 : 1;
+        } else {
+            // Count divs as lines, plus 1 for the first line (which isn't wrapped in a div)
+            // If there are any divs, the first line is outside any div
+            lineCount = divCount > 0 ? divCount + 1 : brCount + 1;
+        }
+    }
+
     let numbers = '';
-    for (let i = 1; i <= lines; i++) {
-    numbers += i + '\n';
-}
+    for (let i = 1; i <= lineCount; i++) {
+        numbers += i + '\n';
+    }
     document.getElementById('lineNumbers').textContent = numbers;
 
     if (Object.keys(foldHierarchy).length === 0) {
-    document.getElementById('foldIcons').innerHTML = '';
-}
+        document.getElementById('foldIcons').innerHTML = '';
+    }
 }
 
 //     function toggleFold(foldId) {
@@ -374,13 +463,16 @@
            input=data;
            type=convertedTye;
         }else{
-            input= (codeEditor.textContent || codeEditor.innerText || '').trim();
+            // Get text content preserving line breaks from contenteditable
+            input = getEditorText();
+            console.log('Input text for parsing:', input);
+            console.log('Input length:', input.length);
+            console.log('Newlines in input:', (input.match(/\n/g) || []).length);
             type = document.getElementById('formatType').value;
         }
     const inputStatus = document.getElementById('inputStatus');
 
     if (!input) {
-    inputStatus.innerHTML = '<span class="warning">Please enter some code first!</span>';
     return;
 }
 
@@ -442,13 +534,112 @@
     document.getElementById('treeView').innerHTML = input;
 }
 } catch (e) {
-    inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + e.message + '</span>';
-    document.getElementById('treeView').innerHTML = '<div class="error">Parse Error: ' + e.message + '</div>';
+    let errorMsg = e.message;
+
+    // Enhanced error reporting: calculate actual line/column from character position
+    const positionMatch = errorMsg.match(/at position (\d+)/);
+    if (positionMatch && input) {
+        const errorPosition = parseInt(positionMatch[1]);
+
+        // Count actual lines up to the error position
+        const textBeforeError = input.substring(0, errorPosition);
+        const lines = textBeforeError.split('\n');
+        const actualLineNumber = lines.length; // This is correct - number of lines up to error
+        const actualColumnNumber = lines[lines.length - 1].length + 1;
+
+        // Show the character at error position and surrounding context
+        const charAtError = input.charAt(errorPosition);
+        const contextStart = Math.max(0, errorPosition - 30);
+        const contextEnd = Math.min(input.length, errorPosition + 30);
+        const context = input.substring(contextStart, contextEnd);
+
+        console.log('Error position:', errorPosition);
+        console.log('Character at error position:', JSON.stringify(charAtError));
+        console.log('Context (30 chars before and after):', JSON.stringify(context));
+        console.log('Text before error (last 50 chars):', JSON.stringify(textBeforeError.slice(-50)));
+        console.log('Lines array length:', lines.length);
+        console.log('Last line content:', JSON.stringify(lines[lines.length - 1]));
+        console.log('Calculated line number:', actualLineNumber);
+        console.log('Calculated column number:', actualColumnNumber);
+
+        // Analyze what's missing based on the error message
+        let suggestion = '';
+        if (errorMsg.includes("Expected ','")) {
+            suggestion = ' → Missing comma after the previous property';
+        } else if (errorMsg.includes("Expected '}'")) {
+            suggestion = ' → Missing closing brace }';
+        } else if (errorMsg.includes("Expected ']'")) {
+            suggestion = ' → Missing closing bracket ]';
+        } else if (errorMsg.includes("Expected ':'")) {
+            suggestion = ' → Missing colon after property name';
+        } else if (errorMsg.includes("Expected double-quoted property name")) {
+            suggestion = ' → Property name must be in double quotes';
+        } else if (errorMsg.includes("Unexpected token")) {
+            suggestion = ' → Unexpected character found';
+        }
+
+        // Replace the line and column numbers in the error message
+        errorMsg = errorMsg.replace(/\(line \d+ column \d+\)/, `(line ${actualLineNumber} column ${actualColumnNumber})`);
+
+        // Build detailed error display
+        const lineContent = lines[lines.length - 1];
+        const previousLine = lines.length > 1 ? lines[lines.length - 2] : '';
+
+        // Create visual pointer
+        const pointer = ' '.repeat(actualColumnNumber - 1) + '↑';
+
+        // Add to error message
+        errorMsg += suggestion;
+
+        // Log detailed error info to console
+        console.log('\n=== ERROR DETAILS ===');
+        if (previousLine) {
+            console.log(`Line ${actualLineNumber - 1}: ${previousLine}`);
+        }
+        console.log(`Line ${actualLineNumber}: ${lineContent}`);
+        console.log(`            ${pointer} Error here`);
+        console.log('Suggestion:', suggestion || 'Check syntax');
+        console.log('===================\n');
+
+        // Also show in the tree view
+        let detailedError = `<div class="error">
+            <strong>Parse Error on Line ${actualLineNumber}:</strong><br><br>
+            ${errorMsg}<br><br>
+            <strong>Problem area:</strong><br>
+            <code style="display:block; background:#2a2a2a; padding:10px; margin:10px 0; font-family:monospace;">`;
+
+        if (previousLine) {
+            detailedError += `Line ${actualLineNumber - 1}: ${escapeHtml(previousLine)}<br>`;
+        }
+        detailedError += `Line ${actualLineNumber}: ${escapeHtml(lineContent)}<br>`;
+        detailedError += `            ${pointer.replace(/ /g, '&nbsp;')} <span style="color:#ff6b6b">Error here</span>`;
+        detailedError += `</code>`;
+
+        if (suggestion) {
+            detailedError += `<br><strong>Fix:</strong> ${suggestion.substring(4)}`;
+        }
+
+        detailedError += `</div>`;
+
+        document.getElementById('treeView').innerHTML = detailedError;
+        inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + errorMsg + '</span>';
+        return; // Exit early since we've handled the display
+    }
+
+    inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + errorMsg + '</span>';
+    document.getElementById('treeView').innerHTML = '<div class="error">Parse Error: ' + errorMsg + '</div>';
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 }
 
     function minifyCode() {
-    const input = (codeEditor.textContent || codeEditor.innerText || '').trim();
+    const input = getEditorText();
     const type = document.getElementById('formatType').value;
     const inputStatus = document.getElementById('inputStatus');
 
@@ -485,7 +676,7 @@
 }
 
     function repairCode() {
-    const input = (codeEditor.textContent || codeEditor.innerText || '').trim();
+    const input = getEditorText();
     const type = document.getElementById('formatType').value;
     const inputStatus = document.getElementById('inputStatus');
 
@@ -798,7 +989,10 @@
 
  function formatData(type) {
      const selectedtype = document.getElementById('formatType').value;
-     input= (codeEditor.textContent || codeEditor.innerText || '').trim();
+     input = getEditorText();
+     if(!input){
+     return;
+     }
      if(type==='REPAIR'){
          type = (selectedtype==='xml') ? "XML_FORMAT" : "JSON_FORMAT"
      }
