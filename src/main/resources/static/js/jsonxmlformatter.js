@@ -990,7 +990,7 @@ function escapeHtml(text) {
  function formatData(type) {
      const selectedtype = document.getElementById('formatType').value;
      input = getEditorText();
-     if(!input){
+     if(!input || input===""){
      return;
      }
      if(type==='REPAIR'){

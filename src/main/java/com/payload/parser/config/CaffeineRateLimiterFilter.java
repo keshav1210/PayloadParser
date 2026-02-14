@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class CaffeineRateLimiterFilter implements Filter {
 
-    private static final int MAX_REQUESTS = 20;
+    private static final int MAX_REQUESTS = 50;
 
     @Autowired
     private Cache<String, AtomicInteger> cache;
