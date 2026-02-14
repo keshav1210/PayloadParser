@@ -32,6 +32,10 @@
 <div id="header"></div>
 
 <div class="controls">
+    <label class="btn">
+        Upload CSV
+        <input type="file" id="csvUploadInput" accept=".csv,text/csv" style="display: none;"/>
+    </label>
     <!--  <select id="formatType">-->
     <!--    <option value="json">JSON</option>-->
     <!--    <option value="xml">XML</option>-->
@@ -102,4 +106,23 @@
 
 <script src="/js/layout-loader.js"></script>
 <script src="/js/jsonxmlformatter.js"></script>
+<script>
+    const csvUploadInput = document.getElementById('csvUploadInput');
+
+    csvUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const text = evt.target.result || '';
+        codeEditor.textContent = text;
+        codeEditor.scrollTop = 0;
+      };
+      reader.readAsText(file);
+
+      // Reset input so selecting the same file again still fires change
+      e.target.value = '';
+    });
+</script>
 </body>

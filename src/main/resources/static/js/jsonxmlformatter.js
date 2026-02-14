@@ -1023,6 +1023,8 @@ function escapeHtml(text) {
                     format = 'csv';
                 }else if(type==='JSON_TO_SQL' || type==='XML_TO_SQL') {
                     format = 'sql';
+                }else if(type==='YAML_TO_PROPERTY') {
+                    format = 'property';
                 }
 
                  const formatted = res.parsedData.replace(/\r\n/g, "\n");
@@ -1142,3 +1144,48 @@ function escapeHtml(text) {
      }
    }
  }
+
+ const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+
+ downloadCsvBtn.addEventListener('click', () => {
+   const rightEditor = document.getElementById('treeView');
+   if (!rightEditor) return;
+
+   const rawText = rightEditor.textContent || rightEditor.value || '';
+   const text = rawText.trim();
+
+   // Empty or no content
+   if (!text) {
+     alert('Content does not look like CSV.');
+     return;
+   }
+
+   // Very simple CSV detection:
+   // - at least one newline
+   // - header row contains at least one comma or semicolon or tab
+   const lines = text.split(/\r?\n/).filter(l => l.length > 0);
+   if (lines.length === 0) {
+     alert('Content does not look like CSV.');
+     return;
+   }
+
+   const header = lines[0];
+   const hasDelimiter = header.includes(',') || header.includes(';') || header.includes('\t');
+
+   if (!hasDelimiter) {
+     alert('Content does not look like CSV.');
+     return;
+   }
+
+   // Passed basic CSV check → download
+   const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+   const url = URL.createObjectURL(blob);
+
+   const a = document.createElement('a');
+   a.href = url;
+   a.download = 'data.csv';
+   document.body.appendChild(a);
+   a.click();
+   document.body.removeChild(a);
+   URL.revokeObjectURL(url);
+ });
