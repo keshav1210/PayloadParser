@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://jsonxmleditor.com/</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/json-parser</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/parser</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/mapper</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/learnings</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/xml-parser</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/yaml-converter</loc>
+  </url>
+
+  <url>
+    <loc>https://jsonxmleditor.com/toml-converter</loc>
+  </url>
+
+<url>
+    <loc>https://jsonxmleditor.com/csv-converter</loc>
+  </url>
+
+<url>
+    <loc>https://jsonxmleditor.com/privacy</loc>
+  </url>
+
+<url>
+    <loc>https://jsonxmleditor.com/contact</loc>
+  </url>
+
+</urlset>
