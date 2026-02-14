@@ -1,14 +1,11 @@
 package com.payload.parser.serviceImpl;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.payload.parser.model.Request;
 import com.payload.parser.model.Response;
 import com.payload.parser.service.ParserService;
+import com.payload.parser.utils.JsonRepairEngine;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +21,9 @@ public class JsonFormatServiceImpl implements ParserService {
     @Override
     public Response parse(Request request) {
         try {
-            String input= repair(request.getData());
+            JsonRepairEngine js=new JsonRepairEngine();
+            String removeComments=removeComments(request.getData());
+            String input= js.repair(removeComments);
             Object jsonObject = mapper.readValue(input, Object.class);
             ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
             return new Response(true, "success", writer.writeValueAsString(jsonObject).replace("\r\n", "\n"), HttpStatus.OK.toString());
