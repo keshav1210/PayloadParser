@@ -1,8 +1,111 @@
 <header class="app-header">
     <link rel="stylesheet" href="/css/header.css">
     <div class="header-left">
-        <div class="logo">JSON XML Editor</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 400 400"
+                    width="36"
+                    height="36"
+                    aria-label="JSON XML Editor logo"
+            >
+                <defs>
+                    <!-- Bold primary gradient -->
+                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#06b6d4" />
+                    </linearGradient>
+
+                    <!-- Bold secondary gradient -->
+                    <linearGradient id="gradient2" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#22c55e" />
+                        <stop offset="100%" stop-color="#16a34a" />
+                    </linearGradient>
+
+                    <!-- Glow effect -->
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="6" result="blur" />
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Background -->
+                <circle
+                        cx="200"
+                        cy="200"
+                        r="185"
+                        fill="#020617"
+                />
+
+                <!-- Outer subtle ring -->
+                <circle
+                        cx="200"
+                        cy="200"
+                        r="170"
+                        fill="none"
+                        stroke="#1e293b"
+                        stroke-width="8"
+                />
+
+                <!-- XML angle brackets -->
+                <path
+                        d="M 75 135 L 125 200 L 75 265"
+                        stroke="url(#gradient1)"
+                        stroke-width="22"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                        filter="url(#glow)"
+                />
+                <path
+                        d="M 325 135 L 275 200 L 325 265"
+                        stroke="url(#gradient1)"
+                        stroke-width="22"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                        filter="url(#glow)"
+                />
+
+                <!-- JSON curly braces -->
+                <path
+                        d="M 145 115 Q 120 115 120 145 L 120 180 Q 120 200 95 200 Q 120 200 120 220 L 120 255 Q 120 285 145 285"
+                        stroke="url(#gradient2)"
+                        stroke-width="20"
+                        stroke-linecap="round"
+                        fill="none"
+                        filter="url(#glow)"
+                />
+                <path
+                        d="M 255 115 Q 280 115 280 145 L 280 180 Q 280 200 305 200 Q 280 200 280 220 L 280 255 Q 280 285 255 285"
+                        stroke="url(#gradient2)"
+                        stroke-width="20"
+                        stroke-linecap="round"
+                        fill="none"
+                        filter="url(#glow)"
+                />
+
+                <!-- Editor lines -->
+                <g transform="translate(200, 200)">
+                    <line x1="-45" y1="-30" x2="45" y2="-30" stroke="#e5e7eb" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="-45" y1="-10" x2="35" y2="-10" stroke="#c7d2fe" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="-45" y1="10"  x2="40" y2="10"  stroke="#a5b4fc" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="-45" y1="30"  x2="30" y2="30"  stroke="#818cf8" stroke-width="6" stroke-linecap="round"/>
+                </g>
+
+                <!-- Accent dots -->
+                <circle cx="200" cy="105" r="6" fill="#38bdf8"/>
+                <circle cx="200" cy="295" r="6" fill="#22c55e"/>
+            </svg>
+
+
+            <h4 style="margin: 0;">JSON XML Editor</h4>
+        </div>
     </div>
+
 
     <nav class="nav-links">
         <a href="/">Home</a>

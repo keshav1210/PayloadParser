@@ -82,5 +82,8 @@ public class ViewHandler {
     public String  objectMapper(){
         return "objectconverter.html";
     }
-
+    @GetMapping("/429")
+    public String tooManyRequests() {
+        return "429.html";
+    }
 }
