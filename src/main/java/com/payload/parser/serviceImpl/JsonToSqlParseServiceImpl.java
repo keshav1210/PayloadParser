@@ -10,10 +10,7 @@ import com.payload.parser.service.ParserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class JsonToSqlParseServiceImpl implements ParserService {
@@ -22,7 +19,11 @@ public class JsonToSqlParseServiceImpl implements ParserService {
 
     @Override
     public Response parse(Request request) {
-        String result = convert(request.getData(), "users", SqlDialect.MYSQL, true);
+        Map<String,Object> filters = request.getFilters();
+        String tableName = filters.getOrDefault("tableName", "users").toString();
+        String dialect = filters.getOrDefault("dialect", "MySQL").toString();
+        boolean includeNulls = (boolean) filters.getOrDefault("includeNulls", true);
+        String result = convert(request.getData(), tableName, SqlDialect.fromString(dialect), includeNulls);
         return new Response(true, "success", result, HttpStatus.OK.toString());
     }
 

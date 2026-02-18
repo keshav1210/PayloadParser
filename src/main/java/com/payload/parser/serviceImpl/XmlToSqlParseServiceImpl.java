@@ -25,7 +25,11 @@ public class XmlToSqlParseServiceImpl implements ParserService {
 
     @Override
     public Response parse(Request request) {
-        String result = convert(request.getData(), "users", SqlDialect.MYSQL, true);
+        Map<String,Object> filters = request.getFilters();
+        String tableName = filters.getOrDefault("tableName", "users").toString();
+        String dialect = filters.getOrDefault("dialect", "MySQL").toString();
+        boolean includeNulls = (boolean) filters.getOrDefault("includeNulls", true);
+        String result = convert(request.getData(), tableName, SqlDialect.fromString(dialect), includeNulls);
         return new Response(true, "success", result, HttpStatus.OK.toString());
     }
 
