@@ -24,6 +24,7 @@
   </script>
   <title>JSON/XML Editor</title>
   <link rel="stylesheet" href="/css/jsonxmlformatter.css">
+    <link rel="stylesheet" href="/css/sql-modal.css">
 </head>
 <body>
 <div id="header"></div>
@@ -91,7 +92,7 @@
     <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>
     <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>
       <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
-      <button class="btn" onclick="formatData('SQL')">Convert TO SQL</button>
+      <button class="btn" id="convertToSqlBtn">Convert TO SQL</button>
   </div>
 
   <!-- Right Panel - Tree View -->
@@ -148,6 +149,63 @@
 </div>
 <br>
 <div id="footer"></div>
+
+<!-- Convert to SQL Modal -->
+<div id="sqlModalOverlay" class="sql-modal-overlay" style="display: none;">
+    <div class="sql-modal">
+        <div class="sql-modal-header">
+            <h3>Convert to SQL</h3>
+            <button type="button" class="sql-modal-close" id="sqlModalCloseBtn">&times;</button>
+        </div>
+
+        <div class="sql-modal-body">
+            <!-- Table name -->
+            <div class="sql-form-group">
+                <label for="sqlTableName">Table name</label>
+                <input
+                        type="text"
+                        id="sqlTableName"
+                        class="sql-input"
+                        value="users"
+                        placeholder="Enter table name"
+                />
+            </div>
+
+            <!-- DB type -->
+            <div class="sql-form-group">
+                <label for="sqlDbType">Dialect</label>
+                <select id="sqlDbType" class="sql-select">
+                    <option value="POSTGRES">PostgreSQL</option>
+                    <option value="MYSQL">MySQL</option>
+                    <option value="SQLSERVER">SQL Server</option>
+                    <option value="SQLITE">SQLite</option>
+                </select>
+            </div>
+
+            <!-- Include nulls -->
+            <div class="sql-form-group sql-checkbox-group">
+                <label class="sql-checkbox-label">
+                    <input
+                            type="checkbox"
+                            id="sqlIncludeNulls"
+                            checked
+                    />
+                    <span>Include NULLs</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="sql-modal-footer">
+            <button type="button" class="btn btn-secondary" id="sqlModalCancelBtn">
+                Cancel
+            </button>
+            <button type="button" class="btn" id="sqlGenerateBtn">
+                Generate
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <script src="/js/layout-loader.js"></script>
 <script src="js/jsonxmlformatter.js"></script>

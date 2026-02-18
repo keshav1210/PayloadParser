@@ -987,7 +987,7 @@ function escapeHtml(text) {
 
 }
 
- function formatData(type) {
+ function formatData(type, filters) {
      const selectedtype = document.getElementById('formatType').value;
      input = getEditorText();
      if(!input || input===""){
@@ -1006,7 +1006,8 @@ function escapeHtml(text) {
          },
          body: JSON.stringify({
              type: type,
-             data: input   // ✅ ALWAYS CLEAN DATA
+             data: input,   // ✅ ALWAYS CLEAN DATA
+             filters: filters
          })
      })
          .then(res => res.json())
@@ -1189,3 +1190,73 @@ function escapeHtml(text) {
    document.body.removeChild(a);
    URL.revokeObjectURL(url);
  });
+
+// Store last-used SQL options keyed by a simple id (you can extend later)
+
+const convertToSqlBtn = document.getElementById('convertToSqlBtn');
+const sqlModalOverlay = document.getElementById('sqlModalOverlay');
+const sqlModalCloseBtn = document.getElementById('sqlModalCloseBtn');
+const sqlModalCancelBtn = document.getElementById('sqlModalCancelBtn');
+const sqlGenerateBtn = document.getElementById('sqlGenerateBtn');
+
+const sqlTableNameInput = document.getElementById('sqlTableName');
+const sqlDbTypeSelect = document.getElementById('sqlDbType');
+const sqlIncludeNullsCheckbox = document.getElementById('sqlIncludeNulls');
+
+function openSqlModal() {
+  sqlModalOverlay.style.display = 'flex';
+  // Reset defaults if you want:
+  if (!sqlTableNameInput.value) {
+    sqlTableNameInput.value = 'users';
+  }
+  sqlIncludeNullsCheckbox.checked = true;
+  sqlDbTypeSelect.value = 'POSTGRES';
+
+  sqlTableNameInput.focus();
+}
+
+function closeSqlModal() {
+  sqlModalOverlay.style.display = 'none';
+}
+
+// Open on "Convert to SQL" button
+if (convertToSqlBtn) {
+  convertToSqlBtn.addEventListener('click', openSqlModal);
+}
+
+// Close actions
+sqlModalCloseBtn.addEventListener('click', closeSqlModal);
+sqlModalCancelBtn.addEventListener('click', closeSqlModal);
+
+// Close on overlay click (but not when clicking inside modal)
+sqlModalOverlay.addEventListener('click', (e) => {
+  if (e.target === sqlModalOverlay) {
+    closeSqlModal();
+  }
+});
+
+// Close on Esc
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && sqlModalOverlay.style.display !== 'none') {
+    closeSqlModal();
+  }
+});
+
+// Generate button – collect values and save in map
+sqlGenerateBtn.addEventListener('click', () => {
+  const tableName = (sqlTableNameInput.value || 'users').trim();
+  const dialect = sqlDbTypeSelect.value; // "MYSQL", "POSTGRES", "SQLSERVER", "SQLITE"
+  const includeNulls = sqlIncludeNullsCheckbox.checked;
+
+  const options = {
+    tableName,
+    dialect,
+    includeNulls
+  };
+
+  // TODO: later use options to actually generate SQL from current JSON
+
+//  console.log('SQL options saved:', options);
+  formatData("SQL", options);
+  closeSqlModal();
+});
