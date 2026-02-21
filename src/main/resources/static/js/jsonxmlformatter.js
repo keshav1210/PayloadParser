@@ -1,1262 +1,895 @@
-let currentData = null;
- let selectedType="JSON";
-    let expandedStates = {};
-    let foldStates = {};
-    let foldHierarchy = {}; // Track parent-child relationships
+/* ============================================================
+   jsonxmlformatter.js  –  shared logic for JSON, XML, JSON/XML editors
+   ============================================================ */
 
-    const codeEditor = document.getElementById('codeEditor');
+'use strict';
 
-    codeEditor.addEventListener('input', updateLineNumbers);
-    codeEditor.addEventListener('scroll', syncScroll);
-    codeEditor.addEventListener('paste', handlePaste);
+// ── State ──────────────────────────────────────────────────────────────────────
+let currentData           = null;
+let expandedStates        = {};
+let foldStates            = {};
+let foldHierarchy         = {};
+let rightPanelFoldStates  = {};
+let rightPanelFoldHierarchy = {};
+let expandedPanel         = null;
 
-    function handlePaste(e) {
-    e.preventDefault();
-    const text = e.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
+// ── DOM refs (assigned after DOM ready) ───────────────────────────────────────
+let codeEditor, lineNumbers, foldIconsEl,
+    rightCodeEditor, rightLineNumbers, rightFoldIcons,
+    rightEditorWrapper, rightTreeContent,
+    inputStatus, outputStatus,
+    formatTypeEl, viewTypeEl;
+
+// ── Init (called once DOM is ready) ──────────────────────────────────────────
+function initEditor() {
+  codeEditor        = document.getElementById('codeEditor');
+  lineNumbers       = document.getElementById('lineNumbers');
+  foldIconsEl       = document.getElementById('foldIcons');
+  rightCodeEditor   = document.getElementById('rightCodeEditor');
+  rightLineNumbers  = document.getElementById('rightLineNumbers');
+  rightFoldIcons    = document.getElementById('rightFoldIcons');
+  rightEditorWrapper= document.getElementById('rightEditorWrapper');
+  rightTreeContent  = document.getElementById('rightTreeContent');
+  inputStatus       = document.getElementById('inputStatus');
+  outputStatus      = document.getElementById('outputStatus');
+  formatTypeEl      = document.getElementById('formatType');
+  viewTypeEl        = document.getElementById('viewType');
+
+  if (!codeEditor) return;
+
+  codeEditor.addEventListener('input',  updateLineNumbers);
+  codeEditor.addEventListener('scroll', syncLeftScroll);
+  codeEditor.addEventListener('paste',  handlePaste);
+
+  if (rightCodeEditor) {
+    rightCodeEditor.addEventListener('scroll', syncRightScroll);
+    rightCodeEditor.addEventListener('input',  updateRightLineNumbers);
+  }
+
+  // CSV export button
+  const csvBtn = document.getElementById('downloadCsvBtn');
+  if (csvBtn) csvBtn.addEventListener('click', exportCSV);
+
+  updateLineNumbers();
+  showTreeView();
 }
 
-    function syncScroll() {
-    document.getElementById('lineNumbers').scrollTop = codeEditor.scrollTop;
-    document.getElementById('foldIcons').scrollTop = codeEditor.scrollTop;
+document.addEventListener('DOMContentLoaded', initEditor);
+
+// ── Scroll sync ───────────────────────────────────────────────────────────────
+function syncLeftScroll() {
+  if (lineNumbers)  lineNumbers.scrollTop  = codeEditor.scrollTop;
+  if (foldIconsEl)  foldIconsEl.scrollTop  = codeEditor.scrollTop;
 }
 
-    // Helper function to get text from contenteditable preserving line breaks
-    function getEditorText() {
-        // If editor has formatted code-line divs, extract from those
-        const codeLines = codeEditor.querySelectorAll('.code-line');
-        if (codeLines.length > 0) {
-            // Already formatted - get text from each code-line div
-            let text = '';
-            codeLines.forEach((line, index) => {
-                if (index > 0) text += '\n';
-                text += line.textContent;
-            });
-            console.log('Extracted from code-lines, count:', codeLines.length);
-            console.log('Text ends with newline:', text.endsWith('\n'));
-            return text;
-        }
-
-        // For plain text editing, we need to handle the contenteditable structure
-        // Different browsers handle contenteditable differently
-        let text = '';
-        const children = Array.from(codeEditor.childNodes);
-
-        console.log('Editor childNodes count:', children.length);
-        console.log('Editor innerHTML:', codeEditor.innerHTML);
-
-        if (children.length === 0) {
-            return '';
-        }
-
-        // If there's only one text node, return it
-        if (children.length === 1 && children[0].nodeType === Node.TEXT_NODE) {
-            return children[0].textContent;
-        }
-
-        // Process each child node
-        for (let i = 0; i < children.length; i++) {
-            const node = children[i];
-
-            if (node.nodeType === Node.TEXT_NODE) {
-                text += node.textContent;
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.nodeName === 'BR') {
-                    text += '\n';
-                } else if (node.nodeName === 'DIV') {
-                    // Add newline before div (except for first div)
-                    if (text.length > 0 && !text.endsWith('\n')) {
-                        text += '\n';
-                    }
-                    // Get text content of the div, including nested elements
-                    text += node.textContent || '';
-                }
-            }
-        }
-
-        console.log('Extracted text:', text);
-        console.log('Newlines found:', (text.match(/\n/g) || []).length);
-
-        return text;
-    }
-
-    function updateLineNumbers() {
-    // Count actual div.code-line elements if they exist (formatted view)
-    const codeLines = codeEditor.querySelectorAll('.code-line');
-
-    let lineCount;
-    if (codeLines.length > 0) {
-        // Formatted view - count the divs
-        lineCount = codeLines.length;
-    } else {
-        // Plain text view - count actual rendered lines
-        // Get the innerHTML and count line breaks more accurately
-        const content = codeEditor.innerHTML;
-
-        // Count <div> tags (created by Enter key in most browsers)
-        const divMatches = content.match(/<div[^>]*>/gi);
-        const divCount = divMatches ? divMatches.length : 0;
-
-        // Count <br> tags (created by Shift+Enter or in some browsers)
-        const brMatches = content.match(/<br[^>]*>/gi);
-        const brCount = brMatches ? brMatches.length : 0;
-
-        // If no divs or brs, check if there's any content
-        if (divCount === 0 && brCount === 0) {
-            // Single line or empty
-            const text = codeEditor.textContent || '';
-            lineCount = text ? 1 : 1;
-        } else {
-            // Count divs as lines, plus 1 for the first line (which isn't wrapped in a div)
-            // If there are any divs, the first line is outside any div
-            lineCount = divCount > 0 ? divCount + 1 : brCount + 1;
-        }
-    }
-
-    let numbers = '';
-    for (let i = 1; i <= lineCount; i++) {
-        numbers += i + '\n';
-    }
-    document.getElementById('lineNumbers').textContent = numbers;
-
-    if (Object.keys(foldHierarchy).length === 0) {
-        document.getElementById('foldIcons').innerHTML = '';
-    }
+function syncRightScroll() {
+  if (rightLineNumbers) rightLineNumbers.scrollTop = rightCodeEditor.scrollTop;
+  if (rightFoldIcons)   rightFoldIcons.scrollTop   = rightCodeEditor.scrollTop;
 }
 
-//     function toggleFold(foldId) {
-//     foldStates[foldId] = !foldStates[foldId];
-//
-//     const arrow = document.getElementById('arrow_' + foldId);
-//     if (foldStates[foldId]) {
-//     arrow.textContent = '▶';
-//     hideAllDescendants(foldId);
-// } else {
-//     arrow.textContent = '▼';
-//     showDirectChildren(foldId);
-// }
-// }
+// ── Paste (plain text only) ───────────────────────────────────────────────────
+function handlePaste(e) {
+  e.preventDefault();
+  const text = e.clipboardData.getData('text/plain');
+  document.execCommand('insertText', false, text);
+}
 
-    function hideAllDescendants(foldId) {
-    // Hide all direct children lines
-    document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => {
-        el.style.display = 'none';
+// ── Get raw text from left editor ─────────────────────────────────────────────
+function getEditorText() {
+  const lines = codeEditor.querySelectorAll('.code-line');
+  if (lines.length > 0) {
+    return Array.from(lines).map(l => l.textContent).join('\n');
+  }
+
+  const children = Array.from(codeEditor.childNodes);
+  if (children.length === 0) return '';
+  if (children.length === 1 && children[0].nodeType === Node.TEXT_NODE) {
+    return children[0].textContent;
+  }
+
+  let text = '';
+  children.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      text += node.textContent;
+    } else if (node.nodeName === 'BR') {
+      text += '\n';
+    } else if (node.nodeName === 'DIV') {
+      if (text.length && !text.endsWith('\n')) text += '\n';
+      text += node.textContent || '';
+    }
+  });
+  return text;
+}
+
+// ── Left panel line numbers ───────────────────────────────────────────────────
+function updateLineNumbers() {
+  if (!codeEditor || !lineNumbers) return;
+  const codeLines = codeEditor.querySelectorAll('.code-line');
+  let count;
+  if (codeLines.length > 0) {
+    count = codeLines.length;
+  } else {
+    const html = codeEditor.innerHTML;
+    const divs = (html.match(/<div[^>]*>/gi) || []).length;
+    const brs  = (html.match(/<br[^>]*>/gi)  || []).length;
+    count = (divs === 0 && brs === 0) ? 1 : (divs > 0 ? divs + 1 : brs + 1);
+  }
+  lineNumbers.textContent = Array.from({length: count}, (_, i) => i + 1).join('\n') + '\n';
+  if (!Object.keys(foldHierarchy).length && foldIconsEl) foldIconsEl.innerHTML = '';
+}
+
+// ── Right panel line numbers ──────────────────────────────────────────────────
+function updateRightLineNumbers() {
+  if (!rightLineNumbers || !rightCodeEditor) return;
+  const count = rightCodeEditor.querySelectorAll('.code-line').length;
+  rightLineNumbers.textContent = Array.from({length: count}, (_, i) => i + 1).join('\n') + '\n';
+}
+
+// ── Show / hide right panel modes ─────────────────────────────────────────────
+function showTextView() {
+  if (rightEditorWrapper) rightEditorWrapper.style.display = 'flex';
+  if (rightTreeContent)   rightTreeContent.style.display   = 'none';
+}
+
+function showTreeView() {
+  if (rightEditorWrapper) rightEditorWrapper.style.display = 'none';
+  if (rightTreeContent)   rightTreeContent.style.display   = 'block';
+}
+
+// ── Syntax highlight (JSON) ───────────────────────────────────────────────────
+function highlightSyntax(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g,  '<span class="key">"$1"</span>:')
+    .replace(/:\s*"([^"]*)"/g, ': <span class="string">"$1"</span>')
+    .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="number">$1</span>')
+    .replace(/:\s*(true|false)/g,  ': <span class="boolean">$1</span>')
+    .replace(/:\s*(null)/g,        ': <span class="null">$1</span>')
+    .replace(/([{}\[\]])/g,        '<span class="bracket">$1</span>')
+    .replace(/,(?![^"]*"(?:[^"]*"[^"]*")*[^"]*$)/g, '<span class="bracket">,</span>');
+}
+
+// ── Syntax highlight (XML) ────────────────────────────────────────────────────
+function highlightXMLLine(line) {
+  let r = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // processing instruction
+  r = r.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/g, (_,s,attrs,e) =>
+    `<span class="bracket">&lt;?</span><span class="xml-tag">xml</span> ` +
+    attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
+      '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>') +
+    ` <span class="bracket">?&gt;</span>`);
+  // opening tags
+  r = r.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g,
+    (_,lt,tag,attrs,slash,gt) => {
+      let h = `<span class="bracket">&lt;</span><span class="xml-tag">${tag}</span>`;
+      if (attrs.trim()) h += ' ' + attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
+        '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
+      if (slash) h += '<span class="bracket">/</span>';
+      return h + '<span class="bracket">&gt;</span>';
     });
-
-    // Recursively hide all nested folds
-    if (foldHierarchy[foldId]) {
-    foldHierarchy[foldId].forEach(childId => {
-    const childArrow = document.getElementById('arrow_' + childId);
-    if (childArrow) {
-    childArrow.style.display = 'none';
-}
-    hideAllDescendants(childId);
-});
-}
+  // closing tags
+  r = r.replace(/(&lt;\/)([\w:-]+)(&gt;)/g,
+    '<span class="bracket">&lt;/</span><span class="xml-tag">$2</span><span class="bracket">&gt;</span>');
+  // text nodes
+  r = r.replace(/(&gt;)([^&<]+)(&lt;)/g, (m, gt, content, lt) =>
+    content.trim() ? `${gt}<span class="xml-text">${content}</span>${lt}` : m);
+  return r;
 }
 
-    function showDirectChildren(foldId) {
-    // Show all direct children
-    document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => {
-        el.style.display = 'block';
-    });
+// ── Render colored code – left panel (no right-panel fold icons) ──────────────
+function renderColoredCode(json) {
+  const lines = json.split('\n');
+  let codeHtml = '', numbersHtml = '';
+  let fId = 0, stack = [];
+  foldHierarchy = {};
 
-    // Show direct child fold arrows
-    if (foldHierarchy[foldId]) {
-    foldHierarchy[foldId].forEach(childId => {
-    const childArrow = document.getElementById('arrow_' + childId);
-    if (childArrow) {
-    childArrow.style.display = 'block';
-}
-    // Don't show nested children if child is folded
-    if (!foldStates[childId]) {
-    showDirectChildren(childId);
-}
-});
-}
-}
-
-    function renderColoredCode(json) {
-    const lines = json.split('\n');
-    let codeHtml = '';
-    let numbersHtml = '';
-    let iconsHtml = '';
-    let foldId = 0;
-    let stack = [];
-    foldHierarchy = {};
-
-    lines.forEach((line, idx) => {
+  lines.forEach((line, idx) => {
     const trimmed = line.trim();
-    const indent = line.length - line.trimLeft().length;
-    const spaces = ' '.repeat(indent);
+    const indent  = line.length - line.trimStart().length;
+    const spaces  = ' '.repeat(indent);
     const lineNum = idx + 1;
+    const parent  = stack.length ? stack[stack.length - 1] : null;
 
-    const currentParent = stack.length > 0 ? stack[stack.length - 1] : null;
+    const parentAttr = parent ? ` data-parent="${parent}"` : '';
 
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-    const id = 'fold_' + (foldId++);
-    stack.push(id);
-
-    // Track hierarchy
-    if (currentParent) {
-    if (!foldHierarchy[currentParent]) {
-    foldHierarchy[currentParent] = [];
-}
-    foldHierarchy[currentParent].push(id);
-}
-
-    // Code line
-    if (currentParent) {
-    codeHtml += `<div class="code-line" data-parent="${currentParent}">${spaces}${highlightSyntax(trimmed)}</div>`;
-} else {
-    codeHtml += `<div class="code-line">${spaces}${highlightSyntax(trimmed)}</div>`;
-}
-
-    // Number line
-    if (currentParent) {
-    numbersHtml += `<div class="code-line" data-parent="${currentParent}">${lineNum}</div>`;
-} else {
-    numbersHtml += `<div class="code-line">${lineNum}</div>`;
-}
-
-    // Icon with fold arrow
-//     if (currentParent) {
-//     iconsHtml += `<div class="fold-arrow" data-parent="${currentParent}" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
-// } else {
-//     iconsHtml += `<div class="fold-arrow" id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
-// }
-
-} else if (trimmed === '}' || trimmed === '},' || trimmed === ']' || trimmed === '],') {
-    stack.pop();
-    const newParent = stack.length > 0 ? stack[stack.length - 1] : null;
-
-    if (newParent) {
-    codeHtml += `<div class="code-line" data-parent="${newParent}">${spaces}${highlightSyntax(trimmed)}</div>`;
-    numbersHtml += `<div class="code-line" data-parent="${newParent}">${lineNum}</div>`;
-    iconsHtml += `<div class="fold-arrow" data-parent="${newParent}"></div>`;
-} else {
-    codeHtml += `<div class="code-line">${spaces}${highlightSyntax(trimmed)}</div>`;
-    numbersHtml += `<div class="code-line">${lineNum}</div>`;
-    iconsHtml += `<div class="fold-arrow"></div>`;
-}
-} else {
-    if (currentParent) {
-    codeHtml += `<div class="code-line" data-parent="${currentParent}">${spaces}${highlightSyntax(trimmed)}</div>`;
-    numbersHtml += `<div class="code-line" data-parent="${currentParent}">${lineNum}</div>`;
-    iconsHtml += `<div class="fold-arrow" data-parent="${currentParent}"></div>`;
-} else {
-    codeHtml += `<div class="code-line">${spaces}${highlightSyntax(trimmed)}</div>`;
-    numbersHtml += `<div class="code-line">${lineNum}</div>`;
-    iconsHtml += `<div class="fold-arrow"></div>`;
-}
-}
-});
-
-    return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
-}
-
-    function highlightSyntax(text) {
-    return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
-    .replace(/:\s*"([^"]*)"/g, ': <span class="string">"$1"</span>')
-    .replace(/:\s*(\d+\.?\d*)/g, ': <span class="number">$1</span>')
-    .replace(/:\s*(true|false)/g, ': <span class="boolean">$1</span>')
-    .replace(/:\s*(null)/g, ': <span class="null">$1</span>')
-    .replace(/([{}\[\]])/g, '<span class="bracket">$1</span>')
-    .replace(/,(?![^"]*")/g, '<span class="bracket">,</span>');
-}
-
- // function highlightXMLLine(line) {
- //     let result = line
- //         .replace(/&/g, '&amp;')
- //         .replace(/</g, '&lt;')
- //         .replace(/>/g, '&gt;');
- //
- //     // XML declaration: <?xml ... ?>
- //     result = result.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/g, function(match, start, attrs, end) {
- //         let highlighted = '<span class="xml-tag">' + start + '</span>';
- //         highlighted += attrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
- //         highlighted += '<span class="xml-tag">' + end + '</span>';
- //         return highlighted;
- //     });
- //
- //     // Opening and self-closing tags
- //     result = result.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g, function(match, lt, tagName, attrs, slash, gt) {
- //         let highlighted = '<span class="bracket">&lt;</span><span class="xml-tag">' + tagName + '</span>';
- //         if (attrs.trim()) {
- //             highlighted += attrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, ' <span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
- //         }
- //         if (slash) {
- //             highlighted += '<span class="bracket">/</span>';
- //         }
- //         highlighted += '<span class="bracket">&gt;</span>';
- //         return highlighted;
- //     });
- //
- //     // Closing tags: </tagName>
- //     result = result.replace(/(&lt;\/)([\w:-]+)(&gt;)/g, '<span class="bracket">&lt;/</span><span class="xml-tag">$2</span><span class="bracket">&gt;</span>');
- //
- //     // Text content between tags
- //     result = result.replace(/(&gt;)([^&<]+)(&lt;)/g, function(match, gt, content, lt) {
- //         if (content.trim()) {
- //             return gt + '<span class="xml-text">' + content + '</span>' + lt;
- //         }
- //         return match;
- //     });
- //
- //     return result;
- // }
-
- // function highlightXMLLine(line) {
- //     let result = line
- //         .replace(/&/g, '&amp;')
- //         .replace(/</g, '&lt;')
- //         .replace(/>/g, '&gt;');
- //
- //     // XML declaration: <?xml ... ?>
- //     result = result.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/g, function(match, start, attrs, end) {
- //         let highlighted = '<span class="xml-tag">' + start + '</span>';
- //         highlighted += attrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span> ');
- //         highlighted += '<span class="xml-tag">' + end + '</span>';
- //         return highlighted;
- //     });
- //
- //     // Opening and self-closing tags
- //     result = result.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g, function(match, lt, tagName, attrs, slash, gt) {
- //         let highlighted = '<span class="bracket">&lt;</span><span class="xml-tag">' + tagName + '</span>';
- //         if (attrs.trim()) {
- //             // Clean up and format attributes properly
- //             const cleanAttrs = attrs.trim().replace(/\s+/g, ' ');
- //             highlighted += ' ' + cleanAttrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
- //         }
- //         if (slash) {
- //             highlighted += '<span class="bracket">/</span>';
- //         }
- //         highlighted += '<span class="bracket">&gt;</span>';
- //         return highlighted;
- //     });
- //
- //     // Closing tags: </tagName>
- //     result = result.replace(/(&lt;\/)([\w:-]+)(&gt;)/g, '<span class="bracket">&lt;/</span><span class="xml-tag">$2</span><span class="bracket">&gt;</span>');
- //
- //     // Text content between tags
- //     result = result.replace(/(&gt;)([^&<]+)(&lt;)/g, function(match, gt, content, lt) {
- //         if (content.trim()) {
- //             return gt + '<span class="xml-text">' + content + '</span>' + lt;
- //         }
- //         return match;
- //     });
- //
- //     return result;
- // }
- function validateXML(xml) {
-     const parser = new DOMParser();
-     const doc = parser.parseFromString(xml, 'text/xml');
-
-     // Check for parsing errors
-     const parseError = doc.querySelector('parsererror');
-     if (parseError) {
-         return {
-             valid: false,
-             error: parseError.textContent || 'XML syntax error'
-         };
-     }
-
-     // Check for unclosed tags manually
-     const openTags = [];
-     const tagRegex = /<\/?[\w:-]+[^>]*>/g;
-     const matches = xml.match(tagRegex);
-
-     if (matches) {
-         for (let tag of matches) {
-             if (tag.startsWith('<?') || tag.startsWith('<!')) continue; // Skip declarations
-             if (tag.endsWith('/>')) continue; // Skip self-closing
-
-             const tagName = tag.match(/<\/?([^\s>]+)/)[1];
-
-             if (tag.startsWith('</')) {
-                 // Closing tag
-                 if (openTags.length === 0 || openTags[openTags.length - 1] !== tagName) {
-                     return {
-                         valid: false,
-                         error: `Missing opening tag for </${tagName}>`
-                     };
-                 }
-                 openTags.pop();
-             } else {
-                 // Opening tag
-                 openTags.push(tagName);
-             }
-         }
-     }
-
-     if (openTags.length > 0) {
-         return {
-             valid: false,
-             error: `Missing closing tag for <${openTags[openTags.length - 1]}>`
-         };
-     }
-
-     return { valid: true };
- }
-
- function highlightXMLLine(line) {
-     let result = line
-         .replace(/&/g, '&amp;')
-         .replace(/</g, '&lt;')
-         .replace(/>/g, '&gt;');
-
-     // XML declaration: <?xml ... ?>
-     // result = result.replace(/(&lt;\?xml)(\s+.*?)(\?&gt;)/g, function(match, start, attrs, end) {
-     //     let highlighted = '<span class="bracket">&lt;?</span><span class="xml-tag">xml</span>';
-     //     if (attrs.trim()) {
-     //         const formattedAttrs = attrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, ' <span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
-     //         highlighted += formattedAttrs;
-     //     }
-     //     highlighted += '<span class="bracket">?&gt;</span>';
-     //     return highlighted;
-     // });
-     result = result.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/g, function(match, start, attrs, end) {
-         let highlighted = '<span class="bracket">&lt;?</span><span class="xml-tag">xml</span> ';
-         const formattedAttrs = attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
-         highlighted += formattedAttrs;
-         highlighted += ' <span class="bracket">?&gt;</span>';
-         return highlighted;
-     });
-
-     // Opening and self-closing tags
-     result = result.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g, function(match, lt, tagName, attrs, slash, gt) {
-         let highlighted = '<span class="bracket">&lt;</span><span class="xml-tag">' + tagName + '</span>';
-         if (attrs.trim()) {
-             const cleanAttrs = attrs.trim();
-             highlighted += ' ' + cleanAttrs.replace(/([\w:-]+)\s*=\s*"([^"]*)"/g, '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
-         }
-         if (slash) {
-             highlighted += '<span class="bracket">/</span>';
-         }
-         highlighted += '<span class="bracket">&gt;</span>';
-         return highlighted;
-     });
-
-     // Closing tags: </tagName>
-     result = result.replace(/(&lt;\/)([\w:-]+)(&gt;)/g, '<span class="bracket">&lt;/</span><span class="xml-tag">$2</span><span class="bracket">&gt;</span>');
-
-     // Text content between tags
-     result = result.replace(/(&gt;)([^&<]+)(&lt;)/g, function(match, gt, content, lt) {
-         if (content.trim()) {
-             return gt + '<span class="xml-text">' + content + '</span>' + lt;
-         }
-         return match;
-     });
-     // XML declaration: <?xml ... ?>
-
-
-     return result;
- }
-    function formatCode(isConverterReq,data,convertedTye) {
-        let input;
-        let type;
-        if(isConverterReq){
-           input=data;
-           type=convertedTye;
-        }else{
-            // Get text content preserving line breaks from contenteditable
-            input = getEditorText();
-            console.log('Input text for parsing:', input);
-            console.log('Input length:', input.length);
-            console.log('Newlines in input:', (input.match(/\n/g) || []).length);
-            type = document.getElementById('formatType').value;
-        }
-    const inputStatus = document.getElementById('inputStatus');
-
-    if (!input) {
-    return;
-}
-
-    try {
-    if (type === 'json') {
-    let parsed = JSON.parse(input);
-    currentData = parsed;
-        if (typeof parsed === "string") {
-            parsed = JSON.parse(parsed);
-        }
-    const formatted = JSON.stringify(parsed, null, 2);
-
-    const rendered = renderColoredCode(formatted);
-    codeEditor.innerHTML = rendered.code;
-    document.getElementById('lineNumbers').innerHTML = rendered.numbers;
-    // document.getElementById('foldIcons').innerHTML = rendered.icons;
-
-    foldStates = {};
-    renderTree(parsed);
-
-    inputStatus.innerHTML = '<span class="success">✓ JSON formatted successfully!</span>';
-    document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view generated</span>';
-} else if(type === 'xml'){
-        if(input.startsWith('"{') || input.startsWith('{') || input.startsWith('[') || input.startsWith('"[')){
-            document.getElementById('treeView').innerHTML = '<span class="error">Invalid XML</span>';
-        return;
-        }
-        const validation = validateXML(input);
-        const formatted = formatXML(input);
-    // codeEditor.textContent = formatted;
-        const lines = formatted.split('\n');let codeHtml = '';
-        let numbersHtml = '';
-        lines.forEach((line, idx) => {
-            const highlighted = highlightXMLLine(line);  // ← YE CALL
-            codeHtml += `<div class="code-line">${highlighted}</div>`;
-            numbersHtml += `<div class="code-line">${idx + 1}</div>`;
-        });
-        codeEditor.innerHTML = codeHtml;  // ← YE IMPORTANT
-        document.getElementById('lineNumbers').innerHTML = numbersHtml;
-        document.getElementById('foldIcons').innerHTML = '';
-        foldHierarchy = {};
-
-    // updateLineNumbers();
-    // foldHierarchy = {};
-    // document.getElementById('foldIcons').innerHTML = '';
-    const parsed = parseXMLToObject(input);
-    currentData = parsed;
-    renderTree(parsed);
-        if (!validation.valid) {
-            inputStatus.innerHTML = `<span style="color: #ff6b6b">✗ ${validation.error}</span>`;
-            document.getElementById('treeView').innerHTML = `<div class="error">${validation.error}</div>`;
-            // document.getElementById('outputStatus').innerHTML = '<span class="error">${validation.error}</span>';
-            return;
-        }
-    inputStatus.innerHTML = '<span class="success">✓ XML formatted successfully!</span>';
-    document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view generated</span>';
-} else{
-    codeEditor.innerHTML = input;
-    document.getElementById('treeView').innerHTML = input;
-}
-} catch (e) {
-    let errorMsg = e.message;
-
-    // Enhanced error reporting: calculate actual line/column from character position
-    const positionMatch = errorMsg.match(/at position (\d+)/);
-    if (positionMatch && input) {
-        const errorPosition = parseInt(positionMatch[1]);
-
-        // Count actual lines up to the error position
-        const textBeforeError = input.substring(0, errorPosition);
-        const lines = textBeforeError.split('\n');
-        const actualLineNumber = lines.length; // This is correct - number of lines up to error
-        const actualColumnNumber = lines[lines.length - 1].length + 1;
-
-        // Show the character at error position and surrounding context
-        const charAtError = input.charAt(errorPosition);
-        const contextStart = Math.max(0, errorPosition - 30);
-        const contextEnd = Math.min(input.length, errorPosition + 30);
-        const context = input.substring(contextStart, contextEnd);
-
-        console.log('Error position:', errorPosition);
-        console.log('Character at error position:', JSON.stringify(charAtError));
-        console.log('Context (30 chars before and after):', JSON.stringify(context));
-        console.log('Text before error (last 50 chars):', JSON.stringify(textBeforeError.slice(-50)));
-        console.log('Lines array length:', lines.length);
-        console.log('Last line content:', JSON.stringify(lines[lines.length - 1]));
-        console.log('Calculated line number:', actualLineNumber);
-        console.log('Calculated column number:', actualColumnNumber);
-
-        // Analyze what's missing based on the error message
-        let suggestion = '';
-        if (errorMsg.includes("Expected ','")) {
-            suggestion = ' → Missing comma after the previous property';
-        } else if (errorMsg.includes("Expected '}'")) {
-            suggestion = ' → Missing closing brace }';
-        } else if (errorMsg.includes("Expected ']'")) {
-            suggestion = ' → Missing closing bracket ]';
-        } else if (errorMsg.includes("Expected ':'")) {
-            suggestion = ' → Missing colon after property name';
-        } else if (errorMsg.includes("Expected double-quoted property name")) {
-            suggestion = ' → Property name must be in double quotes';
-        } else if (errorMsg.includes("Unexpected token")) {
-            suggestion = ' → Unexpected character found';
-        }
-
-        // Replace the line and column numbers in the error message
-        errorMsg = errorMsg.replace(/\(line \d+ column \d+\)/, `(line ${actualLineNumber} column ${actualColumnNumber})`);
-
-        // Build detailed error display
-        const lineContent = lines[lines.length - 1];
-        const previousLine = lines.length > 1 ? lines[lines.length - 2] : '';
-
-        // Create visual pointer
-        const pointer = ' '.repeat(actualColumnNumber - 1) + '↑';
-
-        // Add to error message
-        errorMsg += suggestion;
-
-        // Log detailed error info to console
-        console.log('\n=== ERROR DETAILS ===');
-        if (previousLine) {
-            console.log(`Line ${actualLineNumber - 1}: ${previousLine}`);
-        }
-        console.log(`Line ${actualLineNumber}: ${lineContent}`);
-        console.log(`            ${pointer} Error here`);
-        console.log('Suggestion:', suggestion || 'Check syntax');
-        console.log('===================\n');
-
-        // Also show in the tree view
-        let detailedError = `<div class="error">
-            <strong>Parse Error on Line ${actualLineNumber}:</strong><br><br>
-            ${errorMsg}<br><br>
-            <strong>Problem area:</strong><br>
-            <code style="display:block; background:#2a2a2a; padding:10px; margin:10px 0; font-family:monospace;">`;
-
-        if (previousLine) {
-            detailedError += `Line ${actualLineNumber - 1}: ${escapeHtml(previousLine)}<br>`;
-        }
-        detailedError += `Line ${actualLineNumber}: ${escapeHtml(lineContent)}<br>`;
-        detailedError += `            ${pointer.replace(/ /g, '&nbsp;')} <span style="color:#ff6b6b">Error here</span>`;
-        detailedError += `</code>`;
-
-        if (suggestion) {
-            detailedError += `<br><strong>Fix:</strong> ${suggestion.substring(4)}`;
-        }
-
-        detailedError += `</div>`;
-
-        document.getElementById('treeView').innerHTML = detailedError;
-        inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + errorMsg + '</span>';
-        return; // Exit early since we've handled the display
+      const id = 'fold_' + (fId++);
+      stack.push(id);
+      if (parent) {
+        if (!foldHierarchy[parent]) foldHierarchy[parent] = [];
+        foldHierarchy[parent].push(id);
+      }
+      codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
+      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
+    } else if (/^[}\]],?$/.test(trimmed)) {
+      stack.pop();
+      const newParent = stack.length ? stack[stack.length - 1] : null;
+      const np = newParent ? ` data-parent="${newParent}"` : '';
+      codeHtml    += `<div class="code-line"${np}>${spaces}${highlightSyntax(trimmed)}</div>`;
+      numbersHtml += `<div class="code-line"${np}>${lineNum}</div>`;
+    } else {
+      codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
+      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
     }
+  });
 
-    inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + errorMsg + '</span>';
-    document.getElementById('treeView').innerHTML = '<div class="error">Parse Error: ' + errorMsg + '</div>';
+  return { code: codeHtml, numbers: numbersHtml };
 }
 
-// Helper function to escape HTML
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-}
+// ── Render colored code with fold icons – right panel Text View ───────────────
+function renderColoredCodeWithFolds(text) {
+  const lines  = text.split('\n');
+  const isXML  = text.trimStart().startsWith('<');
+  let codeHtml = '', numbersHtml = '', iconsHtml = '';
+  let fId = 0, stack = [];
+  rightPanelFoldHierarchy = {};
 
-    function minifyCode() {
-    const input = getEditorText();
-    const type = document.getElementById('formatType').value;
-    const inputStatus = document.getElementById('inputStatus');
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    const indent  = line.length - line.trimStart().length;
+    const spaces  = ' '.repeat(indent);
+    const lineNum = idx + 1;
+    const parent  = stack.length ? stack[stack.length - 1] : null;
+    const parentAttr = parent ? ` data-right-parent="${parent}"` : '';
 
-    if (!input) {
-    inputStatus.innerHTML = '<span class="warning">Please enter some code first!</span>';
-    return;
-}
+    // For XML: use XML highlighter on full line (preserves indentation);
+    // For JSON: use JSON highlighter on trimmed line + manual indent
+    const highlighted = isXML ? highlightXMLLine(line) : spaces + highlightSyntax(trimmed);
 
-    try {
-    if (type === 'json') {
-    const parsed = JSON.parse(input);
-    const minified = JSON.stringify(parsed);
-    codeEditor.textContent = minified;
-    foldHierarchy = {};
-    document.getElementById('foldIcons').innerHTML = '';
-    updateLineNumbers();
+    // Only JSON gets fold tracking (XML fold is complex, skip for now)
+    const hasBrace = !isXML && (trimmed.startsWith('{') || trimmed.startsWith('[') ||
+                                trimmed.includes('{')   || trimmed.includes('['));
 
-    currentData = parsed;
-    renderTree(parsed);
+    if (hasBrace) {
+      const id = 'right_fold_' + (fId++);
+      stack.push(id);
+      if (parent) {
+        if (!rightPanelFoldHierarchy[parent]) rightPanelFoldHierarchy[parent] = [];
+        rightPanelFoldHierarchy[parent].push(id);
+      }
+      codeHtml    += `<div class="code-line"${parentAttr}>${highlighted}</div>`;
+      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${parentAttr} id="right_arrow_${id}" onclick="toggleRightPanelFold('${id}')">▼</div>`;
+    } else if (!isXML && /^[}\]],?$/.test(trimmed)) {
+      stack.pop();
+      const newParent = stack.length ? stack[stack.length - 1] : null;
+      const np = newParent ? ` data-right-parent="${newParent}"` : '';
+      codeHtml    += `<div class="code-line"${np}>${highlighted}</div>`;
+      numbersHtml += `<div class="code-line"${np}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${np}></div>`;
+    } else {
+      codeHtml    += `<div class="code-line"${parentAttr}>${highlighted}</div>`;
+      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${parentAttr}></div>`;
+    }
+  });
 
-    inputStatus.innerHTML = '<span class="success">✓ JSON minified successfully!</span>';
-    document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view updated</span>';
-} else {
-    const minified = input.replace(/>\s+</g, '><').trim();
-    codeEditor.textContent = minified;
-    foldHierarchy = {};
-    document.getElementById('foldIcons').innerHTML = '';
-    updateLineNumbers();
-    inputStatus.innerHTML = '<span class="success">✓ XML minified successfully!</span>';
-}
-} catch (e) {
-    inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Error: ' + e.message + '</span>';
-}
-}
-
-    function repairCode() {
-    const input = getEditorText();
-    const type = document.getElementById('formatType').value;
-    const inputStatus = document.getElementById('inputStatus');
-
-    if (!input) {
-    inputStatus.innerHTML = '<span class="warning">Please enter some code first!</span>';
-    return;
+  return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
 }
 
-    try {
-    if (type === 'json') {
-    let repaired = input
-    .replace(/,(\s*[}\]])/g, '$1')
-    .replace(/([{,]\s*)(\w+)(\s*):/g, '$1"$2"$3:')
-    .replace(/'([^']*)'/g, '"$1"');
-
-    const parsed = JSON.parse(repaired);
-    const formatted = JSON.stringify(parsed, null, 2);
-
-    const rendered = renderColoredCode(formatted);
-    codeEditor.innerHTML = rendered.code;
-    document.getElementById('lineNumbers').innerHTML = rendered.numbers;
-    document.getElementById('foldIcons').innerHTML = rendered.icons;
-
-    foldStates = {};
-    currentData = parsed;
-    renderTree(parsed);
-
-    inputStatus.innerHTML = '<span class="success">✓ JSON repaired and formatted!</span>';
-    document.getElementById('outputStatus').innerHTML = '<span class="success">✓ Tree view updated</span>';
-} else {
-    const formatted = formatXML(input);
-    // codeEditor.textContent = formatted;
-    // updateLineNumbers();
-        const lines = formatted.split('\n');let codeHtml = '';
-        let numbersHtml = '';
-        // lines.forEach((line, idx) => {
-        //     const highlighted = highlightXMLLine(line);  // ← YE CALL
-        //     codeHtml += `<div class="code-line">${highlighted}</div>`;
-        //     numbersHtml += `<div class="code-line">${idx + 1}</div>`;
-        // });
-        lines.forEach((line, idx) => {
-            // Get indentation
-            const indent = line.length - line.trimLeft().length;
-            const spaces = '&nbsp;'.repeat(indent);  // Non-breaking spaces for HTML
-            const trimmedLine = line.trim();
-
-            const highlighted = highlightXMLLine(trimmedLine);
-            codeHtml += `<div class="code-line">${spaces}${highlighted}</div>`;
-            numbersHtml += `<div class="code-line">${idx + 1}</div>`;
-        });
-
-
-        codeEditor.innerHTML = codeHtml;  // ← YE IMPORTANT
-        document.getElementById('lineNumbers').innerHTML = numbersHtml;
-        document.getElementById('foldIcons').innerHTML = '';
-        foldHierarchy = {};
-    inputStatus.innerHTML = '<span class="success">✓ XML repaired and formatted!</span>';
-}
-} catch (e) {
-    inputStatus.innerHTML = '<span style="color: #ff6b6b">✗ Could not repair: ' + e.message + '</span>';
-}
+// ── Populate right panel Text View ────────────────────────────────────────────
+function populateTextView(formatted) {
+  const r = renderColoredCodeWithFolds(formatted);
+  rightFoldIcons.innerHTML   = r.icons;
+  rightLineNumbers.innerHTML = r.numbers;
+  rightCodeEditor.innerHTML  = r.code;
+  rightPanelFoldStates = {};
+  showTextView();
 }
 
-    function formatXML(xml) {
-    let formatted = '';
-    let indent = '';
-    xml.split(/>\s*</).forEach(function(node) {
+// ── Left panel fold ───────────────────────────────────────────────────────────
+function toggleFold(foldId) {
+  foldStates[foldId] = !foldStates[foldId];
+  const arrow = document.getElementById('arrow_' + foldId);
+  if (foldStates[foldId]) {
+    arrow.textContent = '▶';
+    hideAllDescendants(foldId);
+  } else {
+    arrow.textContent = '▼';
+    showDirectChildren(foldId);
+  }
+}
+
+function hideAllDescendants(foldId) {
+  document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => el.style.display = 'none');
+  (foldHierarchy[foldId] || []).forEach(childId => {
+    const a = document.getElementById('arrow_' + childId);
+    if (a) a.style.display = 'none';
+    hideAllDescendants(childId);
+  });
+}
+
+function showDirectChildren(foldId) {
+  document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => el.style.display = 'block');
+  (foldHierarchy[foldId] || []).forEach(childId => {
+    const a = document.getElementById('arrow_' + childId);
+    if (a) a.style.display = 'block';
+    if (!foldStates[childId]) showDirectChildren(childId);
+  });
+}
+
+// ── Right panel fold ──────────────────────────────────────────────────────────
+function toggleRightPanelFold(foldId) {
+  rightPanelFoldStates[foldId] = !rightPanelFoldStates[foldId];
+  const arrow = document.getElementById('right_arrow_' + foldId);
+  if (rightPanelFoldStates[foldId]) {
+    arrow.textContent = '▶';
+    hideRightDescendants(foldId);
+  } else {
+    arrow.textContent = '▼';
+    showRightDirectChildren(foldId);
+  }
+}
+
+function hideRightDescendants(foldId) {
+  document.querySelectorAll(`[data-right-parent="${foldId}"]`).forEach(el => el.style.display = 'none');
+  (rightPanelFoldHierarchy[foldId] || []).forEach(childId => {
+    const a = document.getElementById('right_arrow_' + childId);
+    if (a) a.style.display = 'none';
+    hideRightDescendants(childId);
+  });
+}
+
+function showRightDirectChildren(foldId) {
+  document.querySelectorAll(`[data-right-parent="${foldId}"]`).forEach(el => el.style.display = 'block');
+  (rightPanelFoldHierarchy[foldId] || []).forEach(childId => {
+    const a = document.getElementById('right_arrow_' + childId);
+    if (a) a.style.display = 'block';
+    if (!rightPanelFoldStates[childId]) showRightDirectChildren(childId);
+  });
+}
+
+// ── XML utilities ─────────────────────────────────────────────────────────────
+function formatXML(xml) {
+  let formatted = '', indent = '';
+  xml.split(/>\s*</).forEach(node => {
     if (node.match(/^\/\w/)) indent = indent.substring(2);
     formatted += indent + '<' + node + '>\n';
-    if (node.match(/^<?\w[^>]*[^\/]$/)) indent += '  ';
-});
-    return formatted.substring(1, formatted.length - 2);
+    if (node.match(/^<?\w[^>]*[^\/]$/) && !node.match(/^!/) && !node.match(/^\?/)) indent += '  ';
+  });
+  return formatted.substring(1, formatted.length - 2);
 }
 
-    function parseXMLToObject(xml) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'text/xml');
+function validateXML(xml) {
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  const err = doc.querySelector('parsererror');
+  if (err) return { valid: false, error: err.textContent || 'XML syntax error' };
 
-    function xmlToJson(node) {
+  const openTags = [];
+  const tagRegex = /<\/?[\w:-]+[^>]*>/g;
+  for (const tag of xml.match(tagRegex) || []) {
+    if (tag.startsWith('<?') || tag.startsWith('<!') || tag.endsWith('/>')) continue;
+    const name = tag.match(/<\/?([^\s>]+)/)[1];
+    if (tag.startsWith('</')) {
+      if (!openTags.length || openTags[openTags.length-1] !== name)
+        return { valid: false, error: `Missing opening tag for </${name}>` };
+      openTags.pop();
+    } else {
+      openTags.push(name);
+    }
+  }
+  if (openTags.length) return { valid: false, error: `Missing closing tag for <${openTags[openTags.length-1]}>` };
+  return { valid: true };
+}
+
+function parseXMLToObject(xml) {
+  const doc = new DOMParser().parseFromString(xml, 'text/xml');
+  function xmlToJson(node) {
     if (node.nodeType === 3) return node.nodeValue.trim();
     let obj = {};
-    if (node.attributes && node.attributes.length > 0) {
-    for (let i = 0; i < node.attributes.length; i++) {
-    obj['@' + node.attributes[i].name] = node.attributes[i].value;
-}
-}
-    if (node.hasChildNodes()) {
-    for (let i = 0; i < node.childNodes.length; i++) {
-    const child = node.childNodes[i];
-    const name = child.nodeName;
-    if (child.nodeType === 3) {
-    const text = child.nodeValue.trim();
-    if (text) return text;
-} else {
-    if (typeof obj[name] === 'undefined') {
-    obj[name] = xmlToJson(child);
-} else {
-    if (!Array.isArray(obj[name])) obj[name] = [obj[name]];
-    obj[name].push(xmlToJson(child));
-}
-}
-}
-}
+    if (node.attributes) {
+      for (let a of node.attributes) obj['@' + a.name] = a.value;
+    }
+    for (let child of node.childNodes) {
+      if (child.nodeType === 3) {
+        const t = child.nodeValue.trim();
+        if (t) return t;
+      } else {
+        const n = child.nodeName;
+        if (obj[n] === undefined) obj[n] = xmlToJson(child);
+        else { if (!Array.isArray(obj[n])) obj[n] = [obj[n]]; obj[n].push(xmlToJson(child)); }
+      }
+    }
     return obj;
-}
-    return { [doc.documentElement.nodeName]: xmlToJson(doc.documentElement) };
+  }
+  return { [doc.documentElement.nodeName]: xmlToJson(doc.documentElement) };
 }
 
-    function renderTree(data) {
-    const treeView = document.getElementById('treeView');
-    treeView.innerHTML = '';
+// ── Tree render ───────────────────────────────────────────────────────────────
+function renderTree(data) {
+  showTreeView();
+  rightTreeContent.innerHTML = '';
 
-    function renderNode(obj, parent, key = 'root', level = 0, path = '') {
+  function renderNode(obj, parent, key, level, path) {
     const nodeId = path + '_' + key;
 
     if (Array.isArray(obj)) {
-    const count = obj.length;
-    const isExpanded = expandedStates[nodeId] !== false;
+      const isExp = expandedStates[nodeId] !== false;
+      const line  = makeTreeLine(level);
+      const toggle = span('tree-expand', isExp ? '▼' : '▶');
+      toggle.onclick = () => { expandedStates[nodeId] = !isExp; renderTree(currentData); };
+      line.appendChild(toggle);
+      line.appendChild(span('tree-key', key));
+      line.appendChild(text(' : ['));
+      line.appendChild(span('tree-count', obj.length + ' items'));
+      line.appendChild(text(']'));
+      parent.appendChild(line);
+      if (isExp) obj.forEach((item, i) => renderNode(item, parent, String(i), level+1, nodeId));
 
-    const toggle = document.createElement('span');
-    toggle.className = 'tree-expand';
-    toggle.textContent = isExpanded ? '▼' : '▶';
-    toggle.onclick = function() {
-    expandedStates[nodeId] = !isExpanded;
-    renderTree(currentData);
-};
+    } else if (obj !== null && typeof obj === 'object') {
+      const keys = Object.keys(obj);
+      const isExp = expandedStates[nodeId] !== false;
+      const line  = makeTreeLine(level);
+      const toggle = span('tree-expand', isExp ? '▼' : '▶');
+      toggle.onclick = () => { expandedStates[nodeId] = !isExp; renderTree(currentData); };
+      line.appendChild(toggle);
+      line.appendChild(span('tree-key', key));
+      line.appendChild(text(' : {'));
+      line.appendChild(span('tree-count', keys.length + ' props'));
+      line.appendChild(text('}'));
+      parent.appendChild(line);
+      if (isExp) keys.forEach(k => renderNode(obj[k], parent, k, level+1, nodeId));
 
-    const line = document.createElement('div');
-    line.style.marginLeft = (level * 20) + 'px';
-    line.appendChild(toggle);
+    } else {
+      const line = makeTreeLine(level);
+      line.appendChild(text('  '));
+      line.appendChild(span('tree-key', key));
+      line.appendChild(text(' : '));
+      let cls = 'tree-null', val = 'null';
+      if      (typeof obj === 'string')  { cls = 'tree-string';  val = `"${obj}"`; }
+      else if (typeof obj === 'number')  { cls = 'tree-number';  val = String(obj); }
+      else if (typeof obj === 'boolean') { cls = 'tree-boolean'; val = String(obj); }
+      line.appendChild(span(cls, val));
+      parent.appendChild(line);
+    }
+  }
 
-    const keySpan = document.createElement('span');
-    keySpan.className = 'tree-key';
-    keySpan.textContent = key;
-    line.appendChild(keySpan);
+  function makeTreeLine(level) {
+    const d = document.createElement('div');
+    d.style.marginLeft = (level * 20) + 'px';
+    return d;
+  }
+  function span(cls, txt) {
+    const s = document.createElement('span');
+    s.className = cls; s.textContent = txt; return s;
+  }
+  function text(t) { return document.createTextNode(t); }
 
-    line.appendChild(document.createTextNode(' : ['));
-
-    const countSpan = document.createElement('span');
-    countSpan.className = 'tree-count';
-    countSpan.textContent = count + ' items';
-    line.appendChild(countSpan);
-
-    line.appendChild(document.createTextNode(' ]'));
-    parent.appendChild(line);
-
-    if (isExpanded) {
-    obj.forEach((item, index) => {
-    renderNode(item, parent, index.toString(), level + 1, nodeId);
-});
-}
-} else if (typeof obj === 'object' && obj !== null) {
-    const keys = Object.keys(obj);
-    const count = keys.length;
-    const isExpanded = expandedStates[nodeId] !== false;
-
-    const toggle = document.createElement('span');
-    toggle.className = 'tree-expand';
-    toggle.textContent = isExpanded ? '▼' : '▶';
-    toggle.onclick = function() {
-    expandedStates[nodeId] = !isExpanded;
-    renderTree(currentData);
-};
-
-    const line = document.createElement('div');
-    line.style.marginLeft = (level * 20) + 'px';
-    line.appendChild(toggle);
-
-    const keySpan = document.createElement('span');
-    keySpan.className = 'tree-key';
-    keySpan.textContent = key;
-    line.appendChild(keySpan);
-
-    line.appendChild(document.createTextNode(' : {'));
-
-    const countSpan = document.createElement('span');
-    countSpan.className = 'tree-count';
-    countSpan.textContent = count + ' props';
-    line.appendChild(countSpan);
-
-    line.appendChild(document.createTextNode(' }'));
-    parent.appendChild(line);
-
-    if (isExpanded) {
-    keys.forEach(k => {
-    renderNode(obj[k], parent, k, level + 1, nodeId);
-});
-}
-} else {
-    const line = document.createElement('div');
-    line.style.marginLeft = (level * 20) + 'px';
-    line.textContent = '  ';
-
-    const keySpan = document.createElement('span');
-    keySpan.className = 'tree-key';
-    keySpan.textContent = key;
-    line.appendChild(keySpan);
-
-    line.appendChild(document.createTextNode(' : '));
-
-    const valueSpan = document.createElement('span');
-    if (typeof obj === 'string') {
-    valueSpan.className = 'tree-string';
-    valueSpan.textContent = '"' + obj + '"';
-} else if (typeof obj === 'number') {
-    valueSpan.className = 'tree-number';
-    valueSpan.textContent = obj;
-} else if (typeof obj === 'boolean') {
-    valueSpan.className = 'tree-boolean';
-    valueSpan.textContent = obj;
-} else if (obj === null) {
-    valueSpan.className = 'tree-null';
-    valueSpan.textContent = 'null';
-}
-    line.appendChild(valueSpan);
-    parent.appendChild(line);
-}
+  renderNode(data, rightTreeContent, 'root', 0, '');
 }
 
-    renderNode(data, treeView);
+// ── Format code (main entry) ──────────────────────────────────────────────────
+function formatCode(isConverterReq, data, convertedType, isFromSample,autoformat) {
+  let input = isConverterReq ? data : getEditorText();
+  let type  = isConverterReq ? convertedType : (formatTypeEl ? formatTypeEl.value : 'json');
+  const viewType = viewTypeEl ? viewTypeEl.value : 'tree';
+
+  if (!input || !input.trim()) return;
+
+  try {
+    if (type === 'json') {
+      let parsed = JSON.parse(input);
+      currentData = parsed;
+      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+      const formatted = JSON.stringify(parsed, null, 2);
+
+      // Only update the LEFT editor when formatting in-place (not a conversion result)
+      if ((!isConverterReq || isFromSample) && !autoformat) {
+        const rendered = renderColoredCode(formatted);
+        codeEditor.innerHTML  = rendered.code;
+        lineNumbers.innerHTML = rendered.numbers;
+        foldStates = {};
+      }
+
+      // Conversions show as colored text view; direct format respects viewType
+      if (isConverterReq && !isFromSample) {
+        populateTextView(formatted);
+      } else if (viewType === 'tree') {
+        renderTree(parsed);
+      } else {
+        populateTextView(formatted);
+      }
+
+      setStatus(inputStatus, true, '✓ JSON formatted successfully!');
+      setStatus(outputStatus, true, '✓ View generated');
+
+    } else if (type === 'xml') {
+      if (/^["']?[{[]/.test(input.trim())) {
+        showTreeView();
+        rightTreeContent.innerHTML = '<span class="error">Invalid XML — looks like JSON.</span>';
+        return;
+      }
+      const validation = validateXML(input);
+      const formatted  = formatXML(input);
+      const lines      = formatted.split('\n');
+      let codeHtml = '', numbersHtml = '';
+      lines.forEach((line, idx) => {
+        codeHtml    += `<div class="code-line">${highlightXMLLine(line)}</div>`;
+        numbersHtml += `<div class="code-line">${idx + 1}</div>`;
+      });
+
+      if (isFromSample || !isConverterReq) {
+        codeEditor.innerHTML  = codeHtml;
+        lineNumbers.innerHTML = numbersHtml;
+        foldIconsEl.innerHTML = '';
+        foldHierarchy = {};
+      }
+
+      const parsed = parseXMLToObject(input);
+      currentData = parsed;
+
+      // Conversions show as colored text view; direct format respects viewType
+      if (isConverterReq && !isFromSample) {
+        populateTextView(formatted);
+      } else if (viewType === 'tree') {
+        renderTree(parsed);
+      } else {
+        populateTextView(formatted);
+      }
+
+      if (!validation.valid) {
+        setStatus(inputStatus, false, '✗ ' + validation.error);
+        showTreeView();
+        rightTreeContent.innerHTML = `<div class="error">${escapeHtml(validation.error)}</div>`;
+        return;
+      }
+
+      setStatus(inputStatus, true, '✓ XML formatted successfully!');
+      setStatus(outputStatus, true, '✓ Tree view generated');
+
+    } else {
+      // Plain output (YAML, TOML, CSV, SQL)
+      showTreeView();
+      rightTreeContent.style.padding = '15px';
+      rightTreeContent.innerHTML = `<pre style="color:#e3dfd8;margin:0;white-space:pre-wrap;word-break:break-all;">${escapeHtml(input)}</pre>`;
+    }
+
+  } catch (e) {
+    handleParseError(e, input);
+  }
 }
 
-    function clearAll() {
-    codeEditor.textContent = '';
-    document.getElementById('foldIcons').innerHTML = '';
-    document.getElementById('treeView').innerHTML = '<div style="padding: 20px; color: #858585;">Tree view will appear here after formatting</div>';
-    updateLineNumbers();
-    currentData = null;
-    expandedStates = {};
-    foldStates = {};
-    foldHierarchy = {};
-    document.getElementById('inputStatus').textContent = 'Cleared';
-    document.getElementById('outputStatus').textContent = 'Cleared';
+function handleParseError(e, input) {
+  let errorMsg = e.message;
+  const posMatch = errorMsg.match(/at position (\d+)/);
+
+  if (posMatch && input) {
+    const pos     = parseInt(posMatch[1]);
+    const before  = input.substring(0, pos);
+    const linesB  = before.split('\n');
+    const lineNum = linesB.length;
+    const col     = linesB[linesB.length - 1].length + 1;
+
+    let suggestion = '';
+    if (errorMsg.includes("Expected ','"))            suggestion = ' → Missing comma after previous property';
+    else if (errorMsg.includes("Expected '}'"))       suggestion = ' → Missing closing brace }';
+    else if (errorMsg.includes("Expected ']'"))       suggestion = ' → Missing closing bracket ]';
+    else if (errorMsg.includes("Expected ':'"))       suggestion = ' → Missing colon after property name';
+    else if (errorMsg.includes("Expected double"))    suggestion = ' → Property name must be in double quotes';
+    else if (errorMsg.includes("Unexpected token"))   suggestion = ' → Unexpected character found';
+
+    errorMsg = errorMsg.replace(/\(line \d+ column \d+\)/, `(line ${lineNum} column ${col})`);
+    const allLines   = input.split('\n');
+    const lineContent = allLines[lineNum - 1] || '';
+    const prevLine    = lineNum > 1 ? allLines[lineNum - 2] : '';
+    const pointer     = ' '.repeat(col - 1) + '↑';
+
+    let html = `<div class="error"><strong>Parse Error on Line ${lineNum}:</strong><br><br>
+      ${escapeHtml(errorMsg)}${escapeHtml(suggestion)}<br><br>
+      <strong>Problem area:</strong><br>
+      <code style="display:block;background:#2a2a2a;padding:10px;margin:10px 0;font-family:monospace;">`;
+    if (prevLine) html += `Line ${lineNum-1}: ${escapeHtml(prevLine)}<br>`;
+    html += `Line ${lineNum}: ${escapeHtml(lineContent)}<br>`;
+    html += `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${pointer.replace(/ /g,'&nbsp;')} <span style="color:#ff6b6b">Error here</span>`;
+    html += `</code>`;
+    if (suggestion) html += `<br><strong>Fix:</strong> ${escapeHtml(suggestion.substring(3))}`;
+    html += `</div>`;
+
+    showTreeView();
+    rightTreeContent.innerHTML = html;
+    setStatus(inputStatus, false, '✗ ' + errorMsg);
+    return;
+  }
+
+  setStatus(inputStatus, false, '✗ ' + e.message);
+  showTreeView();
+  if (rightTreeContent) rightTreeContent.innerHTML = `<div class="error">Parse Error: ${escapeHtml(e.message)}</div>`;
 }
 
-    function loadSample() {
-      let type=  document.getElementById('formatType').value;
-        let sample;
-        if(type==='json') {
-            sample   = `{
+// ── Minify ────────────────────────────────────────────────────────────────────
+function minifyCode() {
+  const input = getEditorText();
+  const type  = formatTypeEl ? formatTypeEl.value : 'json';
+  if (!input) { setStatus(inputStatus, null, '⚠ Please enter some code first!'); return; }
+
+  try {
+    if (type === 'json') {
+      const parsed = JSON.parse(input);
+      codeEditor.textContent = JSON.stringify(parsed);
+      foldHierarchy = {};
+      foldIconsEl.innerHTML = '';
+      updateLineNumbers();
+      currentData = parsed;
+      renderTree(parsed);
+      setStatus(inputStatus, true, '✓ JSON minified successfully!');
+      setStatus(outputStatus, true, '✓ Tree view updated');
+    } else {
+      codeEditor.textContent = input.replace(/>\s+</g, '><').trim();
+      foldHierarchy = {};
+      foldIconsEl.innerHTML = '';
+      updateLineNumbers();
+      setStatus(inputStatus, true, '✓ XML minified successfully!');
+    }
+  } catch (e) {
+    setStatus(inputStatus, false, '✗ ' + e.message);
+  }
+}
+
+// ── Clear all ─────────────────────────────────────────────────────────────────
+function clearAll() {
+  codeEditor.textContent = '';
+  foldIconsEl.innerHTML  = '';
+  rightFoldIcons.innerHTML   = '';
+  rightLineNumbers.innerHTML = '';
+  rightCodeEditor.innerHTML  = '';
+  showTreeView();
+  rightTreeContent.innerHTML = '<div style="padding:20px;color:#858585;">Tree view will appear here after formatting</div>';
+  updateLineNumbers();
+  currentData = null;
+  expandedStates = {};
+  foldStates = {};
+  foldHierarchy = {};
+  rightPanelFoldStates = {};
+  rightPanelFoldHierarchy = {};
+  if (inputStatus)  inputStatus.textContent  = 'Cleared';
+  if (outputStatus) outputStatus.textContent = 'Cleared';
+}
+
+// ── Load sample ───────────────────────────────────────────────────────────────
+const SAMPLE_JSON = `{
   "customer": {
     "id": "55000",
     "name": "Charter Group",
     "address": [
-      {
-        "street": "100 Main",
-        "city": "Framingham",
-        "state": "MA",
-        "zip": "01701"
-      },
-      {
-        "street": "720 Prospect",
-        "city": "Framingham",
-        "state": "MA",
-        "zip": "01701"
-      },
-      {
-        "street": "120 Ridge",
-        "state": "MA",
-        "zip": "01760"
-      }
+      { "street": "100 Main",     "city": "Framingham", "state": "MA", "zip": "01701" },
+      { "street": "720 Prospect", "city": "Framingham", "state": "MA", "zip": "01701" },
+      { "street": "120 Ridge",                          "state": "MA", "zip": "01760" }
     ]
-    }
-    }`;
-            formatCode(true,sample,'json');
-        }else{
-        sample=    '<?xml version="1.0"?>\n' +
-            '<customers>\n' +
-            '   <customer id="55000">\n' +
-            '      <name>Charter Group</name>\n' +
-            '      <address>\n' +
-            '         <street>100 Main</street>\n' +
-            '         <city>Framingham</city>\n' +
-            '         <state>MA</state>\n' +
-            '         <zip>01701</zip>\n' +
-            '      </address>\n' +
-            '      <address>\n' +
-            '         <street>720 Prospect</street>\n' +
-            '         <city>Framingham</city>\n' +
-            '         <state>MA</state>\n' +
-            '         <zip>01701</zip>\n' +
-            '      </address>\n' +
-            '      <address>\n' +
-            '         <street>120 Ridge</street>\n' +
-            '         <state>MA</state>\n' +
-            '         <zip>01760</zip>\n' +
-            '      </address>\n' +
-            '   </customer>\n' +
-            '</customers>'
-            formatCode(true,sample,'xml');
-        }
-    // codeEditor.textContent = sample;
-    // updateLineNumbers();
-    // document.getElementById('inputStatus').innerHTML = '<span class="success">✓ Sample loaded - Click Format</span>';
-}
-
-    // Initialize
-    updateLineNumbers();
-    document.getElementById('treeView').innerHTML = '<div style="padding: 20px; color: #858585;">Tree view will appear here after formatting</div>';
-
-    function selectedTypeShouldBeCorrect(type,inputData){
-    if(type==="JSON" && inputData.startsWith("<") || inputData.startsWith('"<')){
-    alert("Invalid JSON");
-    } else if(type==="XML" && inputData.startsWith("{") || inputData.startsWith('"{')){
-        alert("Invalid XML");
-    }
-
-
-}
-
- function formatData(type, filters) {
-     const selectedtype = document.getElementById('formatType').value;
-     input = getEditorText();
-     if(!input || input===""){
-     return;
-     }
-     if(type==='REPAIR'){
-         type = (selectedtype==='xml') ? "XML_FORMAT" : "JSON_FORMAT"
-     }
-     if(type === 'TOML' || type === 'YAML' || type === 'CSV' || type === 'SQL') {
-         type = selectedtype.toUpperCase() + "_TO_" + type;
-     }
-     fetch("/data/parse", {
-         method: "POST",
-         headers: {
-             "Content-Type": "application/json"
-         },
-         body: JSON.stringify({
-             type: type,
-             data: input,   // ✅ ALWAYS CLEAN DATA
-             filters: filters
-         })
-     })
-         .then(res => res.json())
-         .then(res => {
-             if (res.success) {
-                let format = 'json';
-                if(type==='XML_FORMAT' || type==='JSON_TO_XML' || type==='XML_SORT' || type==='CSV_TO_XML') {
-                    format = 'xml';
-                }else if(type==='JSON_TO_YAML' || type==='XML_TO_YAML' || type==='PROPERTY_TO_YAML') {
-                    format = 'yaml';
-                }else if(type==='JSON_TO_TOML' || type==='XML_TO_TOML') {
-                    format = 'toml';
-                }else if(type==='JSON_TO_CSV' || type==='XML_TO_CSV') {
-                    format = 'csv';
-                }else if(type==='JSON_TO_SQL' || type==='XML_TO_SQL') {
-                    format = 'sql';
-                }else if(type==='YAML_TO_PROPERTY') {
-                    format = 'property';
-                }
-
-                 const formatted = res.parsedData.replace(/\r\n/g, "\n");
-                 formatCode(true,formatted, format);
-
-             } else {
-                 if(type==='XML_TO_JSON' || type=== 'JSON_TO_XML'){
-                     document.getElementById('treeView').innerHTML = '<div class="error">Failed to convert: ' + res.message + '</div>';
-                 }else{
-                     document.getElementById('treeView').innerHTML = '<div class="error">Failed to repair: ' + res.message + '</div>';
-                 }
-             }
-         })
-         .catch(() => {
-             outputEl.textContent = "Error while formatting";
-             outputLines.textContent = "";
-         });
- }
-
-/*
- let expandedPanel = null;
-
- function toggleExpand(side) {
-   const container = document.getElementById('mainContainer');
-   const leftPanel = document.getElementById('leftPanel');
-   const middleControls = document.getElementById('middleControls');
-   const rightPanel = document.getElementById('rightPanel');
-   const leftIcon = document.getElementById('leftExpandIcon');
-   const rightIcon = document.getElementById('rightExpandIcon');
-
-   if (expandedPanel === side) {
-     // Collapse - return to normal view
-     container.classList.remove('expanded-left', 'expanded-right');
-     leftPanel.classList.remove('hidden');
-     middleControls.classList.remove('hidden');
-     rightPanel.classList.remove('hidden');
-     leftIcon.textContent = '⛶';
-     rightIcon.textContent = '⛶';
-     expandedPanel = null;
-   } else {
-     // Expand selected panel
-     container.classList.remove('expanded-left', 'expanded-right');
-
-     if (side === 'left') {
-       container.classList.add('expanded-left');
-       middleControls.classList.add('hidden');
-       rightPanel.classList.add('hidden');
-       leftIcon.textContent = '⛶';
-       rightIcon.textContent = '⛶';
-       expandedPanel = 'left';
-     } else {
-       container.classList.add('expanded-right');
-       leftPanel.classList.add('hidden');
-       middleControls.classList.add('hidden');
-       leftIcon.textContent = '⛶';
-       rightIcon.textContent = '⛶';
-       expandedPanel = 'right';
-     }
-   }
- }*/
-
- let expandedPanel = null;
-
- function toggleExpand(side) {
-   const container = document.getElementById('mainContainer');
-   const leftPanel = document.getElementById('leftPanel');
-   const middleControls = document.getElementById('middleControls');
-   const rightPanel = document.getElementById('rightPanel');
-   const leftIcon = document.getElementById('leftExpandIcon');
-   const rightIcon = document.getElementById('rightExpandIcon');
-   const leftHeader = document.getElementById('leftPanelHeader');
-   const rightHeader = document.getElementById('rightPanelHeader');
-   const formatTypeExpanded = document.getElementById('formatType');
-   const formatType = document.getElementById('formatType');
-
-   if (expandedPanel === side) {
-     // Collapse - return to normal view
-     container.classList.remove('expanded-left', 'expanded-right');
-     document.body.classList.remove('panel-expanded');
-     leftPanel.classList.remove('hidden');
-     middleControls.classList.remove('hidden');
-     rightPanel.classList.remove('hidden');
-     leftHeader.classList.remove('expanded-header');
-     rightHeader.classList.remove('expanded-header');
-     leftIcon.textContent = '⛶';
-     rightIcon.textContent = '⛶';
-     expandedPanel = null;
-   } else {
-     // Expand selected panel
-     container.classList.remove('expanded-left', 'expanded-right');
-     document.body.classList.add('panel-expanded');
-
-     if (side === 'left') {
-       container.classList.add('expanded-left');
-       middleControls.classList.add('hidden');
-       rightPanel.classList.add('hidden');
-       leftHeader.classList.add('expanded-header');
-       rightHeader.classList.remove('expanded-header');
-       leftIcon.textContent = '✕';
-       rightIcon.textContent = '⛶';
-
-       // Sync dropdown value
-       if (formatTypeExpanded) {
-         formatTypeExpanded.value = formatType===null?null:formatType.value;
-       }
-
-       expandedPanel = 'left';
-     } else {
-       container.classList.add('expanded-right');
-       leftPanel.classList.add('hidden');
-       middleControls.classList.add('hidden');
-       leftHeader.classList.remove('expanded-header');
-       rightHeader.classList.add('expanded-header');
-       leftIcon.textContent = '⛶';
-       rightIcon.textContent = '✕';
-       expandedPanel = 'right';
-     }
-   }
- }
-
- const downloadCsvBtn = document.getElementById('downloadCsvBtn');
-
- downloadCsvBtn.addEventListener('click', () => {
-   const rightEditor = document.getElementById('treeView');
-   if (!rightEditor) return;
-
-   const rawText = rightEditor.textContent || rightEditor.value || '';
-   const text = rawText.trim();
-
-   // Empty or no content
-   if (!text) {
-     alert('Content does not look like CSV.');
-     return;
-   }
-
-   // Very simple CSV detection:
-   // - at least one newline
-   // - header row contains at least one comma or semicolon or tab
-   const lines = text.split(/\r?\n/).filter(l => l.length > 0);
-   if (lines.length === 0) {
-     alert('Content does not look like CSV.');
-     return;
-   }
-
-   const header = lines[0];
-   const hasDelimiter = header.includes(',') || header.includes(';') || header.includes('\t');
-
-   if (!hasDelimiter) {
-     alert('Content does not look like CSV.');
-     return;
-   }
-
-   // Passed basic CSV check → download
-   const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
-   const url = URL.createObjectURL(blob);
-
-   const a = document.createElement('a');
-   a.href = url;
-   a.download = 'data.csv';
-   document.body.appendChild(a);
-   a.click();
-   document.body.removeChild(a);
-   URL.revokeObjectURL(url);
- });
-
-// Store last-used SQL options keyed by a simple id (you can extend later)
-
-const convertToSqlBtn = document.getElementById('convertToSqlBtn');
-const sqlModalOverlay = document.getElementById('sqlModalOverlay');
-const sqlModalCloseBtn = document.getElementById('sqlModalCloseBtn');
-const sqlModalCancelBtn = document.getElementById('sqlModalCancelBtn');
-const sqlGenerateBtn = document.getElementById('sqlGenerateBtn');
-
-const sqlTableNameInput = document.getElementById('sqlTableName');
-const sqlDbTypeSelect = document.getElementById('sqlDbType');
-const sqlIncludeNullsCheckbox = document.getElementById('sqlIncludeNulls');
-
-function openSqlModal() {
-  sqlModalOverlay.style.display = 'flex';
-  // Reset defaults if you want:
-  if (!sqlTableNameInput.value) {
-    sqlTableNameInput.value = 'users';
   }
-  sqlIncludeNullsCheckbox.checked = true;
-  sqlDbTypeSelect.value = 'POSTGRES';
+}`;
 
-  sqlTableNameInput.focus();
+const SAMPLE_XML = `<?xml version="1.0"?>
+<customers>
+   <customer id="55000">
+      <name>Charter Group</name>
+      <address>
+         <street>100 Main</street>
+         <city>Framingham</city>
+         <state>MA</state>
+         <zip>01701</zip>
+      </address>
+      <address>
+         <street>720 Prospect</street>
+         <city>Framingham</city>
+         <state>MA</state>
+         <zip>01701</zip>
+      </address>
+   </customer>
+</customers>`;
+
+function loadSample() {
+  const type = formatTypeEl ? formatTypeEl.value : 'json';
+  if (type === 'json') {
+    formatCode(true, SAMPLE_JSON, 'json', true);
+  } else {
+    formatCode(true, SAMPLE_XML, 'xml', true);
+  }
 }
 
-function closeSqlModal() {
-  sqlModalOverlay.style.display = 'none';
+// ── Change view type (Tree ↔ Text) ────────────────────────────────────────────
+function changeViewType() {
+  const viewType = viewTypeEl ? viewTypeEl.value : 'tree';
+  const input    = getEditorText();
+  const type     = formatTypeEl ? formatTypeEl.value : 'json';
+  if (!input.trim()) return;
+  foldStates = {};
+  rightPanelFoldStates = {};
+
+  if (type === 'json') {
+    try {
+      let parsed = JSON.parse(input);
+      currentData = parsed;
+      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+      const formatted = JSON.stringify(parsed, null, 2);
+      if (viewType === 'tree') renderTree(parsed);
+      else populateTextView(formatted);
+    } catch(e) { /* ignore */ }
+  }
 }
 
-// Open on "Convert to SQL" button
-if (convertToSqlBtn) {
+// ── Format data (API call) ────────────────────────────────────────────────────
+function formatData(type, filters) {
+  const selectedType = formatTypeEl ? formatTypeEl.value : 'json';
+  const input        = getEditorText();
+  if (!input.trim()) return;
+
+  let apiType = type;
+  if (type === 'REPAIR') {
+    apiType = selectedType === 'xml' ? 'XML_FORMAT' : 'JSON_FORMAT';
+  }
+  if (type === 'JSON_SORT' || type === 'XML_SORT') {
+    apiType = type;
+  }
+  if (['TOML','YAML','CSV','SQL'].includes(type)) {
+    apiType = selectedType.toUpperCase() + '_TO_' + type;
+  }
+
+  fetch('/data/parse', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: apiType, data: input, filters: filters || null })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.success) {
+      let fmt = 'json';
+      if (['XML_FORMAT','JSON_TO_XML','XML_SORT','CSV_TO_XML'].includes(apiType)) fmt = 'xml';
+      else if (['JSON_TO_YAML','XML_TO_YAML','PROPERTY_TO_YAML'].includes(apiType)) fmt = 'yaml';
+      else if (['JSON_TO_TOML','XML_TO_TOML'].includes(apiType))                    fmt = 'toml';
+      else if (['JSON_TO_CSV','XML_TO_CSV'].includes(apiType))                      fmt = 'csv';
+      else if (['JSON_TO_SQL','XML_TO_SQL'].includes(apiType))                      fmt = 'sql';
+      else if (apiType === 'YAML_TO_PROPERTY')                                      fmt = 'property';
+
+      formatCode(true, res.parsedData.replace(/\r\n/g, '\n'), fmt, false);
+    } else {
+      showTreeView();
+      rightTreeContent.innerHTML = `<div class="error">Failed: ${escapeHtml(res.message || 'Unknown error')}</div>`;
+    }
+  })
+  .catch(() => {
+    showTreeView();
+    rightTreeContent.innerHTML = '<div class="error">Network error while processing</div>';
+  });
+}
+
+// ── Panel expand / collapse ───────────────────────────────────────────────────
+function toggleExpand(side) {
+  const container      = document.getElementById('mainContainer');
+  const leftPanel      = document.getElementById('leftPanel');
+  const middleControls = document.getElementById('middleControls');
+  const rightPanel     = document.getElementById('rightPanel');
+  const leftIcon       = document.getElementById('leftExpandIcon');
+  const rightIcon      = document.getElementById('rightExpandIcon');
+  const leftHeader     = document.getElementById('leftPanelHeader');
+  const rightHeader    = document.getElementById('rightPanelHeader');
+
+  if (expandedPanel === side) {
+    // collapse
+    container.classList.remove('expanded-left', 'expanded-right');
+    document.body.classList.remove('panel-expanded');
+    if (leftPanel)      leftPanel.classList.remove('hidden');
+    if (middleControls) middleControls.classList.remove('hidden');
+    if (rightPanel)     rightPanel.classList.remove('hidden');
+    if (leftHeader)     leftHeader.classList.remove('expanded-header');
+    if (rightHeader)    rightHeader.classList.remove('expanded-header');
+    if (leftIcon)       leftIcon.textContent  = '⛶';
+    if (rightIcon)      rightIcon.textContent = '⛶';
+    expandedPanel = null;
+  } else {
+    container.classList.remove('expanded-left', 'expanded-right');
+    document.body.classList.add('panel-expanded');
+    if (side === 'left') {
+      container.classList.add('expanded-left');
+      if (middleControls) middleControls.classList.add('hidden');
+      if (rightPanel)     rightPanel.classList.add('hidden');
+      if (leftHeader)     leftHeader.classList.add('expanded-header');
+      if (rightHeader)    rightHeader.classList.remove('expanded-header');
+      if (leftIcon)       leftIcon.textContent  = '✕';
+      if (rightIcon)      rightIcon.textContent = '⛶';
+    } else {
+      container.classList.add('expanded-right');
+      if (leftPanel)      leftPanel.classList.add('hidden');
+      if (middleControls) middleControls.classList.add('hidden');
+      if (leftHeader)     leftHeader.classList.remove('expanded-header');
+      if (rightHeader)    rightHeader.classList.add('expanded-header');
+      if (leftIcon)       leftIcon.textContent  = '⛶';
+      if (rightIcon)      rightIcon.textContent = '✕';
+    }
+    expandedPanel = side;
+  }
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  const text = (
+    (rightCodeEditor && rightCodeEditor.textContent) ||
+    (rightTreeContent && rightTreeContent.textContent) || ''
+  ).trim();
+
+  if (!text) { alert('No content to export.'); return; }
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) { alert('Content does not look like CSV.'); return; }
+  if (!lines[0].includes(',') && !lines[0].includes(';') && !lines[0].includes('\t')) {
+    alert('Content does not look like CSV.'); return;
+  }
+
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), { href: url, download: 'data.csv' });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+function setStatus(el, success, msg) {
+  if (!el) return;
+  if (success === true)  el.innerHTML = `<span class="success">${msg}</span>`;
+  else if (success === false) el.innerHTML = `<span class="error">${msg}</span>`;
+  else el.innerHTML = `<span class="warning">${msg}</span>`;
+}
+
+// Sync the two formatType selects (middle panel sync)
+document.addEventListener('DOMContentLoaded', () => {
+  const ft2 = document.getElementById('formatType2');
+  const ft1 = document.getElementById('formatType');
+  if (ft2 && ft1) {
+    ft2.addEventListener('change', () => ft1.value = ft2.value);
+  }
+});
+
+// ── SQL Modal ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const convertToSqlBtn       = document.getElementById('convertToSqlBtn');
+  const sqlModalOverlay       = document.getElementById('sqlModalOverlay');
+  const sqlModalCloseBtn      = document.getElementById('sqlModalCloseBtn');
+  const sqlModalCancelBtn     = document.getElementById('sqlModalCancelBtn');
+  const sqlGenerateBtn        = document.getElementById('sqlGenerateBtn');
+  const sqlTableNameInput     = document.getElementById('sqlTableName');
+  const sqlDbTypeSelect       = document.getElementById('sqlDbType');
+  const sqlIncludeNullsCheck  = document.getElementById('sqlIncludeNulls');
+
+  // Only wire up if modal elements exist on this page
+  if (!convertToSqlBtn || !sqlModalOverlay) return;
+
+  function openSqlModal() {
+    if (!sqlTableNameInput.value) sqlTableNameInput.value = 'users';
+    sqlIncludeNullsCheck.checked = true;
+    sqlDbTypeSelect.value = 'POSTGRES';
+    sqlModalOverlay.style.display = 'flex';
+    sqlTableNameInput.focus();
+  }
+
+  function closeSqlModal() {
+    sqlModalOverlay.style.display = 'none';
+  }
+
   convertToSqlBtn.addEventListener('click', openSqlModal);
-}
+  sqlModalCloseBtn.addEventListener('click', closeSqlModal);
+  sqlModalCancelBtn.addEventListener('click', closeSqlModal);
 
-// Close actions
-sqlModalCloseBtn.addEventListener('click', closeSqlModal);
-sqlModalCancelBtn.addEventListener('click', closeSqlModal);
+  sqlModalOverlay.addEventListener('click', e => {
+    if (e.target === sqlModalOverlay) closeSqlModal();
+  });
 
-// Close on overlay click (but not when clicking inside modal)
-sqlModalOverlay.addEventListener('click', (e) => {
-  if (e.target === sqlModalOverlay) {
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && sqlModalOverlay.style.display !== 'none') closeSqlModal();
+  });
+
+  sqlGenerateBtn.addEventListener('click', () => {
+    const options = {
+      tableName:    (sqlTableNameInput.value || 'users').trim(),
+      dialect:      sqlDbTypeSelect.value,
+      includeNulls: sqlIncludeNullsCheck.checked
+    };
+    formatData('SQL', options);
     closeSqlModal();
-  }
-});
-
-// Close on Esc
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && sqlModalOverlay.style.display !== 'none') {
-    closeSqlModal();
-  }
-});
-
-// Generate button – collect values and save in map
-sqlGenerateBtn.addEventListener('click', () => {
-  const tableName = (sqlTableNameInput.value || 'users').trim();
-  const dialect = sqlDbTypeSelect.value; // "MYSQL", "POSTGRES", "SQLSERVER", "SQLITE"
-  const includeNulls = sqlIncludeNullsCheckbox.checked;
-
-  const options = {
-    tableName,
-    dialect,
-    includeNulls
-  };
-
-  // TODO: later use options to actually generate SQL from current JSON
-
-//  console.log('SQL options saved:', options);
-  formatData("SQL", options);
-  closeSqlModal();
+  });
 });

@@ -6,39 +6,34 @@
     <title>JSON Parser</title>
     <link rel="stylesheet" href="/css/jsonxmlformatter.css">
     <link rel="stylesheet" href="/css/sql-modal.css">
-    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
+    <meta name="description" content="Free online JSON editor, formatter and validator tool for developers.">
+    <meta name="keywords" content="json formatter, json parser, json validator, json beautifier, json editor, developer tool">
     <meta name="author" content="JSON XML EDITOR">
-
-    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
     <meta property="og:title" content="JSON PARSER">
-    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
+    <meta property="og:description" content="Free online JSON editor, formatter and validator tool for developers.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com">
+    <meta property="og:url" content="https://jsonxmleditor.com/json-parser">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
     <script>
-        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-
-                    gtag('config', 'G-LPTNYNJB94');
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-LPTNYNJB94');
         }
     </script>
 </head>
 <body>
+
 <div id="header"></div>
 
-<!-- Controls -->
+<!-- Top Controls -->
 <div class="controls">
     <button class="btn" onclick="formatCode(false,null,null)">Format</button>
     <button class="btn" onclick="minifyCode()">Minify</button>
     <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-    <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>
-<!--    <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>-->
-    <button type="button" class="btn btn-secondary" id="downloadCsvBtn">
-        Export CSV
-    </button>
+    <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+    <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
     <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
     <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
 </div>
@@ -46,26 +41,20 @@
 <!-- Main Container -->
 <div class="container" id="mainContainer">
 
-    <!-- Left Panel - Editor -->
+    <!-- Left Panel -->
     <div class="panel" id="leftPanel">
         <div class="panel-header" id="leftPanelHeader">
             <span>Editor (Formatted View)</span>
-
-            <!-- Controls for expanded mode -->
             <div class="panel-header-controls" id="leftPanelControls">
                 <button class="btn" onclick="formatCode(false,null,null)">Format</button>
                 <button class="btn" onclick="minifyCode()">Minify</button>
                 <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-                <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>
-<!--                <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>-->
+                <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
                 <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
                 <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
-                <select  id="formatType">
-                    <option value="json">JSON</option>
-<!--                    <option value="xml">XML</option>-->
-                </select>
+                <!-- Hidden select keeps shared JS happy; JSON-only page -->
+                <select id="formatType" style="display:none;"><option value="json">JSON</option></select>
             </div>
-
             <button class="expand-btn" onclick="toggleExpand('left')" id="leftExpandBtn">
                 <span id="leftExpandIcon">⛶</span>
             </button>
@@ -76,10 +65,10 @@
                 <div class="fold-icons" id="foldIcons"></div>
                 <div class="line-numbers" id="lineNumbers">1</div>
             </div>
-            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>
+            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false" oninput="formatCode(false,null,null,null,true)"></div>
         </div>
 
-        <div class="status" id="inputStatus">Ready - Type or paste JSON/XML here</div>
+        <div class="status" id="inputStatus">Ready — paste or type JSON here</div>
     </div>
 
     <!-- Middle Controls -->
@@ -96,27 +85,36 @@
         <button class="btn" id="convertToSqlBtn">Convert TO SQL</button>
     </div>
 
-    <!-- Right Panel - Tree View -->
+    <!-- Right Panel -->
     <div class="panel" id="rightPanel">
         <div class="panel-header" id="rightPanelHeader">
-            <span>Viewer (Tree View for JSON and XML)</span>
-
-            <!-- Controls for expanded mode -->
+            <span>Viewer</span>
+            <select id="viewType" onchange="changeViewType()">
+                <option value="tree">Tree View</option>
+                <option value="formated">Text View</option>
+            </select>
             <div class="panel-header-controls" id="rightPanelControls">
-                <button class="btn" onclick="formatData('JSON_TO_XML')">Convert To XML</button>
-                <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>
-                <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>
-                <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>
-                <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
+                <button class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
+                <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
+                <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+                <button class="btn" onclick="formatData('CSV')">Convert to CSV</button>
             </div>
-
             <button class="expand-btn" onclick="toggleExpand('right')" id="rightExpandBtn">
                 <span id="rightExpandIcon">⛶</span>
             </button>
         </div>
 
         <div class="tree-view" id="treeView">
-            <div style="padding: 20px; color: #858585;">Tree view will appear here after formatting</div>
+            <div class="editor-wrapper" id="rightEditorWrapper">
+                <div class="line-numbers-area" id="rightLineNumbersArea">
+                    <div class="fold-icons" id="rightFoldIcons"></div>
+                    <div class="line-numbers" id="rightLineNumbers"></div>
+                </div>
+                <div class="code-editor" id="rightCodeEditor"></div>
+            </div>
+            <div id="rightTreeContent" style="padding:20px;color:#858585;">
+                Tree view will appear here after formatting
+            </div>
         </div>
 
         <div class="status" id="outputStatus">Ready</div>
@@ -124,30 +122,26 @@
 
 </div>
 
-<!-- Content Section -->
+<!-- SEO Content -->
 <div class="content-section">
     <h2>What is JSON Parser?</h2>
-    <p>JSON Parser is a simple, browser-based tool built for developers who deal with JSON data daily.</p>
-    <p>When you're working with APIs, the data you get back is often just a huge "blob" of text that’s hard to read or debug. Our tool helps you clean that up, visualize it, and even fix it when it's broken.</p>
+    <p>JSON Parser is a simple, browser-based tool built for developers who deal with JSON data daily. When you're working with APIs, the data you get back is often just a huge blob of text that's hard to read or debug. Our tool helps you clean that up, visualize it, and even fix it when it's broken.</p>
 
     <h6>How it Helps You</h6>
-
     <div class="feature-box">
-        <p><strong>No More "Ugly" Code:</strong> Just paste your messy JSON or XML, and the tool instantly beautifies it with proper spacing and colors. We use a color-coding system that makes it easy to tell apart keys, strings, and numbers at a single glance.</p>
+        <p><strong>No More "Ugly" Code:</strong> Paste your messy JSON and the tool instantly beautifies it with proper indentation and syntax color-coding so you can tell apart keys, strings, and numbers at a glance.</p>
     </div>
-
     <div class="feature-box">
-        <p><strong>The Interactive Tree View:</strong> On the right side, your data becomes a "Tree". You can click to expand or collapse sections—a lifesaver for JSON files with thousands of lines.</p>
+        <p><strong>Interactive Tree View:</strong> Your data becomes an expandable/collapsible tree — a lifesaver for deeply nested JSON with thousands of lines.</p>
     </div>
-
     <div class="feature-box">
-        <p><strong>Auto-Repair for Human Errors:</strong> Forgetting a comma or using single quotes? Just hit the Repair button. The tool fixes common syntax mistakes for you automatically.</p>
+        <p><strong>Auto-Repair for Human Errors:</strong> Forgot a comma or used single quotes? Hit <strong>Repair</strong> and the tool fixes common syntax mistakes automatically.</p>
     </div>
-
     <div class="feature-box">
-        <p><strong>Minify for Speed:</strong> When your code is ready for production, the Minify feature strips away all extra space, making your data lightweight and ready to go.</p>
+        <p><strong>Minify for Production:</strong> Strip all extra whitespace to make your JSON lightweight and production-ready in one click.</p>
     </div>
 </div>
+
 <br>
 <div id="footer"></div>
 
@@ -208,6 +202,6 @@
 </div>
 
 <script src="/js/layout-loader.js"></script>
-<script src="js/jsonxmlformatter.js"></script>
+<script src="/js/jsonxmlformatter.js"></script>
 </body>
 </html>

@@ -1052,6 +1052,71 @@ select {
     transition: all 0.3s ease;
 }
 
+
+/* ================================
+   RIGHT PANEL - TEXT VIEW FIX
+   ================================ */
+
+/* When in text view, treeView becomes a flex container */
+#treeView {
+    padding: 0px;        /* remove the 15px padding — rightCodeEditor handles its own padding */
+    overflow: hidden;  /* parent must not scroll; children scroll individually */
+    display: flex;
+    flex-direction: column;
+}
+
+/* The editor wrapper fills the whole treeView in text view mode */
+#rightEditorWrapper {
+    display: none;      /* hidden by default (tree view is default) */
+    flex: 1;
+    overflow: hidden;
+    height: 100%;
+    background: #1e1e1e;
+}
+
+/* rightEditorWrapper uses same layout as left .editor-wrapper */
+#rightEditorWrapper .line-numbers-area {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    height: 100%;
+}
+
+#rightEditorWrapper #rightFoldIcons {
+    overflow: hidden;   /* scrolled by JS in sync */
+}
+
+#rightEditorWrapper #rightLineNumbers {
+    overflow: hidden;   /* scrolled by JS in sync */
+}
+
+/* The code area inside right panel text view */
+#rightCodeEditor {
+    flex: 1;
+    overflow: auto;     /* this is the one element that actually scrolls */
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 21px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Tree content — fills treeView, scrolls on its own */
+#rightTreeContent {
+    flex: 1;
+    overflow: auto;
+    padding: 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #d4d4d4;
+    white-space: pre-wrap;
+}
+
+
 /* Full Screen Expansion Styles */
 .container.expanded-left,
 .container.expanded-right {
