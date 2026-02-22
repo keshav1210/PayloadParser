@@ -737,7 +737,7 @@ function formatData(type, filters) {
       else if (['JSON_TO_YAML','XML_TO_YAML','PROPERTY_TO_YAML'].includes(apiType)) fmt = 'yaml';
       else if (['JSON_TO_TOML','XML_TO_TOML'].includes(apiType))                    fmt = 'toml';
       else if (['JSON_TO_CSV','XML_TO_CSV'].includes(apiType))                      fmt = 'csv';
-      else if (['JSON_TO_SQL','XML_TO_SQL'].includes(apiType))                      fmt = 'sql';
+      else if (['JSON_TO_SQL','XML_TO_SQL','CSV_TO_SQL'].includes(apiType))                      fmt = 'sql';
       else if (apiType === 'YAML_TO_PROPERTY')                                      fmt = 'property';
 
       formatCode(true, res.parsedData.replace(/\r\n/g, '\n'), fmt, false);
