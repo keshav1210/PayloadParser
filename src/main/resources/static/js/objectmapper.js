@@ -390,20 +390,13 @@ public class Address
 
     function getSdContent() {
         if (_sdSource === 'input') {
-          // Get text from the left editor (codeEditor)
           const el = document.getElementById('inputEditor');
-          return el ? el.innerText.trim() : '';
+          return el ? el.value.trim() : '';
         } else {
-          // Get text from right panel — try text view first, then tree text
-          const rightEditor = document.getElementById('outputEditor');
-          if (rightEditor && rightEditor.innerText.trim()) {
-            return rightEditor.innerText.trim();
-          }
-          // Fallback: get visible text from tree content
-          const tree = document.getElementById('rightTreeContent');
-          return tree ? tree.innerText.trim() : '';
+          const el = document.getElementById('outputEditor');
+          return el ? el.value.trim() : '';
         }
-      }
+    }
 
     async function doShare() {
         const text = getSdContent();
