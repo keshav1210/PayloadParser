@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareDrop — Upload</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --bg:#08080b; --s1:#101014; --s2:#16161c; --s3:#1d1d25;
+          --border:#252530; --bh:#363648;
+          --accent:#4f8cff; --teal:#00ddb3; --purple:#9f7eff;
+          --success:#00c896; --danger:#ff4f6a; --warn:#f0a540;
+          --text:#ddddf0; --muted:#525268;
+          --mono:'JetBrains Mono',monospace; --sans:'Outfit',sans-serif;
+        }
+        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+        body { background:var(--bg); color:var(--text); font-family:var(--sans); min-height:100vh; overflow-x:hidden; }
+        body::before {
+          content:''; position:fixed; inset:0; z-index:0;
+          background-image:linear-gradient(rgba(79,140,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,.04) 1px,transparent 1px);
+          background-size:42px 42px; pointer-events:none;
+        }
+        .blob { position:fixed; border-radius:50%; filter:blur(110px); opacity:.13; pointer-events:none; z-index:0; }
+        .blob1 { width:500px; height:500px; background:var(--accent); top:-15%; left:-12%; }
+        .blob2 { width:420px; height:420px; background:var(--teal); bottom:-12%; right:-10%; }
+
+        /* NAV */
+<!--        nav {-->
+<!--          position:sticky; top:0; z-index:100;-->
+<!--          background:rgba(8,8,11,.88); backdrop-filter:blur(18px);-->
+<!--          border-bottom:1px solid var(&#45;&#45;border);-->
+<!--          display:flex; align-items:center; justify-content:space-between;-->
+<!--          padding:0 28px; height:58px;-->
+<!--        }-->
+        .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:.95rem; letter-spacing:-.02em; }
+        .brand-logo {
+          width:32px; height:32px; border-radius:9px;
+          background:linear-gradient(135deg,var(--accent),var(--teal));
+          display:flex; align-items:center; justify-content:center;
+          font-family:var(--mono); font-size:.72rem; font-weight:700; color:#fff;
+        }
+        .nav-links { display:flex; gap:22px; font-size:.82rem; color:var(--muted); }
+        .nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
+        .nav-links a:hover, .nav-links a.active { color:var(--text); }
+
+        /* API STATUS */
+        .api-bar {
+          display:flex; align-items:center; gap:9px;
+          background:var(--s2); border-bottom:1px solid var(--border);
+          padding:7px 28px; font-family:var(--mono); font-size:.7rem; color:var(--muted);
+          position:relative; z-index:10; flex-wrap:wrap; gap:6px;
+        }
+        .api-dot { width:7px; height:7px; border-radius:50%; background:var(--muted); flex-shrink:0; transition:all .3s; }
+        .api-dot.ok  { background:var(--success); box-shadow:0 0 6px var(--success); }
+        .api-dot.err { background:var(--danger);  box-shadow:0 0 6px var(--danger); }
+        .api-dot.chk { background:var(--warn);    animation:pulse 1s infinite; }
+
+        .wrap { position:relative; z-index:1; max-width:720px; margin:0 auto; padding:0 22px 80px; }
+
+        /* HERO */
+        .hero { text-align:center; padding:60px 0 44px; animation:fadeUp .5s ease both; }
+        .hero-chip {
+          display:inline-flex; align-items:center; gap:7px; padding:5px 16px; border-radius:99px;
+          border:1px solid rgba(0,221,179,.28); background:rgba(0,221,179,.07);
+          font-family:var(--mono); font-size:.68rem; color:var(--teal);
+          letter-spacing:.1em; text-transform:uppercase; margin-bottom:20px;
+        }
+        .chip-dot { width:6px; height:6px; border-radius:50%; background:var(--teal); box-shadow:0 0 6px var(--teal); }
+        .hero h1 { font-size:clamp(2rem,5vw,3.2rem); font-weight:900; letter-spacing:-.045em; line-height:1.1; margin-bottom:12px; }
+        .grad { background:linear-gradient(90deg,var(--accent),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero p { color:var(--muted); font-size:.92rem; line-height:1.75; max-width:440px; margin:0 auto; }
+
+        /* MODE TABS */
+        .mode-tabs { display:flex; gap:4px; background:var(--s2); border-radius:11px; padding:4px; margin-bottom:14px; animation:fadeUp .5s ease .05s both; }
+        .tab { flex:1; padding:10px; border-radius:8px; border:none; background:transparent; color:var(--muted); font-family:var(--sans); font-size:.84rem; font-weight:600; cursor:pointer; transition:all .18s; }
+        .tab.active { background:var(--accent); color:#fff; box-shadow:0 0 16px rgba(79,140,255,.3); }
+
+        /* CARDS */
+        .card { background:var(--s1); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; transition:border-color .25s; animation:fadeUp .5s ease both; }
+        .card:hover { border-color:var(--bh); }
+        .card-head { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--s2); }
+        .card-title { display:flex; align-items:center; gap:8px; font-size:.88rem; font-weight:700; }
+        .cicon { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.85rem; }
+        .ci-blue   { background:rgba(79,140,255,.18); }
+        .ci-teal   { background:rgba(0,221,179,.14); }
+        .ci-purple { background:rgba(159,126,255,.16); }
+        .card-body { padding:16px 18px; }
+
+        /* INPUTS */
+        input[type="text"], textarea {
+          width:100%; background:var(--s2); border:1px solid var(--border);
+          border-radius:10px; color:var(--text); font-family:var(--mono);
+          font-size:.82rem; padding:11px 14px; outline:none; transition:border-color .2s;
+        }
+        input[type="text"]:focus, textarea:focus { border-color:var(--accent); }
+        input[type="text"]::placeholder, textarea::placeholder { color:var(--muted); }
+        textarea { min-height:200px; resize:vertical; line-height:1.75; }
+
+        /* ENDPOINT BADGE */
+        .ep-badge {
+          display:inline-flex; align-items:center; gap:6px;
+          padding:3px 10px; border-radius:6px;
+          background:rgba(79,140,255,.12); border:1px solid rgba(79,140,255,.25);
+          font-family:var(--mono); font-size:.68rem; color:var(--accent);
+        }
+        .ep-method { color:var(--teal); font-weight:700; margin-right:2px; }
+
+        /* ONE-TIME TOGGLE */
+        .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; border-top:1px solid var(--border); }
+        .toggle-label { display:flex; align-items:center; gap:10px; }
+        .toggle-desc { font-size:.74rem; color:var(--muted); }
+        .toggle { position:relative; width:42px; height:23px; flex-shrink:0; }
+        .toggle input { opacity:0; width:0; height:0; }
+        .toggle-slider { position:absolute; inset:0; border-radius:99px; background:var(--s3); border:1px solid var(--border); cursor:pointer; transition:all .25s; }
+        .toggle-slider::before { content:''; position:absolute; width:15px; height:15px; border-radius:50%; background:var(--muted); left:3px; top:3px; transition:all .25s; }
+        .toggle input:checked + .toggle-slider { background:var(--success); border-color:var(--success); }
+        .toggle input:checked + .toggle-slider::before { transform:translateX(19px); background:#fff; }
+
+        /* DROP ZONE */
+        .drop-zone { border:2px dashed var(--border); border-radius:12px; padding:34px 20px; text-align:center; cursor:pointer; transition:all .25s; background:var(--s2); }
+        .drop-zone:hover, .drop-zone.over { border-color:var(--accent); background:rgba(79,140,255,.07); }
+        .drop-zone input { display:none; }
+        .dz-icon { font-size:2.4rem; opacity:.4; margin-bottom:10px; }
+        .drop-zone h3 { font-size:.9rem; font-weight:700; margin-bottom:4px; }
+        .drop-zone p { font-size:.78rem; color:var(--muted); margin-bottom:14px; }
+
+        /* SELECTED FILE */
+        .file-preview { display:none; margin-top:12px; background:var(--s2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; align-items:center; gap:12px; }
+        .file-preview.show { display:flex; }
+        .fp-icon { font-size:2rem; flex-shrink:0; }
+        .fp-info { flex:1; min-width:0; }
+        .fp-name { font-family:var(--mono); font-size:.82rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:3px; }
+        .fp-meta { font-family:var(--mono); font-size:.7rem; color:var(--muted); }
+        .fp-rm { border:none; background:none; color:var(--muted); cursor:pointer; font-size:1.1rem; transition:color .2s; }
+        .fp-rm:hover { color:var(--danger); }
+
+        /* BUTTONS */
+        .btn { display:inline-flex; align-items:center; gap:6px; padding:8px 15px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:var(--sans); font-size:.78rem; font-weight:600; cursor:pointer; transition:all .18s; white-space:nowrap; }
+        .btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(79,140,255,.1); }
+        .btn-primary { background:linear-gradient(135deg,var(--accent),var(--teal)); border:none; color:#fff; font-size:.9rem; font-weight:700; padding:13px 36px; border-radius:12px; box-shadow:0 4px 28px rgba(79,140,255,.28); transition:all .22s; }
+        .btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 36px rgba(79,140,255,.4); }
+        .btn-primary:disabled { opacity:.4; transform:none; cursor:not-allowed; }
+
+        /* PROGRESS */
+        .prog-wrap { height:3px; background:var(--border); border-radius:2px; overflow:hidden; display:none; }
+        .prog-wrap.show { display:block; }
+        .prog-bar { height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--teal)); transition:width .35s ease; border-radius:2px; }
+
+        /* STATUS */
+        .status-bar { display:flex; align-items:center; gap:8px; padding:9px 18px; border-top:1px solid var(--border); background:var(--s2); font-family:var(--mono); font-size:.7rem; color:var(--muted); }
+        .sdot { width:6px; height:6px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+        .sdot.ok  { background:var(--success); box-shadow:0 0 5px var(--success); }
+        .sdot.run { background:var(--accent);  box-shadow:0 0 5px var(--accent); animation:pulse 1s infinite; }
+        .sdot.err { background:var(--danger);  box-shadow:0 0 5px var(--danger); }
+
+        .share-row { text-align:center; padding-top:10px; animation:fadeUp .5s ease .2s both; }
+        .share-hint { font-size:.74rem; color:var(--muted); margin-top:10px; line-height:1.6; }
+
+        /* MODAL */
+        .overlay { position:fixed; inset:0; z-index:200; background:rgba(0,0,0,.8); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; padding:20px; }
+        .overlay.show { display:flex; }
+        .modal { background:var(--s1); border:1px solid var(--bh); border-radius:22px; padding:38px 34px; max-width:510px; width:100%; box-shadow:0 0 80px rgba(79,140,255,.2); animation:popIn .32s cubic-bezier(.34,1.56,.64,1); }
+        .modal-check { width:64px; height:64px; border-radius:50%; background:rgba(0,200,150,.14); border:2px solid var(--success); display:flex; align-items:center; justify-content:center; font-size:1.7rem; margin:0 auto 20px; box-shadow:0 0 28px rgba(0,200,150,.2); }
+        .modal h2 { font-size:1.5rem; font-weight:900; letter-spacing:-.04em; text-align:center; margin-bottom:6px; }
+        .modal-sub { text-align:center; color:var(--muted); font-size:.84rem; margin-bottom:16px; line-height:1.6; }
+        .id-badge { display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+        .id-badge span { font-family:var(--mono); font-size:1rem; font-weight:700; letter-spacing:.1em; color:var(--teal); background:var(--s2); border:1px solid var(--border); padding:6px 20px; border-radius:9px; }
+        .url-row { display:flex; align-items:center; background:var(--s2); border:1px solid var(--border); border-radius:10px; padding:10px 14px; margin-bottom:14px; overflow:hidden; }
+        .url-text { flex:1; font-family:var(--mono); font-size:.73rem; color:var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .copy-btn { flex-shrink:0; border:none; background:var(--accent); color:#fff; font-family:var(--sans); font-size:.78rem; font-weight:700; padding:7px 16px; border-radius:7px; cursor:pointer; transition:all .2s; margin-left:10px; }
+        .copy-btn:hover { background:#6fa3ff; }
+        .copy-btn.copied { background:var(--success); }
+        .modal-actions { display:flex; gap:9px; }
+        .modal-actions .btn { flex:1; justify-content:center; }
+
+        .meta-pill { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:99px; font-size:.7rem; font-family:var(--mono); margin:2px; }
+        .pill-text { background:rgba(79,140,255,.15); border:1px solid rgba(79,140,255,.28); color:var(--accent); }
+        .pill-file { background:rgba(0,221,179,.12); border:1px solid rgba(0,221,179,.28); color:var(--teal); }
+        .pill-one  { background:rgba(240,165,64,.12); border:1px solid rgba(240,165,64,.28); color:var(--warn); }
+
+        /* TOAST */
+        .toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(70px); background:var(--s2); border:1px solid var(--border); border-radius:10px; padding:10px 22px; font-size:.82rem; font-weight:600; z-index:999; opacity:0; transition:all .28s ease; white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,.55); pointer-events:none; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+        .toast.success { border-color:var(--success); color:var(--success); }
+        .toast.info    { border-color:var(--accent);  color:var(--accent); }
+        .toast.error   { border-color:var(--danger);  color:var(--danger); }
+        .toast.warn    { border-color:var(--warn);    color:var(--warn); }
+
+        @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+        @keyframes popIn  { from{opacity:0;transform:scale(.82);} to{opacity:1;transform:scale(1);} }
+        @keyframes pulse  { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+        @media(max-width:520px) { .modal{padding:26px 18px;} nav{padding:0 16px;} }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<!-- API status bar -->
+<!--<div class="api-bar">-->
+<!--    <div class="api-dot chk" id="apiDot"></div>-->
+<!--    <span id="apiStatus">Connecting…</span>-->
+<!--    <span style="margin-left:8px;color:var(&#45;&#45;border)">|</span>-->
+<!--    <span class="ep-badge"><span class="ep-method">POST</span>/share/text</span>-->
+<!--    <span class="ep-badge"><span class="ep-method">POST</span>/share/file</span>-->
+<!--    <span style="margin-left:auto;color:var(&#45;&#45;muted)" id="apiBaseLabel"></span>-->
+<!--</div>-->
+
+<div class="wrap">
+
+    <div class="hero">
+        <div class="hero-chip"><span class="chip-dot"></span> instant share</div>
+        <h1>Drop It. Share It.<br><span class="grad">Anywhere.</span></h1>
+        <p>Upload text or a file to your backend — get a unique link anyone can access from any device.</p>
+    </div>
+
+    <!-- MODE TABS -->
+    <div class="mode-tabs">
+        <button class="tab active" onclick="setMode('text',this)">📝 Text / Data</button>
+        <button class="tab" onclick="setMode('file',this)">📁 File</button>
+    </div>
+
+    <!-- ═══════════════ TEXT MODE ═══════════════ -->
+    <div id="panelText">
+
+        <!-- endpoint label -->
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:8px">
+<!--            <span class="ep-badge"><span class="ep-method">POST</span>/share/text · application/json</span>-->
+        </div>
+
+        <div class="card" style="animation-delay:.08s">
+            <div class="card-head">
+                <div class="card-title"><div class="cicon ci-blue">📝</div> Text Content</div>
+                <span id="charCount" style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">0 chars</span>
+            </div>
+            <div class="card-body">
+                <textarea id="textInput" placeholder="Paste text, JSON, XML, code, CSV, notes… anything&#10;&#10;// Sent as: { &quot;text&quot;: &quot;...&quot;, &quot;oneTimeDownload&quot;: false }"></textarea>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    <span style="font-size:1.1rem">🔥</span>
+                    <div>
+                        <div style="font-weight:600;font-size:.85rem">One-time view</div>
+                        <div class="toggle-desc">Content deleted from server after first access</div>
+                    </div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="textOneTime">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+    </div><!-- /panelText -->
+
+    <!-- ═══════════════ FILE MODE ═══════════════ -->
+    <div id="panelFile" style="display:none">
+
+        <!-- endpoint label -->
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:8px">
+            <span class="ep-badge"><span class="ep-method">POST</span>/share/file · multipart/form-data</span>
+        </div>
+
+        <div class="card" style="animation-delay:.08s">
+            <div class="card-head">
+                <div class="card-title"><div class="cicon ci-teal">📁</div> File</div>
+                <span id="fileTypeLabel" style="font-family:var(--mono);font-size:.7rem;color:var(--muted)"></span>
+            </div>
+            <div class="card-body">
+                <div class="drop-zone" id="dropZone">
+                    <div class="dz-icon">📂</div>
+                    <h3>Drop a file here or <span style="color:var(--accent)">browse</span></h3>
+                    <p>Any type — images, documents, archives, audio, video, code…</p>
+                    <button class="btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">Browse File</button>
+                    <input type="file" id="fileInput">
+                </div>
+                <div class="file-preview" id="filePreview">
+                    <div class="fp-icon" id="fpIcon">📎</div>
+                    <div class="fp-info">
+                        <div class="fp-name" id="fpName">—</div>
+                        <div class="fp-meta" id="fpMeta">—</div>
+                    </div>
+                    <button class="fp-rm" onclick="clearFile()" title="Remove">✕</button>
+                </div>
+            </div>
+            <div class="toggle-row">
+                <div class="toggle-label">
+                    <span style="font-size:1.1rem">🔥</span>
+                    <div>
+                        <div style="font-weight:600;font-size:.85rem">One-time download</div>
+                        <div class="toggle-desc">File deleted from server after first download</div>
+                    </div>
+                </div>
+                <label class="toggle">
+                    <input type="checkbox" id="fileOneTime">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+    </div><!-- /panelFile -->
+
+    <!-- STATUS + PROGRESS -->
+    <div class="card" style="margin-bottom:16px;animation-delay:.14s">
+        <div class="status-bar">
+            <div class="sdot" id="sdot"></div>
+            <span id="statusText">Ready — add content above</span>
+        </div>
+        <div class="prog-wrap" id="progWrap">
+            <div class="prog-bar" id="progBar"></div>
+        </div>
+    </div>
+
+    <!-- UPLOAD BUTTON -->
+    <div class="share-row">
+        <button class="btn-primary" id="shareBtn" onclick="handleShare()">⚡ Upload & Generate Link</button>
+        <p class="share-hint" id="shareHint"></p>
+    </div>
+
+</div><!-- /wrap -->
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="overlay">
+    <div class="modal">
+        <div class="modal-check">✓</div>
+        <h2>Share link ready!</h2>
+        <p class="modal-sub" id="modalSub">—</p>
+        <div id="modalPills" style="text-align:center;margin-bottom:16px"></div>
+        <div class="id-badge"><span id="modalToken">—</span></div>
+        <div class="url-row">
+            <span class="url-text" id="modalUrl">—</span>
+            <button class="copy-btn" id="copyBtn" onclick="copyUrl()">⎘ Copy</button>
+        </div>
+        <p style="text-align:center;font-size:.74rem;color:var(--muted);margin-bottom:18px;line-height:1.6">
+            Open <strong style="color:var(--text)">output.html</strong> and paste this URL — or send it directly to anyone.
+        </p>
+        <div class="modal-actions">
+            <button class="btn" onclick="openOutput()">👁 Open Output</button>
+            <button class="btn" onclick="closeModal()">+ New Drop</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="footer"></div>
+
+<script>
+    // ╔══════════════════════════════════════════════════════════╗
+    // ║  CONFIG                                                  ║
+    // ╚══════════════════════════════════════════════════════════╝
+    const BASE_URL    = window.location.origin; // auto-detects host — no hardcoding needed
+
+    // Your exact endpoints from the controller:
+    const EP_TEXT     = BASE_URL + '/data/share/text';   // POST — JSON body
+    const EP_FILE     = BASE_URL + '/data/share/file';   // POST — multipart/form-data
+
+    // Output page (same folder)
+    const OUTPUT_PAGE = 'output.html';
+
+    // ╔══════════════════════════════════════════════════════════╗
+    // ║  RESPONSE SHAPE from your ShareResponse:                 ║
+    // ║  { success: bool, message: string, url: string }         ║
+    // ║  url = "http://localhost:8080/share/{token}"             ║
+    // ╚══════════════════════════════════════════════════════════╝
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────────
+    const $   = id => document.getElementById(id);
+    const fmtSize = b => b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';
+
+    const FILE_ICONS = {
+      jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',svg:'🖼',bmp:'🖼',
+      pdf:'📄',doc:'📄',docx:'📄',txt:'📝',md:'📝',log:'📝',
+      json:'📋',xml:'📋',yaml:'📋',yml:'📋',csv:'📊',xlsx:'📊',
+      zip:'📦',rar:'📦',gz:'📦',tar:'📦',
+      mp4:'🎬',mov:'🎬',avi:'🎬',mkv:'🎬',
+      mp3:'🎵',wav:'🎵',ogg:'🎵',
+      html:'🌐',css:'🎨',js:'⚡',ts:'⚡',py:'🐍',java:'☕',sh:'💻',
+    };
+    const getIcon = n => FILE_ICONS[(n||'').split('.').pop().toLowerCase()] || '📎';
+
+    function toast(msg, type='info') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function setStatus(msg, s='') {
+      $('statusText').textContent = msg;
+      $('sdot').className = 'sdot' + (s ? ' '+s : '');
+    }
+
+    function setProgress(pct) {
+      $('progWrap').classList.toggle('show', pct > 0 && pct < 100);
+      $('progBar').style.width = pct + '%';
+    }
+
+    // ─── API Health ping ──────────────────────────────────────────────────────────
+if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
+
+(async function ping() {
+  try {
+    let ok = false;
+    try {
+      const r = await fetch(BASE_URL + '/actuator/health', { signal: AbortSignal.timeout(3000) });
+      ok = r.ok;
+    } catch {}
+
+    if (!ok) {
+      await fetch(BASE_URL, { method:'HEAD', mode:'no-cors', signal: AbortSignal.timeout(3000) });
+      ok = true;
+    }
+
+    if ($('apiDot')) $('apiDot').className = 'api-dot ok';
+    if ($('apiStatus')) $('apiStatus').textContent = 'Backend online — ' + BASE_URL;
+  } catch {
+    if ($('apiDot')) $('apiDot').className = 'api-dot err';
+    if ($('apiStatus')) $('apiStatus').textContent = '⚠ Cannot reach backend at ' + BASE_URL;
+  }
+})();
+
+    // ─── Mode switch ──────────────────────────────────────────────────────────────
+    let mode = 'text';
+
+    function setMode(m, btn) {
+      mode = m;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      $('panelText').style.display = m === 'text' ? 'block' : 'none';
+      $('panelFile').style.display = m === 'file' ? 'block' : 'none';
+      updateHint();
+      updateStatus();
+    }
+
+    function updateHint() {
+      const ep = mode === 'text' ? EP_TEXT + ' (JSON)' : EP_FILE + ' (multipart)';
+<!--      $('shareHint').textContent = 'Hits: ' + ep;-->
+    }
+    updateHint();
+
+    // ─── Text input ───────────────────────────────────────────────────────────────
+    $('textInput').addEventListener('input', function() {
+      $('charCount').textContent = this.value.length.toLocaleString() + ' chars';
+      updateStatus();
+    });
+
+    // ─── File input ───────────────────────────────────────────────────────────────
+    let selectedFile = null;
+
+    $('fileInput').addEventListener('change', e => selectFile(e.target.files[0]));
+    $('dropZone').addEventListener('click', () => $('fileInput').click());
+    $('dropZone').addEventListener('dragover', e => { e.preventDefault(); $('dropZone').classList.add('over'); });
+    $('dropZone').addEventListener('dragleave', () => $('dropZone').classList.remove('over'));
+    $('dropZone').addEventListener('drop', e => {
+      e.preventDefault();
+      $('dropZone').classList.remove('over');
+      if (e.dataTransfer.files[0]) selectFile(e.dataTransfer.files[0]);
+    });
+
+    function selectFile(f) {
+      if (!f) return;
+      selectedFile = f;
+      $('fpIcon').textContent = getIcon(f.name);
+      $('fpName').textContent = f.name;
+      $('fpMeta').textContent = fmtSize(f.size) + ' · ' + (f.type || 'unknown');
+      $('fileTypeLabel').textContent = f.type || 'unknown';
+      $('filePreview').classList.add('show');
+      $('dropZone').style.display = 'none';
+      updateStatus();
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      $('fileInput').value = '';
+      $('filePreview').classList.remove('show');
+      $('dropZone').style.display = 'block';
+      $('fileTypeLabel').textContent = '';
+      updateStatus();
+    }
+
+    function updateStatus() {
+      if (mode === 'text') {
+        const len = $('textInput').value.trim().length;
+        setStatus(len ? `Ready — ${len.toLocaleString()} chars` : 'Ready — paste text above', len ? 'ok' : '');
+      } else {
+        setStatus(selectedFile ? `Ready — ${selectedFile.name}` : 'Ready — choose a file above', selectedFile ? 'ok' : '');
+      }
+    }
+
+    // ─── Modal state ──────────────────────────────────────────────────────────────
+    let resultUrl  = null;   // full URL from backend response e.g. http://localhost:8080/share/abc123
+    let resultToken = null;  // just the token part
+
+    // ╔══════════════════════════════════════════════════════════╗
+    // ║  UPLOAD HANDLER                                          ║
+    // ╚══════════════════════════════════════════════════════════╝
+    async function handleShare() {
+      if (mode === 'text') {
+        await uploadText();
+      } else {
+        await uploadFile();
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    //  POST /share/text
+    //  Content-Type: application/json
+    //  Body: { "text": "...", "oneTimeDownload": false }
+    //
+    //  Matches your ShareTextRequest DTO
+    // ─────────────────────────────────────────────────────────────────────────────
+    async function uploadText() {
+      const text = $('textInput').value;
+      if (!text.trim()) { toast('Text cannot be empty', 'error'); return; }
+
+      const oneTime = $('textOneTime').checked;
+
+      $('shareBtn').disabled = true;
+      setStatus('Uploading text…', 'run');
+      setProgress(20);
+
+      try {
+        const res = await fetch(EP_TEXT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Add auth header here if needed: 'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            text:            text,         // → ShareTextRequest.text
+            oneTimeDownload: oneTime       // → ShareTextRequest.oneTimeDownload
+          })
+        });
+
+        setProgress(75);
+        const json = await res.json();  // ShareResponse { success, message, url }
+
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || `Server error ${res.status}`);
+        }
+
+        setProgress(100);
+        setStatus('Uploaded ✓', 'ok');
+
+        // Backend returns full URL: "http://localhost:8080/share/{token}"
+        resultUrl   = json.url;
+        resultToken = resultUrl.split('/').pop();
+
+        showModal({ type:'text', text, oneTime });
+
+      } catch(err) {
+        console.error('Text upload failed:', err);
+        toast('Upload failed: ' + err.message, 'error');
+        setStatus('Failed — ' + err.message, 'err');
+      }
+
+      $('shareBtn').disabled = false;
+      setTimeout(() => setProgress(0), 1400);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    //  POST /share/file
+    //  Content-Type: multipart/form-data  (browser sets boundary automatically)
+    //  Parts:
+    //    "file"            → the File object  (@RequestParam("file") MultipartFile)
+    //    "oneTimeDownload" → "true" / "false" (@RequestParam boolean)
+    // ─────────────────────────────────────────────────────────────────────────────
+    async function uploadFile() {
+      if (!selectedFile) { toast('Please select a file first', 'error'); return; }
+
+      const oneTime = $('fileOneTime').checked;
+
+      $('shareBtn').disabled = true;
+      setStatus('Uploading ' + selectedFile.name + '…', 'run');
+      setProgress(20);
+
+      try {
+        const fd = new FormData();
+        fd.append('file',            selectedFile, selectedFile.name);  // → MultipartFile file
+        fd.append('oneTimeDownload', String(oneTime));                  // → boolean oneTimeDownload
+
+        // ⚠ Do NOT set Content-Type — browser auto-sets multipart/form-data with correct boundary
+        const res = await fetch(EP_FILE, {
+          method: 'POST',
+          body:   fd
+        });
+
+        setProgress(80);
+        const json = await res.json();  // ShareResponse { success, message, url }
+
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || `Server error ${res.status}`);
+        }
+
+        setProgress(100);
+        setStatus('Uploaded ✓', 'ok');
+
+        // Backend returns full URL: "http://localhost:8080/share/{token}"
+        resultUrl   = json.url;
+        resultToken = resultUrl.split('/').pop();
+
+        showModal({ type:'file', file:selectedFile, oneTime });
+
+      } catch(err) {
+        console.error('File upload failed:', err);
+        toast('Upload failed: ' + err.message, 'error');
+        setStatus('Failed — ' + err.message, 'err');
+      }
+
+      $('shareBtn').disabled = false;
+      setTimeout(() => setProgress(0), 1400);
+    }
+
+    // ─── Show success modal ───────────────────────────────────────────────────────
+    function showModal({ type, text, file, oneTime }) {
+      // The output.html URL with the token as ?id=
+      const outputUrl = window.location.origin +
+                            window.location.pathname.replace('upload.html', '') +
+                            OUTPUT_PAGE + '?id=' + resultToken;
+
+      $('modalToken').textContent = resultToken;
+      $('modalUrl').textContent   = resultUrl;
+
+      const desc = type === 'text'
+        ? `${text.length.toLocaleString()} chars of text`
+        : `${file.name} (${fmtSize(file.size)})`;
+      $('modalSub').textContent = desc + (oneTime ? ' · one-time' : '');
+
+      const pills = [];
+      if (type === 'text') pills.push(`<span class="meta-pill pill-text">📝 ${text.length.toLocaleString()} chars</span>`);
+      if (type === 'file') pills.push(`<span class="meta-pill pill-file">📁 ${file.name}</span>`);
+      if (oneTime)         pills.push(`<span class="meta-pill pill-one">🔥 One-time</span>`);
+      $('modalPills').innerHTML = pills.join('');
+
+      // Store for openOutput / copyUrl
+      window._outputUrl = resultUrl;
+
+      $('copyBtn').textContent = '⎘ Copy';
+      $('copyBtn').className   = 'copy-btn';
+      $('overlay').classList.add('show');
+    }
+
+    // ─── Modal actions ────────────────────────────────────────────────────────────
+    function copyUrl() {
+      navigator.clipboard.writeText(window._outputUrl).then(() => {
+        $('copyBtn').textContent = '✓ Copied!';
+        $('copyBtn').className   = 'copy-btn copied';
+        toast('Link copied!', 'success');
+        setTimeout(() => { $('copyBtn').textContent = '⎘ Copy'; $('copyBtn').className = 'copy-btn'; }, 2200);
+      });
+    }
+
+    function openOutput() {
+      window.open(window._outputUrl, '_blank');
+    }
+
+    function closeModal() {
+      $('overlay').classList.remove('show');
+      $('textInput').value = '';
+      $('charCount').textContent = '0 chars';
+      clearFile();
+      $('textOneTime').checked = false;
+      $('fileOneTime').checked = false;
+      resultUrl = resultToken = null;
+      setStatus('Ready — add content above', '');
+      setProgress(0);
+    }
+
+    $('overlay').addEventListener('click', e => { if (e.target === $('overlay')) closeModal(); });
+</script>
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>

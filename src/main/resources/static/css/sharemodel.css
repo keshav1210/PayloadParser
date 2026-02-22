@@ -1,0 +1,112 @@
+.btn-share {
+      background: linear-gradient(135deg, #4f8cff, #00ddb3);
+      color: #fff !important;
+      border: none !important;
+      font-weight: 700;
+    }
+    .btn-share:hover { opacity: .88; }
+
+    /* ── Share modal overlay ── */
+    .sd-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.75); backdrop-filter: blur(10px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .sd-overlay.show { display: flex; }
+
+    /* ── Share modal box ── */
+    .sd-modal {
+      background: #101014; border: 1px solid #363648;
+      border-radius: 20px; padding: 34px 30px;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 0 60px rgba(79,140,255,.2);
+      animation: sdPop .28s cubic-bezier(.34,1.56,.64,1);
+      font-family: 'Outfit', sans-serif;
+    }
+    .sd-check {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(0,200,150,.12); border: 2px solid #00c896;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin: 0 auto 16px;
+      box-shadow: 0 0 24px rgba(0,200,150,.2);
+    }
+    .sd-modal h3 {
+      text-align: center; font-size: 1.25rem; font-weight: 900;
+      letter-spacing: -.03em; color: #ddddf0; margin-bottom: 6px;
+    }
+    .sd-sub {
+      text-align: center; color: #525268; font-size: .82rem;
+      margin-bottom: 18px; line-height: 1.6;
+    }
+    .sd-url-row {
+      display: flex; align-items: center;
+      background: #16161c; border: 1px solid #252530;
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; overflow: hidden;
+    }
+    .sd-url-text {
+      flex: 1; font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; color: #4f8cff;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sd-copy-btn {
+      flex-shrink: 0; border: none; background: #4f8cff; color: #fff;
+      font-size: .76rem; font-weight: 700; padding: 6px 14px;
+      border-radius: 7px; cursor: pointer; transition: all .2s; margin-left: 10px;
+    }
+    .sd-copy-btn:hover { background: #6fa3ff; }
+    .sd-copy-btn.copied { background: #00c896; }
+    .sd-actions { display: flex; gap: 8px; }
+    .sd-actions button {
+      flex: 1; padding: 9px; border-radius: 9px; font-size: .8rem; font-weight: 600;
+      cursor: pointer; transition: all .18s; border: 1px solid #252530;
+      background: transparent; color: #525268; font-family: 'Outfit', sans-serif;
+    }
+    .sd-actions button:hover { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.08); }
+
+    /* ── Share source picker ── */
+    .sd-source-row {
+      display: flex; gap: 6px; margin-bottom: 16px;
+    }
+    .sd-src-btn {
+      flex: 1; padding: 7px; border-radius: 8px; border: 1px solid #252530;
+      background: transparent; color: #525268; font-size: .76rem; font-weight: 600;
+      cursor: pointer; transition: all .18s; font-family: 'Outfit', sans-serif;
+    }
+    .sd-src-btn.active { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.1); }
+
+    /* ── One-time toggle ── */
+    .sd-toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #16161c; border: 1px solid #252530;
+      border-radius: 10px; margin-bottom: 14px;
+    }
+    .sd-toggle-label { font-size: .78rem; color: #525268; }
+    .sd-toggle-label strong { color: #ddddf0; display: block; margin-bottom: 2px; }
+    .sd-toggle { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
+    .sd-toggle input { opacity: 0; width: 0; height: 0; }
+    .sd-toggle-slider {
+      position: absolute; inset: 0; border-radius: 99px;
+      background: #1d1d25; border: 1px solid #252530; cursor: pointer; transition: all .22s;
+    }
+    .sd-toggle-slider::before {
+      content: ''; position: absolute; width: 13px; height: 13px;
+      border-radius: 50%; background: #525268; left: 3px; top: 3px; transition: all .22s;
+    }
+    .sd-toggle input:checked + .sd-toggle-slider { background: #00c896; border-color: #00c896; }
+    .sd-toggle input:checked + .sd-toggle-slider::before { transform: translateX(17px); background: #fff; }
+
+    /* ── Loading state inside modal ── */
+    .sd-loader {
+      display: none; text-align: center; padding: 20px 0;
+      font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #525268;
+    }
+    .sd-loader.show { display: block; }
+    .sd-spinner {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid #252530; border-top: 2px solid #4f8cff;
+      animation: sdSpin .7s linear infinite; margin: 0 auto 10px;
+    }
+    .sd-error { color: #ff4f6a; font-size: .78rem; text-align: center; margin-bottom: 12px; display: none; }
+
+    @keyframes sdPop  { from{opacity:0;transform:scale(.84);} to{opacity:1;transform:scale(1);} }
+    @keyframes sdSpin { to{transform:rotate(360deg);} }

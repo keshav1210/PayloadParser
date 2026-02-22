@@ -893,3 +893,106 @@ document.addEventListener('DOMContentLoaded', () => {
     closeSqlModal();
   });
 });
+
+ const SD_EP = window.location.origin + '/data/share/text';
+
+  let _sdSource = 'input';
+
+ function openShareModal(source) {
+    _sdSource = source || 'input';
+    // Reset to form state
+    document.getElementById('sdForm').style.display    = 'block';
+    document.getElementById('sdLoader').classList.remove('show');
+    document.getElementById('sdSuccess').style.display = 'none';
+    document.getElementById('sdError').style.display   = 'none';
+    document.getElementById('sdError').textContent     = '';
+    document.getElementById('sdOneTime').checked       = false;
+    setSdSource(_sdSource);
+    document.getElementById('sdOverlay').classList.add('show');
+  }
+
+function closeSdModal() {
+    document.getElementById('sdOverlay').classList.remove('show');
+  }
+
+  function setSdSource(src) {
+    _sdSource = src;
+    document.getElementById('sdSrcInput') .classList.toggle('active', src === 'input');
+    document.getElementById('sdSrcOutput').classList.toggle('active', src === 'output');
+  }
+
+function getSdContent() {
+    if (_sdSource === 'input') {
+      // Get text from the left editor (codeEditor)
+      const el = document.getElementById('codeEditor');
+      return el ? el.innerText.trim() : '';
+    } else {
+      // Get text from right panel — try text view first, then tree text
+      const rightEditor = document.getElementById('rightCodeEditor');
+      if (rightEditor && rightEditor.innerText.trim()) {
+        return rightEditor.innerText.trim();
+      }
+      // Fallback: get visible text from tree content
+      const tree = document.getElementById('rightTreeContent');
+      return tree ? tree.innerText.trim() : '';
+    }
+  }
+
+async function doShare() {
+    const text = getSdContent();
+
+    if (!text) {
+      const err = document.getElementById('sdError');
+      err.textContent = '⚠ Nothing to share — the selected panel is empty.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const oneTime = document.getElementById('sdOneTime').checked;
+
+    // Show loader
+    document.getElementById('sdForm').style.display    = 'none';
+    document.getElementById('sdLoader').classList.add('show');
+    document.getElementById('sdError').style.display   = 'none';
+
+    try {
+      const res = await fetch(SD_EP, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ text, oneTimeDownload: oneTime })
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || !json.success) throw new Error(json.message || 'Server error ' + res.status);
+
+      // Show success
+      document.getElementById('sdLoader').classList.remove('show');
+      document.getElementById('sdSuccess').style.display = 'block';
+      document.getElementById('sdUrlText').textContent   = json.url;
+      document.getElementById('sdSuccessSub').textContent =
+        `${text.length.toLocaleString()} chars · ${_sdSource} panel` + (oneTime ? ' · one-time' : '');
+
+    } catch (err) {
+      document.getElementById('sdLoader').classList.remove('show');
+      document.getElementById('sdForm').style.display  = 'block';
+      const errEl = document.getElementById('sdError');
+      errEl.textContent    = '⚠ ' + err.message;
+      errEl.style.display  = 'block';
+    }
+  }
+
+  function sdCopyUrl() {
+    const url = document.getElementById('sdUrlText').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('sdCopyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '⎘ Copy'; btn.classList.remove('copied'); }, 2200);
+    });
+  }
+
+  // Close on backdrop click
+  document.getElementById('sdOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('sdOverlay')) closeSdModal();
+  });

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareDrop — View</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --bg:#08080b; --s1:#101014; --s2:#16161c; --s3:#1d1d25;
+          --border:#252530; --bh:#363648;
+          --accent:#4f8cff; --teal:#00ddb3; --purple:#9f7eff;
+          --success:#00c896; --danger:#ff4f6a; --warn:#f0a540;
+          --text:#ddddf0; --muted:#525268;
+          --mono:'JetBrains Mono',monospace; --sans:'Outfit',sans-serif;
+        }
+        *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+        body { background:var(--bg); color:var(--text); font-family:var(--sans); min-height:100vh; overflow-x:hidden; }
+        body::before {
+          content:''; position:fixed; inset:0; z-index:0;
+          background-image:linear-gradient(rgba(79,140,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,.04) 1px,transparent 1px);
+          background-size:42px 42px; pointer-events:none;
+        }
+        .blob { position:fixed; border-radius:50%; filter:blur(120px); opacity:.1; pointer-events:none; z-index:0; }
+        .blob1 { width:500px; height:500px; background:var(--teal);   top:-12%; right:-10%; }
+        .blob2 { width:460px; height:460px; background:var(--purple); bottom:-14%; left:-10%; }
+
+        .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:.95rem; letter-spacing:-.02em; }
+        .brand-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--teal)); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.72rem; font-weight:700; color:#fff; }
+        .brand-sub { font-size:.74rem; color:var(--muted); font-weight:400; margin-left:3px; }
+        .nav-right { display:flex; align-items:center; gap:12px; }
+        .live-badge { display:flex; align-items:center; gap:6px; padding:4px 13px; border-radius:99px; border:1px solid rgba(0,221,179,.28); background:rgba(0,221,179,.07); font-family:var(--mono); font-size:.67rem; color:var(--teal); letter-spacing:.08em; text-transform:uppercase; }
+        .ldot { width:6px; height:6px; border-radius:50%; background:var(--success); box-shadow:0 0 5px var(--success); animation:blink 2s ease infinite; }
+        .nav-links { display:flex; gap:20px; font-size:.82rem; color:var(--muted); }
+        .nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
+        .nav-links a:hover { color:var(--text); }
+
+        .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:0 22px 80px; }
+
+        /* ── States ── */
+        .state { text-align:center; padding-top:120px; animation:fadeUp .4s ease; }
+        .state-icon { font-size:4rem; opacity:.2; margin-bottom:18px; }
+        .state h2 { font-size:1.5rem; font-weight:900; letter-spacing:-.04em; margin-bottom:10px; }
+        .state p { color:var(--muted); font-size:.88rem; line-height:1.7; max-width:420px; margin:0 auto 26px; }
+        .state code { font-family:var(--mono); color:var(--accent); background:var(--s2); padding:2px 7px; border-radius:5px; }
+
+        .loader-wrap { text-align:center; padding-top:120px; }
+        .loader { width:52px; height:52px; border-radius:50%; border:2px solid var(--border); border-top:2px solid var(--accent); animation:spin .75s linear infinite; margin:0 auto 22px; }
+        .loader-label { font-family:var(--mono); color:var(--muted); font-size:.85rem; margin-bottom:6px; }
+        .loader-ep { font-family:var(--mono); font-size:.72rem; color:var(--accent); margin-top:4px; }
+
+        /* ── Hero ── */
+        .hero { text-align:center; padding:58px 0 38px; animation:fadeUp .5s ease both; }
+        .hero-badge { display:inline-flex; align-items:center; gap:7px; padding:5px 16px; border-radius:99px; border:1px solid rgba(0,221,179,.28); background:rgba(0,221,179,.07); font-family:var(--mono); font-size:.67rem; color:var(--teal); letter-spacing:.1em; text-transform:uppercase; margin-bottom:18px; }
+        .hero h1 { font-size:clamp(1.8rem,4vw,2.8rem); font-weight:900; letter-spacing:-.045em; line-height:1.1; margin-bottom:10px; }
+        .hero-meta { font-family:var(--mono); font-size:.73rem; color:var(--muted); }
+
+        /* ── Stats ── */
+        .stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; animation:fadeUp .5s ease .08s both; }
+        .stat { flex:1; min-width:110px; background:var(--s1); border:1px solid var(--border); border-radius:12px; padding:12px 16px; }
+        .stat-label { font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+        .stat-value { font-family:var(--mono); font-size:.88rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; }
+
+        /* ── Cards ── */
+        .card { background:var(--s1); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; transition:border-color .25s; animation:fadeUp .5s ease both; }
+        .card:hover { border-color:var(--bh); }
+        .card-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:12px 18px; border-bottom:1px solid var(--border); background:var(--s2); }
+        .card-title { display:flex; align-items:center; gap:8px; font-size:.88rem; font-weight:700; }
+        .cicon { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.85rem; }
+        .ci-blue { background:rgba(79,140,255,.18); }
+        .ci-teal { background:rgba(0,221,179,.14); }
+        .card-actions { display:flex; gap:6px; flex-wrap:wrap; }
+
+        /* ── Buttons ── */
+        .btn { display:inline-flex; align-items:center; gap:5px; padding:7px 13px; border-radius:9px; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:var(--sans); font-size:.75rem; font-weight:600; cursor:pointer; transition:all .18s; white-space:nowrap; }
+        .btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(79,140,255,.09); }
+        .btn-success { background:rgba(0,200,150,.1); border-color:rgba(0,200,150,.3); color:var(--success); }
+        .btn-success:hover { background:rgba(0,200,150,.2); border-color:var(--success); color:var(--success); }
+        .btn-primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; }
+        .btn-primary:hover { background:#6aa3ff; color:#fff; }
+
+        /* ── View toggle ── */
+        .vtoggle { display:flex; gap:3px; background:var(--s3); border-radius:8px; padding:3px; }
+        .vt { padding:4px 11px; border-radius:5px; border:none; background:transparent; color:var(--muted); font-family:var(--sans); font-size:.7rem; font-weight:600; cursor:pointer; transition:all .18s; }
+        .vt.active { background:var(--accent); color:#fff; }
+
+        /* ── Text pre ── */
+        .text-body { padding:16px 18px; }
+        .text-pre { background:var(--s2); border:1px solid var(--border); border-radius:10px; padding:15px 16px; font-family:var(--mono); font-size:.79rem; line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; max-height:460px; overflow-y:auto; margin:0; }
+
+        /* ── File section ── */
+        .file-row { display:flex; align-items:center; gap:14px; padding:16px 18px; }
+        .fthumb { width:48px; height:48px; border-radius:11px; background:var(--s3); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; overflow:hidden; }
+        .fthumb img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+        .finfo { flex:1; min-width:0; }
+        .finfo-name { font-family:var(--mono); font-size:.82rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-bottom:4px; }
+        .finfo-meta { font-family:var(--mono); font-size:.68rem; color:var(--muted); }
+
+        /* ── Preview area ── */
+        .fprev { display:none; padding:0 18px 16px; }
+        .fprev.open { display:block; animation:fadeUp .25s ease; }
+        .fprev img { max-width:100%; max-height:400px; border-radius:10px; display:block; border:1px solid var(--border); object-fit:contain; }
+        .fprev audio, .fprev video { width:100%; border-radius:10px; display:block; }
+        .fprev iframe { width:100%; height:480px; border-radius:10px; border:1px solid var(--border); display:block; }
+        .fprev pre { background:var(--s3); border:1px solid var(--border); border-radius:9px; padding:14px; font-family:var(--mono); font-size:.76rem; line-height:1.7; color:var(--text); white-space:pre-wrap; word-break:break-word; max-height:300px; overflow-y:auto; margin:0; }
+        .fprev .no-prev { display:flex; align-items:center; gap:10px; padding:14px; background:var(--s3); border:1px solid var(--border); border-radius:9px; font-size:.82rem; color:var(--muted); }
+
+        /* ── One-time warning ── */
+        .onetime-banner { display:flex; align-items:center; gap:10px; padding:11px 16px; background:rgba(240,165,64,.08); border:1px solid rgba(240,165,64,.3); border-radius:10px; margin-bottom:14px; font-size:.82rem; color:var(--warn); animation:fadeUp .5s ease both; }
+
+        /* ── Download bar ── */
+        .dl-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; background:var(--s1); border:1px solid var(--border); border-radius:14px; padding:16px 20px; margin-bottom:16px; animation:fadeUp .5s ease .1s both; }
+        .dl-bar-left { display:flex; align-items:center; gap:12px; }
+        .dl-icon { width:44px; height:44px; border-radius:11px; background:linear-gradient(135deg,var(--accent),var(--teal)); display:flex; align-items:center; justify-content:center; font-size:1.3rem; box-shadow:0 4px 20px rgba(79,140,255,.25); flex-shrink:0; }
+        .dl-bar-info h4 { font-size:.9rem; font-weight:700; margin-bottom:2px; }
+        .dl-bar-info p { font-size:.74rem; color:var(--muted); }
+
+        .lang-chip { display:inline-block; padding:2px 8px; border-radius:5px; background:rgba(159,126,255,.15); border:1px solid rgba(159,126,255,.28); font-family:var(--mono); font-size:.63rem; color:var(--purple); margin-left:7px; vertical-align:middle; }
+
+        /* ── Footer ── */
+        .footer { text-align:center; padding-top:22px; animation:fadeUp .5s ease .28s both; }
+        .footer-inner { display:inline-flex; align-items:center; gap:10px; padding:9px 20px; border-radius:11px; background:var(--s1); border:1px solid var(--border); font-size:.76rem; color:var(--muted); }
+        .footer-inner strong { color:var(--accent); }
+
+        /* ── Toast ── */
+        .toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(70px); background:var(--s2); border:1px solid var(--border); border-radius:10px; padding:10px 22px; font-size:.82rem; font-weight:600; z-index:999; opacity:0; transition:all .28s ease; white-space:nowrap; box-shadow:0 8px 30px rgba(0,0,0,.55); pointer-events:none; }
+        .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+        .toast.success { border-color:var(--success); color:var(--success); }
+        .toast.info    { border-color:var(--accent);  color:var(--accent); }
+        .toast.error   { border-color:var(--danger);  color:var(--danger); }
+
+        /* ── JSON highlight ── */
+        .jk { color:#9f7eff; } .js2 { color:#00ddb3; } .jn { color:#f0a540; } .jb { color:#4f8cff; } .jnull { color:#ff4f6a; }
+
+        @keyframes fadeUp { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:translateY(0);} }
+        @keyframes spin   { to{transform:rotate(360deg);} }
+        @keyframes blink  { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
+        @media(max-width:600px) { .dl-bar,.card-head{flex-direction:column;align-items:flex-start;} .stats .stat{min-width:calc(50% - 5px);} }
+    </style>
+</head>
+<body>
+<div id="header"></div>
+<!--<div class="blob blob1"></div>-->
+<!--<div class="blob blob2"></div>-->
+<div class="wrap">
+
+    <!-- LOADING -->
+    <div class="loader-wrap" id="stateLoading">
+        <div class="loader"></div>
+        <div class="loader-label">Fetching drop <span id="loadToken" style="color:var(--accent)">…</span></div>
+        <div class="loader-ep" id="loaderEp"></div>
+    </div>
+
+    <!-- NO ID -->
+    <div class="state" id="stateNoId" style="display:none">
+        <div class="state-icon">🔗</div>
+        <h2>No token in URL</h2>
+        <p>This page expects <code>?id=TOKEN</code> in the URL. Go to the upload page to create a new share link.</p>
+        <a href="upload.html"><button class="btn btn-primary" style="padding:11px 26px;font-size:.88rem">← Upload Page</button></a>
+    </div>
+
+    <!-- NOT FOUND / ERROR -->
+    <div class="state" id="stateError" style="display:none">
+        <div class="state-icon" id="errIcon">🔍</div>
+        <h2 id="errTitle">Not Found</h2>
+        <p id="errDesc">This drop doesn't exist or has expired.</p>
+        <p id="errDetail" style="font-family:var(--mono);font-size:.74rem;color:var(--warn);margin-top:-14px;margin-bottom:24px;min-height:16px"></p>
+        <a href="upload.html"><button class="btn btn-primary" style="padding:11px 26px;font-size:.88rem">← Upload Something New</button></a>
+    </div>
+
+    <!-- ═══════ FOUND ═══════ -->
+    <div id="stateFound" style="display:none">
+
+        <div class="hero">
+            <div class="hero-badge"><span class="ldot"></span> live drop</div>
+            <h1 id="heroTitle">Shared Drop</h1>
+            <div class="hero-meta" id="heroMeta"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="statsRow"></div>
+
+        <!-- One-time banner -->
+        <div class="onetime-banner" id="onetimeBanner" style="display:none">
+            🔥 <span><strong>One-time download</strong> — this content will be deleted from the server after you download/copy it.</span>
+        </div>
+
+        <!-- Download bar (file mode) -->
+        <div class="dl-bar" id="dlBar" style="display:none">
+            <div class="dl-bar-left">
+                <div class="dl-icon" id="dlIcon">📦</div>
+                <div class="dl-bar-info">
+                    <h4 id="dlTitle">Download File</h4>
+                    <p id="dlSub">—</p>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="downloadFile()" style="font-size:.85rem;padding:9px 18px">⬇ Download</button>
+        </div>
+
+        <!-- TEXT card -->
+        <div class="card" id="textCard" style="display:none;animation-delay:.1s">
+            <div class="card-head">
+                <div class="card-title">
+                    <div class="cicon ci-blue">📝</div>
+                    Text Content
+                    <span id="textLangChip"></span>
+                </div>
+                <div class="card-actions">
+                    <div class="vtoggle">
+                        <button class="vt active" onclick="setView('raw',this)">Raw</button>
+                        <button class="vt" onclick="setView('pretty',this)">Pretty</button>
+                    </div>
+                    <button class="btn" onclick="copyText()">⎘ Copy</button>
+                    <button class="btn btn-success" onclick="dlText('txt')">⬇ .txt</button>
+                    <button class="btn" id="btnJson" onclick="dlText('json')" style="display:none">⬇ .json</button>
+                    <button class="btn" id="btnCsv"  onclick="dlText('csv')"  style="display:none">⬇ .csv</button>
+                </div>
+            </div>
+            <div class="text-body">
+                <pre class="text-pre" id="textContent"></pre>
+            </div>
+        </div>
+
+        <!-- FILE card (preview) -->
+        <div class="card" id="fileCard" style="display:none;animation-delay:.12s">
+            <div class="card-head">
+                <div class="card-title">
+                    <div class="cicon ci-teal">📁</div>
+                    <span id="fileCardName">File</span>
+                </div>
+                <div class="card-actions">
+                    <button class="btn" id="prevBtn" onclick="togglePreview()">👁 Preview</button>
+                    <button class="btn btn-success" onclick="downloadFile()">⬇ Download</button>
+                </div>
+            </div>
+            <div class="file-row">
+                <div class="fthumb" id="fthumb"><span id="fthumbIcon">📎</span></div>
+                <div class="finfo">
+                    <div class="finfo-name" id="fFileName">—</div>
+                    <div class="finfo-meta" id="fFileMeta">—</div>
+                </div>
+            </div>
+            <div class="fprev" id="fprevArea"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-inner">
+                <span>Shared via</span>
+                <strong>ShareDrop</strong>
+                <span style="color:var(--border)">·</span>
+                <button class="btn" onclick="copyPageUrl()" style="padding:4px 10px;font-size:.72rem">⎘ Copy Link</button>
+                <span style="color:var(--border)">·</span>
+                <a href="/share" style="color:var(--muted);text-decoration:none;font-size:.76rem;transition:color .2s"
+                   onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">Upload New →</a>
+            </div>
+        </div>
+
+    </div><!-- /stateFound -->
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="footer"></div>
+
+<script>
+    // ╔══════════════════════════════════════════════════════════╗
+    // ║  CONFIG — must match upload.html                         ║
+    // ╚══════════════════════════════════════════════════════════╝
+    const BASE_URL = window.location.origin; // auto-detects host — no hardcoding needed
+
+    // GET  /share/{token}          → returns ShareMeta JSON
+    // GET  /share/{token}/download → streams file bytes (for file drops)
+    //
+    // Adjust these paths to match your actual @GetMapping routes:
+    const EP_FETCH    = BASE_URL + '/data/shared/';     // GET /data/shared/{token} — returns raw text or file bytes
+    // No separate download endpoint — /data/shared/{token} returns bytes directly
+
+    // ╔══════════════════════════════════════════════════════════╗
+
+    const $ = id => document.getElementById(id);
+    const fmtSize = b => !b ? '—' : b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB';
+    const fmtDate = ts => new Date(ts).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+    const escHtml = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+    const FILE_ICONS = {
+      jpg:'🖼',jpeg:'🖼',png:'🖼',gif:'🖼',webp:'🖼',svg:'🖼',bmp:'🖼',
+      pdf:'📄',doc:'📄',docx:'📄',txt:'📝',md:'📝',log:'📝',
+      json:'📋',xml:'📋',yaml:'📋',yml:'📋',csv:'📊',xlsx:'📊',
+      zip:'📦',rar:'📦',gz:'📦',tar:'📦',
+      mp4:'🎬',mov:'🎬',avi:'🎬',mkv:'🎬',
+      mp3:'🎵',wav:'🎵',ogg:'🎵',
+      html:'🌐',css:'🎨',js:'⚡',ts:'⚡',py:'🐍',java:'☕',sh:'💻',
+    };
+    const getIcon  = n => FILE_ICONS[(n||'').split('.').pop().toLowerCase()] || '📎';
+    const getLang  = n => ({js:'JavaScript',ts:'TypeScript',py:'Python',html:'HTML',css:'CSS',json:'JSON',xml:'XML',yaml:'YAML',md:'Markdown',sh:'Shell',java:'Java',sql:'SQL'})[(n||'').split('.').pop().toLowerCase()] || null;
+    const isImage  = t => t && t.startsWith('image/');
+    const isAudio  = t => t && t.startsWith('audio/');
+    const isVideo  = t => t && t.startsWith('video/');
+    const isPDF    = t => t === 'application/pdf';
+    const isTextFile = n => new Set(['txt','json','xml','yaml','yml','csv','md','html','htm','js','ts','jsx','tsx','css','py','sh','log','ini','sql']).has((n||'').split('.').pop().toLowerCase());
+    const isValidJSON = s => { try{JSON.parse(s);return true;}catch{return false;} };
+
+    function toast(msg, type='info') {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function hlJSON(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+          let c = 'jn';
+          if (/^"/.test(m)) c = /:$/.test(m) ? 'jk' : 'js2';
+          else if (/true|false/.test(m)) c = 'jb';
+          else if (/null/.test(m)) c = 'jnull';
+          return `<span class="${c}">${m}</span>`;
+        });
+    }
+
+    // ─── State ────────────────────────────────────────────────────────────────────
+    let data          = null;   // the parsed ShareMeta from backend
+    let token         = null;   // the token from ?id=
+    let previewOpen   = false;
+    let textViewMode  = 'raw';
+
+    // ════════════════════════════════════════════════════════════
+    //  WHAT YOUR BACKEND ACTUALLY RETURNS from GET /data/shared/{token}:
+    //
+    //  TEXT drop → plain string body (Content-Type: text/plain or similar)
+    //              response body is literally: "Hello world"
+    //
+    //  FILE drop → raw bytes (Content-Type: image/png, application/pdf etc.)
+    //              with header: Content-Disposition: attachment; filename="..."
+    //
+    //  So we do NOT res.json() — we check Content-Type and handle accordingly.
+    // ════════════════════════════════════════════════════════════
+
+    (async function boot() {
+      // Read token from the URL path: /shared/f6040c30-48e4-4683-b944-a14a62c55f1f
+      // Works with clean URLs — no ?id= query param needed
+      const pathParts = window.location.pathname.split('/');
+      token = pathParts[pathParts.length - 1] || null;
+
+      if (!token) {
+        $('stateLoading').style.display = 'none';
+        $('stateNoId').style.display    = 'block';
+        return;
+      }
+
+      $('loadToken').textContent = token;
+
+      const fetchUrl = EP_FETCH + token;
+      $('loaderEp').textContent = 'GET ' + fetchUrl;
+
+      await new Promise(r => setTimeout(r, 350));
+
+      try {
+        const res = await fetch(fetchUrl, { method: 'GET' });
+
+        // ── Error handling ─────────────────────────────────────
+        if (!res.ok) {
+          // Try to read error message from body
+          const errText = await res.text().catch(() => '');
+          if (res.status === 404 || errText.toLowerCase().includes('expired') || errText.toLowerCase().includes('not found')) {
+            showError('🔍 Not Found', 'This link has expired, was already used, or doesn\'t exist.', errText);
+          } else {
+            showError('Error ' + res.status, 'Server returned an error.', errText);
+          }
+          return;
+        }
+
+        // ── Determine what came back by Content-Type ──────────
+        const ct = res.headers.get('Content-Type') || '';
+        // Content-Disposition tells us the filename for file drops
+        const cd = res.headers.get('Content-Disposition') || '';
+
+        const isFileDrop = cd.includes('attachment') || cd.includes('filename');
+
+        if (isFileDrop) {
+          // ── FILE DROP ────────────────────────────────────────
+          // Backend returned raw bytes with Content-Disposition header
+          // Extract filename from: attachment; filename="report.pdf"
+          const nameMatch = cd.match(/filename[^;=\n]*=(['"]?)([^\n'"]*?)\1/i);
+          const fileName  = nameMatch ? nameMatch[2].trim() : 'download';
+          const mimeType  = ct.split(';')[0].trim();
+
+          // Read bytes as blob
+          const blob = await res.blob();
+
+          data = {
+            _type:    'FILE',
+            fileName:    fileName,
+            contentType: mimeType,
+            size:        blob.size,
+            _blob:       blob,            // keep blob for download + preview
+          };
+
+        } else {
+          // ── TEXT DROP ────────────────────────────────────────
+          // Backend returned the raw text string directly
+          const text = await res.text();
+
+          data = {
+            _type:       'TEXT',
+            textContent: text,
+          };
+        }
+
+        $('stateLoading').style.display = 'none';
+        render();
+
+      } catch(err) {
+        console.error('Fetch error:', err);
+        showError('Network Error', 'Could not reach the server.', err.message);
+      }
+    })();
+
+    function showError(title, desc, detail) {
+      $('stateLoading').style.display = 'none';
+      $('errTitle').textContent  = title;
+      $('errDesc').innerHTML     = desc;
+      $('errDetail').textContent = detail ? '⚠ ' + detail : '';
+      $('stateError').style.display = 'block';
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  RENDER — maps the fetched data → UI
+    //  data._type is either "TEXT" or "FILE"
+    // ════════════════════════════════════════════════════════════
+    function render() {
+      $('stateFound').style.display = 'block';
+
+      if (data._type === 'TEXT') {
+        // ── TEXT ─────────────────────────────────────────────
+        $('heroTitle').textContent = 'Text Drop';
+        $('heroMeta').innerHTML = `<span style="font-family:var(--mono)">token: ${escHtml(token)}</span>`;
+
+        $('statsRow').innerHTML = `
+          <div class="stat"><div class="stat-label">Type</div><div class="stat-value" style="color:var(--accent)">TEXT</div></div>
+          <div class="stat"><div class="stat-label">Characters</div><div class="stat-value" style="color:var(--teal)">${data.textContent.length.toLocaleString()}</div></div>
+          <div class="stat"><div class="stat-label">Token</div><div class="stat-value" style="color:var(--muted);font-size:.72rem">${escHtml(token)}</div></div>
+        `;
+
+        $('textCard').style.display = 'block';
+        $('textContent').textContent = data.textContent;
+
+        if (isValidJSON(data.textContent)) {
+          $('btnJson').style.display = 'inline-flex';
+          $('textLangChip').innerHTML = '<span class="lang-chip">JSON</span>';
+        }
+        if (data.textContent.includes(',') && data.textContent.includes('\n')) {
+          $('btnCsv').style.display = 'inline-flex';
+        }
+
+      } else {
+        // ── FILE ─────────────────────────────────────────────
+        const lang = getLang(data.fileName);
+
+        $('heroTitle').textContent = data.fileName;
+        $('heroMeta').innerHTML = `<span style="font-family:var(--mono)">token: ${escHtml(token)}</span>`;
+
+        $('statsRow').innerHTML = `
+          <div class="stat"><div class="stat-label">Type</div><div class="stat-value" style="color:var(--accent)">FILE</div></div>
+          <div class="stat"><div class="stat-label">File Name</div><div class="stat-value" style="color:var(--success)">${escHtml(data.fileName)}</div></div>
+          <div class="stat"><div class="stat-label">Size</div><div class="stat-value" style="color:var(--warn)">${fmtSize(data.size)}</div></div>
+          <div class="stat"><div class="stat-label">MIME</div><div class="stat-value" style="color:var(--muted);font-size:.7rem">${escHtml(data.contentType)}</div></div>
+        `;
+
+        $('dlBar').style.display    = 'flex';
+        $('fileCard').style.display = 'block';
+
+        $('dlIcon').textContent  = getIcon(data.fileName);
+        $('dlTitle').textContent = 'Download — ' + data.fileName;
+        $('dlSub').textContent   = fmtSize(data.size) + ' · ' + data.contentType;
+
+        $('fileCardName').innerHTML = escHtml(data.fileName) + (lang ? `<span class="lang-chip">${lang}</span>` : '');
+        $('fFileName').innerHTML    = escHtml(data.fileName) + (lang ? `<span class="lang-chip">${lang}</span>` : '');
+        $('fFileMeta').textContent  = fmtSize(data.size) + ' · ' + data.contentType;
+        $('fthumbIcon').textContent = getIcon(data.fileName);
+
+        // If it's an image, show thumb immediately
+        if (isImage(data.contentType) && data._blob) {
+          $('fthumb').innerHTML = `<img src="${URL.createObjectURL(data._blob)}" alt="${escHtml(data.fileName)}">`;
+        }
+      }
+    }
+
+    // ── Text view toggle ──────────────────────────────────────
+    function setView(mode, btn) {
+      textViewMode = mode;
+      document.querySelectorAll('.vt').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const pre = $('textContent');
+      const t   = data.textContent || '';
+      if (mode === 'pretty' && isValidJSON(t)) {
+        try { pre.innerHTML = hlJSON(JSON.stringify(JSON.parse(t), null, 2)); return; } catch {}
+      }
+      pre.textContent = t;
+    }
+
+    // ── File preview toggle ───────────────────────────────────
+    function togglePreview() {
+      previewOpen = !previewOpen;
+      const area = $('fprevArea');
+      const btn  = $('prevBtn');
+      btn.textContent = previewOpen ? '✕ Close' : '👁 Preview';
+      area.classList.toggle('open', previewOpen);
+
+      if (!previewOpen || area.dataset.loaded) return;
+      area.dataset.loaded = '1';
+
+      const fname = data.fileName || '';
+      const ftype = data.contentType || '';
+      const blob  = data._blob;
+
+      if (!blob) {
+        area.innerHTML = `<div class="no-prev">📎 No preview available.</div>`;
+        return;
+      }
+
+      const src = URL.createObjectURL(blob);
+
+      if (isImage(ftype)) {
+        area.innerHTML = `<img src="${src}" alt="${escHtml(fname)}">`;
+      } else if (isAudio(ftype)) {
+        area.innerHTML = `<audio controls><source src="${src}" type="${escHtml(ftype)}">No audio support.</audio>`;
+      } else if (isVideo(ftype)) {
+        area.innerHTML = `<video controls style="max-height:320px"><source src="${src}" type="${escHtml(ftype)}">No video support.</video>`;
+      } else if (isPDF(ftype)) {
+        area.innerHTML = `<iframe src="${src}" title="${escHtml(fname)}"></iframe>`;
+      } else if (isTextFile(fname)) {
+        // Read blob as text for preview
+        const reader = new FileReader();
+        reader.onload = e => {
+          const text    = e.target.result;
+          const preview = text.length > 5000 ? text.slice(0,5000) + '\n\n… [truncated]' : text;
+          let   content = escHtml(preview);
+          if (fname.endsWith('.json') && isValidJSON(text)) {
+            try { content = hlJSON(JSON.stringify(JSON.parse(text), null, 2)); } catch {}
+          }
+          area.innerHTML = `<pre>${content}</pre>`;
+        };
+        reader.readAsText(blob);
+      } else {
+        area.innerHTML = `<div class="no-prev">📎 No preview for this file type — click Download.</div>`;
+      }
+    }
+
+    // ── Download file ─────────────────────────────────────────
+    // The blob was already fetched — just save it, no second request needed
+    function downloadFile() {
+      const fname = data.fileName || 'download';
+      const blob  = data._blob;
+
+      if (!blob) { toast('No file data available', 'error'); return; }
+
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement('a');
+      a.href     = url;
+      a.download = fname;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      toast('Downloading ' + fname, 'success');
+    }
+
+    // ── Text downloads ────────────────────────────────────────
+    function dlText(ext) {
+      let content = data.textContent || '';
+      let mime    = 'text/plain';
+      if (ext === 'json') { try { content = JSON.stringify(JSON.parse(content),null,2); mime='application/json'; } catch {} }
+      if (ext === 'csv')  { mime = 'text/csv'; }
+      const blob = new Blob([content], { type: mime });
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = 'sharedrop-' + token + '.' + ext;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Downloaded .' + ext, 'success');
+    }
+
+    function copyText()    { navigator.clipboard.writeText(data.textContent||'').then(()=>toast('Copied!','success')); }
+    function copyPageUrl() { navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied!','success')); }
+</script>
+<script src="/js/layout-loader.js"></script>
+</body>
+</html>

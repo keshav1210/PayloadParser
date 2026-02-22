@@ -118,6 +118,7 @@
     <meta property="og:url" content="https://jsonxmleditor.com/yaml-converter">
     <title>YAML Converter</title>
     <link rel="stylesheet" href="/css/jsonxmlformatter.css">
+    <link rel="stylesheet" href="/css/sharemodel.css">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
     <script>
         if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
@@ -169,6 +170,7 @@
             <option value="xml">XML</option>
         </select>
         <select id="formatType2" style="display:none;"><option value="json">JSON</option></select>
+        <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
         <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
         <button class="btn" onclick="formatData('PROPERTY_TO_YAML')">Property to YAML</button>
         <button class="btn" onclick="formatData('YAML_TO_PROPERTY')">YAML to Property</button>
@@ -218,7 +220,66 @@
 
 <br>
 <div id="footer"></div>
+<!-- ════════════════════════════════════════════════════════
+     ★  SHARE MODAL
+     ════════════════════════════════════════════════════════ -->
+<div class="sd-overlay" id="sdOverlay">
+    <div class="sd-modal">
 
+        <!-- Initial form (source picker + one-time toggle + share btn) -->
+        <div id="sdForm">
+            <h3>Share Content</h3>
+            <p class="sd-sub">Choose what to share and generate an instant link</p>
+
+            <!-- Source: input or output -->
+            <div class="sd-source-row">
+                <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
+                <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
+            </div>
+
+            <!-- One-time toggle -->
+            <div class="sd-toggle-row">
+                <div class="sd-toggle-label">
+                    <strong>🔥 One-time link</strong>
+                    Content deleted from server after first view
+                </div>
+                <label class="sd-toggle">
+                    <input type="checkbox" id="sdOneTime">
+                    <span class="sd-toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="sd-error" id="sdError"></div>
+
+            <div class="sd-actions">
+                <button onclick="closeSdModal()">✕ Cancel</button>
+                <button onclick="doShare()" style="border-color:#4f8cff;color:#4f8cff;font-weight:700">⚡ Generate Link</button>
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        <div class="sd-loader" id="sdLoader">
+            <div class="sd-spinner"></div>
+            Uploading to server…
+        </div>
+
+        <!-- Success state -->
+        <div id="sdSuccess" style="display:none">
+            <div class="sd-check">✓</div>
+            <h3>Link Ready!</h3>
+            <p class="sd-sub" id="sdSuccessSub">—</p>
+            <div class="sd-url-row">
+                <span class="sd-url-text" id="sdUrlText">—</span>
+                <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy</button>
+            </div>
+            <div class="sd-actions">
+                <button onclick="window.open(document.getElementById('sdUrlText').textContent,'_blank')">👁 Open</button>
+                <button onclick="closeSdModal()">✕ Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
 <script src="/js/layout-loader.js"></script>
 <script src="/js/jsonxmlformatter.js"></script>
 </body>
