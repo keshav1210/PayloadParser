@@ -1,0 +1,29 @@
+User-agent: *
+Allow: /
+Disallow: /actuator/
+Disallow: /error
+Disallow: /login
+Disallow: /*.css$
+Disallow: /*.js$
+Disallow: /*.png$
+Disallow: /*.jpg$
+Disallow: /*.gif$
+Disallow: /static/
+Disallow: /assets/
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Googlebot
+Allow: /api/public/
+Allow: /docs/
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /api/public/
+Allow: /docs/
+Crawl-delay: 1
+
+# Sitemap (update with your actual sitemap URL)
+Sitemap: https://jsonxmleditor.com/sitemap.xml
