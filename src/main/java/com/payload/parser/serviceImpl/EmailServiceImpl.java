@@ -7,12 +7,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -22,16 +25,27 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private ObjectProvider<JavaMailSender> mailSenderProvider;
 
-    @Value("${spring.mail.host:}")
-    private String mailHost;
+//    @Value("${spring.mail.host:}")
+//    private String mailHost;
+//
+//    @Value("${spring.mail.username:}")
+//    private String mailUsername;
 
-    @Value("${spring.mail.username:}")
-    private String mailUsername;
+    @Value("${email.api.key}")
+    private String emailApiKey;
+
+    private final RestClient restClient;
+
+    public EmailServiceImpl(RestClient.Builder builder) {
+        this.restClient = builder
+                .baseUrl("https://api.brevo.com/v3")
+                .build();
+    }
 
     @Value("${spring.mail.from:jsonxmleditor@gmail.com}")
     private String mailFrom;
 
-    @Override
+    /*@Override
     public boolean sendShareEmail(String recipientEmail, String token, String shareUrl, String sourcePage) {
         if (recipientEmail == null || recipientEmail.isBlank()) {
             return false;
@@ -66,6 +80,63 @@ public class EmailServiceImpl implements EmailService {
             return true;
         } catch (Exception e) {
             log.error("Failed to send email via SMTP: {}", e.getMessage());
+            return false;
+        }
+    }*/
+
+    @Override
+    public boolean sendShareEmail(
+            String recipientEmail,
+            String token,
+            String shareUrl,
+            String sourcePage) {
+
+        if (recipientEmail == null || recipientEmail.isBlank()) {
+            return false;
+        }
+
+        try {
+            String safeUrl = normalizeShareUrl(shareUrl);
+            String toolName = getToolName(sourcePage);
+            String htmlContent = buildEmailHtml(token, safeUrl, toolName);
+
+            Map<String, Object> requestBody = Map.of(
+                    "sender", Map.of(
+                            "email", mailFrom
+                    ),
+                    "to", new Object[]{
+                            Map.of(
+                                    "email", recipientEmail.trim()
+                            )
+                    },
+                    "subject", "Shared Data Drop - Key: " + token,
+                    "htmlContent", htmlContent
+            );
+
+            restClient.post()
+                    .uri("/smtp/email")
+                    .header("api-key", emailApiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(requestBody)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.info(
+                    "Successfully sent share email for token {} to {}",
+                    token,
+                    recipientEmail
+            );
+
+            return true;
+
+        } catch (Exception e) {
+
+            log.error(
+                    "Failed to send email via Brevo API: {}",
+                    e.getMessage(),
+                    e
+            );
+
             return false;
         }
     }
