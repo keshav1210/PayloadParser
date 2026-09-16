@@ -157,8 +157,11 @@
     <div class="state" id="stateNoId" style="display:none">
         <div class="state-icon">🔗</div>
         <h2>No token in URL</h2>
-        <p>This page expects <code>?id=TOKEN</code> in the URL. Go to the upload page to create a new share link.</p>
-        <a href="upload.html"><button class="btn btn-primary" style="padding:11px 26px;font-size:.88rem">← Upload Page</button></a>
+        <p>This page expects a drop key in the URL (e.g. <code>/shared/KEY</code>). You can enter a key or create a new share link.</p>
+        <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <a href="/share?receive=true"><button class="btn btn-primary" style="padding:11px 24px;font-size:.88rem">📥 Enter Drop Key</button></a>
+            <a href="/share"><button class="btn" style="padding:11px 24px;font-size:.88rem">← Share Page</button></a>
+        </div>
     </div>
 
     <!-- NOT FOUND / ERROR -->
@@ -167,7 +170,10 @@
         <h2 id="errTitle">Not Found</h2>
         <p id="errDesc">This drop doesn't exist or has expired.</p>
         <p id="errDetail" style="font-family:var(--mono);font-size:.74rem;color:var(--warn);margin-top:-14px;margin-bottom:24px;min-height:16px"></p>
-        <a href="upload.html"><button class="btn btn-primary" style="padding:11px 26px;font-size:.88rem">← Upload Something New</button></a>
+        <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <a href="/share?receive=true"><button class="btn btn-primary" style="padding:11px 24px;font-size:.88rem">📥 Try Another Key</button></a>
+            <a href="/share"><button class="btn" style="padding:11px 24px;font-size:.88rem">← Upload New Drop</button></a>
+        </div>
     </div>
 
     <!-- ═══════ FOUND ═══════ -->
@@ -339,10 +345,12 @@
     // ════════════════════════════════════════════════════════════
 
     (async function boot() {
-      // Read token from the URL path: /shared/f6040c30-48e4-4683-b944-a14a62c55f1f
-      // Works with clean URLs — no ?id= query param needed
-      const pathParts = window.location.pathname.split('/');
-      token = pathParts[pathParts.length - 1] || null;
+      // Read token from the URL path (/shared/{token}) or query param (?id={token})
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      let pathToken = pathParts[pathParts.length - 1] || null;
+      if (pathToken === 'shared' || pathToken === 'output.html') pathToken = null;
+      const urlParams = new URLSearchParams(window.location.search);
+      token = pathToken || urlParams.get('id') || null;
 
       if (!token) {
         $('stateLoading').style.display = 'none';

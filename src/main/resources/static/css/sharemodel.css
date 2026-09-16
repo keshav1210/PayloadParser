@@ -108,5 +108,74 @@
     }
     .sd-error { color: #ff4f6a; font-size: .78rem; text-align: center; margin-bottom: 12px; display: none; }
 
+    /* ── Recipient Email Box ── */
+    .sd-email-box {
+      margin-bottom: 14px; text-align: left;
+    }
+    .sd-email-box label {
+      display: block; font-size: .78rem; font-weight: 600; color: #a0a0b8; margin-bottom: 6px;
+    }
+    .sd-email-input-wrapper {
+      display: flex; align-items: center; background: #16161c; border: 1px solid #252530;
+      border-radius: 10px; padding: 2px 10px; transition: border-color .2s;
+    }
+    .sd-email-input-wrapper:focus-within {
+      border-color: #4f8cff; box-shadow: 0 0 10px rgba(79,140,255,.2);
+    }
+    .sd-email-icon {
+      font-size: .95rem; margin-right: 8px; opacity: .7;
+    }
+    .sd-email-input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: #ddddf0; font-family: 'Outfit', sans-serif; font-size: .82rem; padding: 8px 0;
+    }
+    .sd-email-input::placeholder { color: #525268; }
+
+    /* ── Key Display Card ── */
+    .sd-key-card {
+      background: linear-gradient(135deg, rgba(79,140,255,.08), rgba(0,221,179,.05));
+      border: 1px solid rgba(79,140,255,.25); border-radius: 12px;
+      padding: 12px 14px; margin-bottom: 12px; text-align: left;
+    }
+    .sd-key-label {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: #8a8aa8; margin-bottom: 6px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+    .sd-key-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sd-key-badge {
+      flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 800;
+      letter-spacing: .12em; color: #00ddb3; background: #121218;
+      border: 1px solid #2a2a38; border-radius: 8px; padding: 6px 12px;
+      user-select: all; text-shadow: 0 0 12px rgba(0,221,179,.3);
+    }
+    .sd-btn-copy-key {
+      border: none; background: #00c896; color: #09090d;
+      font-size: .78rem; font-weight: 800; padding: 8px 14px;
+      border-radius: 8px; cursor: pointer; transition: all .2s;
+    }
+    .sd-btn-copy-key:hover { background: #00e5ab; transform: translateY(-1px); }
+    .sd-btn-copy-key.copied { background: #4f8cff; color: #fff; }
+
+    /* ── Send on Mail Action Button ── */
+    .sd-btn-mail {
+      border: 1px solid rgba(0,221,179,.35) !important;
+      color: #00ddb3 !important;
+      background: rgba(0,221,179,.06) !important;
+      font-weight: 700 !important;
+    }
+    .sd-btn-mail:hover {
+      background: rgba(0,221,179,.14) !important;
+      border-color: #00ddb3 !important;
+      transform: translateY(-1px);
+    }
+    .sd-email-status {
+      font-size: .78rem; margin-top: 8px; padding: 8px 12px; border-radius: 8px;
+      background: rgba(0,200,150,.1); color: #00ddb3; border: 1px solid rgba(0,200,150,.2);
+      display: none; text-align: center;
+    }
+
     @keyframes sdPop  { from{opacity:0;transform:scale(.84);} to{opacity:1;transform:scale(1);} }
     @keyframes sdSpin { to{transform:rotate(360deg);} }

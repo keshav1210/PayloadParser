@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShareDrop — Upload</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="description" content="Free online JSON editor, formatter and validator tool for developers.">
+    <meta name="keywords" content="json formatter, json parser, json validator, json beautifier, json editor, developer tool">
+    <meta name="author" content="Share Data/File">
+    <meta property="og:title" content="Share Drop">
+    <meta property="og:description" content="Free online tool for sharing Data/File .">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jsonxmleditor.com/share">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+    <script>
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-LPTNYNJB94');
+        }
+    </script>
     <style>
         :root {
           --bg:#08080b; --s1:#101014; --s2:#16161c; --s3:#1d1d25;
@@ -191,8 +207,76 @@
         @keyframes popIn  { from{opacity:0;transform:scale(.82);} to{opacity:1;transform:scale(1);} }
         @keyframes pulse  { 0%,100%{opacity:1;} 50%{opacity:.35;} }
         ::-webkit-scrollbar { width:5px; }
-        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:10px; }
-        @media(max-width:520px) { .modal{padding:26px 18px;} nav{padding:0 16px;} }
+        /* RECEIVE BUTTON & MODAL */
+        .hero-actions { display:flex; justify-content:center; gap:12px; margin-top:20px; animation:fadeUp .5s ease .1s both; }
+        .btn-hero-receive {
+          display:inline-flex; align-items:center; gap:8px;
+          background:rgba(0,221,179,.1); border:1px solid rgba(0,221,179,.35);
+          color:var(--teal); font-family:var(--sans); font-size:.88rem; font-weight:700;
+          padding:10px 24px; border-radius:12px; cursor:pointer;
+          transition:all .22s; box-shadow:0 4px 20px rgba(0,221,179,.15);
+        }
+        .btn-hero-receive:hover {
+          background:rgba(0,221,179,.2); border-color:var(--teal);
+          transform:translateY(-1px); box-shadow:0 6px 26px rgba(0,221,179,.28); color:#fff;
+        }
+        .tab.receive { color:var(--teal); }
+        .tab.receive:hover { background:rgba(0,221,179,.12); color:#fff; }
+
+        .modal-close-icon {
+          position:absolute; top:18px; right:20px;
+          font-size:1.2rem; color:var(--muted); cursor:pointer;
+          line-height:1; padding:4px; transition:color .18s;
+        }
+        .modal-close-icon:hover { color:var(--text); }
+
+        .receive-icon {
+          width:64px; height:64px; border-radius:50%;
+          background:rgba(0,221,179,.12); border:2px solid var(--teal);
+          display:flex; align-items:center; justify-content:center;
+          font-size:1.8rem; margin:0 auto 18px; box-shadow:0 0 28px rgba(0,221,179,.2);
+        }
+
+        .receive-input-box {
+          display:flex; align-items:center; gap:8px;
+          background:var(--s2); border:1px solid var(--border);
+          border-radius:12px; padding:6px 12px; margin-top:10px;
+          transition:border-color .2s, box-shadow .2s;
+        }
+        .receive-input-box:focus-within {
+          border-color:var(--teal);
+          box-shadow:0 0 16px rgba(0,221,179,.18);
+        }
+        .receive-input-box input {
+          flex:1; border:none !important; background:transparent !important;
+          padding:8px 4px !important; font-family:var(--mono);
+          font-size:.88rem; color:var(--text); outline:none;
+        }
+        .receive-input-box input::placeholder { color:var(--muted); }
+        .paste-btn {
+          border:1px solid var(--border); background:var(--s3);
+          color:var(--muted); font-family:var(--sans); font-size:.72rem;
+          font-weight:600; padding:6px 12px; border-radius:7px;
+          cursor:pointer; transition:all .18s; white-space:nowrap;
+        }
+        .paste-btn:hover { border-color:var(--teal); color:var(--teal); }
+
+        .receive-error {
+          font-family:var(--mono); font-size:.72rem; color:var(--danger);
+          margin-top:8px; text-align:left;
+        }
+
+        .btn-open-receive {
+          background:linear-gradient(135deg,var(--teal),var(--accent));
+          border:none; color:#fff; font-family:var(--sans);
+          font-size:.86rem; font-weight:700; padding:11px 24px;
+          border-radius:10px; cursor:pointer; transition:all .2s;
+          display:inline-flex; align-items:center; justify-content:center; gap:6px;
+        }
+        .btn-open-receive:hover {
+          box-shadow:0 4px 20px rgba(0,221,179,.3);
+          transform:translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -216,12 +300,18 @@
         <div class="hero-chip"><span class="chip-dot"></span> instant share</div>
         <h1>Drop It. Share It.<br><span class="grad">Anywhere.</span></h1>
         <p>Upload text or a file to your backend — get a unique link anyone can access from any device.</p>
+        <div class="hero-actions">
+            <button class="btn-hero-receive" onclick="openReceiveModal()" id="heroReceiveBtn">
+                <span>📥</span> Receive Drop
+            </button>
+        </div>
     </div>
 
     <!-- MODE TABS -->
     <div class="mode-tabs">
         <button class="tab active" onclick="setMode('text',this)">📝 Text / Data</button>
         <button class="tab" onclick="setMode('file',this)">📁 File</button>
+        <button class="tab receive" onclick="openReceiveModal()">📥 Receive</button>
     </div>
 
     <!-- ═══════════════ TEXT MODE ═══════════════ -->
@@ -304,6 +394,16 @@
 
     </div><!-- /panelFile -->
 
+    <!-- RECIPIENT EMAIL (OPTIONAL) -->
+    <div class="card" style="margin-bottom:16px;animation-delay:.12s;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:1.1rem;">✉️</span>
+            <span style="font-size:.85rem;font-weight:600;">Recipient Email (Optional)</span>
+        </div>
+        <input type="email" id="shareEmailInput" placeholder="recipient@example.com (optional to send drop via email)"
+               style="width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.84rem;outline:none;">
+    </div>
+
     <!-- STATUS + PROGRESS -->
     <div class="card" style="margin-bottom:16px;animation-delay:.14s">
         <div class="status-bar">
@@ -315,10 +415,11 @@
         </div>
     </div>
 
-    <!-- UPLOAD BUTTON -->
-    <div class="share-row">
-        <button class="btn-primary" id="shareBtn" onclick="handleShare()">⚡ Upload & Generate Link</button>
-        <p class="share-hint" id="shareHint"></p>
+    <!-- UPLOAD BUTTONS -->
+    <div class="share-row" style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-primary" id="shareBtn" onclick="handleShare(false)" style="flex:1 1 200px;">⚡ Upload & Generate Link</button>
+        <button class="btn" id="shareMailBtn" onclick="handleShare(true)" style="flex:1 1 200px;background:rgba(0,221,179,.1);color:var(--teal);border:1px solid rgba(0,221,179,.35);font-weight:700;padding:13px 22px;border-radius:12px;cursor:pointer;font-size:.88rem;">✉️ Upload & Send on Mail</button>
+        <p class="share-hint" id="shareHint" style="width:100%;"></p>
     </div>
 
 </div><!-- /wrap -->
@@ -327,20 +428,58 @@
 <div class="overlay" id="overlay">
     <div class="modal">
         <div class="modal-check">✓</div>
-        <h2>Share link ready!</h2>
+        <h2>Share Drop Ready!</h2>
         <p class="modal-sub" id="modalSub">—</p>
         <div id="modalPills" style="text-align:center;margin-bottom:16px"></div>
-        <div class="id-badge"><span id="modalToken">—</span></div>
+
+        <!-- Key card -->
+        <div style="background:rgba(79,140,255,.07);border:1px solid rgba(79,140,255,.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;text-align:left;">
+            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;">
+                <span>🔑 Drop Key</span>
+                <span style="font-size:.68rem;color:var(--muted)">Use in Receive Drop</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div id="modalToken" style="flex:1;font-family:var(--mono);font-size:1.15rem;font-weight:800;letter-spacing:.12em;color:var(--teal);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;user-select:all;">—</div>
+                <button class="btn" id="copyKeyBtn" onclick="copyKey()" style="background:var(--teal);color:#000;font-weight:800;padding:8px 14px;border:none;">⎘ Copy Key</button>
+            </div>
+        </div>
+
+        <!-- URL row -->
         <div class="url-row">
             <span class="url-text" id="modalUrl">—</span>
-            <button class="copy-btn" id="copyBtn" onclick="copyUrl()">⎘ Copy</button>
+            <button class="copy-btn" id="copyBtn" onclick="copyUrl()">⎘ Copy Link</button>
         </div>
-        <p style="text-align:center;font-size:.74rem;color:var(--muted);margin-bottom:18px;line-height:1.6">
-            Open <strong style="color:var(--text)">output.html</strong> and paste this URL — or send it directly to anyone.
-        </p>
+
+        <div id="modalEmailStatus" style="display:none;font-size:.78rem;padding:8px 12px;border-radius:8px;margin-bottom:14px;text-align:center;"></div>
+
         <div class="modal-actions">
-            <button class="btn" onclick="openOutput()">👁 Open Output</button>
+            <button class="btn" onclick="openOutput()">👁 Open Drop</button>
             <button class="btn" onclick="closeModal()">+ New Drop</button>
+        </div>
+    </div>
+</div>
+
+<!-- RECEIVE MODAL -->
+<div class="overlay" id="receiveOverlay">
+    <div class="modal" style="position:relative;">
+        <div class="modal-close-icon" onclick="closeReceiveModal()" title="Close">✕</div>
+        <div class="receive-icon">📥</div>
+        <h2 style="font-size:1.45rem; margin-bottom:6px;">Receive Drop</h2>
+        <p class="modal-sub" style="margin-bottom:18px;">Enter the generated key or drop link to open and view the shared content.</p>
+
+        <div style="text-align:left; margin-bottom:18px;">
+            <label for="receiveKeyInput" style="font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:700;">Drop Key or Link</label>
+            <div class="receive-input-box">
+                <span style="font-size:1rem; opacity:.7;">🔑</span>
+                <input type="text" id="receiveKeyInput" placeholder="Enter key (e.g. 5xYz9) or full share link" autocomplete="off" spellcheck="false">
+                <button class="paste-btn" type="button" onclick="pasteReceiveKey()">📋 Paste</button>
+            </div>
+            <div class="receive-error" id="receiveError" style="display:none;"></div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn" style="flex:1;" onclick="closeReceiveModal()">Cancel</button>
+            <button class="btn-open-receive" style="flex:1;" onclick="handleOpenReceive()">🚀 Open Drop</button>
         </div>
     </div>
 </div>
@@ -498,46 +637,56 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
     // ╔══════════════════════════════════════════════════════════╗
     // ║  UPLOAD HANDLER                                          ║
     // ╚══════════════════════════════════════════════════════════╝
-    async function handleShare() {
+    async function handleShare(sendMail) {
+      if (sendMail) {
+        const email = $('shareEmailInput').value.trim();
+        if (!email) {
+          toast('Please enter a recipient email address', 'warn');
+          $('shareEmailInput').focus();
+          return;
+        }
+      }
       if (mode === 'text') {
-        await uploadText();
+        await uploadText(sendMail);
       } else {
-        await uploadFile();
+        await uploadFile(sendMail);
       }
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
     //  POST /share/text
     //  Content-Type: application/json
-    //  Body: { "text": "...", "oneTimeDownload": false }
-    //
-    //  Matches your ShareTextRequest DTO
     // ─────────────────────────────────────────────────────────────────────────────
-    async function uploadText() {
+    async function uploadText(sendMail) {
       const text = $('textInput').value;
       if (!text.trim()) { toast('Text cannot be empty', 'error'); return; }
 
       const oneTime = $('textOneTime').checked;
+      const email = $('shareEmailInput').value.trim();
 
       $('shareBtn').disabled = true;
+      if ($('shareMailBtn')) $('shareMailBtn').disabled = true;
       setStatus('Uploading text…', 'run');
       setProgress(20);
 
       try {
+        const payload = {
+          text:            text,
+          oneTimeDownload: oneTime,
+          sourcePage:      window.location.pathname
+        };
+        if (email) payload.email = email;
+
         const res = await fetch(EP_TEXT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            // Add auth header here if needed: 'Authorization': 'Bearer ' + token
           },
-          body: JSON.stringify({
-            text:            text,         // → ShareTextRequest.text
-            oneTimeDownload: oneTime       // → ShareTextRequest.oneTimeDownload
-          })
+          body: JSON.stringify(payload)
         });
 
         setProgress(75);
-        const json = await res.json();  // ShareResponse { success, message, url }
+        const json = await res.json();  // ShareResponse { success, message, url, token, emailSent, mailtoUrl }
 
         if (!res.ok || !json.success) {
           throw new Error(json.message || `Server error ${res.status}`);
@@ -546,11 +695,18 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
         setProgress(100);
         setStatus('Uploaded ✓', 'ok');
 
-        // Backend returns full URL: "http://localhost:8080/share/{token}"
         resultUrl   = json.url;
-        resultToken = resultUrl.split('/').pop();
+        resultToken = json.token || resultUrl.split('/').pop();
 
-        showModal({ type:'text', text, oneTime });
+        showModal({
+          type: 'text',
+          text,
+          oneTime,
+          token: resultToken,
+          email,
+          emailSent: json.emailSent,
+          mailtoUrl: json.mailtoUrl
+        });
 
       } catch(err) {
         console.error('Text upload failed:', err);
@@ -559,38 +715,39 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       }
 
       $('shareBtn').disabled = false;
+      if ($('shareMailBtn')) $('shareMailBtn').disabled = false;
       setTimeout(() => setProgress(0), 1400);
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
     //  POST /share/file
-    //  Content-Type: multipart/form-data  (browser sets boundary automatically)
-    //  Parts:
-    //    "file"            → the File object  (@RequestParam("file") MultipartFile)
-    //    "oneTimeDownload" → "true" / "false" (@RequestParam boolean)
+    //  Content-Type: multipart/form-data
     // ─────────────────────────────────────────────────────────────────────────────
-    async function uploadFile() {
+    async function uploadFile(sendMail) {
       if (!selectedFile) { toast('Please select a file first', 'error'); return; }
 
       const oneTime = $('fileOneTime').checked;
+      const email = $('shareEmailInput').value.trim();
 
       $('shareBtn').disabled = true;
+      if ($('shareMailBtn')) $('shareMailBtn').disabled = true;
       setStatus('Uploading ' + selectedFile.name + '…', 'run');
       setProgress(20);
 
       try {
         const fd = new FormData();
-        fd.append('file',            selectedFile, selectedFile.name);  // → MultipartFile file
-        fd.append('oneTimeDownload', String(oneTime));                  // → boolean oneTimeDownload
+        fd.append('file',            selectedFile, selectedFile.name);
+        fd.append('oneTimeDownload', String(oneTime));
+        fd.append('sourcePage',      window.location.pathname);
+        if (email) fd.append('email', email);
 
-        // ⚠ Do NOT set Content-Type — browser auto-sets multipart/form-data with correct boundary
         const res = await fetch(EP_FILE, {
           method: 'POST',
           body:   fd
         });
 
         setProgress(80);
-        const json = await res.json();  // ShareResponse { success, message, url }
+        const json = await res.json();
 
         if (!res.ok || !json.success) {
           throw new Error(json.message || `Server error ${res.status}`);
@@ -599,11 +756,18 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
         setProgress(100);
         setStatus('Uploaded ✓', 'ok');
 
-        // Backend returns full URL: "http://localhost:8080/share/{token}"
         resultUrl   = json.url;
-        resultToken = resultUrl.split('/').pop();
+        resultToken = json.token || resultUrl.split('/').pop();
 
-        showModal({ type:'file', file:selectedFile, oneTime });
+        showModal({
+          type: 'file',
+          file: selectedFile,
+          oneTime,
+          token: resultToken,
+          email,
+          emailSent: json.emailSent,
+          mailtoUrl: json.mailtoUrl
+        });
 
       } catch(err) {
         console.error('File upload failed:', err);
@@ -612,17 +776,13 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       }
 
       $('shareBtn').disabled = false;
+      if ($('shareMailBtn')) $('shareMailBtn').disabled = false;
       setTimeout(() => setProgress(0), 1400);
     }
 
     // ─── Show success modal ───────────────────────────────────────────────────────
-    function showModal({ type, text, file, oneTime }) {
-      // The output.html URL with the token as ?id=
-      const outputUrl = window.location.origin +
-                            window.location.pathname.replace('upload.html', '') +
-                            OUTPUT_PAGE + '?id=' + resultToken;
-
-      $('modalToken').textContent = resultToken;
+    function showModal({ type, text, file, oneTime, token, email, emailSent, mailtoUrl }) {
+      $('modalToken').textContent = token || resultToken;
       $('modalUrl').textContent   = resultUrl;
 
       const desc = type === 'text'
@@ -636,11 +796,39 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       if (oneTime)         pills.push(`<span class="meta-pill pill-one">🔥 One-time</span>`);
       $('modalPills').innerHTML = pills.join('');
 
+      // Handle email status
+      const statusEl = $('modalEmailStatus');
+      if (statusEl) {
+        if (email) {
+          statusEl.style.display = 'block';
+          if (emailSent) {
+            statusEl.style.background = 'rgba(0,200,150,.12)';
+            statusEl.style.border = '1px solid rgba(0,200,150,.3)';
+            statusEl.style.color = 'var(--teal)';
+            statusEl.textContent = `✓ Drop key & link sent to ${email}`;
+          } else if (mailtoUrl) {
+            statusEl.style.background = 'rgba(255,170,0,.1)';
+            statusEl.style.border = '1px solid rgba(255,170,0,.3)';
+            statusEl.style.color = '#ffb84d';
+            statusEl.textContent = `✉ Opening email client for ${email}...`;
+            window.open(mailtoUrl, '_blank');
+          } else {
+            statusEl.style.display = 'none';
+          }
+        } else {
+          statusEl.style.display = 'none';
+        }
+      }
+
       // Store for openOutput / copyUrl
       window._outputUrl = resultUrl;
 
-      $('copyBtn').textContent = '⎘ Copy';
+      $('copyBtn').textContent = '⎘ Copy Link';
       $('copyBtn').className   = 'copy-btn';
+      if ($('copyKeyBtn')) {
+        $('copyKeyBtn').textContent = '⎘ Copy Key';
+        $('copyKeyBtn').className = 'btn';
+      }
       $('overlay').classList.add('show');
     }
 
@@ -650,7 +838,21 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
         $('copyBtn').textContent = '✓ Copied!';
         $('copyBtn').className   = 'copy-btn copied';
         toast('Link copied!', 'success');
-        setTimeout(() => { $('copyBtn').textContent = '⎘ Copy'; $('copyBtn').className = 'copy-btn'; }, 2200);
+        setTimeout(() => { $('copyBtn').textContent = '⎘ Copy Link'; $('copyBtn').className = 'copy-btn'; }, 2200);
+      });
+    }
+
+    function copyKey() {
+      const key = $('modalToken').textContent;
+      if (!key || key === '—') return;
+      navigator.clipboard.writeText(key).then(() => {
+        const btn = $('copyKeyBtn');
+        if (btn) {
+          btn.textContent = '✓ Copied!';
+          btn.classList.add('copied');
+          toast('Key copied!', 'success');
+          setTimeout(() => { btn.textContent = '⎘ Copy Key'; btn.classList.remove('copied'); }, 2200);
+        }
       });
     }
 
@@ -662,6 +864,7 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       $('overlay').classList.remove('show');
       $('textInput').value = '';
       $('charCount').textContent = '0 chars';
+      if ($('shareEmailInput')) $('shareEmailInput').value = '';
       clearFile();
       $('textOneTime').checked = false;
       $('fileOneTime').checked = false;
@@ -671,6 +874,108 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
     }
 
     $('overlay').addEventListener('click', e => { if (e.target === $('overlay')) closeModal(); });
+
+    // ─── Receive Modal Logic ──────────────────────────────────────────────────────
+    function openReceiveModal() {
+      const input = $('receiveKeyInput');
+      input.value = '';
+      $('receiveError').style.display = 'none';
+      $('receiveError').textContent = '';
+      $('receiveOverlay').classList.add('show');
+      setTimeout(() => input.focus(), 60);
+    }
+
+    function closeReceiveModal() {
+      $('receiveOverlay').classList.remove('show');
+    }
+
+    function extractDropKey(raw) {
+      if (!raw) return '';
+      let str = raw.trim();
+
+      try {
+        if (str.startsWith('http://') || str.startsWith('https://')) {
+          const parsed = new URL(str);
+          const idParam = parsed.searchParams.get('id');
+          if (idParam) return idParam.trim();
+          const segments = parsed.pathname.split('/').filter(Boolean);
+          if (segments.length > 0) {
+            return segments[segments.length - 1].trim();
+          }
+        }
+      } catch (e) {}
+
+      if (str.includes('/')) {
+        const parts = str.split('?')[0].split('/').filter(Boolean);
+        if (parts.length > 0) return parts[parts.length - 1].trim();
+      }
+
+      if (str.includes('id=')) {
+        const match = str.match(/id=([^&]+)/);
+        if (match) return match[1].trim();
+      }
+
+      return str;
+    }
+
+    function handleOpenReceive() {
+      const raw = $('receiveKeyInput').value;
+      const key = extractDropKey(raw);
+      const err = $('receiveError');
+
+      if (!key) {
+        err.textContent = '⚠ Please enter a valid drop key or link.';
+        err.style.display = 'block';
+        $('receiveKeyInput').focus();
+        return;
+      }
+
+      err.style.display = 'none';
+      // Navigate to received page with data
+      window.location.href = '/shared/' + encodeURIComponent(key);
+    }
+
+    async function pasteReceiveKey() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          $('receiveKeyInput').value = text.trim();
+          $('receiveError').style.display = 'none';
+          $('receiveKeyInput').focus();
+        }
+      } catch (e) {
+        toast('Clipboard read unavailable, please paste manually', 'warn');
+      }
+    }
+
+    $('receiveKeyInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleOpenReceive();
+      }
+    });
+
+    $('receiveOverlay').addEventListener('click', e => {
+      if (e.target === $('receiveOverlay')) closeReceiveModal();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if ($('receiveOverlay') && $('receiveOverlay').classList.contains('show')) {
+          closeReceiveModal();
+        } else if ($('overlay') && $('overlay').classList.contains('show')) {
+          closeModal();
+        }
+      }
+    });
+
+    // Auto-open if query param ?receive=true or ?action=receive
+    (function checkAutoReceive() {
+      const p = new URLSearchParams(window.location.search);
+      if (p.get('receive') === 'true' || p.get('action') === 'receive') {
+        openReceiveModal();
+      }
+    })();
 </script>
 <script src="/js/layout-loader.js"></script>
 </body>

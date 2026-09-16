@@ -231,11 +231,21 @@
                 </label>
             </div>
 
+            <!-- Recipient Email (Optional) -->
+            <div class="sd-email-box">
+                <label for="sdEmail">Recipient Email (Optional)</label>
+                <div class="sd-email-input-wrapper">
+                    <span class="sd-email-icon">✉️</span>
+                    <input type="email" id="sdEmail" class="sd-email-input" placeholder="recipient@example.com">
+                </div>
+            </div>
+
             <div class="sd-error" id="sdError"></div>
 
-            <div class="sd-actions">
-                <button onclick="closeSdModal()">✕ Cancel</button>
-                <button onclick="doShare()" style="border-color:#4f8cff;color:#4f8cff;font-weight:700">⚡ Generate Link</button>
+            <div class="sd-actions" style="flex-wrap: wrap;">
+                <button onclick="closeSdModal()" style="flex: 1 1 25%;">✕ Cancel</button>
+                <button onclick="doShare(false)" style="flex: 1 1 35%; border-color:#4f8cff;color:#4f8cff;font-weight:700">⚡ Generate Link</button>
+                <button onclick="doShare(true)" class="sd-btn-mail" style="flex: 1 1 100%;">✉️ Upload & Send on Mail</button>
             </div>
         </div>
 
@@ -248,13 +258,30 @@
         <!-- Success state -->
         <div id="sdSuccess" style="display:none">
             <div class="sd-check">✓</div>
-            <h3>Link Ready!</h3>
+            <h3>Share Drop Ready!</h3>
             <p class="sd-sub" id="sdSuccessSub">—</p>
+
+            <!-- Key display -->
+            <div class="sd-key-card">
+                <div class="sd-key-label">
+                    <span>🔑 Drop Key</span>
+                    <span style="font-size:.68rem;color:#6e6e88">Use in Receive Drop</span>
+                </div>
+                <div class="sd-key-row">
+                    <div class="sd-key-badge" id="sdKeyText">-----</div>
+                    <button class="sd-btn-copy-key" id="sdCopyKeyBtn" onclick="sdCopyKey()">⎘ Copy Key</button>
+                </div>
+            </div>
+
+            <!-- URL display -->
             <div class="sd-url-row">
                 <span class="sd-url-text" id="sdUrlText">—</span>
-                <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy</button>
+                <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
             </div>
-            <div class="sd-actions">
+
+            <div class="sd-email-status" id="sdEmailStatus"></div>
+
+            <div class="sd-actions" style="margin-top: 14px;">
                 <button onclick="window.open(document.getElementById('sdUrlText').textContent,'_blank')">👁 Open</button>
                 <button onclick="closeSdModal()">✕ Close</button>
             </div>

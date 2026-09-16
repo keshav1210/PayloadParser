@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,9 @@ import java.io.IOException;
 @Controller
 @RequestMapping
 public class ViewHandler {
+
+    @Autowired
+    private Cache<String, ShareMeta> cache;
 
     @GetMapping("/")
     public String  viewHomePage(){
@@ -100,8 +104,15 @@ public class ViewHandler {
     }
 
     @GetMapping("/shared/{token}")
-    @ResponseBody  // ← add this
-    public ResponseEntity<byte[]> accessData(@PathVariable String token) throws IOException {
+    @ResponseBody
+    public ResponseEntity<?> accessData(@PathVariable String token) throws IOException {
+        ShareMeta meta = cache.getIfPresent(token);
+        if (meta != null && meta.getSourcePage() != null && !meta.getSourcePage().isBlank() && !meta.getSourcePage().equals("/share")) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, meta.getSourcePage() + "?drop=" + token)
+                    .build();
+        }
+
         ClassPathResource resource = new ClassPathResource("static/output.html");
         byte[] bytes = resource.getInputStream().readAllBytes();
         return ResponseEntity.ok()

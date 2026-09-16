@@ -26,6 +26,8 @@ public class ShareMeta implements Serializable {
     private long size;              // used by Caffeine weigher
     private Instant createdAt;      // useful for debugging/cleanup
     private boolean oneTimeDownload; // future-ready flag
+    private String sourcePage;      // e.g. /json-parser, /csv-converter
+    private String recipientEmail;  // optional recipient email
 
     // ===== Constructors =====
     public ShareMeta() {

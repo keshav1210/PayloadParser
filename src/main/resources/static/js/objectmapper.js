@@ -374,6 +374,13 @@ public class Address
         document.getElementById('sdError').style.display   = 'none';
         document.getElementById('sdError').textContent     = '';
         document.getElementById('sdOneTime').checked       = false;
+        const emailInput = document.getElementById('sdEmail');
+        if (emailInput) emailInput.value = '';
+        const emailStatus = document.getElementById('sdEmailStatus');
+        if (emailStatus) {
+          emailStatus.style.display = 'none';
+          emailStatus.textContent = '';
+        }
         setSdSource(_sdSource);
         document.getElementById('sdOverlay').classList.add('show');
       }
@@ -398,13 +405,24 @@ public class Address
         }
     }
 
-    async function doShare() {
+    async function doShare(sendEmail) {
         const text = getSdContent();
 
         if (!text) {
           const err = document.getElementById('sdError');
           err.textContent = '⚠ Nothing to share — the selected panel is empty.';
           err.style.display = 'block';
+          return;
+        }
+
+        const emailInput = document.getElementById('sdEmail');
+        const email = emailInput ? emailInput.value.trim() : '';
+
+        if (sendEmail && !email) {
+          const err = document.getElementById('sdError');
+          err.textContent = '⚠ Please enter a recipient email to send on mail.';
+          err.style.display = 'block';
+          if (emailInput) emailInput.focus();
           return;
         }
 
@@ -416,10 +434,19 @@ public class Address
         document.getElementById('sdError').style.display   = 'none';
 
         try {
+          const payload = {
+            text,
+            oneTimeDownload: oneTime,
+            sourcePage: window.location.pathname
+          };
+          if (email) {
+            payload.email = email;
+          }
+
           const res = await fetch(SD_EP, {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ text, oneTimeDownload: oneTime })
+            body:    JSON.stringify(payload)
           });
 
           const json = await res.json();
@@ -429,9 +456,37 @@ public class Address
           // Show success
           document.getElementById('sdLoader').classList.remove('show');
           document.getElementById('sdSuccess').style.display = 'block';
-          document.getElementById('sdUrlText').textContent   = json.url;
+
+          const token = json.token || (json.url ? json.url.substring(json.url.lastIndexOf('/') + 1) : '');
+          const keyEl = document.getElementById('sdKeyText');
+          if (keyEl) keyEl.textContent = token;
+
+          document.getElementById('sdUrlText').textContent = json.url;
           document.getElementById('sdSuccessSub').textContent =
             `${text.length.toLocaleString()} chars · ${_sdSource} panel` + (oneTime ? ' · one-time' : '');
+
+          const statusEl = document.getElementById('sdEmailStatus');
+          if (statusEl) {
+            if (email) {
+              statusEl.style.display = 'block';
+              if (json.emailSent) {
+                statusEl.style.background = 'rgba(0,200,150,.12)';
+                statusEl.style.borderColor = 'rgba(0,200,150,.3)';
+                statusEl.style.color = '#00ddb3';
+                statusEl.textContent = `✓ Drop sent to ${email}`;
+              } else if (json.mailtoUrl) {
+                statusEl.style.background = 'rgba(255,170,0,.1)';
+                statusEl.style.borderColor = 'rgba(255,170,0,.3)';
+                statusEl.style.color = '#ffb84d';
+                statusEl.textContent = `✉ Opening email client for ${email}...`;
+                window.open(json.mailtoUrl, '_blank');
+              } else {
+                statusEl.style.display = 'none';
+              }
+            } else {
+              statusEl.style.display = 'none';
+            }
+          }
 
         } catch (err) {
           document.getElementById('sdLoader').classList.remove('show');
@@ -448,11 +503,94 @@ public class Address
           const btn = document.getElementById('sdCopyBtn');
           btn.textContent = '✓ Copied!';
           btn.classList.add('copied');
-          setTimeout(() => { btn.textContent = '⎘ Copy'; btn.classList.remove('copied'); }, 2200);
+          setTimeout(() => { btn.textContent = '⎘ Copy Link'; btn.classList.remove('copied'); }, 2200);
         });
       }
 
-      // Close on backdrop click
-      document.getElementById('sdOverlay').addEventListener('click', e => {
-        if (e.target === document.getElementById('sdOverlay')) closeSdModal();
+      function sdCopyKey() {
+        const keyEl = document.getElementById('sdKeyText');
+        const key = keyEl ? keyEl.textContent : '';
+        if (!key || key === '-----') return;
+        navigator.clipboard.writeText(key).then(() => {
+          const btn = document.getElementById('sdCopyKeyBtn');
+          if (btn) {
+            btn.textContent = '✓ Copied!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '⎘ Copy Key'; btn.classList.remove('copied'); }, 2200);
+          }
+        });
+      }
+
+      // ── Auto-load shared drop if ?drop=token is present in URL ──────────────────
+      async function checkAndLoadSharedDrop() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const dropToken = urlParams.get('drop');
+        if (!dropToken) return;
+
+        try {
+          const res = await fetch('/data/shared/' + encodeURIComponent(dropToken));
+          if (!res.ok) {
+            showDropToast('⚠ Could not load shared drop (link may be expired or already used).', 'error');
+            return;
+          }
+
+          const content = await res.text();
+          const editor = document.getElementById('inputEditor');
+          if (editor) {
+            editor.value = content;
+            if (typeof convertCode === 'function') {
+              try { convertCode(); } catch (e) { console.warn('Auto-convert skipped:', e); }
+            }
+            showDropToast('✓ Shared content loaded into editor!', 'success');
+            // Clean URL query parameter without page reload
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } catch (err) {
+          console.error('Failed to load drop:', err);
+          showDropToast('⚠ Error loading drop: ' + err.message, 'error');
+        }
+      }
+
+      function showDropToast(msg, type) {
+        let toast = document.getElementById('sdToast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'sdToast';
+          toast.style.cssText = `
+            position: fixed; top: 20px; right: 24px; z-index: 9999;
+            padding: 12px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif;
+            font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; align-items: center; gap: 10px;
+          `;
+          document.body.appendChild(toast);
+        }
+        if (type === 'error') {
+          toast.style.background = '#251015';
+          toast.style.color = '#ff6b81';
+          toast.style.border = '1px solid #ff4f6a';
+        } else {
+          toast.style.background = '#0e2420';
+          toast.style.color = '#00ddb3';
+          toast.style.border = '1px solid #00c896';
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-10px)';
+        }, 4000);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        checkAndLoadSharedDrop();
       });
+
+      // Close on backdrop click
+      const sdOverlayEl = document.getElementById('sdOverlay');
+      if (sdOverlayEl) {
+        sdOverlayEl.addEventListener('click', e => {
+          if (e.target === sdOverlayEl) closeSdModal();
+        });
+      }

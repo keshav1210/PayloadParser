@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.payload.parser.facade.ParserFacade;
 import com.payload.parser.model.*;
+import com.payload.parser.service.EmailService;
 import com.payload.parser.service.ShareService;
 import com.payload.parser.serviceImpl.ObjectConverterServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class RequestHandler {
 
     @Autowired
     ShareService shareService;
+
+    @Autowired
+    private EmailService emailService;
 
     @Value("${baseurl}")
     private String baseUrl;
@@ -63,13 +67,33 @@ public class RequestHandler {
 
         String token = shareService.saveText(
                 request.getText(),
-                request.isOneTimeDownload()
+                request.isOneTimeDownload(),
+                request.getSourcePage()
         );
 
         String url = baseUrl + "/shared/" + token;
+        boolean emailSent = false;
+        String mailtoUrl = null;
+
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+            emailSent = emailService.sendShareEmail(
+                    request.getEmail().trim(),
+                    token,
+                    url,
+                    request.getSourcePage()
+            );
+            if (!emailSent) {
+                mailtoUrl = emailService.generateMailtoUrl(
+                        request.getEmail().trim(),
+                        token,
+                        url,
+                        request.getSourcePage()
+                );
+            }
+        }
 
         return ResponseEntity.ok(
-                new ShareResponse(true, "Text shared successfully", url)
+                new ShareResponse(true, "Text shared successfully", url, token, emailSent, mailtoUrl)
         );
     }
 
@@ -78,7 +102,9 @@ public class RequestHandler {
     @PostMapping("/share/file")
     public ResponseEntity<ShareResponse> shareFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(defaultValue = "false") boolean oneTimeDownload
+            @RequestParam(defaultValue = "false") boolean oneTimeDownload,
+            @RequestParam(required = false) String sourcePage,
+            @RequestParam(required = false) String email
     ) throws Exception {
 
         if (file == null || file.isEmpty()) {
@@ -86,13 +112,59 @@ public class RequestHandler {
                     .body(new ShareResponse(false, "File is empty", null));
         }
 
-        String token = shareService.saveFile(file, oneTimeDownload);
+        String token = shareService.saveFile(file, oneTimeDownload, sourcePage);
 
         String url = baseUrl + "/shared/" + token;
+        boolean emailSent = false;
+        String mailtoUrl = null;
+
+        if (email != null && !email.trim().isEmpty()) {
+            emailSent = emailService.sendShareEmail(
+                    email.trim(),
+                    token,
+                    url,
+                    sourcePage
+            );
+            if (!emailSent) {
+                mailtoUrl = emailService.generateMailtoUrl(
+                        email.trim(),
+                        token,
+                        url,
+                        sourcePage
+                );
+            }
+        }
 
         return ResponseEntity.ok(
-                new ShareResponse(true, "File shared successfully", url)
+                new ShareResponse(true, "File shared successfully", url, token, emailSent, mailtoUrl)
         );
+    }
+
+    @PostMapping("/share/email")
+    public ResponseEntity<Map<String, Object>> sendShareEmail(
+            @RequestBody Map<String, String> payload
+    ) {
+        String email = payload.get("email");
+        String token = payload.get("token");
+        String sourcePage = payload.get("sourcePage");
+
+        if (email == null || email.isBlank() || token == null || token.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "message", "Email and token are required"
+            ));
+        }
+
+        String url = baseUrl + "/shared/" + token;
+        boolean sent = emailService.sendShareEmail(email.trim(), token, url, sourcePage);
+        String mailto = sent ? null : emailService.generateMailtoUrl(email.trim(), token, url, sourcePage);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "emailSent", sent,
+                "mailtoUrl", mailto != null ? mailto : "",
+                "message", sent ? "Email sent successfully" : "SMTP unavailable, use mailto fallback"
+        ));
     }
 
     @GetMapping("/shared/{token}")

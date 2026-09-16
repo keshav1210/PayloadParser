@@ -17,21 +17,34 @@ public class ShareServiceImpl implements ShareService {
     @Autowired
     private Cache<String, ShareMeta> cache;
 
+    @Override
     public String saveText(String text, boolean oneTime) {
+        return saveText(text, oneTime, null);
+    }
+
+    @Override
+    public String saveText(String text, boolean oneTime, String sourcePage) {
         String token = generateToken();
 
         ShareMeta meta = ShareMeta.forText(text);
         meta.setOneTimeDownload(oneTime);
+        meta.setSourcePage(sourcePage);
 
         cache.put(token, meta);
         return token;
     }
 
+    @Override
     public String saveFile(MultipartFile file, boolean oneTime) throws IOException {
+        return saveFile(file, oneTime, null);
+    }
+
+    @Override
+    public String saveFile(MultipartFile file, boolean oneTime, String sourcePage) throws IOException {
 
         validateFile(file);
 
-        String token =generateToken();
+        String token = generateToken();
 
         ShareMeta meta = ShareMeta.forFile(
                 file.getBytes(),
@@ -40,6 +53,7 @@ public class ShareServiceImpl implements ShareService {
         );
 
         meta.setOneTimeDownload(oneTime);
+        meta.setSourcePage(sourcePage);
 
         cache.put(token, meta);
         return token;
