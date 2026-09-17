@@ -101,6 +101,7 @@ public class EmailServiceImpl implements EmailService {
 
             Map<String, Object> requestBody = Map.of(
                     "sender", Map.of(
+                            "name", "JSON XML Editor",
                             "email", mailFrom
                     ),
                     "to", new Object[]{
@@ -112,12 +113,18 @@ public class EmailServiceImpl implements EmailService {
                     "htmlContent", htmlContent
             );
 
+            log.info("Calling Brevo API to send email to {} for token {}", recipientEmail, token);
+
             restClient.post()
                     .uri("/smtp/email")
                     .header("api-key", apiKey)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
                     .retrieve()
+                    .onStatus(status -> !status.is2xxSuccessful(), (req, res) -> {
+                        String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                        throw new RuntimeException("Brevo API error " + res.getStatusCode() + ": " + body);
+                    })
                     .toBodilessEntity();
 
             log.info(
