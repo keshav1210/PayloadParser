@@ -1,15 +1,10 @@
 package com.payload.parser.serviceImpl;
 
 import com.payload.parser.service.EmailService;
-import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -21,9 +16,6 @@ import java.util.Map;
 public class EmailServiceImpl implements EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
-
-    @Autowired
-    private ObjectProvider<JavaMailSender> mailSenderProvider;
 
 //    @Value("${spring.mail.host:}")
 //    private String mailHost;
@@ -95,8 +87,15 @@ public class EmailServiceImpl implements EmailService {
             return false;
         }
 
+        if (emailApiKey == null || emailApiKey.isBlank()) {
+            log.warn("Brevo API key not configured. Skipping server-side email.");
+            return false;
+        }
+
         try {
+            String apiKey = emailApiKey.trim();
             String safeUrl = normalizeShareUrl(shareUrl);
+
             String toolName = getToolName(sourcePage);
             String htmlContent = buildEmailHtml(token, safeUrl, toolName);
 
@@ -115,7 +114,7 @@ public class EmailServiceImpl implements EmailService {
 
             restClient.post()
                     .uri("/smtp/email")
-                    .header("api-key", emailApiKey)
+                    .header("api-key", apiKey)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
                     .retrieve()
