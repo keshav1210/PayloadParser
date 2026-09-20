@@ -68,7 +68,7 @@
                 <div class="fold-icons" id="foldIcons"></div>
                 <div class="line-numbers" id="lineNumbers">1</div>
             </div>
-            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false" oninput="formatCode(false,null,null,null,true)"></div>
+            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>
         </div>
 
         <div class="status" id="inputStatus">Ready — paste or type XML here</div>
@@ -108,17 +108,15 @@
             </button>
         </div>
 
-        <div class="tree-view" id="treeView">
-            <div class="editor-wrapper" id="rightEditorWrapper">
-                <div class="line-numbers-area" id="rightLineNumbersArea">
-                    <div class="fold-icons" id="rightFoldIcons"></div>
-                    <div class="line-numbers" id="rightLineNumbers"></div>
-                </div>
-                <div class="code-editor" id="rightCodeEditor"></div>
+        <div class="editor-wrapper" id="rightEditorWrapper" style="display: none;">
+            <div class="line-numbers-area" id="rightLineNumbersArea">
+                <div class="fold-icons" id="rightFoldIcons"></div>
+                <div class="line-numbers" id="rightLineNumbers">1</div>
             </div>
-            <div id="rightTreeContent" style="padding:20px;color:#858585;">
-                Tree view will appear here after formatting
-            </div>
+            <div class="code-editor" id="rightCodeEditor"></div>
+        </div>
+        <div class="tree-view" id="rightTreeContent" style="padding:20px;color:#858585;">
+            Tree view will appear here after formatting
         </div>
 
         <div class="status" id="outputStatus">Ready</div>

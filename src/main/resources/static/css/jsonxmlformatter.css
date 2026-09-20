@@ -1806,3 +1806,22 @@ select:focus-visible,
     outline: 2px solid #607d8b;
     outline-offset: 2px;
 }
+
+/* Minified code soft-wraps to fit the view box width cleanly without horizontal scrolling */
+.minified-line {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    display: block;
+    width: 100%;
+}
+
+/* Ensure right editor wrapper matches left editor layout */
+#rightEditorWrapper {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    background: #1e1e1e;
+    height: 100%;
+}

@@ -37,7 +37,7 @@ function initEditor() {
 
   if (!codeEditor) return;
 
-  codeEditor.addEventListener('input',  updateLineNumbers);
+  codeEditor.addEventListener('input',  handleEditorInput);
   codeEditor.addEventListener('scroll', syncLeftScroll);
   codeEditor.addEventListener('paste',  handlePaste);
 
@@ -110,20 +110,33 @@ function updateLineNumbers() {
   if (codeLines.length > 0) {
     count = codeLines.length;
   } else {
-    const html = codeEditor.innerHTML;
-    const divs = (html.match(/<div[^>]*>/gi) || []).length;
-    const brs  = (html.match(/<br[^>]*>/gi)  || []).length;
-    count = (divs === 0 && brs === 0) ? 1 : (divs > 0 ? divs + 1 : brs + 1);
+    const text = codeEditor.innerText || codeEditor.textContent || '';
+    count = Math.max(1, text.split('\n').length);
   }
-  lineNumbers.textContent = Array.from({length: count}, (_, i) => i + 1).join('\n') + '\n';
+  let s = '';
+  for (let i = 1; i <= count; i++) {
+    s += `<div class="code-line">${i}</div>`;
+  }
+  lineNumbers.innerHTML = s;
   if (!Object.keys(foldHierarchy).length && foldIconsEl) foldIconsEl.innerHTML = '';
 }
 
 // ── Right panel line numbers ──────────────────────────────────────────────────
 function updateRightLineNumbers() {
   if (!rightLineNumbers || !rightCodeEditor) return;
-  const count = rightCodeEditor.querySelectorAll('.code-line').length;
-  rightLineNumbers.textContent = Array.from({length: count}, (_, i) => i + 1).join('\n') + '\n';
+  const codeLines = rightCodeEditor.querySelectorAll('.code-line');
+  let count;
+  if (codeLines.length > 0) {
+    count = codeLines.length;
+  } else {
+    const text = rightCodeEditor.innerText || rightCodeEditor.textContent || '';
+    count = Math.max(1, text.split('\n').length);
+  }
+  let s = '';
+  for (let i = 1; i <= count; i++) {
+    s += `<div class="code-line">${i}</div>`;
+  }
+  rightLineNumbers.innerHTML = s;
 }
 
 // ── Show / hide right panel modes ─────────────────────────────────────────────
@@ -138,32 +151,62 @@ function showTreeView() {
 }
 
 // ── Syntax highlight (JSON) ───────────────────────────────────────────────────
+// High-performance linear O(N) tokenizer — no catastrophic regex backtracking
 function highlightSyntax(text) {
-  return text
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"([^"]+)":/g,  '<span class="key">"$1"</span>:')
-    .replace(/:\s*"([^"]*)"/g, ': <span class="string">"$1"</span>')
-    .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="number">$1</span>')
-    .replace(/:\s*(true|false)/g,  ': <span class="boolean">$1</span>')
-    .replace(/:\s*(null)/g,        ': <span class="null">$1</span>')
-    .replace(/([{}\[\]])/g,        '<span class="bracket">$1</span>')
-    .replace(/,(?![^"]*"(?:[^"]*"[^"]*")*[^"]*$)/g, '<span class="bracket">,</span>');
+  if (!text) return '';
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const tokenRegex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\]:,])/g;
+
+  return escaped.replace(tokenRegex, function (match) {
+    if (match.charCodeAt(0) === 34) {
+      if (match.endsWith(':')) {
+        const colonIdx = match.lastIndexOf(':');
+        const key = match.substring(0, colonIdx);
+        const colonAndSpace = match.substring(colonIdx);
+        return `<span class="key">${key}</span>${colonAndSpace}`;
+      }
+      return `<span class="string">${match}</span>`;
+    }
+    if (match === 'true' || match === 'false') {
+      return `<span class="boolean">${match}</span>`;
+    }
+    if (match === 'null') {
+      return `<span class="null">${match}</span>`;
+    }
+    if (match === '{' || match === '}' || match === '[' || match === ']') {
+      return `<span class="bracket">${match}</span>`;
+    }
+    if (match === ',') {
+      return `<span class="bracket">,</span>`;
+    }
+    if (match === ':') {
+      return ':';
+    }
+    return `<span class="number">${match}</span>`;
+  });
 }
 
 // ── Syntax highlight (XML) ────────────────────────────────────────────────────
 function highlightXMLLine(line) {
+  if (!line) return '';
   let r = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // processing instruction
-  r = r.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/g, (_,s,attrs,e) =>
+  r = r.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/gi, (_,s,attrs,e) =>
     `<span class="bracket">&lt;?</span><span class="xml-tag">xml</span> ` +
     attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
       '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>') +
     ` <span class="bracket">?&gt;</span>`);
+  // comments
+  r = r.replace(/(&lt;!--.*?--&gt;)/g, '<span style="color:#6a9955">$1</span>');
   // opening tags
   r = r.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g,
     (_,lt,tag,attrs,slash,gt) => {
       let h = `<span class="bracket">&lt;</span><span class="xml-tag">${tag}</span>`;
-      if (attrs.trim()) h += ' ' + attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
+      if (attrs && attrs.trim()) h += ' ' + attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
         '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
       if (slash) h += '<span class="bracket">/</span>';
       return h + '<span class="bracket">&gt;</span>';
@@ -177,10 +220,28 @@ function highlightXMLLine(line) {
   return r;
 }
 
-// ── Render colored code – left panel (no right-panel fold icons) ──────────────
+// ── Render colored code with fold icons – left panel ──────────────────────────
 function renderColoredCode(json) {
   const lines = json.split('\n');
-  let codeHtml = '', numbersHtml = '';
+  let codeHtml = '', numbersHtml = '', iconsHtml = '';
+
+  // Large data guard: skip fold tracking for huge payloads (>50K chars or >5K lines)
+  const isLarge = json.length > 50000 || lines.length > 5000;
+
+  if (isLarge) {
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
+      const indent  = line.length - line.trimStart().length;
+      const spaces  = ' '.repeat(indent);
+      const lineNum = idx + 1;
+      codeHtml    += `<div class="code-line">${spaces}${highlightSyntax(trimmed)}</div>`;
+      numbersHtml += `<div class="code-line">${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"></div>`;
+    });
+    foldHierarchy = {};
+    return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
+  }
+
   let fId = 0, stack = [];
   foldHierarchy = {};
 
@@ -202,19 +263,22 @@ function renderColoredCode(json) {
       }
       codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
       numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${parentAttr} id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
     } else if (/^[}\]],?$/.test(trimmed)) {
       stack.pop();
       const newParent = stack.length ? stack[stack.length - 1] : null;
       const np = newParent ? ` data-parent="${newParent}"` : '';
       codeHtml    += `<div class="code-line"${np}>${spaces}${highlightSyntax(trimmed)}</div>`;
       numbersHtml += `<div class="code-line"${np}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${np}></div>`;
     } else {
       codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
       numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"${parentAttr}></div>`;
     }
   });
 
-  return { code: codeHtml, numbers: numbersHtml };
+  return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
 }
 
 // ── Render colored code with fold icons – right panel Text View ───────────────
@@ -222,6 +286,24 @@ function renderColoredCodeWithFolds(text) {
   const lines  = text.split('\n');
   const isXML  = text.trimStart().startsWith('<');
   let codeHtml = '', numbersHtml = '', iconsHtml = '';
+
+  // Large data guard: skip fold tracking for huge payloads
+  const isLarge = text.length > 50000 || lines.length > 5000;
+  if (isLarge) {
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
+      const indent  = line.length - line.trimStart().length;
+      const spaces  = ' '.repeat(indent);
+      const lineNum = idx + 1;
+      const highlighted = isXML ? highlightXMLLine(line) : spaces + highlightSyntax(trimmed);
+      codeHtml    += `<div class="code-line">${highlighted}</div>`;
+      numbersHtml += `<div class="code-line">${lineNum}</div>`;
+      iconsHtml   += `<div class="fold-arrow"></div>`;
+    });
+    rightPanelFoldHierarchy = {};
+    return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
+  }
+
   let fId = 0, stack = [];
   rightPanelFoldHierarchy = {};
 
@@ -479,6 +561,7 @@ function formatCode(isConverterReq, data, convertedType, isFromSample,autoformat
         const rendered = renderColoredCode(formatted);
         codeEditor.innerHTML  = rendered.code;
         lineNumbers.innerHTML = rendered.numbers;
+        if (foldIconsEl) foldIconsEl.innerHTML = rendered.icons || '';
         foldStates = {};
       }
 
@@ -512,7 +595,7 @@ function formatCode(isConverterReq, data, convertedType, isFromSample,autoformat
       if (isFromSample || !isConverterReq) {
         codeEditor.innerHTML  = codeHtml;
         lineNumbers.innerHTML = numbersHtml;
-        foldIconsEl.innerHTML = '';
+        if (foldIconsEl) foldIconsEl.innerHTML = '';
         foldHierarchy = {};
       }
 
@@ -539,13 +622,33 @@ function formatCode(isConverterReq, data, convertedType, isFromSample,autoformat
       setStatus(outputStatus, true, '✓ Tree view generated');
 
     } else {
-      // Plain output (YAML, TOML, CSV, SQL)
-      showTreeView();
-      rightTreeContent.style.padding = '15px';
-      rightTreeContent.innerHTML = `<pre style="color:#e3dfd8;margin:0;white-space:pre-wrap;word-break:break-all;">${escapeHtml(input)}</pre>`;
+      // Plain output (YAML, TOML, CSV, SQL, or any other format)
+      const lines = input.split('\n');
+      let codeHtml = '', numbersHtml = '';
+      lines.forEach((line, idx) => {
+        codeHtml    += `<div class="code-line">${escapeHtml(line) || '&nbsp;'}</div>`;
+        numbersHtml += `<div class="code-line">${idx + 1}</div>`;
+      });
+
+      if (isFromSample || !isConverterReq) {
+        codeEditor.innerHTML  = codeHtml;
+        lineNumbers.innerHTML = numbersHtml;
+        if (foldIconsEl) foldIconsEl.innerHTML = '';
+        foldHierarchy = {};
+      }
+
+      populateTextView(input);
+      setStatus(inputStatus, true, '✓ Formatted successfully!');
+      setStatus(outputStatus, true, '✓ View generated');
+    }
+
+    // Safety fallback: ensure left line numbers always exist
+    if (!lineNumbers.innerHTML.trim()) {
+      updateLineNumbers();
     }
 
   } catch (e) {
+    updateLineNumbers();
     handleParseError(e, input);
   }
 }
@@ -601,26 +704,51 @@ function handleParseError(e, input) {
 function minifyCode() {
   const input = getEditorText();
   const type  = formatTypeEl ? formatTypeEl.value : 'json';
-  if (!input) { setStatus(inputStatus, null, '⚠ Please enter some code first!'); return; }
+  if (!input || !input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some code first!'); return; }
 
   try {
+    let minified;
+    let highlighted;
     if (type === 'json') {
       const parsed = JSON.parse(input);
-      codeEditor.textContent = JSON.stringify(parsed);
-      foldHierarchy = {};
-      foldIconsEl.innerHTML = '';
-      updateLineNumbers();
+      minified = JSON.stringify(parsed);
       currentData = parsed;
-      renderTree(parsed);
+      highlighted = highlightSyntax(minified);
+
       setStatus(inputStatus, true, '✓ JSON minified successfully!');
-      setStatus(outputStatus, true, '✓ Tree view updated');
+      setStatus(outputStatus, true, '✓ View updated');
     } else {
-      codeEditor.textContent = input.replace(/>\s+</g, '><').trim();
-      foldHierarchy = {};
-      foldIconsEl.innerHTML = '';
-      updateLineNumbers();
+      minified = input.replace(/>\s+</g, '><').trim();
+      highlighted = highlightXMLLine(minified);
+
       setStatus(inputStatus, true, '✓ XML minified successfully!');
+      setStatus(outputStatus, true, '✓ View updated');
     }
+
+    // Left panel: colored minified single line with line number 1
+    codeEditor.innerHTML = `<div class="code-line minified-line">${highlighted}</div>`;
+    lineNumbers.textContent = '1\n';
+    foldHierarchy = {};
+    foldStates = {};
+    if (foldIconsEl) foldIconsEl.innerHTML = '';
+
+    // Right panel: also show colored minified line with line number 1
+    if (rightCodeEditor) {
+      rightCodeEditor.innerHTML = `<div class="code-line minified-line">${highlighted}</div>`;
+    }
+    if (rightLineNumbers) {
+      rightLineNumbers.textContent = '1\n';
+    }
+    if (rightFoldIcons) {
+      rightFoldIcons.innerHTML = '';
+    }
+    rightPanelFoldStates = {};
+    rightPanelFoldHierarchy = {};
+
+    // Switch right panel to Text View mode so line number 1 and colored line are visible!
+    showTextView();
+    if (viewTypeEl) viewTypeEl.value = 'formated';
+
   } catch (e) {
     setStatus(inputStatus, false, '✗ ' + e.message);
   }
@@ -628,14 +756,14 @@ function minifyCode() {
 
 // ── Clear all ─────────────────────────────────────────────────────────────────
 function clearAll() {
-  codeEditor.textContent = '';
-  foldIconsEl.innerHTML  = '';
-  rightFoldIcons.innerHTML   = '';
-  rightLineNumbers.innerHTML = '';
-  rightCodeEditor.innerHTML  = '';
+  if (codeEditor) codeEditor.textContent = '';
+  if (foldIconsEl) foldIconsEl.innerHTML = '';
+  if (lineNumbers) lineNumbers.textContent = '1\n';
+  if (rightFoldIcons) rightFoldIcons.innerHTML = '';
+  if (rightLineNumbers) rightLineNumbers.textContent = '1\n';
+  if (rightCodeEditor) rightCodeEditor.innerHTML = '';
   showTreeView();
-  rightTreeContent.innerHTML = '<div style="padding:20px;color:#858585;">Tree view will appear here after formatting</div>';
-  updateLineNumbers();
+  if (rightTreeContent) rightTreeContent.innerHTML = '<div style="padding:20px;color:#858585;">Tree view will appear here after formatting</div>';
   currentData = null;
   expandedStates = {};
   foldStates = {};
@@ -705,7 +833,28 @@ function changeViewType() {
       if (viewType === 'tree') renderTree(parsed);
       else populateTextView(formatted);
     } catch(e) { /* ignore */ }
+  } else if (type === 'xml') {
+    try {
+      const formatted = formatXML(input);
+      if (viewType === 'tree') {
+        const parsed = parseXMLToObject(input);
+        currentData = parsed;
+        renderTree(parsed);
+      } else {
+        populateTextView(formatted);
+      }
+    } catch(e) { /* ignore */ }
   }
+}
+
+// ── Debounced Input Handler for smooth editing ───────────────────────────────
+let inputDebounceTimer = null;
+function handleEditorInput() {
+  clearTimeout(inputDebounceTimer);
+  updateLineNumbers();
+  inputDebounceTimer = setTimeout(() => {
+    formatCode(false, null, null, null, true);
+  }, 300);
 }
 
 // ── Format data (API call) ────────────────────────────────────────────────────
@@ -741,7 +890,12 @@ function formatData(type, filters) {
       else if (['JSON_TO_SQL','XML_TO_SQL','CSV_TO_SQL'].includes(apiType))                      fmt = 'sql';
       else if (apiType === 'YAML_TO_PROPERTY')                                      fmt = 'property';
 
-      formatCode(true, res.parsedData.replace(/\r\n/g, '\n'), fmt, false);
+      const cleanData = res.parsedData.replace(/\r\n/g, '\n');
+      if (['REPAIR', 'JSON_SORT', 'XML_SORT'].includes(type)) {
+        formatCode(false, cleanData, fmt, true);
+      } else {
+        formatCode(true, cleanData, fmt, false);
+      }
     } else {
       showTreeView();
       rightTreeContent.innerHTML = `<div class="error">Failed: ${escapeHtml(res.message || 'Unknown error')}</div>`;

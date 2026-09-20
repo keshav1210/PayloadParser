@@ -31,7 +31,7 @@ public class RequestHandler {
     @Autowired
     private EmailService emailService;
 
-    @Value("${baseurl}")
+    @Value("${baseurl:http://localhost:8085}")
     private String baseUrl;
 
     @Autowired

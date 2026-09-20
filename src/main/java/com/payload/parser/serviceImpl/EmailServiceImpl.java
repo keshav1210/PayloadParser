@@ -23,7 +23,7 @@ public class EmailServiceImpl implements EmailService {
 //    @Value("${spring.mail.username:}")
 //    private String mailUsername;
 
-    @Value("${email.api.key}")
+    @Value("${email.api.key:}")
     private String emailApiKey;
 
     private final RestClient restClient;
