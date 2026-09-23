@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Service
 public class ShareServiceImpl implements ShareService {
-    private static final long MAX_FILE_SIZE = 30 * 1024* 1024; // 300 KB
+    private static final long MAX_FILE_SIZE = 40 * 1024* 1024; // 40
     @Autowired
     private Cache<String, ShareMeta> cache;
 
