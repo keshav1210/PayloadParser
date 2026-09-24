@@ -3,32 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
-    <meta name="author" content="JSON XML EDITOR">
-
-    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
-    <meta property="og:title" content="Home">
-    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta property="og:type" content="Object Mapper">
-    <meta property="og:url" content="https://jsonxmleditor.com">
+    <title>JSON to Java, TypeScript, Python and C# Class Generator</title>
+    <meta name="description" content="Paste a JSON sample and get Java (Lombok or POJO), TypeScript, Python, JavaScript or C# classes. Nested objects become their own classes.">
+    <link rel="canonical" href="https://jsonxmleditor.com/mapper">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#111317">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="JSON XML Editor">
+    <meta property="og:title" content="JSON to Class Generator">
+    <meta property="og:description" content="Turn a JSON sample into Java, TypeScript, Python, JavaScript or C# classes.">
+    <meta property="og:url" content="https://jsonxmleditor.com/mapper">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/css/objectmapper.css?v=5">
+    <link rel="stylesheet" href="/css/sharemodel.css?v=4">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
     <script>
-        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-
-                    gtag('config', 'G-LPTNYNJB94');
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-LPTNYNJB94');
         }
     </script>
-    <title>Code Converter</title>
-    <link rel="stylesheet" href="/css/objectmapper.css">
-    <link rel="stylesheet" href="/css/sharemodel.css">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON to Class Generator",
+      "url": "https://jsonxmleditor.com/mapper",
+      "description": "Turn a JSON sample into Java, TypeScript, Python, JavaScript or C# classes.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Object Mapper",
+          "item": "https://jsonxmleditor.com/mapper"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which languages can I generate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is my top-level class called RootObject?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "JSON doesn't name its outermost object, so the generator uses RootObject. Rename it after copying the code."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are field types chosen?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In Java, C# and TypeScript the types come from the values in your sample: text becomes a string, whole numbers an integer, decimals a double or number, and true/false a boolean. Python and JavaScript classes are generated without type annotations. A field that is null in the sample has no type to go on, so give it a real value before converting."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it handle nested objects?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every nested object becomes its own class, named after its key, and the parent class gets a field of that type."
+          }
+        }
+      ]
+    }
+  ]
+}
+    </script>
 </head>
 <body>
-<div id="header">
-</div>
+<div id="header"></div>
+
+<section class="tool-intro">
+    <h1>JSON to Class Generator</h1>
+    <p>Paste a JSON sample, pick a language and get ready-to-use classes. Nested objects become separate classes.</p>
+</section>
 
 <div class="toolbar">
 <!--    <button class="btn btn-primary" onclick="convertCode()">Convert</button>-->
@@ -153,24 +233,51 @@
         </div>
     </div>
 </div>
-<div class="content-section">
-    <h2>What This Tool Does</h2>
-    <p>This tool helps developers convert code objects from one language to another and also generate JSON from objects. You can paste your class or object code, choose the input and output language, and the tool will convert it instantly.</p>
+<article class="content-section">
+    <h2>How to generate classes from JSON</h2>
+    <ol>
+        <li>Paste a JSON object into the left panel, or click <strong>Load Sample</strong>.</li>
+        <li>Pick the output language on the right: Java, TypeScript, Python, JavaScript or C#.</li>
+        <li>For Java, choose Lombok or a plain POJO and which constructors you want.</li>
+        <li>Click <strong>Convert</strong>, then <strong>Copy Output</strong>.</li>
+    </ol>
 
-    <p>It supports multiple programming languages and works with both simple and nested objects. This makes it useful when working with APIs, data mapping, or when switching between different technologies.</p>
+    <h2>What you get</h2>
+    <p>Every JSON object becomes a class, and nested objects get a class of their own, named after their key. The top-level class is called <code>RootObject</code>, so rename it to fit your code. In Java, C# and TypeScript, field types come from the sample values: text becomes <code>String</code>, whole numbers become <code>int</code>, decimals become <code>double</code>, and so on. For example, with Java and Lombok:</p>
+<pre>{ "userName": "ada", "age": 36, "address": { "city": "London" } }</pre>
+    <p>produces an <code>Address</code> class with a <code>city</code> field, and a <code>RootObject</code> class with <code>userName</code>, <code>age</code> and <code>address</code>, each annotated with <code>@Data</code> and the constructor annotations you picked.</p>
 
-    <p><strong>You can use this tool to:</strong></P>
+    <h2>Tips for better results</h2>
     <ul>
-        <li> Convert Java DTO to JSON</li>
-
-        <li> Convert JSON to object classes</li>
-
-        <li>Convert objects between different programming languages</li>
-
-        <li>Understand object structure easily<P>
+        <li>Use a sample where every field has a real value. A field that is <code>null</code> in the sample can't tell the generator its type.</li>
+        <li>If a number can have decimals, put a decimal value like <code>9.5</code> in the sample so it isn't typed as a whole number.</li>
+        <li>Check list fields after generating. Arrays may come out as a generic <code>Object</code> type that you'll want to change to a typed list.</li>
+        <li>Choose Snake Case output for Python if your API uses <code>user_name</code> style keys.</li>
     </ul>
-        <p>The tool is fast, simple to use, and runs directly in your browser without needing installation.</P>
-</div>
+
+    <h2>Is my code sent anywhere?</h2>
+    <p>Yes. The conversion runs on our server: your input is sent, converted in memory and returned. It isn't stored. See the <a href="/privacy">privacy policy</a> for details.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+        <details>
+          <summary>Which languages can I generate?</summary>
+          <p>Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#.</p>
+        </details>
+        <details>
+          <summary>Why is my top-level class called RootObject?</summary>
+          <p>JSON doesn't name its outermost object, so the generator uses RootObject. Rename it after copying the code.</p>
+        </details>
+        <details>
+          <summary>How are field types chosen?</summary>
+          <p>In Java, C# and TypeScript the types come from the values in your sample: text becomes a string, whole numbers an integer, decimals a double or number, and true/false a boolean. Python and JavaScript classes are generated without type annotations. A field that is null in the sample has no type to go on, so give it a real value before converting.</p>
+        </details>
+        <details>
+          <summary>Does it handle nested objects?</summary>
+          <p>Yes. Every nested object becomes its own class, named after its key, and the parent class gets a field of that type.</p>
+        </details>
+    </div>
+</article>
 <!-- ════════════════════════════════════════════════════════
      ★  SHARE MODAL
      ════════════════════════════════════════════════════════ -->
@@ -261,7 +368,7 @@
 
 <br>
 <div id="footer"></div>
-<script src="/js/layout-loader.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
 <script src="/js/objectmapper.js"></script>
 </body>
 </html>

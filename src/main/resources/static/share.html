@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareDrop — Upload</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-    <meta name="description" content="Free online JSON editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter, json parser, json validator, json beautifier, json editor, developer tool">
-    <meta name="author" content="Share Data/File">
-    <meta property="og:title" content="Share Drop">
-    <meta property="og:description" content="Free online tool for sharing Data/File .">
+    <title>Share Drop – Send Text or Files with a Temporary Link</title>
+    <link rel="canonical" href="https://jsonxmleditor.com/share">
+    <meta name="theme-color" content="#111317">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta name="description" content="Move text, JSON or a file to another device with a short key or link. One-time links delete themselves after the first view. Free, no sign-up.">
+    <meta property="og:title" content="Share Drop – Send text or files with a temporary link">
+    <meta property="og:description" content="Upload text or a file, get a key or link, open it on another device.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jsonxmleditor.com/share">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
@@ -23,42 +23,16 @@
     </script>
     <style>
         :root {
-          --bg:#08080b; --s1:#101014; --s2:#16161c; --s3:#1d1d25;
-          --border:#252530; --bh:#363648;
-          --accent:#4f8cff; --teal:#00ddb3; --purple:#9f7eff;
-          --success:#00c896; --danger:#ff4f6a; --warn:#f0a540;
-          --text:#ddddf0; --muted:#525268;
-          --mono:'JetBrains Mono',monospace; --sans:'Outfit',sans-serif;
+          --bg:#0f1115; --s1:#16181d; --s2:#1c1f26; --s3:#232833;
+          --border:#262b35; --bh:#353b48;
+          --accent:#2f6fed; --teal:#2bb9a0; --purple:#8f7cf0;
+          --success:#3fb950; --danger:#ff6b6b; --warn:#f0a540;
+          --text:#d5d9e0; --muted:#9aa3b2;
+          --mono:'Consolas','SFMono-Regular','Courier New',monospace;
+          --sans:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
         }
         *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
         body { background:var(--bg); color:var(--text); font-family:var(--sans); min-height:100vh; overflow-x:hidden; }
-        body::before {
-          content:''; position:fixed; inset:0; z-index:0;
-          background-image:linear-gradient(rgba(79,140,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,.04) 1px,transparent 1px);
-          background-size:42px 42px; pointer-events:none;
-        }
-        .blob { position:fixed; border-radius:50%; filter:blur(110px); opacity:.13; pointer-events:none; z-index:0; }
-        .blob1 { width:500px; height:500px; background:var(--accent); top:-15%; left:-12%; }
-        .blob2 { width:420px; height:420px; background:var(--teal); bottom:-12%; right:-10%; }
-
-        /* NAV */
-<!--        nav {-->
-<!--          position:sticky; top:0; z-index:100;-->
-<!--          background:rgba(8,8,11,.88); backdrop-filter:blur(18px);-->
-<!--          border-bottom:1px solid var(&#45;&#45;border);-->
-<!--          display:flex; align-items:center; justify-content:space-between;-->
-<!--          padding:0 28px; height:58px;-->
-<!--        }-->
-        .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:.95rem; letter-spacing:-.02em; }
-        .brand-logo {
-          width:32px; height:32px; border-radius:9px;
-          background:linear-gradient(135deg,var(--accent),var(--teal));
-          display:flex; align-items:center; justify-content:center;
-          font-family:var(--mono); font-size:.72rem; font-weight:700; color:#fff;
-        }
-        .nav-links { display:flex; gap:22px; font-size:.82rem; color:var(--muted); }
-        .nav-links a { color:inherit; text-decoration:none; transition:color .2s; }
-        .nav-links a:hover, .nav-links a.active { color:var(--text); }
 
         /* API STATUS */
         .api-bar {
@@ -277,12 +251,107 @@
           box-shadow:0 4px 20px rgba(0,221,179,.3);
           transform:translateY(-1px);
         }
+        /* ── Guide below the tool ── */
+        .guide { position:relative; z-index:1; max-width:760px; margin:8px auto 72px; padding:0 22px; font-family:var(--sans); color:var(--text); line-height:1.7; font-size:16px; }
+        .guide h2 { font-size:1.45rem; font-weight:700; color:#f2f4f8; margin:40px 0 12px; letter-spacing:-.01em; }
+        .guide h2:first-child { margin-top:0; }
+        .guide p { margin-bottom:14px; }
+        .guide ol, .guide ul { margin:0 0 16px 22px; }
+        .guide li { margin-bottom:6px; }
+        .guide strong { color:#f2f4f8; }
+        .guide a { color:#7fb0ff; }
+        .guide code { font-family:var(--mono); font-size:.9em; background:var(--s3); color:#e8c790; padding:1px 6px; border-radius:4px; }
+        .guide details { background:var(--s1); border:1px solid var(--border); border-radius:10px; margin-bottom:10px; }
+        .guide summary { cursor:pointer; padding:14px 18px; font-weight:600; color:#f2f4f8; }
+        .guide details[open] summary { border-bottom:1px solid var(--border); }
+        .guide details p { padding:12px 18px; margin:0; }
     </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Share Drop",
+      "url": "https://jsonxmleditor.com/share",
+      "description": "Send text or a file to another device with a short key or a temporary link.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Share Drop",
+          "item": "https://jsonxmleditor.com/share"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How long does a drop last?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only a short time. Drops are kept in server memory and expire automatically, so open the link or enter the key soon after it is created. After that the link shows that the drop is no longer available."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a one-time link?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A drop that is deleted as soon as it has been opened or downloaded once. Anyone who tries the link or key after that gets an error, including you."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a size limit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Text drops of several megabytes work fine. Files larger than about 1 MB are currently rejected, so compress bigger files or split them first."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need an account?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. There is no sign-up. Whoever has the key or link can open the drop until it expires."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I send the link by email?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Enter the recipient's address before uploading and the key and link are emailed to them. If the email can't be sent from our side, your own mail app opens with the message ready to send."
+          }
+        }
+      ]
+    }
+  ]
+}
+    </script>
 </head>
 <body>
 <div id="header"></div>
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
 
 <!-- API status bar -->
 <!--<div class="api-bar">-->
@@ -298,8 +367,8 @@
 
     <div class="hero">
         <div class="hero-chip"><span class="chip-dot"></span> instant share</div>
-        <h1>Drop It. Share It.<br><span class="grad">Anywhere.</span></h1>
-        <p>Upload text or a file to your backend — get a unique link anyone can access from any device.</p>
+        <h1>Share text or files<br><span class="grad">with a temporary link</span></h1>
+        <p>Paste text or pick a file, get a short key or link, and open it on any other device. Links are temporary.</p>
         <div class="hero-actions">
             <button class="btn-hero-receive" onclick="openReceiveModal()" id="heroReceiveBtn">
                 <span>📥</span> Receive Drop
@@ -328,7 +397,7 @@
                 <span id="charCount" style="font-family:var(--mono);font-size:.7rem;color:var(--muted)">0 chars</span>
             </div>
             <div class="card-body">
-                <textarea id="textInput" placeholder="Paste text, JSON, XML, code, CSV, notes… anything&#10;&#10;// Sent as: { &quot;text&quot;: &quot;...&quot;, &quot;oneTimeDownload&quot;: false }"></textarea>
+                <textarea id="textInput" placeholder="Paste text, JSON, XML, code, CSV, notes… anything"></textarea>
             </div>
             <div class="toggle-row">
                 <div class="toggle-label">
@@ -485,6 +554,52 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<section class="guide" aria-labelledby="guide-title">
+    <h2 id="guide-title">How Share Drop works</h2>
+    <ol>
+        <li>Paste text into the box, or switch to <strong>File</strong> and choose a file.</li>
+        <li>Turn on <strong>one-time</strong> if the drop should disappear after it has been opened once.</li>
+        <li>Upload. You get a short key, such as <code>5xYz9</code>, and a link.</li>
+        <li>On the other device, open the link, or go to Share Drop, click <strong>Receive Drop</strong> and type the key.</li>
+    </ol>
+    <p>The key is short on purpose, so you can read it out or type it on a phone without copying a long URL.</p>
+
+    <h2>When it's useful</h2>
+    <ul>
+        <li>Moving a JSON payload or a log snippet from your work laptop to your phone, or the other way round.</li>
+        <li>Handing a test file to a colleague without going through chat or email attachments.</li>
+        <li>Sending the exact request body you used to someone who is debugging the same API.</li>
+    </ul>
+    <p>The formatter and the Object Mapper have a <strong>Share</strong> button too. A drop created there opens straight back in the same tool, with the content already in the editor.</p>
+
+    <h2>What not to share</h2>
+    <p>Anyone who has the key or link can open the drop until it expires, and short keys can be guessed. Don't use Share Drop for passwords, API keys, tokens or personal data. For anything sensitive, use the one-time option at the very least. The <a href="/privacy">privacy policy</a> explains how drops are stored.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+        <details>
+          <summary>How long does a drop last?</summary>
+          <p>Only a short time. Drops are kept in server memory and expire automatically, so open the link or enter the key soon after it is created. After that the link shows that the drop is no longer available.</p>
+        </details>
+        <details>
+          <summary>What is a one-time link?</summary>
+          <p>A drop that is deleted as soon as it has been opened or downloaded once. Anyone who tries the link or key after that gets an error, including you.</p>
+        </details>
+        <details>
+          <summary>Is there a size limit?</summary>
+          <p>Text drops of several megabytes work fine. Files larger than about 1 MB are currently rejected, so compress bigger files or split them first.</p>
+        </details>
+        <details>
+          <summary>Do I need an account?</summary>
+          <p>No. There is no sign-up. Whoever has the key or link can open the drop until it expires.</p>
+        </details>
+        <details>
+          <summary>Can I send the link by email?</summary>
+          <p>Yes. Enter the recipient's address before uploading and the key and link are emailed to them. If the email can't be sent from our side, your own mail app opens with the message ready to send.</p>
+        </details>
+    </div>
+</section>
+
 <div id="footer"></div>
 
 <script>
@@ -977,6 +1092,6 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       }
     })();
 </script>
-<script src="/js/layout-loader.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
 </body>
 </html>

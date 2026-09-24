@@ -2,112 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Application Health</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Application Health – JSON XML Editor</title>
+    <link rel="stylesheet" href="/css/site.css?v=4">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            padding: 30px;
-        }
-
-        .card {
-            max-width: 600px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .status {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .UP {
-            color: #2e7d32;
-        }
-
-        .DOWN {
-            color: #c62828;
-        }
-
-        .component {
-            border-left: 4px solid #1976d2;
-            background: #f9f9f9;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        .component h4 {
-            margin: 0 0 5px 0;
-            text-transform: capitalize;
-        }
-
-        table {
-            width: 100%;
-            font-size: 14px;
-            border-collapse: collapse;
-            margin-top: 8px;
-        }
-
-        td {
-            padding: 4px 6px;
-        }
-
-        td:first-child {
-            font-weight: bold;
-            width: 40%;
-        }
+        .health { max-width: 720px; margin: 48px auto; padding: 0 20px; }
+        .health h1 { font-size: 26px; color: var(--text-strong); margin-bottom: 14px; }
+        .overall { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        .UP { color: var(--success); }
+        .DOWN, .OUT_OF_SERVICE { color: var(--danger); }
+        .component { margin-bottom: 12px; }
+        .component h2 { font-size: 16px; color: var(--text-strong); text-transform: capitalize; margin-bottom: 4px; }
+        .component table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+        .component td { padding: 5px 8px; border-top: 1px solid var(--border); vertical-align: top; word-break: break-word; }
+        .component td:first-child { color: var(--muted); width: 40%; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Application Health Status</h2>
-    <div id="overallStatus" class="status"></div>
+<main class="health">
+    <h1>Application health</h1>
+    <div id="overallStatus" class="overall">Checking…</div>
     <div id="components"></div>
-</div>
+</main>
 
 <script>
+    function cell(text) {
+        const td = document.createElement('td');
+        td.textContent = typeof text === 'object' ? JSON.stringify(text) : String(text);
+        return td;
+    }
+
     fetch('/actuator/health')
         .then(response => response.json())
         .then(data => {
-            // Overall status
             const statusDiv = document.getElementById('overallStatus');
-            statusDiv.textContent = 'Overall Status: ' + data.status;
+            statusDiv.textContent = 'Overall status: ' + data.status;
             statusDiv.classList.add(data.status);
 
-            // Components
             const componentsDiv = document.getElementById('components');
-            for (const [key, value] of Object.entries(data.components)) {
-
-                let html = `
-                <div class="component">
-                    <h4>${key}</h4>
-                    <p>Status: <b>${value.status}</b></p>
-            `;
+            for (const [key, value] of Object.entries(data.components || {})) {
+                const card = document.createElement('div');
+                card.className = 'card component';
+                const title = document.createElement('h2');
+                title.textContent = key;
+                const status = document.createElement('div');
+                status.className = value.status;
+                status.textContent = 'Status: ' + value.status;
+                card.append(title, status);
 
                 if (value.details) {
-                    html += '<table>';
+                    const table = document.createElement('table');
                     for (const [dKey, dVal] of Object.entries(value.details)) {
-                        html += `
-                        <tr>
-                            <td>${dKey}</td>
-                            <td>${dVal}</td>
-                        </tr>
-                    `;
+                        const tr = document.createElement('tr');
+                        tr.append(cell(dKey), cell(dVal));
+                        table.appendChild(tr);
                     }
-                    html += '</table>';
+                    card.appendChild(table);
                 }
-
-                html += '</div>';
-                componentsDiv.innerHTML += html;
+                componentsDiv.appendChild(card);
             }
         })
         .catch(err => {
-            document.getElementById('overallStatus').innerText =
-                'Failed to load health status';
+            document.getElementById('overallStatus').textContent = 'Failed to load health status';
             console.error(err);
         });
 </script>

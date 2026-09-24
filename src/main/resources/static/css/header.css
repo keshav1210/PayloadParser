@@ -5,40 +5,99 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #2e2e2e, #252525);
-    border-bottom: 1px solid #444;
+    gap: 16px;
+    padding: 10px 24px;
+    min-height: 58px;
+    background: rgba(17, 19, 23, 0.94);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1f232b;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    box-shadow: none;
 }
 
-.logo {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
-}
-
-.nav-links {
+.app-header .brand {
     display: flex;
-    gap: 18px;
-}
-
-.nav-links a {
+    align-items: center;
+    gap: 10px;
     text-decoration: none;
-    color: #cfcfcf;
-    font-size: 13.5px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    transition: background 0.2s, color 0.2s;
+    color: #f2f4f8;
 }
 
-.nav-links a:hover {
-    background: #3d3d3d;
+.app-header .brand-name {
+    font-size: 16px;
+    font-weight: 650;
+    white-space: nowrap;
+    letter-spacing: 0.1px;
+}
+
+.app-header .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.app-header .nav-links a {
+    text-decoration: none;
+    color: #aeb6c4;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.app-header .nav-links a:hover {
+    background: #1c1f26;
     color: #ffffff;
 }
 
-/* Mobile toggle */
-.menu-toggle {
+.app-header .nav-links a.active {
+    background: #1c2433;
+    color: #ffffff;
+    box-shadow: inset 0 -2px 0 #2f6fed;
+}
+
+.app-header .menu-toggle {
     display: none;
-    font-size: 20px;
-    cursor: pointer;
+    background: none;
+    border: 1px solid #2a2f3a;
+    border-radius: 6px;
     color: #ffffff;
+    font-size: 20px;
+    line-height: 1;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+@media (max-width: 860px) {
+    .app-header {
+        flex-wrap: wrap;
+        padding: 10px 16px;
+    }
+
+    .app-header .menu-toggle {
+        display: block;
+    }
+
+    .app-header .nav-links {
+        order: 3;
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        padding-top: 8px;
+    }
+
+    .app-header .nav-links.open {
+        display: flex;
+    }
+
+    .app-header .nav-links a {
+        padding: 11px 12px;
+        font-size: 15px;
+    }
 }

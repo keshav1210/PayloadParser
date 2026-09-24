@@ -5,20 +5,25 @@
 'use strict';
 
 // ── State ──────────────────────────────────────────────────────────────────────
-let currentData           = null;
-let expandedStates        = {};
-let foldStates            = {};
-let foldHierarchy         = {};
-let rightPanelFoldStates  = {};
-let rightPanelFoldHierarchy = {};
-let expandedPanel         = null;
+let currentAst     = null;   // AST of the last successfully parsed input (for tree view)
+let lastOutput     = null;   // { text, lang } currently represented by the right panel
+let expandedPanel  = null;
+const folds = {
+  left:  { list: [], atLine: {} },
+  right: { list: [], atLine: {} }
+};
+
+const INDENT_KEY       = 'jxe.indent';
+const LINE_HEIGHT      = 21;
+const FOLD_LINE_LIMIT  = 20000;   // skip fold tracking above this many lines
+const TREE_FULL_EXPAND = 3000;    // expand every tree node below this many nodes
 
 // ── DOM refs (assigned after DOM ready) ───────────────────────────────────────
 let codeEditor, lineNumbers, foldIconsEl,
     rightCodeEditor, rightLineNumbers, rightFoldIcons,
     rightEditorWrapper, rightTreeContent,
     inputStatus, outputStatus,
-    formatTypeEl, viewTypeEl;
+    formatTypeEl, formatType2El, viewTypeEl;
 
 // ── Init (called once DOM is ready) ──────────────────────────────────────────
 function initEditor() {
@@ -33,29 +38,184 @@ function initEditor() {
   inputStatus       = document.getElementById('inputStatus');
   outputStatus      = document.getElementById('outputStatus');
   formatTypeEl      = document.getElementById('formatType');
+  formatType2El     = document.getElementById('formatType2');
   viewTypeEl        = document.getElementById('viewType');
 
   if (!codeEditor) return;
 
-  codeEditor.addEventListener('input',  handleEditorInput);
-  codeEditor.addEventListener('scroll', syncLeftScroll);
-  codeEditor.addEventListener('paste',  handlePaste);
+  codeEditor.dataset.placeholder = 'Paste or type your data here, or drop a file…';
+  codeEditor.addEventListener('input',   handleEditorInput);
+  codeEditor.addEventListener('scroll',  syncLeftScroll);
+  codeEditor.addEventListener('paste',   handlePaste);
+  codeEditor.addEventListener('keydown', handleEditorKeydown);
+  codeEditor.addEventListener('dragover', e => { e.preventDefault(); codeEditor.classList.add('drag-over'); });
+  codeEditor.addEventListener('dragleave', () => codeEditor.classList.remove('drag-over'));
+  codeEditor.addEventListener('drop', handleFileDrop);
+
+  codeEditor.addEventListener('copy', e => handleCopy(e, codeEditor, false));
+  codeEditor.addEventListener('cut',  e => handleCopy(e, codeEditor, true));
 
   if (rightCodeEditor) {
     rightCodeEditor.addEventListener('scroll', syncRightScroll);
-    rightCodeEditor.addEventListener('input',  updateRightLineNumbers);
+    rightCodeEditor.addEventListener('copy', e => handleCopy(e, rightCodeEditor, false));
+    // Make Ctrl+A select only the output, not the whole page
+    rightCodeEditor.tabIndex = 0;
+    rightCodeEditor.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        selectAllIn(rightCodeEditor);
+      }
+    });
+  }
+  if (foldIconsEl)     foldIconsEl.addEventListener('click', e => onFoldIconClick(e, 'left'));
+  if (rightFoldIcons)  rightFoldIcons.addEventListener('click', e => onFoldIconClick(e, 'right'));
+
+  // Keep both format selects in sync (either one may be the visible one)
+  if (formatType2El) formatType2El.addEventListener('change', () => setFormatType(formatType2El.value));
+  if (formatTypeEl)  formatTypeEl.addEventListener('change',  () => setFormatType(formatTypeEl.value));
+  updateFormatButtons();
+
+  const indentEl = document.getElementById('indentSize');
+  if (indentEl) {
+    try {
+      const saved = localStorage.getItem(INDENT_KEY);
+      if (saved && hasOption(indentEl, saved)) indentEl.value = saved;
+    } catch (_) { /* storage unavailable */ }
+    indentEl.addEventListener('change', () => {
+      try { localStorage.setItem(INDENT_KEY, indentEl.value); } catch (_) { /* ignore */ }
+      if (getEditorText().trim()) formatCode(false, null, null);
+    });
   }
 
-  // CSV export button
   const csvBtn = document.getElementById('downloadCsvBtn');
   if (csvBtn) csvBtn.addEventListener('click', exportCSV);
 
+  if (rightTreeContent) rightTreeContent.style.color = '';
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && expandedPanel && !document.querySelector('.sd-overlay.show')) {
+      toggleExpand(expandedPanel);
+    }
+  });
+
+  document.addEventListener('selectionchange', markSelectedFolds);
+
+  injectPanelActions();
   updateLineNumbers();
   showTreeView();
   checkAndLoadSharedDrop();
 }
 
 document.addEventListener('DOMContentLoaded', initEditor);
+
+// ── Panel action buttons (copy / upload / download) ──────────────────────────
+function injectPanelActions() {
+  const leftHeader  = document.getElementById('leftPanelHeader');
+  const rightHeader = document.getElementById('rightPanelHeader');
+
+  if (leftHeader) {
+    const bar = makeActionBar();
+    if (!document.getElementById('csvUploadInput')) {
+      const file = Object.assign(document.createElement('input'), { type: 'file', hidden: true });
+      file.accept = '.json,.xml,.txt,.yaml,.yml,.toml,.csv,.properties,application/json,text/xml,text/plain';
+      file.addEventListener('change', () => {
+        if (file.files && file.files[0]) loadFileIntoEditor(file.files[0]);
+        file.value = '';
+      });
+      bar.appendChild(file);
+      bar.appendChild(makeActionBtn('⭱ Upload', 'Open a file from your computer', () => file.click()));
+    }
+    bar.appendChild(makeActionBtn('⎘ Copy', 'Copy editor content', () => copyText(getEditorText(), inputStatus)));
+    leftHeader.insertBefore(bar, document.getElementById('leftExpandBtn'));
+  }
+
+  if (rightHeader) {
+    const bar = makeActionBar();
+    bar.appendChild(makeActionBtn('⎘ Copy', 'Copy output', () => copyText(getOutputText(), outputStatus)));
+    bar.appendChild(makeActionBtn('⭳ Download', 'Download output as a file', downloadOutput));
+    rightHeader.insertBefore(bar, document.getElementById('rightExpandBtn'));
+  }
+}
+
+function makeActionBar() {
+  const bar = document.createElement('div');
+  bar.className = 'panel-actions';
+  return bar;
+}
+
+function makeActionBtn(label, title, onClick) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'icon-btn';
+  b.textContent = label;
+  b.title = title;
+  b.addEventListener('click', onClick);
+  return b;
+}
+
+function copyText(text, statusEl) {
+  if (!text || !text.trim()) { setStatus(statusEl, null, '⚠ Nothing to copy'); return; }
+  const done = () => setStatus(statusEl, true, '✓ Copied to clipboard');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text) ? done() : setStatus(statusEl, false, '✗ Copy failed'));
+  } else if (fallbackCopy(text)) {
+    done();
+  } else {
+    setStatus(statusEl, false, '✗ Copy failed');
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = Object.assign(document.createElement('textarea'), { value: text });
+  ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+const FILE_EXT = { json: 'json', xml: 'xml', yaml: 'yaml', toml: 'toml', csv: 'csv', sql: 'sql', property: 'properties' };
+const MIME     = { json: 'application/json', xml: 'application/xml', csv: 'text/csv' };
+
+function downloadOutput() {
+  const text = getOutputText();
+  if (!text.trim()) { setStatus(outputStatus, null, '⚠ Nothing to download'); return; }
+  const lang = (lastOutput && lastOutput.lang) || 'txt';
+  downloadFile(text, 'output.' + (FILE_EXT[lang] || 'txt'), (MIME[lang] || 'text/plain') + ';charset=utf-8');
+}
+
+function downloadFile(text, name, type) {
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a   = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function handleFileDrop(e) {
+  codeEditor.classList.remove('drag-over');
+  const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!file) return;               // plain text drag → let the browser handle it
+  e.preventDefault();
+  loadFileIntoEditor(file);
+}
+
+function loadFileIntoEditor(file) {
+  if (file.size > 20 * 1024 * 1024) {
+    setStatus(inputStatus, false, '✗ File is too large (max 20 MB)');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    setEditorText(String(reader.result || ''));
+    formatCode(false, null, null);
+  };
+  reader.onerror = () => setStatus(inputStatus, false, '✗ Could not read file');
+  reader.readAsText(file);
+}
 
 // ── Scroll sync ───────────────────────────────────────────────────────────────
 function syncLeftScroll() {
@@ -68,75 +228,194 @@ function syncRightScroll() {
   if (rightFoldIcons)   rightFoldIcons.scrollTop   = rightCodeEditor.scrollTop;
 }
 
-// ── Paste (plain text only) ───────────────────────────────────────────────────
+// ── Editor keyboard & paste ───────────────────────────────────────────────────
+function handleEditorKeydown(e) {
+  if (e.key === 'Tab' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    e.preventDefault();
+    document.execCommand('insertText', false, '  ');
+  } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'a') {
+    // Native select-all stops at the last *visible* character, dropping folded lines
+    e.preventDefault();
+    selectAllIn(codeEditor);
+  } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    formatCode(false, null, null);
+  }
+}
+
 function handlePaste(e) {
   e.preventDefault();
-  const text = e.clipboardData.getData('text/plain');
-  document.execCommand('insertText', false, text);
+  const text = (e.clipboardData || window.clipboardData).getData('text/plain').replace(/\r\n?/g, '\n');
+  if (!text) return;
+
+  const sel = window.getSelection();
+  const replacesAll = !getEditorText().trim() ||
+    (sel.rangeCount && sel.getRangeAt(0).toString().length >= codeEditor.textContent.length);
+
+  if (replacesAll) {
+    // Fast path: replacing everything (the usual case) — rebuild instead of editing the DOM
+    setEditorText(text);
+    placeCaretAtEnd(codeEditor);
+    handleEditorInput();
+  } else if (text.length < 200000) {
+    document.execCommand('insertText', false, text);   // keeps native undo
+  } else {
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    const node = document.createTextNode(text);
+    range.insertNode(node);
+    range.setStartAfter(node);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    handleEditorInput();
+  }
 }
 
-// ── Get raw text from left editor ─────────────────────────────────────────────
-function getEditorText() {
-  const lines = codeEditor.querySelectorAll('.code-line');
-  if (lines.length > 0) {
-    return Array.from(lines).map(l => l.textContent).join('\n');
-  }
+// The browser skips display:none (folded) lines when copying, so build the
+// clipboard text from the selected DOM, which still contains them.
+function handleCopy(e, container, isCut) {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  if (!container.contains(range.commonAncestorContainer)) return;
 
-  const children = Array.from(codeEditor.childNodes);
-  if (children.length === 0) return '';
-  if (children.length === 1 && children[0].nodeType === Node.TEXT_NODE) {
-    return children[0].textContent;
-  }
+  const text = extractText(range.cloneContents());
+  if (!e.clipboardData) return;
+  e.preventDefault();
+  e.clipboardData.setData('text/plain', text);
+  if (isCut) document.execCommand('delete');
+}
 
-  let text = '';
-  children.forEach(node => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      text += node.textContent;
-    } else if (node.nodeName === 'BR') {
-      text += '\n';
-    } else if (node.nodeName === 'DIV') {
-      if (text.length && !text.endsWith('\n')) text += '\n';
-      text += node.textContent || '';
+// Hidden (folded) lines can't show a selection highlight, so highlight the
+// "{ … }" marker of every folded block the selection fully spans.
+function selectAllIn(container) {
+  const range = document.createRange();
+  range.selectNodeContents(container);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// Right-click → "Select all" can't be intercepted and gets clipped at the last
+// visible character when the document ends in a folded block. Detect a selection
+// running from the very start to the end of that folded head and extend it.
+function fixClippedSelectAll(range) {
+  ['left', 'right'].forEach(side => {
+    const code = panelEls(side).code;
+    if (!code || !code.contains(range.commonAncestorContainer) || !hasFoldedLines(side)) return;
+    const rows = code.children;
+    const last = rows.length - 1;
+    const fold = folds[side].list.find(f => f.folded && f.end === last && rows[f.start].style.display !== 'none');
+    if (!fold) return;
+
+    // No text between the editor start and the selection start …
+    const before = document.createRange();
+    before.setStart(code, 0);
+    before.setEnd(range.startContainer, range.startOffset);
+    // … and none between the selection end and the end of the folded head line
+    const after = document.createRange();
+    after.setStart(range.endContainer, range.endOffset);
+    after.setEnd(rows[fold.start], rows[fold.start].childNodes.length);
+
+    if (!before.toString() && !after.toString() && !range.intersectsNode(rows[last])) {
+      selectAllIn(code);
     }
   });
-  return text;
 }
 
-// ── Left panel line numbers ───────────────────────────────────────────────────
+function markSelectedFolds() {
+  const sel = window.getSelection();
+  const range = sel.rangeCount && !sel.isCollapsed ? sel.getRangeAt(0) : null;
+  if (range) fixClippedSelectAll(range);
+  ['left', 'right'].forEach(side => {
+    const code = panelEls(side).code;
+    if (!code) return;
+    const rows = code.children;
+    folds[side].list.forEach(f => {
+      const head = rows[f.start];
+      if (!head) return;
+      const selected = !!range && f.folded && range.intersectsNode(head) && !!rows[f.end] && range.intersectsNode(rows[f.end]);
+      head.classList.toggle('fold-selected', selected);
+    });
+  });
+}
+
+function placeCaretAtEnd(el) {
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ── Get / set raw text of the left editor ─────────────────────────────────────
+// Walks the contenteditable DOM the way the browser lays it out (block elements
+// and <br> become line breaks). Unlike innerText it also includes folded lines.
+function getEditorText() {
+  return codeEditor ? extractText(codeEditor) : '';
+}
+
+function extractText(root) {
+  const lines = [''];
+  let fresh = true;            // current line is empty and was opened by a boundary
+  let endedByBlock = false;    // last line was only added to close a block
+
+  const isBlock = n => n.nodeName === 'DIV' || n.nodeName === 'P';
+
+  function walk(node) {
+    for (let c = node.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === Node.TEXT_NODE) {
+        const parts = c.nodeValue.split('\n');
+        for (let k = 0; k < parts.length; k++) {
+          if (k > 0) { lines.push(''); fresh = true; }
+          if (parts[k]) { lines[lines.length - 1] += parts[k]; fresh = false; }
+          endedByBlock = false;
+        }
+      } else if (c.nodeName === 'BR') {
+        if (!c.nextSibling && c.parentNode !== root && isBlock(c.parentNode)) {
+          fresh = false;                       // placeholder <br> keeps an empty line alive
+        } else {
+          lines.push(''); fresh = true;
+        }
+        endedByBlock = false;
+      } else if (isBlock(c)) {
+        if (!fresh) { lines.push(''); fresh = true; }
+        endedByBlock = false;
+        walk(c);
+        if (!fresh) { lines.push(''); fresh = true; endedByBlock = true; }
+      } else if (c.nodeType === Node.ELEMENT_NODE) {
+        walk(c);
+      }
+    }
+  }
+
+  walk(root);
+  if (endedByBlock && lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+  return lines.join('\n');
+}
+
+function setEditorText(text) {
+  const r = renderLines(text, 'plain', 'left');
+  codeEditor.innerHTML  = r.code;
+  lineNumbers.innerHTML = r.numbers;
+  if (foldIconsEl) foldIconsEl.innerHTML = r.icons;
+  folds.left = r.folds;
+}
+
+// ── Line numbers ──────────────────────────────────────────────────────────────
 function updateLineNumbers() {
   if (!codeEditor || !lineNumbers) return;
-  const codeLines = codeEditor.querySelectorAll('.code-line');
-  let count;
-  if (codeLines.length > 0) {
-    count = codeLines.length;
-  } else {
-    const text = codeEditor.innerText || codeEditor.textContent || '';
-    count = Math.max(1, text.split('\n').length);
-  }
-  let s = '';
-  for (let i = 1; i <= count; i++) {
-    s += `<div class="code-line">${i}</div>`;
-  }
-  lineNumbers.innerHTML = s;
-  if (!Object.keys(foldHierarchy).length && foldIconsEl) foldIconsEl.innerHTML = '';
+  const count = Math.max(1, getEditorText().split('\n').length);
+  lineNumbers.innerHTML = numberColumn(count);
 }
 
-// ── Right panel line numbers ──────────────────────────────────────────────────
-function updateRightLineNumbers() {
-  if (!rightLineNumbers || !rightCodeEditor) return;
-  const codeLines = rightCodeEditor.querySelectorAll('.code-line');
-  let count;
-  if (codeLines.length > 0) {
-    count = codeLines.length;
-  } else {
-    const text = rightCodeEditor.innerText || rightCodeEditor.textContent || '';
-    count = Math.max(1, text.split('\n').length);
-  }
-  let s = '';
-  for (let i = 1; i <= count; i++) {
-    s += `<div class="code-line">${i}</div>`;
-  }
-  rightLineNumbers.innerHTML = s;
+function numberColumn(count) {
+  const parts = new Array(count);
+  for (let i = 0; i < count; i++) parts[i] = `<div class="code-line">${i + 1}</div>`;
+  return parts.join('');
 }
 
 // ── Show / hide right panel modes ─────────────────────────────────────────────
@@ -150,628 +429,877 @@ function showTreeView() {
   if (rightTreeContent)   rightTreeContent.style.display   = 'block';
 }
 
-// ── Syntax highlight (JSON) ───────────────────────────────────────────────────
-// High-performance linear O(N) tokenizer — no catastrophic regex backtracking
-function highlightSyntax(text) {
-  if (!text) return '';
-  const escaped = text
+// ── Escaping ──────────────────────────────────────────────────────────────────
+function escapeHtml(text) {
+  return String(text == null ? '' : text)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-  const tokenRegex = /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\]:,])/g;
-
-  return escaped.replace(tokenRegex, function (match) {
-    if (match.charCodeAt(0) === 34) {
-      if (match.endsWith(':')) {
-        const colonIdx = match.lastIndexOf(':');
-        const key = match.substring(0, colonIdx);
-        const colonAndSpace = match.substring(colonIdx);
-        return `<span class="key">${key}</span>${colonAndSpace}`;
-      }
-      return `<span class="string">${match}</span>`;
-    }
-    if (match === 'true' || match === 'false') {
-      return `<span class="boolean">${match}</span>`;
-    }
-    if (match === 'null') {
-      return `<span class="null">${match}</span>`;
-    }
-    if (match === '{' || match === '}' || match === '[' || match === ']') {
-      return `<span class="bracket">${match}</span>`;
-    }
-    if (match === ',') {
-      return `<span class="bracket">,</span>`;
-    }
-    if (match === ':') {
-      return ':';
-    }
-    return `<span class="number">${match}</span>`;
-  });
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
-// ── Syntax highlight (XML) ────────────────────────────────────────────────────
-function highlightXMLLine(line) {
-  if (!line) return '';
-  let r = line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // processing instruction
-  r = r.replace(/(&lt;\?xml\s+)(.*?)(\?&gt;)/gi, (_,s,attrs,e) =>
-    `<span class="bracket">&lt;?</span><span class="xml-tag">xml</span> ` +
-    attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
-      '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>') +
-    ` <span class="bracket">?&gt;</span>`);
-  // comments
-  r = r.replace(/(&lt;!--.*?--&gt;)/g, '<span style="color:#6a9955">$1</span>');
-  // opening tags
-  r = r.replace(/(&lt;)([\w:-]+)((?:\s+[\w:-]+\s*=\s*"[^"]*")*)\s*(\/?)(&gt;)/g,
-    (_,lt,tag,attrs,slash,gt) => {
-      let h = `<span class="bracket">&lt;</span><span class="xml-tag">${tag}</span>`;
-      if (attrs && attrs.trim()) h += ' ' + attrs.trim().replace(/([\w:-]+)\s*=\s*"([^"]*)"/g,
-        '<span class="xml-attr">$1</span>=<span class="xml-attr-value">"$2"</span>');
-      if (slash) h += '<span class="bracket">/</span>';
-      return h + '<span class="bracket">&gt;</span>';
-    });
-  // closing tags
-  r = r.replace(/(&lt;\/)([\w:-]+)(&gt;)/g,
-    '<span class="bracket">&lt;/</span><span class="xml-tag">$2</span><span class="bracket">&gt;</span>');
-  // text nodes
-  r = r.replace(/(&gt;)([^&<]+)(&lt;)/g, (m, gt, content, lt) =>
-    content.trim() ? `${gt}<span class="xml-text">${content}</span>${lt}` : m);
-  return r;
-}
+// ══════════════════════════════════════════════════════════════════════════════
+//  JSON — strict parser with precise error positions and lossless output
+//  (keeps big integers, 1.0, unicode escapes and duplicate keys exactly as typed)
+// ══════════════════════════════════════════════════════════════════════════════
+function parseJsonAst(text) {
+  const n = text.length;
+  let i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
+  let lastComma = -1;
+  const NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
 
-// ── Render colored code with fold icons – left panel ──────────────────────────
-function renderColoredCode(json) {
-  const lines = json.split('\n');
-  let codeHtml = '', numbersHtml = '', iconsHtml = '';
-
-  // Large data guard: skip fold tracking for huge payloads (>50K chars or >5K lines)
-  const isLarge = json.length > 50000 || lines.length > 5000;
-
-  if (isLarge) {
-    lines.forEach((line, idx) => {
-      const trimmed = line.trim();
-      const indent  = line.length - line.trimStart().length;
-      const spaces  = ' '.repeat(indent);
-      const lineNum = idx + 1;
-      codeHtml    += `<div class="code-line">${spaces}${highlightSyntax(trimmed)}</div>`;
-      numbersHtml += `<div class="code-line">${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"></div>`;
-    });
-    foldHierarchy = {};
-    return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
+  function fail(message, pos) {
+    throw { isParseError: true, message, pos: pos === undefined ? i : pos };
+  }
+  function found(pos) {
+    if (pos >= n) return 'end of input';
+    const ch = text[pos];
+    if (ch === '\n') return 'a line break';
+    return `'${ch}'`;
+  }
+  function ws() {
+    while (i < n) {
+      const c = text.charCodeAt(i);
+      if (c === 32 || c === 9 || c === 10 || c === 13) i++;
+      else break;
+    }
   }
 
-  let fId = 0, stack = [];
-  foldHierarchy = {};
+  function value() {
+    ws();
+    if (i >= n) fail('Unexpected end of input — expected a value');
+    const c = text[i];
+    if (c === '{') return object();
+    if (c === '[') return array();
+    if (c === '"') return string();
+    if (c === '-' || (c >= '0' && c <= '9')) return number();
+    if (text.startsWith('true', i))  { i += 4; return { type: 'boolean', raw: 'true' }; }
+    if (text.startsWith('false', i)) { i += 5; return { type: 'boolean', raw: 'false' }; }
+    if (text.startsWith('null', i))  { i += 4; return { type: 'null', raw: 'null' }; }
+    if (c === "'") fail('Strings must be wrapped in double quotes (") — single quotes are not valid JSON');
+    if (/[A-Za-z_$]/.test(c)) {
+      const word = text.slice(i).match(/^[A-Za-z_$][\w$]*/)[0];
+      if (word === 'undefined' || word === 'NaN' || word === 'Infinity') fail(`'${word}' is not a valid JSON value`);
+      fail(`Unexpected word '${word}' — strings must be wrapped in double quotes`);
+    }
+    fail(`Expected a value but found ${found(i)}`);
+  }
 
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
-    const indent  = line.length - line.trimStart().length;
-    const spaces  = ' '.repeat(indent);
-    const lineNum = idx + 1;
-    const parent  = stack.length ? stack[stack.length - 1] : null;
-
-    const parentAttr = parent ? ` data-parent="${parent}"` : '';
-
-    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-      const id = 'fold_' + (fId++);
-      stack.push(id);
-      if (parent) {
-        if (!foldHierarchy[parent]) foldHierarchy[parent] = [];
-        foldHierarchy[parent].push(id);
+  function object() {
+    i++;
+    const entries = [];
+    ws();
+    if (text[i] === '}') { i++; return { type: 'object', entries }; }
+    for (;;) {
+      ws();
+      if (text[i] !== '"') {
+        if (i >= n)                       fail("Unexpected end of input — expected a property name or '}'");
+        if (text[i] === '}' && entries.length) fail("Trailing comma is not allowed before '}'", lastComma);
+        if (text[i] === "'")              fail('Property names must be wrapped in double quotes (")');
+        if (/[A-Za-z_$]/.test(text[i]))   fail('Property names must be wrapped in double quotes (")');
+        fail(`Expected a property name but found ${found(i)}`);
       }
-      codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
-      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${parentAttr} id="arrow_${id}" onclick="toggleFold('${id}')">▼</div>`;
-    } else if (/^[}\]],?$/.test(trimmed)) {
-      stack.pop();
-      const newParent = stack.length ? stack[stack.length - 1] : null;
-      const np = newParent ? ` data-parent="${newParent}"` : '';
-      codeHtml    += `<div class="code-line"${np}>${spaces}${highlightSyntax(trimmed)}</div>`;
-      numbersHtml += `<div class="code-line"${np}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${np}></div>`;
+      const key = string();
+      ws();
+      if (text[i] !== ':') fail(`Expected ':' after property name but found ${found(i)}`);
+      i++;
+      entries.push({ key, value: value() });
+      ws();
+      if (text[i] === ',') { lastComma = i; i++; continue; }
+      if (text[i] === '}') { i++; return { type: 'object', entries }; }
+      if (i >= n)          fail("Unexpected end of input — missing '}'");
+      if (text[i] === '"') fail("Missing ',' between properties");
+      fail(`Expected ',' or '}' after property value but found ${found(i)}`);
+    }
+  }
+
+  function array() {
+    i++;
+    const items = [];
+    ws();
+    if (text[i] === ']') { i++; return { type: 'array', items }; }
+    for (;;) {
+      ws();
+      if (text[i] === ']' && items.length) fail("Trailing comma is not allowed before ']'", lastComma);
+      items.push(value());
+      ws();
+      if (text[i] === ',') { lastComma = i; i++; continue; }
+      if (text[i] === ']') { i++; return { type: 'array', items }; }
+      if (i >= n)          fail("Unexpected end of input — missing ']'");
+      if (/["{\[\d\-tfn]/.test(text[i])) fail("Missing ',' between array items");
+      fail(`Expected ',' or ']' after array item but found ${found(i)}`);
+    }
+  }
+
+  function string() {
+    const start = i++;
+    for (;;) {
+      if (i >= n) fail('Unterminated string — missing closing "', start);
+      const c = text.charCodeAt(i);
+      if (c === 34) { i++; break; }
+      if (c === 92) {
+        const e = text[i + 1];
+        if (e === 'u') {
+          if (!/^[0-9a-fA-F]{4}$/.test(text.substr(i + 2, 4))) fail('Invalid unicode escape — expected \\u followed by 4 hex digits');
+          i += 6;
+        } else if (e !== undefined && '"\\/bfnrt'.indexOf(e) !== -1) {
+          i += 2;
+        } else {
+          fail(`Invalid escape sequence '\\${e === undefined ? '' : e}'`);
+        }
+        continue;
+      }
+      if (c < 32) fail(c === 10 ? 'Unterminated string — line breaks inside strings must be escaped as \\n'
+                                : 'Control characters inside strings must be escaped');
+      i++;
+    }
+    return { type: 'string', raw: text.slice(start, i) };
+  }
+
+  function number() {
+    const start = i;
+    NUM.lastIndex = i;
+    const m = NUM.exec(text);
+    if (!m) fail('Invalid number');
+    i += m[0].length;
+    if (i < n && /[0-9.eExX]/.test(text[i])) fail(`Invalid number '${text.slice(start, i + 1)}'`, start);
+    return { type: 'number', raw: m[0] };
+  }
+
+  let root;
+  try {
+    root = value();
+  } catch (e) {
+    if (e instanceof RangeError) fail('JSON is nested too deeply to parse', i);
+    throw e;
+  }
+  ws();
+  if (i < n) {
+    if (text[i] === ',') fail('Unexpected \',\' after the end of the JSON document');
+    fail(`Unexpected ${found(i)} after the end of the JSON document — only one root value is allowed`);
+  }
+  return root;
+}
+
+// indent === '' → minified
+function astToText(ast, indent) {
+  const out = [];
+  const nl  = indent ? '\n' : '';
+  const sep = indent ? ': ' : ':';
+
+  (function write(node, pad) {
+    if (node.type === 'object') {
+      if (!node.entries.length) { out.push('{}'); return; }
+      const inner = pad + indent;
+      out.push('{');
+      node.entries.forEach((e, k) => {
+        out.push(k ? ',' + nl + inner : nl + inner, e.key.raw, sep);
+        write(e.value, inner);
+      });
+      out.push(nl + pad + '}');
+    } else if (node.type === 'array') {
+      if (!node.items.length) { out.push('[]'); return; }
+      const inner = pad + indent;
+      out.push('[');
+      node.items.forEach((item, k) => {
+        out.push(k ? ',' + nl + inner : nl + inner);
+        write(item, inner);
+      });
+      out.push(nl + pad + ']');
     } else {
-      codeHtml    += `<div class="code-line"${parentAttr}>${spaces}${highlightSyntax(trimmed)}</div>`;
-      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${parentAttr}></div>`;
+      out.push(node.raw);
     }
-  });
+  })(ast, '');
 
-  return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
+  return out.join('');
 }
 
-// ── Render colored code with fold icons – right panel Text View ───────────────
-function renderColoredCodeWithFolds(text) {
-  const lines  = text.split('\n');
-  const isXML  = text.trimStart().startsWith('<');
-  let codeHtml = '', numbersHtml = '', iconsHtml = '';
-
-  // Large data guard: skip fold tracking for huge payloads
-  const isLarge = text.length > 50000 || lines.length > 5000;
-  if (isLarge) {
-    lines.forEach((line, idx) => {
-      const trimmed = line.trim();
-      const indent  = line.length - line.trimStart().length;
-      const spaces  = ' '.repeat(indent);
-      const lineNum = idx + 1;
-      const highlighted = isXML ? highlightXMLLine(line) : spaces + highlightSyntax(trimmed);
-      codeHtml    += `<div class="code-line">${highlighted}</div>`;
-      numbersHtml += `<div class="code-line">${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"></div>`;
-    });
-    rightPanelFoldHierarchy = {};
-    return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
+// Plain JS value → AST (used for the XML tree view)
+function valueToAst(v) {
+  if (Array.isArray(v)) return { type: 'array', items: v.map(valueToAst) };
+  if (v !== null && typeof v === 'object') {
+    return {
+      type: 'object',
+      entries: Object.keys(v).map(k => ({ key: { type: 'string', raw: JSON.stringify(k) }, value: valueToAst(v[k]) }))
+    };
   }
+  if (typeof v === 'string')  return { type: 'string', raw: JSON.stringify(v) };
+  if (typeof v === 'number')  return { type: 'number', raw: String(v) };
+  if (typeof v === 'boolean') return { type: 'boolean', raw: String(v) };
+  return { type: 'null', raw: 'null' };
+}
 
-  let fId = 0, stack = [];
-  rightPanelFoldHierarchy = {};
+function unquote(raw) {
+  try { return JSON.parse(raw); } catch (_) { return raw; }
+}
 
-  lines.forEach((line, idx) => {
-    const trimmed = line.trim();
-    const indent  = line.length - line.trimStart().length;
-    const spaces  = ' '.repeat(indent);
-    const lineNum = idx + 1;
-    const parent  = stack.length ? stack[stack.length - 1] : null;
-    const parentAttr = parent ? ` data-right-parent="${parent}"` : '';
+// ══════════════════════════════════════════════════════════════════════════════
+//  XML — DOM based formatter / minifier with clean error reporting
+// ══════════════════════════════════════════════════════════════════════════════
+function parseXmlDocument(xml) {
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const err = doc.getElementsByTagName('parsererror')[0];
+  if (err) {
+    const raw = err.textContent || '';
+    let line = null, col = null, message = raw;
+    let m = raw.match(/error on line (\d+) at column (\d+):\s*([^\n]*)/i);          // Chrome / Safari
+    if (m) { line = +m[1]; col = +m[2]; message = m[3]; }
+    else if ((m = raw.match(/Line Number (\d+), Column (\d+)/i))) {                  // Firefox
+      line = +m[1]; col = +m[2];
+      message = raw.split('\n')[0].replace(/^XML Parsing Error:\s*/i, '');
+    }
+    message = message.trim().replace(/\s+/g, ' ') || 'Invalid XML';
+    throw { isParseError: true, message, line, col };
+  }
+  return doc;
+}
 
-    // For XML: use XML highlighter on full line (preserves indentation);
-    // For JSON: use JSON highlighter on trimmed line + manual indent
-    const highlighted = isXML ? highlightXMLLine(line) : spaces + highlightSyntax(trimmed);
+function escXmlText(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function escXmlAttr(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 
-    // Only JSON gets fold tracking (XML fold is complex, skip for now)
-    const hasBrace = !isXML && (trimmed.startsWith('{') || trimmed.startsWith('[') ||
-                                trimmed.includes('{')   || trimmed.includes('['));
+// Returns { text, doc }; throws a parse error for malformed XML.
+function xmlFormat(xml, minify) {
+  const doc  = parseXmlDocument(xml);
+  const unit = minify ? '' : getIndent();
+  const nl   = minify ? '' : '\n';
+  const out  = [];
 
-    if (hasBrace) {
-      const id = 'right_fold_' + (fId++);
-      stack.push(id);
-      if (parent) {
-        if (!rightPanelFoldHierarchy[parent]) rightPanelFoldHierarchy[parent] = [];
-        rightPanelFoldHierarchy[parent].push(id);
+  const decl = xml.match(/^\s*(<\?xml[\s\S]*?\?>)/);
+  if (decl) out.push(decl[1]);
+
+  function isTextLike(n) { return n.nodeType === Node.TEXT_NODE || n.nodeType === Node.CDATA_SECTION_NODE; }
+
+  function write(node, pad) {
+    switch (node.nodeType) {
+      case Node.ELEMENT_NODE: {
+        let open = '<' + node.nodeName;
+        for (const a of node.attributes) open += ` ${a.name}="${escXmlAttr(a.value)}"`;
+        const kids = Array.from(node.childNodes).filter(k => !(k.nodeType === Node.TEXT_NODE && !k.nodeValue.trim()));
+        if (!kids.length) { out.push(pad + open + '/>'); return; }
+        if (kids.every(isTextLike)) {
+          const inner = kids.map(k => k.nodeType === Node.CDATA_SECTION_NODE
+            ? `<![CDATA[${k.nodeValue}]]>` : escXmlText(minify ? k.nodeValue.trim() : k.nodeValue.trim())).join('');
+          out.push(pad + open + '>' + inner + '</' + node.nodeName + '>');
+          return;
+        }
+        out.push(pad + open + '>');
+        kids.forEach(k => write(k, pad + unit));
+        out.push(pad + '</' + node.nodeName + '>');
+        return;
       }
-      codeHtml    += `<div class="code-line"${parentAttr}>${highlighted}</div>`;
-      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${parentAttr} id="right_arrow_${id}" onclick="toggleRightPanelFold('${id}')">▼</div>`;
-    } else if (!isXML && /^[}\]],?$/.test(trimmed)) {
-      stack.pop();
-      const newParent = stack.length ? stack[stack.length - 1] : null;
-      const np = newParent ? ` data-right-parent="${newParent}"` : '';
-      codeHtml    += `<div class="code-line"${np}>${highlighted}</div>`;
-      numbersHtml += `<div class="code-line"${np}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${np}></div>`;
-    } else {
-      codeHtml    += `<div class="code-line"${parentAttr}>${highlighted}</div>`;
-      numbersHtml += `<div class="code-line"${parentAttr}>${lineNum}</div>`;
-      iconsHtml   += `<div class="fold-arrow"${parentAttr}></div>`;
+      case Node.TEXT_NODE:
+        out.push(pad + escXmlText(node.nodeValue.trim()));
+        return;
+      case Node.CDATA_SECTION_NODE:
+        out.push(pad + `<![CDATA[${node.nodeValue}]]>`);
+        return;
+      case Node.COMMENT_NODE:
+        out.push(pad + `<!--${node.nodeValue}-->`);
+        return;
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        out.push(pad + `<?${node.target}${node.data ? ' ' + node.data : ''}?>`);
+        return;
+      case Node.DOCUMENT_TYPE_NODE:
+        out.push(pad + new XMLSerializer().serializeToString(node));
+        return;
     }
-  });
-
-  return { code: codeHtml, numbers: numbersHtml, icons: iconsHtml };
-}
-
-// ── Populate right panel Text View ────────────────────────────────────────────
-function populateTextView(formatted) {
-  const r = renderColoredCodeWithFolds(formatted);
-  rightFoldIcons.innerHTML   = r.icons;
-  rightLineNumbers.innerHTML = r.numbers;
-  rightCodeEditor.innerHTML  = r.code;
-  rightPanelFoldStates = {};
-  showTextView();
-}
-
-// ── Left panel fold ───────────────────────────────────────────────────────────
-function toggleFold(foldId) {
-  foldStates[foldId] = !foldStates[foldId];
-  const arrow = document.getElementById('arrow_' + foldId);
-  if (foldStates[foldId]) {
-    arrow.textContent = '▶';
-    hideAllDescendants(foldId);
-  } else {
-    arrow.textContent = '▼';
-    showDirectChildren(foldId);
   }
+
+  doc.childNodes.forEach(n => write(n, ''));
+  return { text: out.join(nl), doc };
 }
 
-function hideAllDescendants(foldId) {
-  document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => el.style.display = 'none');
-  (foldHierarchy[foldId] || []).forEach(childId => {
-    const a = document.getElementById('arrow_' + childId);
-    if (a) a.style.display = 'none';
-    hideAllDescendants(childId);
-  });
-}
-
-function showDirectChildren(foldId) {
-  document.querySelectorAll(`[data-parent="${foldId}"]`).forEach(el => el.style.display = 'block');
-  (foldHierarchy[foldId] || []).forEach(childId => {
-    const a = document.getElementById('arrow_' + childId);
-    if (a) a.style.display = 'block';
-    if (!foldStates[childId]) showDirectChildren(childId);
-  });
-}
-
-// ── Right panel fold ──────────────────────────────────────────────────────────
-function toggleRightPanelFold(foldId) {
-  rightPanelFoldStates[foldId] = !rightPanelFoldStates[foldId];
-  const arrow = document.getElementById('right_arrow_' + foldId);
-  if (rightPanelFoldStates[foldId]) {
-    arrow.textContent = '▶';
-    hideRightDescendants(foldId);
-  } else {
-    arrow.textContent = '▼';
-    showRightDirectChildren(foldId);
-  }
-}
-
-function hideRightDescendants(foldId) {
-  document.querySelectorAll(`[data-right-parent="${foldId}"]`).forEach(el => el.style.display = 'none');
-  (rightPanelFoldHierarchy[foldId] || []).forEach(childId => {
-    const a = document.getElementById('right_arrow_' + childId);
-    if (a) a.style.display = 'none';
-    hideRightDescendants(childId);
-  });
-}
-
-function showRightDirectChildren(foldId) {
-  document.querySelectorAll(`[data-right-parent="${foldId}"]`).forEach(el => el.style.display = 'block');
-  (rightPanelFoldHierarchy[foldId] || []).forEach(childId => {
-    const a = document.getElementById('right_arrow_' + childId);
-    if (a) a.style.display = 'block';
-    if (!rightPanelFoldStates[childId]) showRightDirectChildren(childId);
-  });
-}
-
-// ── XML utilities ─────────────────────────────────────────────────────────────
-function formatXML(xml) {
-  let formatted = '', indent = '';
-  xml.split(/>\s*</).forEach(node => {
-    if (node.match(/^\/\w/)) indent = indent.substring(2);
-    formatted += indent + '<' + node + '>\n';
-    if (node.match(/^<?\w[^>]*[^\/]$/) && !node.match(/^!/) && !node.match(/^\?/)) indent += '  ';
-  });
-  return formatted.substring(1, formatted.length - 2);
-}
+// Kept for backwards compatibility with inline page scripts
+function formatXML(xml) { return xmlFormat(xml, false).text; }
 
 function validateXML(xml) {
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  const err = doc.querySelector('parsererror');
-  if (err) return { valid: false, error: err.textContent || 'XML syntax error' };
-
-  const openTags = [];
-  const tagRegex = /<\/?[\w:-]+[^>]*>/g;
-  for (const tag of xml.match(tagRegex) || []) {
-    if (tag.startsWith('<?') || tag.startsWith('<!') || tag.endsWith('/>')) continue;
-    const name = tag.match(/<\/?([^\s>]+)/)[1];
-    if (tag.startsWith('</')) {
-      if (!openTags.length || openTags[openTags.length-1] !== name)
-        return { valid: false, error: `Missing opening tag for </${name}>` };
-      openTags.pop();
-    } else {
-      openTags.push(name);
-    }
-  }
-  if (openTags.length) return { valid: false, error: `Missing closing tag for <${openTags[openTags.length-1]}>` };
-  return { valid: true };
+  try { parseXmlDocument(xml); return { valid: true }; }
+  catch (e) { return { valid: false, error: e.message }; }
 }
 
-function parseXMLToObject(xml) {
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  function xmlToJson(node) {
-    if (node.nodeType === 3) return node.nodeValue.trim();
-    let obj = {};
-    if (node.attributes) {
-      for (let a of node.attributes) obj['@' + a.name] = a.value;
-    }
-    for (let child of node.childNodes) {
-      if (child.nodeType === 3) {
-        const t = child.nodeValue.trim();
-        if (t) return t;
-      } else {
-        const n = child.nodeName;
-        if (obj[n] === undefined) obj[n] = xmlToJson(child);
-        else { if (!Array.isArray(obj[n])) obj[n] = [obj[n]]; obj[n].push(xmlToJson(child)); }
-      }
+function xmlDocToObject(doc) {
+  function convert(node) {
+    const obj = {};
+    for (const a of node.attributes) obj['@' + a.name] = a.value;
+    const kids = Array.from(node.childNodes);
+    const text = kids.filter(k => k.nodeType === Node.TEXT_NODE || k.nodeType === Node.CDATA_SECTION_NODE)
+                     .map(k => k.nodeValue).join('').trim();
+    const elements = kids.filter(k => k.nodeType === Node.ELEMENT_NODE);
+
+    if (!elements.length && !node.attributes.length) return text;
+    if (text) obj['#text'] = text;
+    for (const child of elements) {
+      const name = child.nodeName, val = convert(child);
+      if (!(name in obj))              obj[name] = val;
+      else if (Array.isArray(obj[name])) obj[name].push(val);
+      else                              obj[name] = [obj[name], val];
     }
     return obj;
   }
-  return { [doc.documentElement.nodeName]: xmlToJson(doc.documentElement) };
+  const root = doc.documentElement;
+  return { [root.nodeName]: convert(root) };
 }
 
-// ── Tree render ───────────────────────────────────────────────────────────────
-function renderTree(data) {
+// Kept for backwards compatibility
+function parseXMLToObject(xml) { return xmlDocToObject(parseXmlDocument(xml)); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  Syntax highlighting
+// ══════════════════════════════════════════════════════════════════════════════
+const JSON_TOKEN = /("(?:\\.|[^\\"])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\],]/g;
+
+function highlightSyntax(line) {
+  if (!line) return '';
+  let out = '', last = 0, m;
+  JSON_TOKEN.lastIndex = 0;
+  while ((m = JSON_TOKEN.exec(line))) {
+    out += escapeHtml(line.slice(last, m.index));
+    const tok = m[0];
+    let cls;
+    if (m[1]) {
+      if (m[2]) {
+        out += `<span class="key">${escapeHtml(m[1])}</span>${m[2]}`;
+        last = JSON_TOKEN.lastIndex;
+        continue;
+      }
+      cls = 'string';
+    } else if (tok === 'true' || tok === 'false') cls = 'boolean';
+    else if (tok === 'null') cls = 'null';
+    else if ('{}[],'.indexOf(tok) !== -1) cls = 'bracket';
+    else cls = 'number';
+    out += `<span class="${cls}">${escapeHtml(tok)}</span>`;
+    last = JSON_TOKEN.lastIndex;
+  }
+  return out + escapeHtml(line.slice(last));
+}
+
+function highlightXMLLine(line) {
+  if (!line) return '';
+  let out = '', i = 0;
+  const n = line.length;
+  while (i < n) {
+    if (line.startsWith('<!--', i)) {
+      const end = line.indexOf('-->', i + 4);
+      const j = end < 0 ? n : end + 3;
+      out += `<span class="xml-comment">${escapeHtml(line.slice(i, j))}</span>`;
+      i = j;
+    } else if (line.startsWith('<![CDATA[', i)) {
+      const end = line.indexOf(']]>', i);
+      const j = end < 0 ? n : end + 3;
+      out += `<span class="xml-cdata">${escapeHtml(line.slice(i, j))}</span>`;
+      i = j;
+    } else if (line[i] === '<') {
+      let j = i + 1, quote = null;
+      while (j < n && (quote || line[j] !== '>')) {
+        if (quote) { if (line[j] === quote) quote = null; }
+        else if (line[j] === '"' || line[j] === "'") quote = line[j];
+        j++;
+      }
+      j = Math.min(n, j + 1);
+      out += highlightXmlTag(line.slice(i, j));
+      i = j;
+    } else {
+      const next = line.indexOf('<', i);
+      const j = next < 0 ? n : next;
+      const text = line.slice(i, j);
+      out += text.trim() ? `<span class="xml-text">${escapeHtml(text)}</span>` : escapeHtml(text);
+      i = j;
+    }
+  }
+  return out;
+}
+
+function highlightXmlTag(tag) {
+  const m = tag.match(/^(<[\/?!]?)([^\s\/>?]*)([\s\S]*?)([\/?]?>)?$/);
+  if (!m) return escapeHtml(tag);
+  let out = `<span class="bracket">${escapeHtml(m[1])}</span><span class="xml-tag">${escapeHtml(m[2])}</span>`;
+  const attrs = m[3] || '';
+  const re = /([^\s=]+)(\s*=\s*)("[^"]*"?|'[^']*'?)/g;
+  let last = 0, a;
+  while ((a = re.exec(attrs))) {
+    out += escapeHtml(attrs.slice(last, a.index)) +
+      `<span class="xml-attr">${escapeHtml(a[1])}</span>${escapeHtml(a[2])}<span class="xml-attr-value">${escapeHtml(a[3])}</span>`;
+    last = re.lastIndex;
+  }
+  out += escapeHtml(attrs.slice(last));
+  if (m[4]) out += `<span class="bracket">${escapeHtml(m[4])}</span>`;
+  return out;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  Line rendering with code folding (shared by both panels)
+// ══════════════════════════════════════════════════════════════════════════════
+function isFoldOpener(trimmed, lang) {
+  if (lang === 'json') return /[{\[]$/.test(trimmed);
+  if (lang === 'xml') {
+    return /^<[^\/!?][^>]*>$/.test(trimmed) && !trimmed.endsWith('/>') && trimmed.indexOf('</') === -1;
+  }
+  return false;
+}
+
+function isFoldCloser(trimmed, lang) {
+  if (lang === 'json') return /^[}\]],?$/.test(trimmed);
+  if (lang === 'xml')  return /^<\/[^>]+>$/.test(trimmed);
+  return false;
+}
+
+function renderLines(text, lang, side) {
+  const lines    = text.split('\n');
+  const foldable = (lang === 'json' || lang === 'xml') && lines.length <= FOLD_LINE_LIMIT;
+  const code = new Array(lines.length), nums = new Array(lines.length), icons = new Array(lines.length);
+  const list = [], atLine = {}, stack = [];
+
+  for (let idx = 0; idx < lines.length; idx++) {
+    const line = lines[idx];
+    let lineHtml;
+    if (lang === 'json') {
+      const indent = line.length - line.trimStart().length;
+      lineHtml = line.slice(0, indent) + highlightSyntax(line.slice(indent));
+    } else if (lang === 'xml') {
+      lineHtml = highlightXMLLine(line);
+    } else {
+      lineHtml = escapeHtml(line);
+    }
+
+    let icon = '';
+    if (foldable) {
+      const trimmed = line.trim();
+      if (isFoldCloser(trimmed, lang) && stack.length) {
+        list[stack.pop()].end = idx;
+      } else if (isFoldOpener(trimmed, lang)) {
+        const id = list.length;
+        list.push({ start: idx, end: idx, folded: false });
+        atLine[idx] = list[id];
+        stack.push(id);
+        icon = '<span data-fold title="Collapse / expand">▾</span>';
+      }
+    }
+
+    code[idx]  = `<div class="code-line">${lineHtml}</div>`;
+    nums[idx]  = `<div class="code-line">${idx + 1}</div>`;
+    icons[idx] = `<div class="fold-arrow">${icon}</div>`;
+  }
+
+  return {
+    code: code.join(''), numbers: nums.join(''), icons: icons.join(''),
+    folds: { list: list.filter(f => f.end > f.start), atLine }
+  };
+}
+
+function panelEls(side) {
+  return side === 'left'
+    ? { code: codeEditor, nums: lineNumbers, icons: foldIconsEl }
+    : { code: rightCodeEditor, nums: rightLineNumbers, icons: rightFoldIcons };
+}
+
+function onFoldIconClick(e, side) {
+  const t = e.target.closest('[data-fold]');
+  if (!t) return;
+  toggleFold(side, t);
+}
+
+function toggleFold(side, iconEl) {
+  const els  = panelEls(side);
+  const row  = iconEl.parentNode;
+  const idx  = Array.prototype.indexOf.call(els.icons.children, row);
+  const fold = folds[side].atLine[idx];
+  if (!fold || fold.end <= fold.start) return;
+
+  fold.folded = !fold.folded;
+  iconEl.textContent = fold.folded ? '▸' : '▾';
+  const codeRows = els.code.children, numRows = els.nums.children, iconRows = els.icons.children;
+  const head = codeRows[fold.start];
+  if (head) {
+    head.classList.toggle('folded', fold.folded);
+    // Show the closing bracket / tag inline ("{ … }") via CSS, so it never becomes editor text
+    if (fold.folded) head.dataset.foldTail = codeRows[fold.end] ? codeRows[fold.end].textContent.trim() : '';
+    else delete head.dataset.foldTail;
+  }
+
+  const setRow = (i, display) => {
+    if (codeRows[i]) codeRows[i].style.display = display;
+    if (numRows[i])  numRows[i].style.display  = display;
+    if (iconRows[i]) iconRows[i].style.display = display;
+  };
+
+  if (fold.folded) {
+    for (let i = fold.start + 1; i <= fold.end; i++) setRow(i, 'none');
+  } else {
+    let i = fold.start + 1;
+    while (i <= fold.end) {
+      setRow(i, '');
+      const inner = folds[side].atLine[i];
+      i = inner && inner.folded ? inner.end + 1 : i + 1;
+    }
+  }
+  markSelectedFolds();
+}
+
+function hasFoldedLines(side) {
+  return folds[side].list.some(f => f.folded);
+}
+
+function setLeft(text, lang) {
+  const r = renderLines(text, lang, 'left');
+  codeEditor.innerHTML  = r.code;
+  lineNumbers.innerHTML = r.numbers;
+  if (foldIconsEl) foldIconsEl.innerHTML = r.icons;
+  folds.left = r.folds;
+  codeEditor.scrollTop = 0;
+  syncLeftScroll();
+}
+
+// Right panel Text View
+function showOutputText(text, lang) {
+  const hl = lang === 'json' || lang === 'xml' ? lang : 'plain';
+  const r  = renderLines(text, hl, 'right');
+  rightFoldIcons.innerHTML   = r.icons;
+  rightLineNumbers.innerHTML = r.numbers;
+  rightCodeEditor.innerHTML  = r.code;
+  folds.right = r.folds;
+  rightCodeEditor.scrollTop  = 0;
+  syncRightScroll();
+  lastOutput = { text, lang };
+  showTextView();
+}
+
+// Backwards-compatible name
+function populateTextView(formatted) {
+  showOutputText(formatted, formatted.trimStart().startsWith('<') ? 'xml' : 'json');
+}
+
+function getOutputText() {
+  return lastOutput ? lastOutput.text : '';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  Tree view (lazy – children are only built when a node is expanded)
+// ══════════════════════════════════════════════════════════════════════════════
+function countNodes(ast, limit) {
+  let count = 0;
+  const stack = [ast];
+  while (stack.length && count <= limit) {
+    const n = stack.pop();
+    count++;
+    if (n.type === 'object') n.entries.forEach(e => stack.push(e.value));
+    else if (n.type === 'array') n.items.forEach(x => stack.push(x));
+  }
+  return count;
+}
+
+function renderTree(ast) {
   showTreeView();
-  rightTreeContent.innerHTML = '';
-
-  function renderNode(obj, parent, key, level, path) {
-    const nodeId = path + '_' + key;
-
-    if (Array.isArray(obj)) {
-      const isExp = expandedStates[nodeId] !== false;
-      const line  = makeTreeLine(level);
-      const toggle = span('tree-expand', isExp ? '▼' : '▶');
-      toggle.onclick = () => { expandedStates[nodeId] = !isExp; renderTree(currentData); };
-      line.appendChild(toggle);
-      line.appendChild(span('tree-key', key));
-      line.appendChild(text(' : ['));
-      line.appendChild(span('tree-count', obj.length + ' items'));
-      line.appendChild(text(']'));
-      parent.appendChild(line);
-      if (isExp) obj.forEach((item, i) => renderNode(item, parent, String(i), level+1, nodeId));
-
-    } else if (obj !== null && typeof obj === 'object') {
-      const keys = Object.keys(obj);
-      const isExp = expandedStates[nodeId] !== false;
-      const line  = makeTreeLine(level);
-      const toggle = span('tree-expand', isExp ? '▼' : '▶');
-      toggle.onclick = () => { expandedStates[nodeId] = !isExp; renderTree(currentData); };
-      line.appendChild(toggle);
-      line.appendChild(span('tree-key', key));
-      line.appendChild(text(' : {'));
-      line.appendChild(span('tree-count', keys.length + ' props'));
-      line.appendChild(text('}'));
-      parent.appendChild(line);
-      if (isExp) keys.forEach(k => renderNode(obj[k], parent, k, level+1, nodeId));
-
-    } else {
-      const line = makeTreeLine(level);
-      line.appendChild(text('  '));
-      line.appendChild(span('tree-key', key));
-      line.appendChild(text(' : '));
-      let cls = 'tree-null', val = 'null';
-      if      (typeof obj === 'string')  { cls = 'tree-string';  val = `"${obj}"`; }
-      else if (typeof obj === 'number')  { cls = 'tree-number';  val = String(obj); }
-      else if (typeof obj === 'boolean') { cls = 'tree-boolean'; val = String(obj); }
-      line.appendChild(span(cls, val));
-      parent.appendChild(line);
-    }
-  }
-
-  function makeTreeLine(level) {
-    const d = document.createElement('div');
-    d.style.marginLeft = (level * 20) + 'px';
-    return d;
-  }
-  function span(cls, txt) {
-    const s = document.createElement('span');
-    s.className = cls; s.textContent = txt; return s;
-  }
-  function text(t) { return document.createTextNode(t); }
-
-  renderNode(data, rightTreeContent, 'root', 0, '');
+  rightTreeContent.textContent = '';
+  const expandDepth = countNodes(ast, TREE_FULL_EXPAND) <= TREE_FULL_EXPAND ? Infinity : 2;
+  const frag = document.createDocumentFragment();
+  buildTreeNode(ast, null, 0, frag, expandDepth);
+  rightTreeContent.appendChild(frag);
+  rightTreeContent.scrollTop = 0;
 }
 
-// ── Format code (main entry) ──────────────────────────────────────────────────
-function formatCode(isConverterReq, data, convertedType, isFromSample,autoformat) {
-  let input = isConverterReq ? data : getEditorText();
-  let type  = isConverterReq ? convertedType : (formatTypeEl ? formatTypeEl.value : 'json');
-  const viewType = viewTypeEl ? viewTypeEl.value : 'tree';
-
-  if (!input || !input.trim()) return;
-
-  try {
-    if (type === 'json') {
-      let parsed = JSON.parse(input);
-      currentData = parsed;
-      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
-      const formatted = JSON.stringify(parsed, null, 2);
-
-      // Only update the LEFT editor when formatting in-place (not a conversion result)
-      if ((!isConverterReq || isFromSample) && !autoformat) {
-        const rendered = renderColoredCode(formatted);
-        codeEditor.innerHTML  = rendered.code;
-        lineNumbers.innerHTML = rendered.numbers;
-        if (foldIconsEl) foldIconsEl.innerHTML = rendered.icons || '';
-        foldStates = {};
-      }
-
-      // Conversions show as colored text view; direct format respects viewType
-      if (isConverterReq && !isFromSample) {
-        populateTextView(formatted);
-      } else if (viewType === 'tree') {
-        renderTree(parsed);
-      } else {
-        populateTextView(formatted);
-      }
-
-      setStatus(inputStatus, true, '✓ JSON formatted successfully!');
-      setStatus(outputStatus, true, '✓ View generated');
-
-    } else if (type === 'xml') {
-      if (/^["']?[{[]/.test(input.trim())) {
-        showTreeView();
-        rightTreeContent.innerHTML = '<span class="error">Invalid XML — looks like JSON.</span>';
-        return;
-      }
-      const validation = validateXML(input);
-      const formatted  = formatXML(input);
-      const lines      = formatted.split('\n');
-      let codeHtml = '', numbersHtml = '';
-      lines.forEach((line, idx) => {
-        codeHtml    += `<div class="code-line">${highlightXMLLine(line)}</div>`;
-        numbersHtml += `<div class="code-line">${idx + 1}</div>`;
-      });
-
-      if (isFromSample || !isConverterReq) {
-        codeEditor.innerHTML  = codeHtml;
-        lineNumbers.innerHTML = numbersHtml;
-        if (foldIconsEl) foldIconsEl.innerHTML = '';
-        foldHierarchy = {};
-      }
-
-      const parsed = parseXMLToObject(input);
-      currentData = parsed;
-
-      // Conversions show as colored text view; direct format respects viewType
-      if (isConverterReq && !isFromSample) {
-        populateTextView(formatted);
-      } else if (viewType === 'tree') {
-        renderTree(parsed);
-      } else {
-        populateTextView(formatted);
-      }
-
-      if (!validation.valid) {
-        setStatus(inputStatus, false, '✗ ' + validation.error);
-        showTreeView();
-        rightTreeContent.innerHTML = `<div class="error">${escapeHtml(validation.error)}</div>`;
-        return;
-      }
-
-      setStatus(inputStatus, true, '✓ XML formatted successfully!');
-      setStatus(outputStatus, true, '✓ Tree view generated');
-
-    } else {
-      // Plain output (YAML, TOML, CSV, SQL, or any other format)
-      const lines = input.split('\n');
-      let codeHtml = '', numbersHtml = '';
-      lines.forEach((line, idx) => {
-        codeHtml    += `<div class="code-line">${escapeHtml(line) || '&nbsp;'}</div>`;
-        numbersHtml += `<div class="code-line">${idx + 1}</div>`;
-      });
-
-      if (isFromSample || !isConverterReq) {
-        codeEditor.innerHTML  = codeHtml;
-        lineNumbers.innerHTML = numbersHtml;
-        if (foldIconsEl) foldIconsEl.innerHTML = '';
-        foldHierarchy = {};
-      }
-
-      populateTextView(input);
-      setStatus(inputStatus, true, '✓ Formatted successfully!');
-      setStatus(outputStatus, true, '✓ View generated');
-    }
-
-    // Safety fallback: ensure left line numbers always exist
-    if (!lineNumbers.innerHTML.trim()) {
-      updateLineNumbers();
-    }
-
-  } catch (e) {
-    updateLineNumbers();
-    handleParseError(e, input);
-  }
+function el(tag, cls, txt) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (txt !== undefined) e.textContent = txt;
+  return e;
 }
 
-function handleParseError(e, input) {
-  let errorMsg = e.message;
-  const posMatch = errorMsg.match(/at position (\d+)/);
+function buildTreeNode(node, key, depth, parentEl, expandDepth) {
+  const row = el('div', 'tree-row');
+  row.style.paddingLeft = (depth * 18) + 'px';
 
-  if (posMatch && input) {
-    const pos     = parseInt(posMatch[1]);
-    const before  = input.substring(0, pos);
-    const linesB  = before.split('\n');
-    const lineNum = linesB.length;
-    const col     = linesB[linesB.length - 1].length + 1;
+  const isContainer = node.type === 'object' || node.type === 'array';
+  const children    = node.type === 'object' ? node.entries : node.type === 'array' ? node.items : null;
+  const toggle      = el('span', 'tree-expand', isContainer && children.length ? '▾' : '');
+  row.appendChild(toggle);
 
-    let suggestion = '';
-    if (errorMsg.includes("Expected ','"))            suggestion = ' → Missing comma after previous property';
-    else if (errorMsg.includes("Expected '}'"))       suggestion = ' → Missing closing brace }';
-    else if (errorMsg.includes("Expected ']'"))       suggestion = ' → Missing closing bracket ]';
-    else if (errorMsg.includes("Expected ':'"))       suggestion = ' → Missing colon after property name';
-    else if (errorMsg.includes("Expected double"))    suggestion = ' → Property name must be in double quotes';
-    else if (errorMsg.includes("Unexpected token"))   suggestion = ' → Unexpected character found';
+  if (key !== null) {
+    row.appendChild(el('span', 'tree-key', key));
+    row.appendChild(el('span', 'tree-colon', ': '));
+  }
 
-    errorMsg = errorMsg.replace(/\(line \d+ column \d+\)/, `(line ${lineNum} column ${col})`);
-    const allLines   = input.split('\n');
-    const lineContent = allLines[lineNum - 1] || '';
-    const prevLine    = lineNum > 1 ? allLines[lineNum - 2] : '';
-    const pointer     = ' '.repeat(col - 1) + '↑';
-
-    let html = `<div class="error"><strong>Parse Error on Line ${lineNum}:</strong><br><br>
-      ${escapeHtml(errorMsg)}${escapeHtml(suggestion)}<br><br>
-      <strong>Problem area:</strong><br>
-      <code style="display:block;background:#2a2a2a;padding:10px;margin:10px 0;font-family:monospace;">`;
-    if (prevLine) html += `Line ${lineNum-1}: ${escapeHtml(prevLine)}<br>`;
-    html += `Line ${lineNum}: ${escapeHtml(lineContent)}<br>`;
-    html += `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${pointer.replace(/ /g,'&nbsp;')} <span style="color:#ff6b6b">Error here</span>`;
-    html += `</code>`;
-    if (suggestion) html += `<br><strong>Fix:</strong> ${escapeHtml(suggestion.substring(3))}`;
-    html += `</div>`;
-
-    showTreeView();
-    rightTreeContent.innerHTML = html;
-    setStatus(inputStatus, false, '✗ ' + errorMsg);
+  if (!isContainer) {
+    const cls = { string: 'tree-string', number: 'tree-number', boolean: 'tree-boolean' }[node.type] || 'tree-null';
+    row.appendChild(el('span', cls, node.raw));
+    parentEl.appendChild(row);
     return;
   }
 
-  setStatus(inputStatus, false, '✗ ' + e.message);
+  const open = node.type === 'object' ? '{' : '[';
+  const close = node.type === 'object' ? '}' : ']';
+  const label = node.type === 'object'
+    ? children.length + (children.length === 1 ? ' prop' : ' props')
+    : children.length + (children.length === 1 ? ' item' : ' items');
+  row.appendChild(el('span', 'bracket', open));
+  row.appendChild(el('span', 'tree-count', label));
+  row.appendChild(el('span', 'bracket', close));
+  parentEl.appendChild(row);
+  if (!children.length) return;
+
+  const box = el('div', 'tree-children');
+  parentEl.appendChild(box);
+  let built = false;
+
+  const setOpen = (isOpen) => {
+    if (isOpen && !built) {
+      const frag = document.createDocumentFragment();
+      if (node.type === 'object') children.forEach(e => buildTreeNode(e.value, unquote(e.key.raw), depth + 1, frag, expandDepth));
+      else children.forEach((item, i) => buildTreeNode(item, String(i), depth + 1, frag, expandDepth));
+      box.appendChild(frag);
+      built = true;
+    }
+    box.style.display = isOpen ? '' : 'none';
+    toggle.textContent = isOpen ? '▾' : '▸';
+    row.classList.toggle('collapsed', !isOpen);
+  };
+
+  row.classList.add('tree-branch');
+  row.addEventListener('click', () => setOpen(box.style.display === 'none'));
+  setOpen(depth < expandDepth);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  Format / minify / errors
+// ══════════════════════════════════════════════════════════════════════════════
+function hasOption(select, value) {
+  return !!select && Array.from(select.options).some(o => o.value === value);
+}
+
+function setFormatType(value) {
+  if (hasOption(formatTypeEl, value))  formatTypeEl.value  = value;
+  if (hasOption(formatType2El, value)) formatType2El.value = value;
+  updateFormatButtons();
+}
+
+// Buttons marked data-for="json|xml" only make sense for one input format
+function updateFormatButtons() {
+  const type = formatTypeEl ? formatTypeEl.value : null;
+  if (!type) return;
+  document.querySelectorAll('[data-for]').forEach(b => { b.hidden = b.dataset.for !== type; });
+}
+
+function getIndent() {
+  const el = document.getElementById('indentSize');
+  const v = el ? el.value : '2';
+  return v === 'tab' ? '\t' : ' '.repeat(parseInt(v, 10) || 2);
+}
+
+function detectFormat(text) {
+  const t = text.replace(/^﻿/, '').trimStart();
+  if (t[0] === '<') return 'xml';
+  if (t[0] === '{' || t[0] === '[') return 'json';
+  return null;
+}
+
+// Switches the format selector when the content is obviously JSON or XML
+function resolveInputType(text) {
+  const current = formatTypeEl ? formatTypeEl.value : 'json';
+  const detected = detectFormat(text);
+  if (detected && detected !== current && hasOption(formatTypeEl, detected)) setFormatType(detected);
+  return formatTypeEl ? formatTypeEl.value : (detected || 'json');
+}
+
+/**
+ * formatCode(isConverterReq, data, convertedType, isFromSample, autoformat)
+ *  - no args / false       → format the left editor content (left + right updated)
+ *  - isConverterReq only   → `data` is a conversion result, shown in the right panel
+ *  - with isFromSample     → `data` replaces the editor content (sample, repair, sort)
+ *  - autoformat            → live preview while typing: right panel only
+ */
+function formatCode(isConverterReq, data, convertedType, isFromSample, autoformat) {
+  if (!codeEditor) return;
+  const isConversion = !!isConverterReq && !isFromSample;
+  const input = isConverterReq ? data : getEditorText();
+
+  if (input == null || !input.trim()) {
+    if (!isConverterReq && !autoformat) setStatus(inputStatus, null, '⚠ Please enter some data first');
+    return;
+  }
+
+  let type;
+  if (isConverterReq) {
+    type = convertedType;
+    if (isFromSample) setFormatType(type);
+  } else {
+    type = resolveInputType(input);
+  }
+  const renderLeft = !isConversion && !autoformat;
+  const viewType   = viewTypeEl ? viewTypeEl.value : 'tree';
+
+  if (type === 'json' || type === 'xml') {
+    let formatted, ast;
+    try {
+      if (type === 'json') {
+        ast = parseJsonAst(input);
+        if (ast.type === 'string') {             // JSON document embedded in a JSON string
+          try { ast = parseJsonAst(JSON.parse(ast.raw)); } catch (_) { /* keep as string */ }
+        }
+        formatted = astToText(ast, getIndent());
+      } else {
+        if (/^["']?[{\[]/.test(input.trim())) {
+          throw { isParseError: true, message: 'This looks like JSON, not XML — switch the format to JSON', line: 1, col: 1 };
+        }
+        const r = xmlFormat(input, false);
+        formatted = r.text;
+        ast = valueToAst(xmlDocToObject(r.doc));
+      }
+    } catch (err) {
+      if (!err || !err.isParseError) throw err;
+      if (isConversion) { showOutputText(input, type); return; }   // show server output as-is
+      showParseError(type, input, err, renderLeft);
+      return;
+    }
+
+    if (renderLeft) setLeft(formatted, type);
+
+    if (isConversion) {
+      showOutputText(formatted, type);
+      setStatus(outputStatus, true, '✓ Converted to ' + type.toUpperCase());
+      return;
+    }
+
+    currentAst = ast;
+    if (viewType === 'tree') {
+      renderTree(ast);
+      lastOutput = { text: formatted, lang: type };
+    } else {
+      showOutputText(formatted, type);
+    }
+
+    const label = type.toUpperCase();
+    setStatus(inputStatus, true, autoformat ? `✓ Valid ${label}` : `✓ Valid ${label} — formatted`);
+    setStatus(outputStatus, true, `✓ ${viewType === 'tree' ? 'Tree' : 'Text'} view · ${formatted.split('\n').length.toLocaleString()} lines · ${formatBytes(formatted.length)}`);
+    return;
+  }
+
+  // Plain output (YAML, TOML, CSV, SQL, properties …)
+  if (renderLeft) setLeft(input, 'plain');
+  showOutputText(input, type);
+  if (isConversion) setStatus(outputStatus, true, '✓ Converted to ' + String(type).toUpperCase());
+  else {
+    setStatus(inputStatus, true, '✓ Ready');
+    setStatus(outputStatus, true, '✓ View generated');
+  }
+}
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+function lineColFromPos(text, pos) {
+  let line = 1, lineStart = 0;
+  for (let i = 0; i < pos && i < text.length; i++) {
+    if (text.charCodeAt(i) === 10) { line++; lineStart = i + 1; }
+  }
+  return { line, col: pos - lineStart + 1 };
+}
+
+function showParseError(lang, input, err, renderLeft) {
+  let line = err.line, col = err.col;
+  if (err.pos !== undefined) ({ line, col } = lineColFromPos(input, err.pos));
+
+  const where = line ? `line ${line}, column ${col}` : '';
+  setStatus(inputStatus, false, `✗ Invalid ${lang.toUpperCase()}${where ? ' — ' + where : ''}: ${err.message}`);
+  setStatus(outputStatus, false, '✗ Fix the error to see the output');
+
+  currentAst = null;
+  lastOutput = null;
   showTreeView();
-  if (rightTreeContent) rightTreeContent.innerHTML = `<div class="error">Parse Error: ${escapeHtml(e.message)}</div>`;
+  rightTreeContent.textContent = '';
+
+  const box = el('div', 'error');
+  box.appendChild(el('strong', null, where ? `Parse error on ${where}` : 'Parse error'));
+  box.appendChild(el('div', 'error-message', err.message));
+
+  if (line) {
+    const all  = input.split('\n');
+    const from = Math.max(1, line - 2);
+    const width = String(line).length;
+    let snippet = '';
+    for (let l = from; l <= line; l++) {
+      snippet += `${String(l).padStart(width)} | ${(all[l - 1] || '').replace(/\t/g, ' ')}\n`;
+    }
+    snippet += `${' '.repeat(width)} | ${' '.repeat(Math.max(0, (col || 1) - 1))}^`;
+    box.appendChild(el('pre', 'error-snippet', snippet));
+  }
+  if (lang === 'json') {
+    box.appendChild(el('div', 'error-tip', 'Tip: click “Repair” to automatically fix common mistakes such as missing quotes or trailing commas.'));
+  }
+  rightTreeContent.appendChild(box);
+
+  if (renderLeft) {
+    setLeft(input, 'plain');
+    if (line) {
+      const row = codeEditor.children[line - 1];
+      const num = lineNumbers.children[line - 1];
+      if (row) row.classList.add('error-line');
+      if (num) num.classList.add('error-line');
+      codeEditor.scrollTop = Math.max(0, (line - 5) * LINE_HEIGHT);
+      syncLeftScroll();
+    }
+  }
+}
+
+// Backwards-compatible name
+function handleParseError(e, input) {
+  showParseError('json', input, { message: e.message || String(e) }, false);
 }
 
 // ── Minify ────────────────────────────────────────────────────────────────────
 function minifyCode() {
   const input = getEditorText();
-  const type  = formatTypeEl ? formatTypeEl.value : 'json';
-  if (!input || !input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some code first!'); return; }
+  if (!input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
+  const type = resolveInputType(input);
+  if (type !== 'json' && type !== 'xml') { setStatus(inputStatus, null, '⚠ Minify supports JSON and XML only'); return; }
 
+  let minified;
   try {
-    let minified;
-    let highlighted;
     if (type === 'json') {
-      const parsed = JSON.parse(input);
-      minified = JSON.stringify(parsed);
-      currentData = parsed;
-      highlighted = highlightSyntax(minified);
-
-      setStatus(inputStatus, true, '✓ JSON minified successfully!');
-      setStatus(outputStatus, true, '✓ View updated');
+      const ast = parseJsonAst(input);
+      minified = astToText(ast, '');
+      currentAst = ast;
     } else {
-      minified = input.replace(/>\s+</g, '><').trim();
-      highlighted = highlightXMLLine(minified);
-
-      setStatus(inputStatus, true, '✓ XML minified successfully!');
-      setStatus(outputStatus, true, '✓ View updated');
+      const r = xmlFormat(input, true);
+      minified = r.text;
+      currentAst = valueToAst(xmlDocToObject(r.doc));
     }
-
-    // Left panel: colored minified single line with line number 1
-    codeEditor.innerHTML = `<div class="code-line minified-line">${highlighted}</div>`;
-    lineNumbers.textContent = '1\n';
-    foldHierarchy = {};
-    foldStates = {};
-    if (foldIconsEl) foldIconsEl.innerHTML = '';
-
-    // Right panel: also show colored minified line with line number 1
-    if (rightCodeEditor) {
-      rightCodeEditor.innerHTML = `<div class="code-line minified-line">${highlighted}</div>`;
-    }
-    if (rightLineNumbers) {
-      rightLineNumbers.textContent = '1\n';
-    }
-    if (rightFoldIcons) {
-      rightFoldIcons.innerHTML = '';
-    }
-    rightPanelFoldStates = {};
-    rightPanelFoldHierarchy = {};
-
-    // Switch right panel to Text View mode so line number 1 and colored line are visible!
-    showTextView();
-    if (viewTypeEl) viewTypeEl.value = 'formated';
-
-  } catch (e) {
-    setStatus(inputStatus, false, '✗ ' + e.message);
+  } catch (err) {
+    if (!err || !err.isParseError) throw err;
+    showParseError(type, input, err, true);
+    return;
   }
+
+  setLeft(minified, type);
+  if (codeEditor.firstElementChild) codeEditor.firstElementChild.classList.add('minified-line');
+
+  showOutputText(minified, type);
+  if (rightCodeEditor.firstElementChild) rightCodeEditor.firstElementChild.classList.add('minified-line');
+  if (viewTypeEl) viewTypeEl.value = 'formated';
+
+  const saved = input.length - minified.length;
+  setStatus(inputStatus, true, `✓ ${type.toUpperCase()} minified — ${formatBytes(minified.length)} (saved ${formatBytes(Math.max(0, saved))})`);
+  setStatus(outputStatus, true, '✓ View updated');
 }
 
 // ── Clear all ─────────────────────────────────────────────────────────────────
 function clearAll() {
   if (codeEditor) codeEditor.textContent = '';
   if (foldIconsEl) foldIconsEl.innerHTML = '';
-  if (lineNumbers) lineNumbers.textContent = '1\n';
+  if (lineNumbers) lineNumbers.innerHTML = numberColumn(1);
   if (rightFoldIcons) rightFoldIcons.innerHTML = '';
-  if (rightLineNumbers) rightLineNumbers.textContent = '1\n';
+  if (rightLineNumbers) rightLineNumbers.innerHTML = numberColumn(1);
   if (rightCodeEditor) rightCodeEditor.innerHTML = '';
   showTreeView();
-  if (rightTreeContent) rightTreeContent.innerHTML = '<div style="padding:20px;color:#858585;">Tree view will appear here after formatting</div>';
-  currentData = null;
-  expandedStates = {};
-  foldStates = {};
-  foldHierarchy = {};
-  rightPanelFoldStates = {};
-  rightPanelFoldHierarchy = {};
+  if (rightTreeContent) rightTreeContent.innerHTML = '<div class="placeholder">Tree view will appear here after formatting</div>';
+  currentAst = null;
+  lastOutput = null;
+  folds.left  = { list: [], atLine: {} };
+  folds.right = { list: [], atLine: {} };
   if (inputStatus)  inputStatus.textContent  = 'Cleared';
   if (outputStatus) outputStatus.textContent = 'Cleared';
+  if (codeEditor) codeEditor.focus();
 }
 
 // ── Load sample ───────────────────────────────────────────────────────────────
@@ -779,6 +1307,9 @@ const SAMPLE_JSON = `{
   "customer": {
     "id": "55000",
     "name": "Charter Group",
+    "active": true,
+    "balance": 1250.75,
+    "manager": null,
     "address": [
       { "street": "100 Main",     "city": "Framingham", "state": "MA", "zip": "01701" },
       { "street": "720 Prospect", "city": "Framingham", "state": "MA", "zip": "01701" },
@@ -808,103 +1339,96 @@ const SAMPLE_XML = `<?xml version="1.0"?>
 
 function loadSample() {
   const type = formatTypeEl ? formatTypeEl.value : 'json';
-  if (type === 'json') {
-    formatCode(true, SAMPLE_JSON, 'json', true);
-  } else {
-    formatCode(true, SAMPLE_XML, 'xml', true);
-  }
+  if (type === 'xml') formatCode(true, SAMPLE_XML, 'xml', true);
+  else                formatCode(true, SAMPLE_JSON, 'json', true);
 }
 
 // ── Change view type (Tree ↔ Text) ────────────────────────────────────────────
 function changeViewType() {
-  const viewType = viewTypeEl ? viewTypeEl.value : 'tree';
-  const input    = getEditorText();
-  const type     = formatTypeEl ? formatTypeEl.value : 'json';
-  if (!input.trim()) return;
-  foldStates = {};
-  rightPanelFoldStates = {};
-
-  if (type === 'json') {
-    try {
-      let parsed = JSON.parse(input);
-      currentData = parsed;
-      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
-      const formatted = JSON.stringify(parsed, null, 2);
-      if (viewType === 'tree') renderTree(parsed);
-      else populateTextView(formatted);
-    } catch(e) { /* ignore */ }
-  } else if (type === 'xml') {
-    try {
-      const formatted = formatXML(input);
-      if (viewType === 'tree') {
-        const parsed = parseXMLToObject(input);
-        currentData = parsed;
-        renderTree(parsed);
-      } else {
-        populateTextView(formatted);
-      }
-    } catch(e) { /* ignore */ }
-  }
+  if (!getEditorText().trim()) return;
+  formatCode(false, null, null, null, true);
 }
 
-// ── Debounced Input Handler for smooth editing ───────────────────────────────
+// ── Debounced input handler for live validation ─────────────────────────────
 let inputDebounceTimer = null;
 function handleEditorInput() {
   clearTimeout(inputDebounceTimer);
+
+  // Line indexes change while editing: drop stale fold markers / error marks
+  if (hasFoldedLines('left')) {
+    Array.from(codeEditor.children).forEach(c => { c.style.display = ''; c.classList.remove('folded'); });
+  }
+  folds.left = { list: [], atLine: {} };
+  if (foldIconsEl) foldIconsEl.innerHTML = '';
+  codeEditor.querySelectorAll('.error-line').forEach(r => r.classList.remove('error-line'));
+
   updateLineNumbers();
+  syncLeftScroll();
+  const size = codeEditor.textContent.length;
   inputDebounceTimer = setTimeout(() => {
     formatCode(false, null, null, null, true);
-  }, 300);
+  }, size > 1000000 ? 900 : 300);
 }
 
 // ── Format data (API call) ────────────────────────────────────────────────────
 function formatData(type, filters) {
-  const selectedType = formatTypeEl ? formatTypeEl.value : 'json';
-  const input        = getEditorText();
-  if (!input.trim()) return;
+  const input = getEditorText();
+  if (!input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
+  const selectedType = resolveInputType(input);
 
   let apiType = type;
   if (type === 'REPAIR') {
     apiType = selectedType === 'xml' ? 'XML_FORMAT' : 'JSON_FORMAT';
   }
-  if (type === 'JSON_SORT' || type === 'XML_SORT') {
-    apiType = type;
-  }
-  if (['TOML','YAML','CSV','SQL'].includes(type)) {
+  if (['TOML', 'YAML', 'CSV', 'SQL'].includes(type)) {
     apiType = selectedType.toUpperCase() + '_TO_' + type;
   }
+
+  setStatus(outputStatus, null, '⏳ Processing…');
 
   fetch('/data/parse', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ type: apiType, data: input, filters: filters || null })
   })
-  .then(r => r.json())
+  .then(async r => {
+    if (r.status === 429 || (r.redirected && /\/429$/.test(r.url))) {
+      throw new Error('Too many requests — please wait a moment and try again.');
+    }
+    try { return await r.json(); }
+    catch (_) { throw new Error(`Unexpected server response (HTTP ${r.status})`); }
+  })
   .then(res => {
-    if (res.success) {
-      let fmt = 'json';
-      if (['XML_FORMAT','JSON_TO_XML','XML_SORT','CSV_TO_XML'].includes(apiType)) fmt = 'xml';
-      else if (['JSON_TO_YAML','XML_TO_YAML','PROPERTY_TO_YAML'].includes(apiType)) fmt = 'yaml';
-      else if (['JSON_TO_TOML','XML_TO_TOML'].includes(apiType))                    fmt = 'toml';
-      else if (['JSON_TO_CSV','XML_TO_CSV'].includes(apiType))                      fmt = 'csv';
-      else if (['JSON_TO_SQL','XML_TO_SQL','CSV_TO_SQL'].includes(apiType))                      fmt = 'sql';
-      else if (apiType === 'YAML_TO_PROPERTY')                                      fmt = 'property';
+    if (!res.success) {
+      showOutputError('Failed: ' + (res.message || 'Unknown error'));
+      return;
+    }
+    let fmt = 'json';
+    if (['XML_FORMAT', 'JSON_TO_XML', 'XML_SORT', 'CSV_TO_XML'].includes(apiType))   fmt = 'xml';
+    else if (['JSON_TO_YAML', 'XML_TO_YAML', 'PROPERTY_TO_YAML'].includes(apiType)) fmt = 'yaml';
+    else if (['JSON_TO_TOML', 'XML_TO_TOML'].includes(apiType))                     fmt = 'toml';
+    else if (['JSON_TO_CSV', 'XML_TO_CSV'].includes(apiType))                       fmt = 'csv';
+    else if (['JSON_TO_SQL', 'XML_TO_SQL', 'CSV_TO_SQL'].includes(apiType))         fmt = 'sql';
+    else if (apiType === 'YAML_TO_PROPERTY')                                        fmt = 'property';
 
-      const cleanData = res.parsedData.replace(/\r\n/g, '\n');
-      if (['REPAIR', 'JSON_SORT', 'XML_SORT'].includes(type)) {
-        formatCode(false, cleanData, fmt, true);
-      } else {
-        formatCode(true, cleanData, fmt, false);
-      }
+    const cleanData = String(res.parsedData == null ? '' : res.parsedData).replace(/\r\n/g, '\n');
+    if (['REPAIR', 'JSON_SORT', 'XML_SORT'].includes(type)) {
+      formatCode(true, cleanData, fmt, true);          // result replaces the editor content
+      const done = type === 'REPAIR' ? 'repaired' : 'sorted';
+      setStatus(inputStatus, true, `✓ ${fmt.toUpperCase()} ${done}`);
     } else {
-      showTreeView();
-      rightTreeContent.innerHTML = `<div class="error">Failed: ${escapeHtml(res.message || 'Unknown error')}</div>`;
+      formatCode(true, cleanData, fmt, false);         // conversion → right panel
     }
   })
-  .catch(() => {
-    showTreeView();
-    rightTreeContent.innerHTML = '<div class="error">Network error while processing</div>';
-  });
+  .catch(err => showOutputError(err && err.message ? err.message : 'Network error while processing'));
+}
+
+function showOutputError(message) {
+  showTreeView();
+  rightTreeContent.textContent = '';
+  rightTreeContent.appendChild(el('div', 'error', message));
+  setStatus(outputStatus, false, '✗ ' + message);
+  lastOutput = null;
 }
 
 // ── Panel expand / collapse ───────────────────────────────────────────────────
@@ -918,87 +1442,56 @@ function toggleExpand(side) {
   const leftHeader     = document.getElementById('leftPanelHeader');
   const rightHeader    = document.getElementById('rightPanelHeader');
 
+  container.classList.remove('expanded-left', 'expanded-right');
+  [leftPanel, middleControls, rightPanel].forEach(p => p && p.classList.remove('hidden'));
+  [leftHeader, rightHeader].forEach(h => h && h.classList.remove('expanded-header'));
+  if (leftIcon)  leftIcon.textContent  = '⛶';
+  if (rightIcon) rightIcon.textContent = '⛶';
+
   if (expandedPanel === side) {
-    // collapse
-    container.classList.remove('expanded-left', 'expanded-right');
     document.body.classList.remove('panel-expanded');
-    if (leftPanel)      leftPanel.classList.remove('hidden');
-    if (middleControls) middleControls.classList.remove('hidden');
-    if (rightPanel)     rightPanel.classList.remove('hidden');
-    if (leftHeader)     leftHeader.classList.remove('expanded-header');
-    if (rightHeader)    rightHeader.classList.remove('expanded-header');
-    if (leftIcon)       leftIcon.textContent  = '⛶';
-    if (rightIcon)      rightIcon.textContent = '⛶';
     expandedPanel = null;
-  } else {
-    container.classList.remove('expanded-left', 'expanded-right');
-    document.body.classList.add('panel-expanded');
-    if (side === 'left') {
-      container.classList.add('expanded-left');
-      if (middleControls) middleControls.classList.add('hidden');
-      if (rightPanel)     rightPanel.classList.add('hidden');
-      if (leftHeader)     leftHeader.classList.add('expanded-header');
-      if (rightHeader)    rightHeader.classList.remove('expanded-header');
-      if (leftIcon)       leftIcon.textContent  = '✕';
-      if (rightIcon)      rightIcon.textContent = '⛶';
-    } else {
-      container.classList.add('expanded-right');
-      if (leftPanel)      leftPanel.classList.add('hidden');
-      if (middleControls) middleControls.classList.add('hidden');
-      if (leftHeader)     leftHeader.classList.remove('expanded-header');
-      if (rightHeader)    rightHeader.classList.add('expanded-header');
-      if (leftIcon)       leftIcon.textContent  = '⛶';
-      if (rightIcon)      rightIcon.textContent = '✕';
-    }
-    expandedPanel = side;
+    return;
   }
+
+  document.body.classList.add('panel-expanded');
+  container.classList.add(side === 'left' ? 'expanded-left' : 'expanded-right');
+  if (middleControls) middleControls.classList.add('hidden');
+  if (side === 'left') {
+    if (rightPanel) rightPanel.classList.add('hidden');
+    if (leftHeader) leftHeader.classList.add('expanded-header');
+    if (leftIcon)   leftIcon.textContent = '✕';
+  } else {
+    if (leftPanel)   leftPanel.classList.add('hidden');
+    if (rightHeader) rightHeader.classList.add('expanded-header');
+    if (rightIcon)   rightIcon.textContent = '✕';
+  }
+  expandedPanel = side;
 }
 
 // ── Export CSV ────────────────────────────────────────────────────────────────
 function exportCSV() {
-  const text = (
-    (rightCodeEditor && rightCodeEditor.textContent) ||
-    (rightTreeContent && rightTreeContent.textContent) || ''
-  ).trim();
-
-  if (!text) { alert('No content to export.'); return; }
-  const lines = text.split(/\r?\n/).filter(l => l.trim());
-  if (!lines.length) { alert('Content does not look like CSV.'); return; }
-  if (!lines[0].includes(',') && !lines[0].includes(';') && !lines[0].includes('\t')) {
-    alert('Content does not look like CSV.'); return;
+  const text = getOutputText().trim();
+  if (!text) { alert('Nothing to export yet — convert your data to CSV first.'); return; }
+  const isCsv = lastOutput && lastOutput.lang === 'csv';
+  const first = text.split(/\r?\n/)[0];
+  if (!isCsv && !/[,;\t]/.test(first)) {
+    alert('The output is not CSV — click "Convert to CSV" first.');
+    return;
   }
-
-  const blob = new Blob([text], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'), { href: url, download: 'data.csv' });
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadFile(text, 'data.csv', 'text/csv;charset=utf-8');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function escapeHtml(text) {
-  const d = document.createElement('div');
-  d.textContent = text;
-  return d.innerHTML;
-}
-
 function setStatus(el, success, msg) {
   if (!el) return;
-  if (success === true)  el.innerHTML = `<span class="success">${msg}</span>`;
-  else if (success === false) el.innerHTML = `<span class="error">${msg}</span>`;
-  else el.innerHTML = `<span class="warning">${msg}</span>`;
+  const span = document.createElement('span');
+  span.className = success === true ? 'success' : success === false ? 'error-text' : 'warning';
+  span.textContent = msg;
+  span.title = msg;
+  el.textContent = '';
+  el.appendChild(span);
 }
-
-// Sync the two formatType selects (middle panel sync)
-document.addEventListener('DOMContentLoaded', () => {
-  const ft2 = document.getElementById('formatType2');
-  const ft1 = document.getElementById('formatType');
-  if (ft2 && ft1) {
-    ft2.addEventListener('change', () => ft1.value = ft2.value);
-  }
-});
 
 // ── SQL Modal ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -1015,20 +1508,35 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!convertToSqlBtn || !sqlModalOverlay) return;
 
   function openSqlModal() {
+    if (!getEditorText().trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
     if (!sqlTableNameInput.value) sqlTableNameInput.value = 'users';
-    sqlIncludeNullsCheck.checked = true;
-    sqlDbTypeSelect.value = 'POSTGRES';
     sqlModalOverlay.style.display = 'flex';
     sqlTableNameInput.focus();
+    sqlTableNameInput.select();
   }
 
   function closeSqlModal() {
     sqlModalOverlay.style.display = 'none';
   }
 
+  function generate() {
+    const tableName = (sqlTableNameInput.value || 'users').trim();
+    if (!/^[A-Za-z_][\w.]*$/.test(tableName)) {
+      sqlTableNameInput.setCustomValidity('Use letters, digits and underscores only');
+      sqlTableNameInput.reportValidity();
+      return;
+    }
+    sqlTableNameInput.setCustomValidity('');
+    formatData('SQL', { tableName, dialect: sqlDbTypeSelect.value, includeNulls: sqlIncludeNullsCheck.checked });
+    closeSqlModal();
+  }
+
   convertToSqlBtn.addEventListener('click', openSqlModal);
   sqlModalCloseBtn.addEventListener('click', closeSqlModal);
   sqlModalCancelBtn.addEventListener('click', closeSqlModal);
+  sqlGenerateBtn.addEventListener('click', generate);
+  sqlTableNameInput.addEventListener('input', () => sqlTableNameInput.setCustomValidity(''));
+  sqlTableNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
 
   sqlModalOverlay.addEventListener('click', e => {
     if (e.target === sqlModalOverlay) closeSqlModal();
@@ -1037,252 +1545,225 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && sqlModalOverlay.style.display !== 'none') closeSqlModal();
   });
-
-  sqlGenerateBtn.addEventListener('click', () => {
-    const options = {
-      tableName:    (sqlTableNameInput.value || 'users').trim(),
-      dialect:      sqlDbTypeSelect.value,
-      includeNulls: sqlIncludeNullsCheck.checked
-    };
-    formatData('SQL', options);
-    closeSqlModal();
-  });
 });
 
- const SD_EP = window.location.origin + '/data/share/text';
+// ══════════════════════════════════════════════════════════════════════════════
+//  Share modal
+// ══════════════════════════════════════════════════════════════════════════════
+const SD_EP = window.location.origin + '/data/share/text';
+let _sdSource = 'input';
 
-  let _sdSource = 'input';
-
- function openShareModal(source) {
-    _sdSource = source || 'input';
-    // Reset to form state
-    document.getElementById('sdForm').style.display    = 'block';
-    document.getElementById('sdLoader').classList.remove('show');
-    document.getElementById('sdSuccess').style.display = 'none';
-    document.getElementById('sdError').style.display   = 'none';
-    document.getElementById('sdError').textContent     = '';
-    document.getElementById('sdOneTime').checked       = false;
-    const emailInput = document.getElementById('sdEmail');
-    if (emailInput) emailInput.value = '';
-    const emailStatus = document.getElementById('sdEmailStatus');
-    if (emailStatus) {
-      emailStatus.style.display = 'none';
-      emailStatus.textContent = '';
-    }
-    setSdSource(_sdSource);
-    document.getElementById('sdOverlay').classList.add('show');
+function openShareModal(source) {
+  _sdSource = source || 'input';
+  document.getElementById('sdForm').style.display    = 'block';
+  document.getElementById('sdLoader').classList.remove('show');
+  document.getElementById('sdSuccess').style.display = 'none';
+  document.getElementById('sdError').style.display   = 'none';
+  document.getElementById('sdError').textContent     = '';
+  document.getElementById('sdOneTime').checked       = false;
+  const emailInput = document.getElementById('sdEmail');
+  if (emailInput) emailInput.value = '';
+  const emailStatus = document.getElementById('sdEmailStatus');
+  if (emailStatus) {
+    emailStatus.style.display = 'none';
+    emailStatus.textContent = '';
   }
+  setSdSource(_sdSource);
+  document.getElementById('sdOverlay').classList.add('show');
+}
 
 function closeSdModal() {
-    document.getElementById('sdOverlay').classList.remove('show');
-  }
+  document.getElementById('sdOverlay').classList.remove('show');
+}
 
-  function setSdSource(src) {
-    _sdSource = src;
-    document.getElementById('sdSrcInput') .classList.toggle('active', src === 'input');
-    document.getElementById('sdSrcOutput').classList.toggle('active', src === 'output');
-  }
+function setSdSource(src) {
+  _sdSource = src;
+  document.getElementById('sdSrcInput') .classList.toggle('active', src === 'input');
+  document.getElementById('sdSrcOutput').classList.toggle('active', src === 'output');
+}
 
 function getSdContent() {
-    if (_sdSource === 'input') {
-      // Get text from the left editor (codeEditor)
-      const el = document.getElementById('codeEditor');
-      return el ? el.innerText.trim() : '';
-    } else {
-      // Get text from right panel — try text view first, then tree text
-      const rightEditor = document.getElementById('rightCodeEditor');
-      if (rightEditor && rightEditor.innerText.trim()) {
-        return rightEditor.innerText.trim();
-      }
-      // Fallback: get visible text from tree content
-      const tree = document.getElementById('rightTreeContent');
-      return tree ? tree.innerText.trim() : '';
-    }
-  }
+  return (_sdSource === 'input' ? getEditorText() : getOutputText()).trim();
+}
+
+function showSdError(message) {
+  const err = document.getElementById('sdError');
+  err.textContent = message;
+  err.style.display = 'block';
+}
 
 async function doShare(sendEmail) {
-    const text = getSdContent();
-
-    if (!text) {
-      const err = document.getElementById('sdError');
-      err.textContent = '⚠ Nothing to share — the selected panel is empty.';
-      err.style.display = 'block';
-      return;
-    }
-
-    const emailInput = document.getElementById('sdEmail');
-    const email = emailInput ? emailInput.value.trim() : '';
-
-    if (sendEmail && !email) {
-      const err = document.getElementById('sdError');
-      err.textContent = '⚠ Please enter a recipient email to send on mail.';
-      err.style.display = 'block';
-      if (emailInput) emailInput.focus();
-      return;
-    }
-
-    const oneTime = document.getElementById('sdOneTime').checked;
-
-    // Show loader
-    document.getElementById('sdForm').style.display    = 'none';
-    document.getElementById('sdLoader').classList.add('show');
-    document.getElementById('sdError').style.display   = 'none';
-
-    try {
-      const payload = {
-        text,
-        oneTimeDownload: oneTime,
-        sourcePage: window.location.pathname
-      };
-      if (email) {
-        payload.email = email;
-      }
-
-      const res = await fetch(SD_EP, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload)
-      });
-
-      const json = await res.json();
-
-      if (!res.ok || !json.success) throw new Error(json.message || 'Server error ' + res.status);
-
-      // Show success
-      document.getElementById('sdLoader').classList.remove('show');
-      document.getElementById('sdSuccess').style.display = 'block';
-
-      const token = json.token || (json.url ? json.url.substring(json.url.lastIndexOf('/') + 1) : '');
-      const keyEl = document.getElementById('sdKeyText');
-      if (keyEl) keyEl.textContent = token;
-
-      document.getElementById('sdUrlText').textContent = json.url;
-      document.getElementById('sdSuccessSub').textContent =
-        `${text.length.toLocaleString()} chars · ${_sdSource} panel` + (oneTime ? ' · one-time' : '');
-
-      const statusEl = document.getElementById('sdEmailStatus');
-      if (statusEl) {
-        if (email) {
-          statusEl.style.display = 'block';
-          if (json.emailSent) {
-            statusEl.style.background = 'rgba(0,200,150,.12)';
-            statusEl.style.borderColor = 'rgba(0,200,150,.3)';
-            statusEl.style.color = '#00ddb3';
-            statusEl.textContent = `✓ Drop sent to ${email}`;
-          } else if (json.mailtoUrl) {
-            statusEl.style.background = 'rgba(255,170,0,.1)';
-            statusEl.style.borderColor = 'rgba(255,170,0,.3)';
-            statusEl.style.color = '#ffb84d';
-            statusEl.textContent = `✉ Opening email client for ${email}...`;
-            window.open(json.mailtoUrl, '_blank');
-          } else {
-            statusEl.style.display = 'none';
-          }
-        } else {
-          statusEl.style.display = 'none';
-        }
-      }
-
-    } catch (err) {
-      document.getElementById('sdLoader').classList.remove('show');
-      document.getElementById('sdForm').style.display  = 'block';
-      const errEl = document.getElementById('sdError');
-      errEl.textContent    = '⚠ ' + err.message;
-      errEl.style.display  = 'block';
-    }
+  const text = getSdContent();
+  if (!text) {
+    showSdError(_sdSource === 'output'
+      ? '⚠ Nothing to share — the output panel is empty. Format or convert something first.'
+      : '⚠ Nothing to share — the editor is empty.');
+    return;
   }
 
-  function sdCopyUrl() {
-    const url = document.getElementById('sdUrlText').textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.getElementById('sdCopyBtn');
-      btn.textContent = '✓ Copied!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '⎘ Copy Link'; btn.classList.remove('copied'); }, 2200);
+  const emailInput = document.getElementById('sdEmail');
+  const email = emailInput ? emailInput.value.trim() : '';
+
+  if (sendEmail && !email) {
+    showSdError('⚠ Please enter a recipient email to send on mail.');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showSdError('⚠ Please enter a valid email address.');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  const oneTime = document.getElementById('sdOneTime').checked;
+
+  document.getElementById('sdForm').style.display  = 'none';
+  document.getElementById('sdLoader').classList.add('show');
+  document.getElementById('sdError').style.display = 'none';
+
+  try {
+    const payload = { text, oneTimeDownload: oneTime, sourcePage: window.location.pathname };
+    if (email) payload.email = email;
+
+    const res = await fetch(SD_EP, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
     });
-  }
 
-  function sdCopyKey() {
+    if (res.status === 429 || (res.redirected && /\/429$/.test(res.url))) {
+      throw new Error('Too many requests — please wait a moment and try again.');
+    }
+    let json;
+    try { json = await res.json(); }
+    catch (_) { throw new Error('Unexpected server response (HTTP ' + res.status + ')'); }
+    if (!res.ok || !json.success) throw new Error(json.message || 'Server error ' + res.status);
+
+    document.getElementById('sdLoader').classList.remove('show');
+    document.getElementById('sdSuccess').style.display = 'block';
+
+    const token = json.token || (json.url ? json.url.substring(json.url.lastIndexOf('/') + 1) : '');
     const keyEl = document.getElementById('sdKeyText');
-    const key = keyEl ? keyEl.textContent : '';
-    if (!key || key === '-----') return;
-    navigator.clipboard.writeText(key).then(() => {
-      const btn = document.getElementById('sdCopyKeyBtn');
-      if (btn) {
-        btn.textContent = '✓ Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = '⎘ Copy Key'; btn.classList.remove('copied'); }, 2200);
+    if (keyEl) keyEl.textContent = token;
+
+    document.getElementById('sdUrlText').textContent = json.url;
+    document.getElementById('sdSuccessSub').textContent =
+      `${text.length.toLocaleString()} chars · ${_sdSource} panel` + (oneTime ? ' · one-time' : '');
+
+    const statusEl = document.getElementById('sdEmailStatus');
+    if (statusEl) {
+      statusEl.style.display = 'none';
+      if (email && json.emailSent) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(0,200,150,.12)';
+        statusEl.style.borderColor = 'rgba(0,200,150,.3)';
+        statusEl.style.color = '#00ddb3';
+        statusEl.textContent = `✓ Drop sent to ${email}`;
+      } else if (email && json.mailtoUrl) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = 'rgba(255,170,0,.1)';
+        statusEl.style.borderColor = 'rgba(255,170,0,.3)';
+        statusEl.style.color = '#ffb84d';
+        statusEl.textContent = `✉ Opening email client for ${email}...`;
+        window.open(json.mailtoUrl, '_blank');
       }
-    });
-  }
-
-  // ── Auto-load shared drop if ?drop=token is present in URL ──────────────────
-  async function checkAndLoadSharedDrop() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const dropToken = urlParams.get('drop');
-    if (!dropToken) return;
-
-    try {
-      const res = await fetch('/data/shared/' + encodeURIComponent(dropToken));
-      if (!res.ok) {
-        showDropToast('⚠ Could not load shared drop (link may be expired or already used).', 'error');
-        return;
-      }
-
-      const content = await res.text();
-      const editor = document.getElementById('codeEditor');
-      if (editor) {
-        editor.innerText = content;
-        if (typeof updateLineNumbers === 'function') updateLineNumbers();
-        if (typeof formatCode === 'function') {
-          try { formatCode(); } catch (e) { console.warn('Auto-format skipped:', e); }
-        }
-        showDropToast('✓ Shared content loaded into editor!', 'success');
-        // Clean URL query parameter without page reload
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-    } catch (err) {
-      console.error('Failed to load drop:', err);
-      showDropToast('⚠ Error loading drop: ' + err.message, 'error');
     }
+  } catch (err) {
+    document.getElementById('sdLoader').classList.remove('show');
+    document.getElementById('sdForm').style.display = 'block';
+    showSdError('⚠ ' + err.message);
   }
+}
 
-  function showDropToast(msg, type) {
-    let toast = document.getElementById('sdToast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'sdToast';
-      toast.style.cssText = `
-        position: fixed; top: 20px; right: 24px; z-index: 9999;
-        padding: 12px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif;
-        font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: flex; align-items: center; gap: 10px;
-      `;
-      document.body.appendChild(toast);
-    }
-    if (type === 'error') {
-      toast.style.background = '#251015';
-      toast.style.color = '#ff6b81';
-      toast.style.border = '1px solid #ff4f6a';
-    } else {
-      toast.style.background = '#0e2420';
-      toast.style.color = '#00ddb3';
-      toast.style.border = '1px solid #00c896';
-    }
-    toast.textContent = msg;
-    toast.style.opacity = '1';
-    toast.style.transform = 'translateY(0)';
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-10px)';
-    }, 4000);
-  }
+function flashCopied(btn, label) {
+  if (!btn) return;
+  btn.textContent = '✓ Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 2200);
+}
 
-  // Close on backdrop click
-  const sdOverlayEl = document.getElementById('sdOverlay');
-  if (sdOverlayEl) {
-    sdOverlayEl.addEventListener('click', e => {
-      if (e.target === sdOverlayEl) closeSdModal();
-    });
+function sdCopyUrl() {
+  const url = document.getElementById('sdUrlText').textContent;
+  const btn = document.getElementById('sdCopyBtn');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(() => flashCopied(btn, '⎘ Copy Link'));
+  } else if (fallbackCopy(url)) {
+    flashCopied(btn, '⎘ Copy Link');
   }
+}
+
+function sdCopyKey() {
+  const keyEl = document.getElementById('sdKeyText');
+  const key = keyEl ? keyEl.textContent : '';
+  if (!key || key === '-----') return;
+  const btn = document.getElementById('sdCopyKeyBtn');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(key).then(() => flashCopied(btn, '⎘ Copy Key'));
+  } else if (fallbackCopy(key)) {
+    flashCopied(btn, '⎘ Copy Key');
+  }
+}
+
+// ── Auto-load shared drop if ?drop=token is present in URL ──────────────────
+async function checkAndLoadSharedDrop() {
+  const dropToken = new URLSearchParams(window.location.search).get('drop');
+  if (!dropToken) return;
+
+  try {
+    const res = await fetch('/data/shared/' + encodeURIComponent(dropToken));
+    if (!res.ok) {
+      showDropToast('⚠ Could not load shared drop (link may be expired or already used).', 'error');
+      return;
+    }
+    const content = await res.text();
+    setEditorText(content.replace(/\r\n?/g, '\n'));
+    try { formatCode(false, null, null); } catch (e) { console.warn('Auto-format skipped:', e); }
+    showDropToast('✓ Shared content loaded into editor!', 'success');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } catch (err) {
+    console.error('Failed to load drop:', err);
+    showDropToast('⚠ Error loading drop: ' + err.message, 'error');
+  }
+}
+
+function showDropToast(msg, type) {
+  let toast = document.getElementById('sdToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'sdToast';
+    toast.style.cssText = `
+      position: fixed; top: 20px; right: 24px; z-index: 9999;
+      padding: 12px 20px; border-radius: 10px; font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex; align-items: center; gap: 10px;
+    `;
+    document.body.appendChild(toast);
+  }
+  if (type === 'error') {
+    toast.style.background = '#251015';
+    toast.style.color = '#ff6b81';
+    toast.style.border = '1px solid #ff4f6a';
+  } else {
+    toast.style.background = '#0e2420';
+    toast.style.color = '#00ddb3';
+    toast.style.border = '1px solid #00c896';
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-10px)';
+  }, 4000);
+}
+
+// Close share modal on backdrop click / Escape
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('sdOverlay');
+  if (!overlay) return;
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeSdModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && overlay.classList.contains('show')) closeSdModal();
+  });
+});

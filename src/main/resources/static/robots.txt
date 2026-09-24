@@ -1,0 +1,14 @@
+# Search engines need CSS and JS to render pages, so those stay crawlable.
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /shared/
+Disallow: /actuator/
+Disallow: /error
+Disallow: /429
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+
+Sitemap: https://jsonxmleditor.com/sitemap.xml

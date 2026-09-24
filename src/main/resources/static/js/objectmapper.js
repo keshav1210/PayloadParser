@@ -558,7 +558,7 @@ public class Address
           toast.id = 'sdToast';
           toast.style.cssText = `
             position: fixed; top: 20px; right: 24px; z-index: 9999;
-            padding: 12px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif;
+            padding: 12px 20px; border-radius: 10px; font-family: inherit;
             font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 30px rgba(0,0,0,0.5);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex; align-items: center; gap: 10px;

@@ -1,44 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Too Many Requests</title>
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            padding-top: 100px;
-            background-color: #0d0d0d;
-        }
-        h1 {
-            font-size: 60px;
-            color: #dc3545;
-        }
-        p {
-            font-size: 20px;
-            color: white;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Too many requests – JSON XML Editor</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/site.css?v=4">
 </head>
 <body>
+<div id="header"></div>
 
-<h1>Too Many Requests</h1>
-<p>You are sending requests too fast.</p>
+<main class="status-page">
+  <div>
+    <div class="code">429</div>
+    <h1>Slow down a little</h1>
+    <p>We received a lot of requests from you in a short time. Please wait about a minute, then try again.</p>
+    <p>If you keep seeing this while using the site normally, <a href="/contact">let us know</a>.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/">Back to home</a>
+      <a class="btn" href="javascript:history.back()">Go back</a>
+    </div>
+  </div>
+</main>
 
-    <p>Please wait 60 seconds before trying again.
-
-    If you believe this is an error, contact support.</p>
-<!--<p>Please wait for 1 minute and try again.</p>-->
-
-<a href="/">Go Back Home</a>
-
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=4"></script>
 </body>
 </html>

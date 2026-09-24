@@ -1,44 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XML Parser</title>
-    <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-    <link rel="stylesheet" href="/css/sharemodel.css">
-    <meta name="description" content="Free online XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="xml formatter, xml parser, xml validator, xml beautifier, xml editor, developer tool">
-    <meta name="author" content="JSON XML EDITOR">
-    <meta property="og:title" content="XML PARSER">
-    <meta property="og:description" content="Free online XML editor, formatter and validator tool for developers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com/xml-parser">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
-    <script>
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-LPTNYNJB94');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XML Formatter &amp; Validator – Pretty Print XML Online</title>
+  <meta name="description" content="Format and validate XML in your browser. See errors by line and column, fold elements, minify, and convert XML to JSON, YAML, TOML or CSV.">
+  <link rel="canonical" href="https://jsonxmleditor.com/xml-parser">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="XML Formatter and Validator">
+  <meta property="og:description" content="Format and validate XML in your browser. See errors by line and column, fold elements, minify, and convert XML to JSON, YAML, TOML or CSV.">
+  <meta property="og:url" content="https://jsonxmleditor.com/xml-parser">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="XML Formatter and Validator">
+  <meta name="twitter:description" content="Format and validate XML in your browser. See errors by line and column, fold elements, minify, and convert XML to JSON, YAML, TOML or CSV.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <link rel="stylesheet" href="/css/sql-modal.css?v=4">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "XML Formatter and Validator",
+      "url": "https://jsonxmleditor.com/xml-parser",
+      "description": "Format and validate XML in your browser. See errors by line and column, fold elements, minify, and convert XML to JSON, YAML, TOML or CSV.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "XML Formatter",
+          "item": "https://jsonxmleditor.com/xml-parser"
         }
-    </script>
-    <title>XML Parser</title>
-    <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-    <link rel="stylesheet" href="/css/sql-modal.css">
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does the validator check my XML against a schema (XSD)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It checks that the XML is well-formed. A document can be well-formed and still fail schema validation, for example when a required element is missing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will formatting change my data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only the whitespace between elements and the way character references are written. Text content, attribute values, comments and CDATA stay the same."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I format SOAP messages, RSS feeds or Android layout files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. They are all XML, and namespaced names like soap:Envelope or android:layout_width are left exactly as they are."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I minify XML?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Click Minify. The whitespace between tags is removed and the document is written on a single line. Text inside elements is trimmed."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
 </head>
 <body>
 
 <div id="header"></div>
 
+<section class="tool-intro">
+  <h1>XML Formatter and Validator</h1>
+  <p>Paste XML to indent it, check that it is well-formed and see it as a tree. Comments, CDATA and the XML declaration are kept.</p>
+</section>
+
+
+
+
 <!-- Top Controls -->
 <div class="controls">
-    <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-    <button class="btn" onclick="minifyCode()">Minify</button>
-    <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-    <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+    <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+    <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+    <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
     <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
-    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
 </div>
 
 <!-- Main Container -->
@@ -49,12 +146,12 @@
         <div class="panel-header" id="leftPanelHeader">
             <span>Editor (Formatted View)</span>
             <div class="panel-header-controls" id="leftPanelControls">
-                <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-                <button class="btn" onclick="minifyCode()">Minify</button>
-                <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-                <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
-                <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-                <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+                <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+                <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+                <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+                <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+                <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
                 <!-- Force XML mode; hidden from user -->
                 <select id="formatType" style="display:none;"><option value="xml">XML</option></select>
             </div>
@@ -80,13 +177,13 @@
 <!--            <option value="json">JSON</option>-->
             <option value="xml">XML</option>
         </select>
-<!--        <button class="btn" style="align-items: baseline" onclick="formatData('JSON_TO_XML')">Convert To XML</button>-->
+<!--        <button data-for="json" class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>-->
         <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
-        <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>
-        <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>
-        <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>
-        <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
-        <button class="btn" id="convertToSqlBtn">Convert TO SQL</button>
+        <button data-for="xml" class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
+        <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
+        <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+        <button class="btn" onclick="formatData('CSV')">Convert to CSV</button>
+        <button class="btn" id="convertToSqlBtn">Convert to SQL</button>
     </div>
 
     <!-- Right Panel -->
@@ -98,7 +195,7 @@
                 <option value="formated">Text View</option>
             </select>
             <div class="panel-header-controls" id="rightPanelControls">
-                <button class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
+                <button data-for="xml" class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
                 <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
                 <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
                 <button class="btn" onclick="formatData('CSV')">Convert to CSV</button>
@@ -124,26 +221,94 @@
 
 </div>
 
-<!-- SEO Content -->
-<div class="content-section">
-    <h2>What is XML Parser?</h2>
-    <p>XML Parser is a simple, browser-based tool built for developers who deal with XML data daily. When you're working with APIs or config files, raw XML is often a wall of text that's hard to read or debug. Our tool helps you clean that up, visualize the structure, and catch errors fast.</p>
+<article class="content-section">
+<h2>How to format XML</h2>
+<ol>
+  <li>Paste XML into the editor, drop a file on it, or click <strong>Upload</strong>.</li>
+  <li>Click <strong>Format</strong> (or <code>Ctrl</code> + <code>Enter</code>). Child elements are indented under their parent.</li>
+  <li>If the document isn't well-formed, the status bar shows the line, the column and what went wrong.</li>
+  <li>Use the arrows next to the line numbers to fold elements you don't need to see.</li>
+</ol>
 
-    <h6>How it Helps You</h6>
-    <div class="feature-box">
-        <p><strong>Instant Beautification:</strong> Paste your XML and the tool indents it properly with color-coded tags, attributes, and text nodes so structure is immediately clear.</p>
-    </div>
-    <div class="feature-box">
-        <p><strong>Interactive Tree View:</strong> Your XML becomes an expandable/collapsible tree — perfect for deeply nested documents with hundreds of elements.</p>
-    </div>
-    <div class="feature-box">
-        <p><strong>Validation &amp; Error Highlighting:</strong> The parser checks your XML structure and reports missing closing tags or other syntax errors with the exact location.</p>
-    </div>
-    <div class="feature-box">
-        <p><strong>Minify for Production:</strong> Strip all extra whitespace to produce compact XML that's ready for APIs or file storage.</p>
-    </div>
+<h2>What "well-formed" means</h2>
+<p>The validator checks that your XML follows the basic rules every XML parser requires. It does not check the document against an XSD or DTD schema.</p>
+<ul>
+  <li>There is exactly one root element around everything else.</li>
+  <li>Every opening tag has a closing tag, or closes itself like <code>&lt;br/&gt;</code>.</li>
+  <li>Tags close in the reverse order they were opened: <code>&lt;a&gt;&lt;b&gt;&lt;/b&gt;&lt;/a&gt;</code>, not <code>&lt;a&gt;&lt;b&gt;&lt;/a&gt;&lt;/b&gt;</code>.</li>
+  <li>Names are case-sensitive, so <code>&lt;Item&gt;</code> is not closed by <code>&lt;/item&gt;</code>.</li>
+  <li>Attribute values are always quoted: <code>id="7"</code>.</li>
+  <li>A literal <code>&amp;</code> or <code>&lt;</code> in text is written as <code>&amp;amp;</code> or <code>&amp;lt;</code>.</li>
+</ul>
+
+<h2>Common error messages and what they mean</h2>
+<p>These are the messages Chrome and Edge show. Firefox words them a little differently, but the line and column work the same way.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Message</th><th>Usual cause</th></tr></thead>
+  <tbody>
+    <tr><td>Opening and ending tag mismatch</td><td>An element was closed in the wrong order, never closed, or closed with a different spelling or capitalisation.</td></tr>
+    <tr><td>AttValue: " or ' expected</td><td>An attribute value has no quotes, as in <code>&lt;a id=7&gt;</code>.</td></tr>
+    <tr><td>xmlParseEntityRef: no name</td><td>A bare <code>&amp;</code> in text, such as "fish &amp; chips". Write <code>&amp;amp;</code>.</td></tr>
+    <tr><td>StartTag: invalid element name</td><td>A <code>&lt;</code> that doesn't start a tag, often from a comparison like <code>1 &lt; 2</code> in text.</td></tr>
+    <tr><td>Extra content at the end of the document</td><td>There is more than one root element.</td></tr>
+    <tr><td>Premature end of data</td><td>The document stops before all elements are closed. Often a copy-paste that missed the last lines.</td></tr>
+  </tbody>
+</table>
 </div>
-<br>
+
+<h2>What formatting changes and what it keeps</h2>
+<p>Each element goes on its own line, indented by two spaces, four spaces or a tab. An element that only holds text stays on one line, like <code>&lt;city&gt;Boston&lt;/city&gt;</code>. The XML declaration, comments, CDATA sections, processing instructions and namespace prefixes such as <code>soap:Envelope</code> are all kept. Whitespace between elements is replaced by the new indentation, and character references like <code>&amp;#65;</code> are written out as the character they stand for.</p>
+
+<h2>Sorting XML</h2>
+<p><strong>Sort XML</strong> puts child elements in alphabetical order at every level, which makes two versions of a document easy to compare side by side. Only the order of elements changes: attributes, text, comments, CDATA and namespace prefixes stay as they were. Elements that share a name, like a list of <code>&lt;item&gt;</code> entries, keep their original order relative to each other. Documents that contain a <code>&lt;!DOCTYPE&gt;</code> are rejected for security reasons, so remove it before sorting.</p>
+
+<h2>Converting XML to JSON</h2>
+<p><strong>Convert to JSON</strong> turns elements into keys. Elements that repeat become an array, attributes become ordinary keys, and all values come out as strings, because XML has no number or boolean type. The root element becomes the outer object. For example:</p>
+<pre><code>&lt;order id="7"&gt;
+  &lt;item&gt;pen&lt;/item&gt;
+  &lt;item&gt;ink&lt;/item&gt;
+&lt;/order&gt;</code></pre>
+<p>becomes</p>
+<pre><code>{
+  "id": "7",
+  "item": [
+    "pen",
+    "ink"
+  ]
+}</code></pre>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>Does the validator check my XML against a schema (XSD)?</summary>
+    <p>No. It checks that the XML is well-formed. A document can be well-formed and still fail schema validation, for example when a required element is missing.</p>
+  </details>
+  <details>
+    <summary>Will formatting change my data?</summary>
+    <p>Only the whitespace between elements and the way character references are written. Text content, attribute values, comments and CDATA stay the same.</p>
+  </details>
+  <details>
+    <summary>Can I format SOAP messages, RSS feeds or Android layout files?</summary>
+    <p>Yes. They are all XML, and namespaced names like soap:Envelope or android:layout_width are left exactly as they are.</p>
+  </details>
+  <details>
+    <summary>How do I minify XML?</summary>
+    <p>Click Minify. The whitespace between tags is removed and the document is written on a single line. Text inside elements is trimmed.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Converter</strong>JSON to YAML, and properties files to YAML and back.</a></li>
+  <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+</ul>
+</article>
+
 <div id="footer"></div>
 
 <!-- Convert to SQL Modal -->
@@ -288,7 +453,7 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js"></script>
-<script src="/js/jsonxmlformatter.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/jsonxmlformatter.js?v=4"></script>
 </body>
 </html>

@@ -1,146 +1,130 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">-->
-<!--    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">-->
-<!--    <meta name="author" content="JSON XML EDITOR">-->
-
-<!--    &lt;!&ndash; Open Graph (For WhatsApp, Facebook Preview) &ndash;&gt;-->
-<!--    <meta property="og:title" content="YAML Converter">-->
-<!--    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">-->
-<!--    <meta property="og:type" content="website">-->
-<!--    <meta property="og:url" content="https://jsonxmleditor.com">-->
-<!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>-->
-<!--    <script>-->
-<!--        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){-->
-<!--                    window.dataLayer = window.dataLayer || [];-->
-<!--                    function gtag(){dataLayer.push(arguments);}-->
-<!--                    gtag('js', new Date());-->
-
-<!--                    gtag('config', 'G-LPTNYNJB94');-->
-<!--        }-->
-<!--    </script>-->
-<!--    <title>YAML Converter</title>-->
-<!--    <link rel="stylesheet" href="/css/jsonxmlformatter.css">-->
-<!--</head>-->
-<!--<body>-->
-<!--&lt;!&ndash;<div class="header">&ndash;&gt;-->
-<!--&lt;!&ndash;  <h1>Payload Parser</h1>&ndash;&gt;-->
-<!--&lt;!&ndash;</div>&ndash;&gt;-->
-<!--<div id="header"></div>-->
-
-<!--<div class="controls">-->
-<!--    &lt;!&ndash;  <select id="formatType">&ndash;&gt;-->
-<!--    &lt;!&ndash;    <option value="json">JSON</option>&ndash;&gt;-->
-<!--    &lt;!&ndash;    <option value="xml">XML</option>&ndash;&gt;-->
-<!--    &lt;!&ndash;  </select>&ndash;&gt;-->
-<!--    <button class="btn" onclick="formatCode(false,null,null)">Format</button>-->
-<!--    <button class="btn" onclick="minifyCode()">Minify</button>-->
-<!--    <button class="btn" onclick="formatData('REPAIR')">Repair</button>-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('JSON_TO_XML')">Convert To XML</button>&ndash;&gt;-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>&ndash;&gt;-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('JSON_TO_TOML')">Convert JSON TO TOML</button>&ndash;&gt;-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('XML_TO_TOML')">Convert XML TO TOML</button>&ndash;&gt;-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('JSON_TO_YAML')">Convert JSON TO YAML</button>&ndash;&gt;-->
-<!--    &lt;!&ndash;  <button class="btn" onclick="formatData('XML_TO_YAML')">Convert XML TO YAML</button>&ndash;&gt;-->
-<!--    <button class="btn" onclick="formatData('JSON_SORT')">SORT JSON</button>-->
-<!--    <button class="btn" onclick="formatData('XML_SORT')">SORT XML</button>-->
-<!--    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>-->
-<!--    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>-->
-<!--</div>-->
-
-<!--<div class="container">-->
-<!--    <div class="panel">-->
-<!--        <div class="panel-header">Editor (Formatted View)</div>-->
-<!--        <div class="editor-wrapper">-->
-<!--            <div class="line-numbers-area">-->
-<!--                <div class="fold-icons" id="foldIcons"></div>-->
-<!--                <div class="line-numbers" id="lineNumbers"></div>-->
-<!--            </div>-->
-<!--            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>-->
-<!--        </div>-->
-<!--        <div class="status" id="inputStatus">Ready - Type or paste JSON/XML here</div>-->
-<!--    </div>-->
-<!--    <div class="middle-controls">-->
-<!--        <select id="formatType">-->
-<!--            <option value="json">JSON</option>-->
-<!--            <option value="xml">XML</option>-->
-<!--        </select>-->
-<!--        &lt;!&ndash;        <button class="btn" style="align-items: baseline" onclick="formatData('JSON_TO_XML')">Convert To XML</button>&ndash;&gt;-->
-<!--        &lt;!&ndash;        <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>&ndash;&gt;-->
-<!--       &lt;!&ndash; <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>&ndash;&gt;-->
-<!--                <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>-->
-<!--                <button class="btn" onclick="formatData('PROPERTY_TO_YAML')">Property TO YAML</button>-->
-<!--                <button class="btn" onclick="formatData('YAML_TO_PROPERTY')">YAML TO PROPERTY</button>-->
-<!--    </div>-->
-
-<!--    <div class="panel">-->
-<!--        <div class="panel-header">Viewer</div>-->
-<!--        <div class="editor-wrapper">-->
-<!--            <div class="tree-view" id="treeView"></div>-->
-<!--        </div>-->
-<!--        <div class="status" id="outputStatus">Ready</div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--</br>-->
-<!--<div class="content-section">-->
-<!--    <h2>What is a YAML Converter?</h2>-->
-<!--    <p>YAML Converter is a simple, browser-based tool built for developers who work with JSON, XML, and YAML (YML) data.</p>-->
-<!--    <p>When you're working with configuration files or APIs, data often comes in JSON or XML formats. This tool helps you easily convert that data into clean, readable YAML format without any hassle.</p>-->
-
-<!--    <h6>How it Helps You</h6>-->
-
-<!--    <div class="feature-box">-->
-<!--        <p><strong>Easy Format Conversion:</strong> Just paste your JSON or XML data, and the tool instantly converts it into YAML. The output is well-structured, easy to read, and ready to use in your configuration files.</p>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<br>-->
-<!--<div id="footer"></div>-->
-
-<!--<script src="/js/layout-loader.js"></script>-->
-<!--<script src="/js/jsonxmlformatter.js"></script>-->
-<!--</body>-->
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online JSON to YAML and XML to YAML converter tool for developers.">
-    <meta name="keywords" content="yaml converter, json to yaml, xml to yaml, yaml formatter, yaml parser, yaml to property">
-    <meta name="author" content="JSON XML EDITOR">
-    <meta property="og:title" content="YAML Converter">
-    <meta property="og:description" content="Free online JSON to YAML and XML to YAML converter tool for developers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com/yaml-converter">
-    <title>YAML Converter</title>
-    <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-    <link rel="stylesheet" href="/css/sharemodel.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
-    <script>
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-LPTNYNJB94');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON to YAML Converter · Properties to YAML Online</title>
+  <meta name="description" content="Convert JSON or XML to YAML, and move Spring Boot settings between application.properties and application.yml in either direction.">
+  <link rel="canonical" href="https://jsonxmleditor.com/yaml-converter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON to YAML and Properties Converter">
+  <meta property="og:description" content="Convert JSON or XML to YAML, and move Spring Boot settings between application.properties and application.yml in either direction.">
+  <meta property="og:url" content="https://jsonxmleditor.com/yaml-converter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="JSON to YAML and Properties Converter">
+  <meta name="twitter:description" content="Convert JSON or XML to YAML, and move Spring Boot settings between application.properties and application.yml in either direction.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON to YAML and Properties Converter",
+      "url": "https://jsonxmleditor.com/yaml-converter",
+      "description": "Convert JSON or XML to YAML, and move Spring Boot settings between application.properties and application.yml in either direction.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "YAML Converter",
+          "item": "https://jsonxmleditor.com/yaml-converter"
         }
-    </script>
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is JSON valid YAML?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. YAML 1.2 is a superset of JSON, so any JSON document is also valid YAML. That is also why converting JSON to YAML never loses data. The reverse isn't true: YAML has comments, anchors and multiple documents per file, which JSON can't express."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I use application.properties or application.yml?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Both behave the same at runtime. YAML is easier to read when many settings share a prefix. Properties files are easier to override one line at a time and to search with grep."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the converter keep comments?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. JSON has no comments to begin with, and comments in a properties file are dropped during conversion. Add them back to the YAML by hand if you need them."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
 </head>
 <body>
 
 <div id="header"></div>
 
+<section class="tool-intro">
+  <h1>JSON to YAML and Properties Converter</h1>
+  <p>Convert JSON or XML to YAML, or move Spring Boot settings between application.properties and application.yml.</p>
+</section>
+
+
+
 <div class="controls">
-    <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-    <button class="btn" onclick="minifyCode()">Minify</button>
-    <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-    <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
-    <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
-    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+    <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+    <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+    <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+    <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
 </div>
 
 <div class="container" id="mainContainer">
@@ -205,20 +189,76 @@
 
 </div>
 
-<div class="content-section">
-    <h2>What is a YAML Converter?</h2>
-    <p>YAML Converter is a simple, browser-based tool built for developers who work with JSON, XML, and YAML data. When you're working with configuration files or APIs, data often comes in JSON or XML format. This tool helps you easily convert that data into clean, readable YAML without any hassle.</p>
-
-    <h6>How it Helps You</h6>
-    <div class="feature-box">
-        <p><strong>Easy Format Conversion:</strong> Paste your JSON or XML data and the tool instantly converts it to YAML. The output is well-structured, easy to read, and ready to drop into your config files.</p>
-    </div>
-    <div class="feature-box">
-        <p><strong>Properties Support:</strong> Convert Java-style <code>.properties</code> files to YAML, or YAML back to <code>.properties</code> format — useful for Spring Boot and other config migrations.</p>
-    </div>
+<article class="content-section">
+<h2>What you can convert here</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Button</th><th>From → To</th></tr></thead>
+  <tbody>
+    <tr><td>Convert to YAML</td><td>JSON or XML → YAML</td></tr>
+    <tr><td>Property to YAML</td><td><code>key=value</code> lines from a <code>.properties</code> file → nested YAML</td></tr>
+    <tr><td>YAML to Property</td><td>Nested YAML → flat <code>key=value</code> lines</td></tr>
+  </tbody>
+</table>
 </div>
 
-<br>
+<h2>Spring Boot: application.properties to application.yml</h2>
+<p>Spring Boot reads both files the same way. Dotted keys in a properties file turn into nested blocks in YAML:</p>
+<pre><code>server.port=8080
+spring.datasource.url=jdbc:postgresql://localhost/app
+spring.datasource.username=app</code></pre>
+<p>becomes</p>
+<pre><code>spring:
+  datasource:
+    username: app
+    url: jdbc:postgresql://localhost/app
+server:
+  port: 8080</code></pre>
+<p>The order of keys can change along the way. Spring doesn't care about order, but reorder by hand if you want the file to read top-down. Comments in the properties file are not carried over.</p>
+<p>Going the other way, lists become numbered keys: a YAML list under <code>hosts:</code> turns into <code>hosts[0]=…</code> and <code>hosts[1]=…</code>, which is the form Spring expects in a properties file.</p>
+
+<h2>Why some keys get quotes</h2>
+<p>Convert <code>{"country": "no", "y": 2, "on": true}</code> and you'll get:</p>
+<pre><code>country: "no"
+"y": 2
+"on": true</code></pre>
+<p>The quotes are deliberate. Older YAML parsers read words like <code>y</code>, <code>n</code>, <code>yes</code>, <code>no</code>, <code>on</code> and <code>off</code> as true or false. Without the quotes, the country code for Norway would turn into <code>false</code>. Quoting keeps them as plain text in every parser.</p>
+
+<h2>YAML indentation in short</h2>
+<ul>
+  <li>Indent with spaces, never tabs.</li>
+  <li>Children are indented further than their parent. Two spaces is the usual choice.</li>
+  <li>A list item starts with a dash and a space: <code>- item</code>.</li>
+  <li>Strings rarely need quotes, except when they contain <code>: </code>, start with a character like <code>*</code>, <code>&amp;</code> or <code>#</code>, or look like a number or boolean.</li>
+</ul>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>Is JSON valid YAML?</summary>
+    <p>Yes. YAML 1.2 is a superset of JSON, so any JSON document is also valid YAML. That is also why converting JSON to YAML never loses data. The reverse isn't true: YAML has comments, anchors and multiple documents per file, which JSON can't express.</p>
+  </details>
+  <details>
+    <summary>Should I use application.properties or application.yml?</summary>
+    <p>Both behave the same at runtime. YAML is easier to read when many settings share a prefix. Properties files are easier to override one line at a time and to search with grep.</p>
+  </details>
+  <details>
+    <summary>Does the converter keep comments?</summary>
+    <p>No. JSON has no comments to begin with, and comments in a properties file are dropped during conversion. Add them back to the YAML by hand if you need them.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+</ul>
+</article>
+
 <div id="footer"></div>
 <!-- ════════════════════════════════════════════════════════
      ★  SHARE MODAL
@@ -307,7 +347,7 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js"></script>
-<script src="/js/jsonxmlformatter.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/jsonxmlformatter.js?v=4"></script>
 </body>
 </html>

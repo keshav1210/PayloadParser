@@ -21,7 +21,7 @@
       max-width: 480px; width: 100%;
       box-shadow: 0 0 60px rgba(79,140,255,.2);
       animation: sdPop .28s cubic-bezier(.34,1.56,.64,1);
-      font-family: 'Outfit', sans-serif;
+      font-family: inherit;
     }
     .sd-check {
       width: 56px; height: 56px; border-radius: 50%;
@@ -35,7 +35,7 @@
       letter-spacing: -.03em; color: #ddddf0; margin-bottom: 6px;
     }
     .sd-sub {
-      text-align: center; color: #525268; font-size: .82rem;
+      text-align: center; color: #9aa3b2; font-size: .82rem;
       margin-bottom: 18px; line-height: 1.6;
     }
     .sd-url-row {
@@ -44,7 +44,7 @@
       border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; overflow: hidden;
     }
     .sd-url-text {
-      flex: 1; font-family: 'JetBrains Mono', monospace;
+      flex: 1; font-family: 'Consolas', 'Courier New', monospace;
       font-size: .72rem; color: #4f8cff;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
@@ -59,7 +59,7 @@
     .sd-actions button {
       flex: 1; padding: 9px; border-radius: 9px; font-size: .8rem; font-weight: 600;
       cursor: pointer; transition: all .18s; border: 1px solid #252530;
-      background: transparent; color: #525268; font-family: 'Outfit', sans-serif;
+      background: transparent; color: #9aa3b2; font-family: inherit;
     }
     .sd-actions button:hover { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.08); }
 
@@ -69,8 +69,8 @@
     }
     .sd-src-btn {
       flex: 1; padding: 7px; border-radius: 8px; border: 1px solid #252530;
-      background: transparent; color: #525268; font-size: .76rem; font-weight: 600;
-      cursor: pointer; transition: all .18s; font-family: 'Outfit', sans-serif;
+      background: transparent; color: #9aa3b2; font-size: .76rem; font-weight: 600;
+      cursor: pointer; transition: all .18s; font-family: inherit;
     }
     .sd-src-btn.active { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.1); }
 
@@ -80,7 +80,7 @@
       padding: 10px 14px; background: #16161c; border: 1px solid #252530;
       border-radius: 10px; margin-bottom: 14px;
     }
-    .sd-toggle-label { font-size: .78rem; color: #525268; }
+    .sd-toggle-label { font-size: .78rem; color: #9aa3b2; }
     .sd-toggle-label strong { color: #ddddf0; display: block; margin-bottom: 2px; }
     .sd-toggle { position: relative; width: 38px; height: 21px; flex-shrink: 0; }
     .sd-toggle input { opacity: 0; width: 0; height: 0; }
@@ -90,7 +90,7 @@
     }
     .sd-toggle-slider::before {
       content: ''; position: absolute; width: 13px; height: 13px;
-      border-radius: 50%; background: #525268; left: 3px; top: 3px; transition: all .22s;
+      border-radius: 50%; background: #9aa3b2; left: 3px; top: 3px; transition: all .22s;
     }
     .sd-toggle input:checked + .sd-toggle-slider { background: #00c896; border-color: #00c896; }
     .sd-toggle input:checked + .sd-toggle-slider::before { transform: translateX(17px); background: #fff; }
@@ -98,7 +98,7 @@
     /* ── Loading state inside modal ── */
     .sd-loader {
       display: none; text-align: center; padding: 20px 0;
-      font-family: 'JetBrains Mono', monospace; font-size: .78rem; color: #525268;
+      font-family: 'Consolas', 'Courier New', monospace; font-size: .78rem; color: #9aa3b2;
     }
     .sd-loader.show { display: block; }
     .sd-spinner {
@@ -127,9 +127,9 @@
     }
     .sd-email-input {
       flex: 1; background: transparent; border: none; outline: none;
-      color: #ddddf0; font-family: 'Outfit', sans-serif; font-size: .82rem; padding: 8px 0;
+      color: #ddddf0; font-family: inherit; font-size: .82rem; padding: 8px 0;
     }
-    .sd-email-input::placeholder { color: #525268; }
+    .sd-email-input::placeholder { color: #9aa3b2; }
 
     /* ── Key Display Card ── */
     .sd-key-card {
@@ -146,7 +146,7 @@
       display: flex; align-items: center; gap: 8px;
     }
     .sd-key-badge {
-      flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.15rem; font-weight: 800;
+      flex: 1; font-family: 'Consolas', 'Courier New', monospace; font-size: 1.15rem; font-weight: 800;
       letter-spacing: .12em; color: #00ddb3; background: #121218;
       border: 1px solid #2a2a38; border-radius: 8px; padding: 6px 12px;
       user-select: all; text-shadow: 0 0 12px rgba(0,221,179,.3);

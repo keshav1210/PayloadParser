@@ -3,49 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter, xml formatter, payload parser, developer tool, json parser, xml parser, object mapper, json to xml converter, Java object to json converter">
-    <meta name="author" content="JSON XML EDITOR">
-
-    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
-    <meta property="og:title" content="Learn-JSON/XML EDITOR">
-    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com">
+    <title>Learn JSON, XML, YAML and TOML – Syntax Guide with Examples</title>
+    <meta name="description" content="Short guides to JSON, XML, YAML and TOML syntax with examples, plus what Format, Minify, Repair and Sort do and when to use each conversion.">
+    <link rel="canonical" href="https://jsonxmleditor.com/learnings">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#111317">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="JSON XML Editor">
+    <meta property="og:title" content="Learn JSON, XML, YAML and TOML">
+    <meta property="og:description" content="Syntax guides with examples for the most common data formats.">
+    <meta property="og:url" content="https://jsonxmleditor.com/learnings">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="/css/site.css?v=4">
+    <link rel="stylesheet" href="/css/learning.css?v=4">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
     <script>
-        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-
-                    gtag('config', 'G-LPTNYNJB94');
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-LPTNYNJB94');
         }
     </script>
-    <title>Learn - JSON/XML EDITOR</title>
-    <link rel="stylesheet" href="/css/learning.css">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "headline": "Learn the data formats: JSON, XML, YAML and TOML",
+      "description": "Syntax guides with examples for JSON, XML, YAML and TOML, plus what Format, Minify, Repair, Sort and each conversion do.",
+      "url": "https://jsonxmleditor.com/learnings",
+      "inLanguage": "en",
+      "dateModified": "2026-09-24",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Learn",
+          "item": "https://jsonxmleditor.com/learnings"
+        }
+      ]
+    }
+  ]
+}
+    </script>
 </head>
 <body>
-<div class="nav" id="header"></div>
+<div id="header"></div>
 
 <div class="container">
     <div class="page-title">
-        <h1>📚 Learning Center</h1>
-        <p>Master data formats and parsing functions with detailed examples</p>
+        <h1>Learn the data formats</h1>
+        <p>How JSON, XML, YAML and TOML are written, what each editor function does, and which conversion to use when.</p>
     </div>
 
     <div class="toc">
-        <h2>📑 Table of Contents</h2>
+        <h2>On this page</h2>
         <ul>
-            <li><a href="#json">→ JSON Format</a></li>
-            <li><a href="#xml">→ XML Format</a></li>
-            <li><a href="#yaml">→ YAML Format</a></li>
-            <li><a href="#toml">→ TOML Format</a></li>
-            <li><a href="#format">→ Format Function</a></li>
-            <li><a href="#minify">→ Minify Function</a></li>
-            <li><a href="#repair">→ Repair Function</a></li>
-            <li><a href="#sort">→ Sort JSON/XML</a></li>
-            <li><a href="#conversions">→ Format Conversions</a></li>
+            <li><a href="#json">JSON Format</a></li>
+            <li><a href="#xml">XML Format</a></li>
+            <li><a href="#yaml">YAML Format</a></li>
+            <li><a href="#toml">TOML Format</a></li>
+            <li><a href="#format">Format Function</a></li>
+            <li><a href="#minify">Minify Function</a></li>
+            <li><a href="#repair">Repair Function</a></li>
+            <li><a href="#sort">Sort JSON/XML</a></li>
+            <li><a href="#conversions">Format Conversions</a></li>
         </ul>
     </div>
 
@@ -66,10 +110,10 @@
         <h3>Data Types:</h3>
         <ul>
             <li><span class="highlight">String</span> - Text values in double quotes</li>
-            <li><span class="highlight">Number</span> - Integer ya decimal numbers</li>
-            <li><span class="highlight">Boolean</span> - true ya false</li>
+            <li><span class="highlight">Number</span> - Whole or decimal numbers</li>
+            <li><span class="highlight">Boolean</span> - true or false</li>
             <li><span class="highlight">Array</span> - Ordered list of values</li>
-            <li><span class="highlight">Object</span> - Key-value pairs ka collection</li>
+            <li><span class="highlight">Object</span> - A collection of key-value pairs</li>
             <li><span class="highlight">null</span> - Empty value</li>
         </ul>
 
@@ -164,7 +208,7 @@
             <li>SOAP web services</li>
             <li>Configuration files (web.xml, pom.xml)</li>
             <li>Document storage (Office files)</li>
-            <li>RSS feeds aur sitemaps</li>
+            <li>RSS feeds and sitemaps</li>
         </ul>
     </div>
 
@@ -408,7 +452,7 @@ password = "secure_password"</pre>
 
         <h4>Benefits:</h4>
         <ul>
-            <li>Reduced file size (often 40-60% smaller)</li>
+            <li>Smaller files. How much smaller depends on how deeply the data was indented; the status bar shows the exact number of bytes saved.</li>
             <li>Faster network transfer</li>
             <li>Less bandwidth usage</li>
             <li>Improved load times</li>
@@ -424,34 +468,33 @@ password = "secure_password"</pre>
         <h2>🔧 Repair Function</h2>
 
         <p>
-            The Repair function fixes broken or invalid data.
-            It automatically detects and corrects common syntax errors.
+            Repair takes JSON that won't parse and fixes the mistakes that most often come from
+            hand-editing or from copying JavaScript code. It is available for JSON in the formatter.
         </p>
 
         <div class="function-card">
-            <h4>Purpose:</h4>
-            <p>
-                Converts data with invalid syntax into a valid format.
-            </p>
-
-            <h4>Common Issues It Fixes:</h4>
+            <h4>What Repair fixes:</h4>
             <ul>
-                <li>Missing commas between elements</li>
-                <li>Trailing commas</li>
-                <li>Missing quotes around string values</li>
-                <li>Unclosed brackets or braces</li>
-                <li>Single quotes instead of double quotes (for JSON)</li>
+                <li>Keys without quotes, such as <code>{name: "Rahul"}</code></li>
+                <li>Trailing commas after the last item in an object or array</li>
+                <li>Comments written as <code>// …</code> or <code>/* … */</code></li>
+                <li>Brackets or braces that were never closed</li>
             </ul>
+
+            <h4>What it doesn't fix:</h4>
+            <ul>
+                <li>Single quotes around keys or strings</li>
+                <li>Missing commas between properties</li>
+                <li>Python values like <code>True</code>, <code>False</code> or <code>None</code></li>
+            </ul>
+            <p>For those, the validator shows the exact line and column so you can correct them by hand.</p>
         </div>
 
-        <h3>Example 1 - Missing Commas:</h3>
+        <h3>Example</h3>
         <h4>Before Repair:</h4>
         <div class="code-block">
-                <pre>{
-  "name": "Rahul"
-  "age": 28
-  "city": "Mumbai"
-}</pre>
+                <pre>{name: "Rahul", age: 28, // added later
+ "skills": ["JS", "Python",],</pre>
         </div>
 
         <h4>After Repair:</h4>
@@ -459,20 +502,13 @@ password = "secure_password"</pre>
                 <pre>{
   "name": "Rahul",
   "age": 28,
-  "city": "Mumbai"
+  "skills": [
+    "JS",
+    "Python"
+  ]
 }</pre>
         </div>
-
-        <h3>Example 2 - Single Quotes:</h3>
-        <h4>Before Repair:</h4>
-        <div class="code-block">
-            <pre>{'name': 'Rahul', 'age': 28}</pre>
-        </div>
-
-        <h4>After Repair:</h4>
-        <div class="code-block">
-            <pre>{"name": "Rahul", "age": 28}</pre>
-        </div>
+        <p>The keys got their quotes, the comment and the trailing comma are gone, and the missing closing brace was added.</p>
 
         <span class="tag">Fix Errors</span>
         <span class="tag">Auto-correct</span>
@@ -498,8 +534,9 @@ password = "secure_password"</pre>
             <ul>
                 <li>Sorts keys alphabetically</li>
                 <li>Also sorts keys inside nested objects</li>
-                <li>Keeps the original order of arrays</li>
+                <li>Keeps the order of array items (only keys are sorted)</li>
                 <li>Makes data comparison easier</li>
+                <li>Sort XML does the same for child elements</li>
             </ul>
         </div>
 
@@ -541,22 +578,19 @@ password = "secure_password"</pre>
     <!-- Conversion Functions -->
     <div class="section" id="conversions">
         <h2>🔄 Format Conversion Functions</h2>
-
-        <h3>1. JSON to XML Conversion</h3>
         <p>
-            Our tool seamlessly transforms <strong>JSON structures into valid XML documents</strong>. During this process, JSON objects are mapped to XML elements, while arrays are converted into repeated child nodes to maintain data integrity.
+            Conversions take the content of the editor and show the result in the right-hand panel.
+            Your original stays unchanged on the left. The examples below show the exact output of each conversion.
         </p>
 
-        <div class="info-box">
-            <h4>How the Mapping Works:</h4>
-            <ul>
-                <li><strong>Objects to Elements:</strong> Each key-value pair in your JSON becomes a corresponding XML tag.</li>
-                <li><strong>Array Handling:</strong> JSON arrays are transformed into repetitive XML tags, ensuring your list data is perfectly preserved.</li>
-                <li><strong>Structural Hierarchy:</strong> Nested JSON objects are converted into parent-child XML relationships, keeping your data tree intact.</li>
-            </ul>
-        </div>
-        <h4>Example:</h4>
-        <strong>JSON Input:</strong>
+        <h3>1. JSON to XML</h3>
+        <p>
+            Each key becomes an element and each value becomes the element's text. Arrays turn into the same element
+            repeated once per item, because XML has no separate list syntax. The whole document is wrapped in a
+            <code>&lt;root&gt;</code> element, since XML needs exactly one root, and an XML declaration is added at the top.
+        </p>
+
+        <strong>JSON input:</strong>
         <div class="code-block">
                 <pre>{
   "employee": {
@@ -567,24 +601,26 @@ password = "secure_password"</pre>
 }</pre>
         </div>
 
-        <strong>XML Output:</strong>
+        <strong>XML output:</strong>
         <div class="code-block">
-                <pre>&lt;employee&gt;
-  &lt;name&gt;Rahul&lt;/name&gt;
-  &lt;age&gt;28&lt;/age&gt;
-  &lt;skills&gt;JavaScript&lt;/skills&gt;
-  &lt;skills&gt;Python&lt;/skills&gt;
-&lt;/employee&gt;</pre>
+                <pre>&lt;?xml version='1.0' encoding='UTF-8'?&gt;
+&lt;root&gt;
+  &lt;employee&gt;
+    &lt;name&gt;Rahul&lt;/name&gt;
+    &lt;age&gt;28&lt;/age&gt;
+    &lt;skills&gt;JavaScript&lt;/skills&gt;
+    &lt;skills&gt;Python&lt;/skills&gt;
+  &lt;/employee&gt;
+&lt;/root&gt;</pre>
         </div>
 
-        <h3>2. XML to JSON Conversion</h3>
+        <h3>2. XML to JSON</h3>
         <p>
-            Converts XML data into JSON format.
-            XML elements are converted into objects, and repeated elements are converted into arrays.
+            Child elements become keys and repeated elements become arrays. The root element itself becomes the outer
+            object, so its name does not appear in the output. All values are strings, because XML text has no types.
         </p>
 
-        <h4>Example:</h4>
-        <strong>XML Input:</strong>
+        <strong>XML input:</strong>
         <div class="code-block">
                 <pre>&lt;person&gt;
   &lt;name&gt;Rahul&lt;/name&gt;
@@ -592,68 +628,43 @@ password = "secure_password"</pre>
 &lt;/person&gt;</pre>
         </div>
 
-        <strong>JSON Output:</strong>
+        <strong>JSON output:</strong>
         <div class="code-block">
                 <pre>{
-  "person": {
-    "name": "Rahul",
-    "age": "28"
-  }
+  "name": "Rahul",
+  "age": "28"
 }</pre>
         </div>
 
-        <h3>3. JSON to YAML Conversion</h3>
+        <h3>3. JSON to YAML</h3>
         <p>
-            Converts JSON data into YAML using a clean and human-friendly syntax.
-            This makes configuration files easier to read and maintain.
-        </p>
-        <h4>Purpose:</h4>
-        <p>
-            Converts JSON into YAML for better readability and simpler configuration management.
+            Objects become indented blocks and arrays become lists with a dash per item. Quotes are only added where
+            YAML needs them. For example, text that looks like a number or a yes/no value keeps its quotes, so it
+            stays text.
         </p>
 
-        <h4>How it Works:</h4>
-        <ul>
-            <li>JSON objects are converted into YAML key-value pairs</li>
-            <li>Arrays are represented using YAML list syntax</li>
-            <li>Indentation is used to define structure</li>
-        </ul>
-        <h4>Example:</h4>
-        <strong>JSON Input:</strong>
+        <strong>JSON input:</strong>
         <div class="code-block">
             <pre>{"name": "Rahul", "age": 28, "skills": ["JS", "Python"]}</pre>
         </div>
 
-        <strong>YAML Output:</strong>
+        <strong>YAML output:</strong>
         <div class="code-block">
                 <pre>name: Rahul
 age: 28
 skills:
-  - JS
-  - Python</pre>
+- JS
+- Python</pre>
         </div>
 
-        <h3>4. JSON to TOML Conversion</h3>
+        <h3>4. JSON to TOML</h3>
         <p>
-            Converts JSON data into the TOML configuration format.
-            This is useful for projects that use TOML-based configuration files.
+            Top-level values become <code>key = value</code> lines, nested objects become <code>[tables]</code>,
+            and arrays of objects become repeated <code>[[tables]]</code>. TOML has no null, so keys with a null
+            value are left out.
         </p>
 
-        <div class="function-card">
-            <h4>Purpose:</h4>
-            <p>
-                Converts JSON into TOML for clean, readable, and strongly typed configuration files.
-            </p>
-
-            <h4>How it Works:</h4>
-            <ul>
-                <li>JSON objects are converted into TOML key-value pairs</li>
-                <li>Nested objects are converted into TOML tables</li>
-                <li>Arrays are preserved in TOML array format</li>
-                <li>Data types are maintained during conversion</li>
-            </ul>
-        <h4>Example:</h4>
-        <strong>JSON Input:</strong>
+        <strong>JSON input:</strong>
         <div class="code-block">
                 <pre>{
   "database": {
@@ -663,68 +674,65 @@ skills:
 }</pre>
         </div>
 
-        <strong>TOML Output:</strong>
+        <strong>TOML output:</strong>
         <div class="code-block">
                 <pre>[database]
 server = "localhost"
 port = 5432</pre>
         </div>
-        </div>
 
-        <h3>5. XML to YAML Conversion</h3>
+        <h3>5. XML to YAML</h3>
         <p>
-            Converts XML data into YAML format, making it easier to read and understand.
+            Works like XML to JSON: repeated elements become a list and the root element becomes the top level.
         </p>
 
-        <div class="function-card">
-            <h4>Purpose:</h4>
-            <p>
-                Converts XML into YAML for better readability and cleaner configuration files.
-            </p>
-
-            <h4>How it Works:</h4>
-            <ul>
-                <li>XML elements are converted into YAML key-value pairs</li>
-                <li>Nested XML elements are represented using indentation</li>
-                <li>Repeated XML elements are converted into YAML lists</li>
-                <li>Attributes are mapped as key-value entries</li>
-            </ul>
-
-            <h4>Example:</h4>
-            <p><strong>XML Input:</strong></p>
-            <pre>
-&lt;user&gt;
+        <strong>XML input:</strong>
+        <div class="code-block">
+                <pre>&lt;user&gt;
   &lt;name&gt;Keshav&lt;/name&gt;
   &lt;skills&gt;Java&lt;/skills&gt;
   &lt;skills&gt;Spring&lt;/skills&gt;
-&lt;/user&gt;
-    </pre>
-
-            <p><strong>YAML Output:</strong></p>
-            <pre>
-user:
-  name: Keshav
-  skills:
-    - Java
-    - Spring
-    </pre>
+&lt;/user&gt;</pre>
         </div>
 
+        <strong>YAML output:</strong>
+        <div class="code-block">
+                <pre>name: Keshav
+skills:
+- Java
+- Spring</pre>
+        </div>
 
-        <h3>6. XML to TOML Conversion</h3>
+        <h3>6. XML to TOML</h3>
         <p>
-            Converts XML configuration into TOML format for modern build tools.
+            Useful when moving settings from an older XML config to a TOML file. Nested elements become tables.
+            Values come out as strings, again because XML text has no types, so change <code>"5432"</code> to
+            <code>5432</code> by hand where a number is expected.
         </p>
 
-        <div class="function-card">
-            <h4>Conversion Benefits:</h4>
-            <ul>
-                <li>Enables data exchange between different systems</li>
-                <li>Migrates configuration from legacy XML to modern TOML format</li>
-                <li>Improves compatibility with modern tools</li>
-                <li>Enhances human readability of configuration files</li>
-            </ul>
+        <strong>XML input:</strong>
+        <div class="code-block">
+                <pre>&lt;config&gt;
+  &lt;database&gt;
+    &lt;server&gt;localhost&lt;/server&gt;
+    &lt;port&gt;5432&lt;/port&gt;
+  &lt;/database&gt;
+&lt;/config&gt;</pre>
         </div>
+
+        <strong>TOML output:</strong>
+        <div class="code-block">
+                <pre>[database]
+server = "localhost"
+port = "5432"</pre>
+        </div>
+
+        <h3>Other conversions</h3>
+        <ul>
+            <li><a href="/csv-converter">CSV to JSON, XML or SQL</a>: the first row becomes the field names.</li>
+            <li><a href="/parser">JSON or XML to CSV</a>: nested objects are flattened into columns like <code>address.city</code>.</li>
+            <li><a href="/yaml-converter">Properties to YAML and back</a>: for Spring Boot configuration files.</li>
+        </ul>
 
         <span class="tag">Transform</span>
         <span class="tag">Convert</span>
@@ -741,7 +749,7 @@ user:
             <li>Always use double quotes for strings</li>
             <li>No trailing commas allowed</li>
             <li>Use consistent indentation (2 or 4 spaces)</li>
-            <li>Validate JSON using online validators</li>
+            <li>Validate before you commit or send, for example with the <a href="/json-parser">JSON formatter</a></li>
         </ul>
 
         <h3>XML Best Practices:</h3>
@@ -773,5 +781,5 @@ user:
 
 <div id="footer"></div>
 
-    <script src="/js/layout-loader.js"></script>
+    <script src="/js/layout-loader.js?v=4"></script>
     <script src="/js/learning.js"></script>

@@ -1,13 +1,12 @@
 <header class="app-header">
-    <link rel="stylesheet" href="/css/header.css">
-    <div class="header-left">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <svg
+    <link rel="stylesheet" href="/css/header.css?v=4">
+    <a class="brand" href="/" aria-label="JSON XML Editor home">
+        <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 400 400"
-                    width="36"
-                    height="36"
-                    aria-label="JSON XML Editor logo"
+                    width="32"
+                    height="32"
+                    aria-hidden="true" focusable="false"
             >
                 <defs>
                     <!-- Bold primary gradient -->
@@ -100,23 +99,17 @@
                 <circle cx="200" cy="105" r="6" fill="#38bdf8"/>
                 <circle cx="200" cy="295" r="6" fill="#22c55e"/>
             </svg>
+        <span class="brand-name">JSON XML Editor</span>
+    </a>
 
-
-            <h4 style="margin: 0;">JSON XML Editor</h4>
-        </div>
-    </div>
-
-
-    <nav class="nav-links">
+    <nav class="nav-links" aria-label="Main">
         <a href="/">Home</a>
-        <a href="/parser">Parser</a>
+        <a href="/parser">Formatter</a>
         <a href="/mapper">Object Mapper</a>
-        <a href="/learnings">Learnings</a>
-        <a href="/contact">Contact</a>
         <a href="/share">Share Drop</a>
-<!--        <a href="/blogs">Blogs</a>-->
-<!--        <a href="/about">TOML</a>-->
+        <a href="/learnings">Learn</a>
+        <a href="/contact">Contact</a>
     </nav>
 
-    <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
 </header>

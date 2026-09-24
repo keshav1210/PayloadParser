@@ -1,40 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online JSON to TOML and XML to TOML converter tool for developers.">
-    <meta name="keywords" content="toml converter, json to toml, xml to toml, toml formatter, toml parser, developer tool">
-    <meta name="author" content="JSON XML EDITOR">
-    <meta property="og:title" content="TOML Converter">
-    <meta property="og:description" content="Free online JSON to TOML and XML to TOML converter tool for developers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com/toml-converter">
-    <title>TOML Converter</title>
-    <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-    <link rel="stylesheet" href="/css/sharemodel.css">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
-    <script>
-        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-LPTNYNJB94');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON to TOML Converter – Convert JSON or XML to TOML</title>
+  <meta name="description" content="Convert JSON or XML to TOML for Cargo.toml, pyproject.toml and other config files. Nested objects become tables and arrays of objects become [[tables]].">
+  <link rel="canonical" href="https://jsonxmleditor.com/toml-converter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON to TOML Converter">
+  <meta property="og:description" content="Convert JSON or XML to TOML for Cargo.toml, pyproject.toml and other config files. Nested objects become tables and arrays of objects become [[tables]].">
+  <meta property="og:url" content="https://jsonxmleditor.com/toml-converter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="JSON to TOML Converter">
+  <meta name="twitter:description" content="Convert JSON or XML to TOML for Cargo.toml, pyproject.toml and other config files. Nested objects become tables and arrays of objects become [[tables]].">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON to TOML Converter",
+      "url": "https://jsonxmleditor.com/toml-converter",
+      "description": "Convert JSON or XML to TOML for Cargo.toml, pyproject.toml and other config files. Nested objects become tables and arrays of objects become [[tables]].",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "TOML Converter",
+          "item": "https://jsonxmleditor.com/toml-converter"
         }
-    </script>
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why is one of my fields missing after conversion?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It was most likely null. TOML has no null value, so those keys are skipped. If the target tool needs the key, give it an empty string or a default value in the source."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do I get an error about a top-level array?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A TOML document is always a table of keys, so the input must be a JSON object. Wrap the array in an object, for example {\"items\": [ … ]}, and it becomes [[items]] blocks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert TOML back to JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not on this page at the moment. The converter works from JSON or XML to TOML."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
 </head>
 <body>
 
 <div id="header"></div>
 
+<section class="tool-intro">
+  <h1>JSON to TOML Converter</h1>
+  <p>Paste JSON or XML and turn it into TOML, the config format used by Rust's Cargo, Python's pyproject.toml and many other tools.</p>
+</section>
+
+
+
+
 <div class="controls">
-    <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-    <button class="btn" onclick="minifyCode()">Minify</button>
-    <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-    <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
-    <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
-    <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-    <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+    <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+    <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+    <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+    <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
 </div>
 
 <div class="container" id="mainContainer">
@@ -96,18 +187,91 @@
 
 </div>
 
-<div class="content-section">
-    <h2>What is a TOML Converter?</h2>
-    <p>TOML Converter is a simple, browser-based tool built for developers who work with JSON, XML, and TOML data. When you're working with configuration files or APIs, data often comes in JSON or XML format. This tool helps you easily convert that data into clean, readable TOML without any hassle.</p>
+<article class="content-section">
+<h2>How to convert JSON to TOML</h2>
+<ol>
+  <li>Paste JSON or XML into the editor. The top level has to be an object, not an array.</li>
+  <li>Click <strong>Format</strong> first if you want to check that the input is valid.</li>
+  <li>Click <strong>Convert to TOML</strong>. The result appears on the right.</li>
+  <li>Copy it into your <code>.toml</code> file or download it.</li>
+</ol>
 
-    <h6>How it Helps You</h6>
-    <div class="feature-box">
-        <p><strong>Easy Format Conversion:</strong> Paste your JSON or XML data and the tool instantly converts it to TOML. The output is well-structured, human-readable, and ready to drop into your configuration files.</p>
-    </div>
-    <div class="feature-box">
-        <p><strong>TOML for Modern Config:</strong> TOML is the preferred config format for Rust, Go, and many modern tools. Convert your existing JSON or XML configs to TOML in one click.</p>
-    </div>
+<h2>How JSON maps to TOML</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>JSON</th><th>TOML</th></tr></thead>
+  <tbody>
+    <tr><td><code>"title": "Demo"</code></td><td><code>title = "Demo"</code></td></tr>
+    <tr><td><code>"ports": [80, 443]</code></td><td><code>ports = [80, 443]</code></td></tr>
+    <tr><td><code>"owner": { … }</code></td><td>a <code>[owner]</code> table</td></tr>
+    <tr><td><code>"servers": [{ … }, { … }]</code></td><td>one <code>[[servers]]</code> block per item</td></tr>
+    <tr><td><code>null</code></td><td>left out, because TOML has no null</td></tr>
+  </tbody>
+</table>
 </div>
+
+<h2>Example</h2>
+<pre><code>{
+  "title": "Demo",
+  "ports": [80, 443],
+  "owner": { "name": "Ada" },
+  "servers": [
+    { "ip": "10.0.0.1", "role": { "primary": true } },
+    { "ip": "10.0.0.2" }
+  ]
+}</code></pre>
+<p>becomes</p>
+<pre><code>title = "Demo"
+ports = [80, 443]
+
+[owner]
+name = "Ada"
+
+[[servers]]
+ip = "10.0.0.1"
+
+[servers.role]
+primary = true
+
+[[servers]]
+ip = "10.0.0.2"</code></pre>
+<p>Plain values always come before any table, because in TOML a key belongs to the last table heading above it. Keys with spaces or other special characters are wrapped in quotes, for example <code>"first name" = "Ada"</code>.</p>
+
+<h2>Where you'll meet TOML</h2>
+<ul>
+  <li><code>Cargo.toml</code> in every Rust project</li>
+  <li><code>pyproject.toml</code> for Python packaging and tools like Black, Ruff and pytest</li>
+  <li>Static site generators such as Hugo, and deployment config such as <code>netlify.toml</code></li>
+  <li>Many command-line tools that want a config file people can edit by hand</li>
+</ul>
+<p>TOML was designed so that one file maps to one clear structure, with none of YAML's indentation surprises. That is why it is popular for configuration that people maintain by hand.</p>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>Why is one of my fields missing after conversion?</summary>
+    <p>It was most likely null. TOML has no null value, so those keys are skipped. If the target tool needs the key, give it an empty string or a default value in the source.</p>
+  </details>
+  <details>
+    <summary>Why do I get an error about a top-level array?</summary>
+    <p>A TOML document is always a table of keys, so the input must be a JSON object. Wrap the array in an object, for example {&quot;items&quot;: [ … ]}, and it becomes [[items]] blocks.</p>
+  </details>
+  <details>
+    <summary>Can I convert TOML back to JSON?</summary>
+    <p>Not on this page at the moment. The converter works from JSON or XML to TOML.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Converter</strong>JSON to YAML, and properties files to YAML and back.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+</ul>
+</article>
 
 <!-- ════════════════════════════════════════════════════════
      ★  SHARE MODAL
@@ -200,7 +364,7 @@
 <br>
 <div id="footer"></div>
 
-<script src="/js/layout-loader.js"></script>
-<script src="/js/jsonxmlformatter.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/jsonxmlformatter.js?v=4"></script>
 </body>
 </html>

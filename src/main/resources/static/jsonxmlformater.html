@@ -3,18 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JSON / XML Editor</title>
-    <link rel="canonical" href="https://jsonxmleditor.com/jsonxmlformater.html" />
-  <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-  <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter,xml formatter,payload parser,json parser,xml parser,object mapper,json xml editor,
-    json editor,xml editor,json convertor,beautifier,online json editor,validator,lint,format,share tool,share json,sample json">
-  <meta name="author" content="JSON XML EDITOR">
-  <meta property="og:title" content="JSON / XML EDITOR">
-  <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://jsonxmleditor.com">
+  <title>JSON &amp; XML Formatter, Validator &amp; Converter Online</title>
+  <meta name="description" content="Format, validate and minify JSON or XML in your browser. Errors point to the exact line and column, and you can convert to YAML, TOML, CSV or SQL.">
+  <link rel="canonical" href="https://jsonxmleditor.com/parser">
   <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON &amp; XML Formatter, Validator and Converter">
+  <meta property="og:description" content="Format, validate and minify JSON or XML in your browser. Errors point to the exact line and column, and you can convert to YAML, TOML, CSV or SQL.">
+  <meta property="og:url" content="https://jsonxmleditor.com/parser">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="JSON &amp; XML Formatter, Validator and Converter">
+  <meta name="twitter:description" content="Format, validate and minify JSON or XML in your browser. Errors point to the exact line and column, and you can convert to YAML, TOML, CSV or SQL.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/sql-modal.css?v=4">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON & XML Formatter, Validator and Converter",
+      "url": "https://jsonxmleditor.com/parser",
+      "description": "Format, validate and minify JSON or XML in your browser. Errors point to the exact line and column, and you can convert to YAML, TOML, CSV or SQL.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "JSON & XML Formatter",
+          "item": "https://jsonxmleditor.com/parser"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is this JSON formatter free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. There is no account and no sign-up. To keep the service fast for everyone, very rapid repeated use of the convert and repair buttons is briefly rate-limited."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How large a file can I format?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Files of several megabytes work. Above about 20,000 lines the editor switches off code folding to stay responsive, and the tree view opens only the first two levels until you expand more."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do I get \"Property names must be wrapped in double quotes\"?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "JSON only accepts double-quoted keys. {name: \"x\"} and {'name': \"x\"} are fine in JavaScript but not in JSON. Click Repair to add the missing quotes, or write {\"name\": \"x\"}."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I format JSON that is stored inside a string?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. If the whole input is a JSON string that itself contains JSON, which is common in log files and message queues, Format unwraps it and shows the inner document."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work on a phone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. On small screens the editor and the viewer stack on top of each other, and each one scrolls on its own."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
   <script>
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
@@ -24,24 +115,36 @@
       gtag('config', 'G-LPTNYNJB94');
     }
   </script>
-  <title>JSON/XML Editor</title>
-  <link rel="stylesheet" href="/css/jsonxmlformatter.css">
-    <link rel="stylesheet" href="/css/sql-modal.css">
 </head>
 <body>
 
 <div id="header"></div>
 
+<section class="tool-intro">
+  <h1>JSON &amp; XML Formatter, Validator and Converter</h1>
+  <p>Paste JSON or XML into the editor. It is checked as you type, errors point to the exact line, and the right panel shows the result as a tree or as formatted text.</p>
+</section>
+
+
+
+
 <!-- Top Controls -->
 <div class="controls">
-  <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-  <button class="btn" onclick="minifyCode()">Minify</button>
-  <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-  <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
-  <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+  <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+  <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+  <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+  <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+  <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
   <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
-  <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-  <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+  <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+  <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
 </div>
 
 <!-- Main Container -->
@@ -52,13 +155,13 @@
     <div class="panel-header" id="leftPanelHeader">
       <span>Editor (Formatted View)</span>
       <div class="panel-header-controls" id="leftPanelControls">
-        <button class="btn" onclick="formatCode(false,null,null)">Format</button>
-        <button class="btn" onclick="minifyCode()">Minify</button>
-        <button class="btn" onclick="formatData('REPAIR')">Repair</button>
-        <button class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
-        <button class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
-        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
+        <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+        <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+        <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+        <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+        <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+        <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
         <select id="formatType">
           <option value="json">JSON</option>
           <option value="xml">XML</option>
@@ -87,12 +190,12 @@
       <option value="xml">XML</option>
     </select>
       <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
-    <button class="btn" style="align-items: baseline" onclick="formatData('JSON_TO_XML')">Convert To XML</button>
-    <button class="btn" onclick="formatData('XML_TO_JSON')">Convert To JSON</button>
-    <button class="btn" onclick="formatData('TOML')">Convert TO TOML</button>
-    <button class="btn" onclick="formatData('YAML')">Convert TO YAML</button>
-      <button class="btn" onclick="formatData('CSV')">Convert TO CSV</button>
-      <button class="btn" id="convertToSqlBtn">Convert TO SQL</button>
+    <button data-for="json" class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
+    <button data-for="xml" class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
+    <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
+    <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+      <button class="btn" onclick="formatData('CSV')">Convert to CSV</button>
+      <button class="btn" id="convertToSqlBtn">Convert to SQL</button>
   </div>
 
   <!-- Right Panel -->
@@ -104,8 +207,8 @@
         <option value="formated">Text View</option>
       </select>
       <div class="panel-header-controls" id="rightPanelControls">
-        <button class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
-        <button class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
+        <button data-for="json" class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
+        <button data-for="xml" class="btn" onclick="formatData('XML_TO_JSON')">Convert to JSON</button>
         <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
         <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
         <button class="btn" onclick="formatData('CSV')">Convert to CSV</button>
@@ -136,27 +239,96 @@
 
 </div>
 
-<!-- SEO Content -->
-<div class="content-section">
-  <h2>What is JSON XML Editor?</h2>
-  <p>JSON XML Editor is a simple, browser-based tool built for developers who deal with JSON and XML data daily. When you're working with APIs, the data you get back is often just a huge blob of text that's hard to read or debug. Our tool helps you clean that up, visualize it, and even fix it when it's broken.</p>
+<article class="content-section">
+<h2>How to use the formatter</h2>
+<ol>
+  <li>Paste your data into the left editor, drop a file onto it, or click <strong>Upload</strong>. The JSON/XML switch changes by itself when the text starts with <code>{</code>, <code>[</code> or <code>&lt;</code>.</li>
+  <li>Click <strong>Format</strong> or press <code>Ctrl</code> + <code>Enter</code>. The editor is re-indented and the right panel shows a tree you can open and close.</li>
+  <li>If something is wrong, the status bar tells you the line and column, and that line turns red in the editor.</li>
+  <li>Use <strong>Copy</strong> or <strong>Download</strong> above the right panel to take the result with you.</li>
+</ol>
 
-  <h6>How it Helps You</h6>
-  <div class="feature-box">
-    <p><strong>No More "Ugly" Code:</strong> Paste your messy JSON or XML and the tool instantly beautifies it with proper spacing and syntax color-coding. Keys, strings, numbers, and XML tags are all visually distinct.</p>
-  </div>
-  <div class="feature-box">
-    <p><strong>Interactive Tree View:</strong> On the right side, your data becomes an expandable/collapsible tree — a lifesaver for deeply nested files with thousands of lines.</p>
-  </div>
-  <div class="feature-box">
-    <p><strong>Auto-Repair for Human Errors:</strong> Forgot a comma or used single quotes? Hit <strong>Repair</strong> and the tool fixes common syntax mistakes automatically.</p>
-  </div>
-  <div class="feature-box">
-    <p><strong>Minify for Speed:</strong> Strip all extra whitespace to make your data lightweight and production-ready in one click.</p>
-  </div>
+<h2>What each button does</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Button</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td>Format</td><td>Checks the syntax and re-indents everything. Pick 2 spaces, 4 spaces or tabs in the Indent menu; the choice is remembered next time.</td></tr>
+    <tr><td>Minify</td><td>Removes every space and line break that isn't part of a value, so the whole document fits on one line. The status bar shows how many bytes you saved.</td></tr>
+    <tr><td>Repair</td><td>Fixes JSON that won't parse because of unquoted keys, a trailing comma, <code>//</code> comments or a missing closing bracket.</td></tr>
+    <tr><td>Sort JSON / Sort XML</td><td>Puts keys (or elements) in alphabetical order. Handy when you want to compare two versions of the same response.</td></tr>
+    <tr><td>Convert to …</td><td>Produces XML, JSON, YAML, TOML, CSV or SQL. The result shows on the right and your original stays untouched on the left.</td></tr>
+    <tr><td>Share</td><td>Uploads the text and gives you a temporary link. Tick "one-time link" and it is deleted after the first person opens it.</td></tr>
+  </tbody>
+</table>
 </div>
 
-<br>
+<h2>Reading an error message</h2>
+<p>Say you paste this:</p>
+<pre><code>{
+  "id": 7,
+  "tags": ["api", "v2",],
+}</code></pre>
+<p>The status bar will read <code>Invalid JSON — line 3, column 23: Trailing comma is not allowed before ']'</code>. Column 23 is the comma itself, so you can go straight to it. The messages name the actual mistake, such as a missing comma between two properties, a key without quotes, or a string that never ends, instead of a bare "unexpected token".</p>
+
+<h2>Your numbers stay exactly as you typed them</h2>
+<p>Many online formatters run JSON through JavaScript's <code>JSON.parse</code> and print it back out. That quietly changes data: <code>12345678901234567890</code> turns into <code>12345678901234567000</code>, <code>1.0</code> turns into <code>1</code>, and a key that appears twice loses one of its values. This formatter reads the text itself, so large IDs, decimal places, escape sequences like <code>\u00e9</code> and repeated keys come out the way they went in. Only the whitespace changes.</p>
+
+<h2>JSON or XML?</h2>
+<p>Both describe nested data, but they do it differently:</p>
+<ul>
+  <li>JSON has real lists (<code>[1, 2, 3]</code>). XML shows a list by repeating an element: <code>&lt;item&gt;</code>, <code>&lt;item&gt;</code>, <code>&lt;item&gt;</code>.</li>
+  <li>JSON values have types: numbers, <code>true</code>/<code>false</code> and <code>null</code>. In XML everything is text unless a schema says otherwise.</li>
+  <li>XML has attributes (<code>id="7"</code>), comments and namespaces. JSON has none of these.</li>
+</ul>
+<p>Most web APIs today send JSON. XML is still common in SOAP services, RSS and Atom feeds, Maven <code>pom.xml</code> files, Android layouts and a lot of banking and government systems.</p>
+
+<h2>What happens to your data</h2>
+<p>Formatting, minifying, validation, the tree view and folding run in your browser. For those, your text isn't sent anywhere. Repair, Sort and the Convert buttons send the editor content to our server, which does the work and sends the result back. Share keeps the text on the server for a short time so the link works. The <a href="/privacy">privacy page</a> has the details.</p>
+
+<h2>Keyboard shortcuts</h2>
+<ul>
+  <li><code>Ctrl</code> + <code>Enter</code>: format</li>
+  <li><code>Tab</code>: indent by two spaces instead of leaving the editor</li>
+  <li><code>Ctrl</code> + <code>A</code>: select everything, including folded blocks</li>
+  <li><code>Esc</code>: leave full-screen mode</li>
+</ul>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>Is this JSON formatter free?</summary>
+    <p>Yes. There is no account and no sign-up. To keep the service fast for everyone, very rapid repeated use of the convert and repair buttons is briefly rate-limited.</p>
+  </details>
+  <details>
+    <summary>How large a file can I format?</summary>
+    <p>Files of several megabytes work. Above about 20,000 lines the editor switches off code folding to stay responsive, and the tree view opens only the first two levels until you expand more.</p>
+  </details>
+  <details>
+    <summary>Why do I get &quot;Property names must be wrapped in double quotes&quot;?</summary>
+    <p>JSON only accepts double-quoted keys. {name: &quot;x&quot;} and {'name': &quot;x&quot;} are fine in JavaScript but not in JSON. Click Repair to add the missing quotes, or write {&quot;name&quot;: &quot;x&quot;}.</p>
+  </details>
+  <details>
+    <summary>Can I format JSON that is stored inside a string?</summary>
+    <p>Yes. If the whole input is a JSON string that itself contains JSON, which is common in log files and message queues, Format unwraps it and shows the inner document.</p>
+  </details>
+  <details>
+    <summary>Does it work on a phone?</summary>
+    <p>Yes. On small screens the editor and the viewer stack on top of each other, and each one scrolls on its own.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Converter</strong>JSON to YAML, and properties files to YAML and back.</a></li>
+  <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+</ul>
+</article>
+
 <div id="footer"></div>
 
 <!-- Convert to SQL Modal -->
@@ -302,7 +474,7 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js"></script>
-<script src="/js/jsonxmlformatter.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/jsonxmlformatter.js?v=4"></script>
 </body>
 </html>

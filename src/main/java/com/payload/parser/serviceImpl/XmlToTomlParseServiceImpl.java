@@ -37,18 +37,26 @@ public class XmlToTomlParseServiceImpl implements ParserService {
         return "XML_TO_TOML";
     }
 
+    // Keys inside a [table] are relative to it; only table headers use the full dotted path.
+    // Plain values (and arrays of values) are written before any sub-table so they stay in this table.
     private static void writeObject(StringBuilder toml, JsonNode node, String path) {
-        // 1. write primitives first
+        // 1. write primitives and arrays of primitives first
         node.fields().forEachRemaining(entry -> {
             JsonNode val = entry.getValue();
+            String key = tomlKey(entry.getKey());
             if (val.isValueNode()) {
-                writePrimitive(toml, path, entry.getKey(), val);
+                writePrimitive(toml, key, val);
+            } else if (val.isArray() && !val.isEmpty() && val.get(0).isValueNode()) {
+                toml.append(key)
+                        .append(" = ")
+                        .append(formatArray(val))
+                        .append("\n");
             }
         });
 
-        // 2. write objects and arrays
+        // 2. write tables and arrays of tables
         node.fields().forEachRemaining(entry -> {
-            String key = entry.getKey();
+            String key = tomlKey(entry.getKey());
             JsonNode val = entry.getValue();
             String newPath = path.isEmpty() ? key : path + "." + key;
 
@@ -56,27 +64,20 @@ public class XmlToTomlParseServiceImpl implements ParserService {
                 toml.append("\n[").append(newPath).append("]\n");
                 writeObject(toml, val, newPath);
             }
-            else if (val.isArray()) {
+            else if (val.isArray() && !val.isEmpty() && !val.get(0).isValueNode()) {
                 writeArray(toml, val, newPath);
             }
         });
     }
 
+    private static String tomlKey(String key) {
+        return key.matches("[A-Za-z0-9_-]+") ? key : "\"" + escape(key) + "\"";
+    }
+
     /* ===================== ARRAYS ===================== */
 
     private static void writeArray(StringBuilder toml, JsonNode array, String path) {
-        if (array.isEmpty()) return;
-
         JsonNode first = array.get(0);
-
-        // array of primitives
-        if (first.isValueNode()) {
-            toml.append(path)
-                    .append(" = ")
-                    .append(formatArray(array))
-                    .append("\n");
-            return;
-        }
 
         // array of objects → [[table]]
         if (first.isObject()) {
@@ -97,10 +98,10 @@ public class XmlToTomlParseServiceImpl implements ParserService {
 
     /* ===================== PRIMITIVES ===================== */
 
-    private static void writePrimitive(StringBuilder toml, String path, String key, JsonNode value) {
+    private static void writePrimitive(StringBuilder toml, String key, JsonNode value) {
         if (value.isNull()) return;
 
-        toml.append(path.isEmpty() ? key : path + "." + key)
+        toml.append(key)
                 .append(" = ")
                 .append(formatValue(value))
                 .append("\n");

@@ -16,7 +16,9 @@ public class XmlToYamlParseServiceImpl implements ParserService {
 
     private static final YAMLMapper yamlMapper = new YAMLMapper()
             .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
-            .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
+            .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES)
+            // keep strings like "55000" or "1.10" as strings instead of turning them into numbers
+            .enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
 
     @Override
     public Response parse(Request request) {

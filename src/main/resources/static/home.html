@@ -1,182 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta name="keywords" content="json formatter,xml formatter,payload parser,json parser,xml parser,object mapper,json xml editor,
-        json editor,xml editor,json convertor,beautifier,online json editor,validator,lint,format,share tool,share json,sample json">
-    <meta name="author" content="JSON XML EDITOR">
-
-    <!-- Open Graph (For WhatsApp, Facebook Preview) -->
-    <meta property="og:title" content="Home">
-    <meta property="og:description" content="Free online JSON and XML editor, formatter and validator tool for developers.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jsonxmleditor.com">
-    <meta name="robots" content="index, follow">
-
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <title>JSON/XML Editor - Home</title>
-    <link rel="stylesheet" href="/css/home.css">
-    <link rel="canonical" href="https://jsonxmleditor.com/" />
-
-    <!-- ✅ FAVICONS - Add these -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="icon" href="/favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
-    <script>
-        if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"){
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-
-                    gtag('config', 'G-LPTNYNJB94');
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON XML Editor – Format, Validate and Convert JSON &amp; XML</title>
+  <meta name="description" content="Free online tools to format, validate and minify JSON and XML, and convert between JSON, XML, YAML, TOML, CSV and SQL. No sign-up needed.">
+  <link rel="canonical" href="https://jsonxmleditor.com/">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON XML Editor – Format, Validate and Convert JSON & XML">
+  <meta property="og:description" content="Free online tools to format, validate and minify JSON and XML, and convert between JSON, XML, YAML, TOML, CSV and SQL.">
+  <meta property="og:url" content="https://jsonxmleditor.com/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "JSON XML Editor",
+  "url": "https://jsonxmleditor.com/",
+  "description": "Free online tools to format, validate and convert JSON, XML, YAML, TOML and CSV."
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
 </head>
 <body>
 <div id="header"></div>
 
-<div class="hero">
-    <h1>Powerful Data Parsing & Conversion</h1>
-    <p>Transform, format, and convert your JSON, XML, YAML, and TOML data with ease. Professional tools for developers.</p>
-</div>
-
-<div class="cards-container">
-    <div class="card" onclick="navigateTo('json-parser')">
-        <div class="card-icon">{ }</div>
-        <h3>JSON Parser</h3>
-        <p>Format, minify, validate and repair JSON data. Includes tree view and syntax highlighting.</p>
+<main class="page">
+  <section class="page-hero">
+    <span class="eyebrow">Free · No sign-up</span>
+    <h1>Format, validate and convert<br>JSON and XML</h1>
+    <p>Paste your data, see exactly where it breaks, and turn it into YAML, TOML, CSV or SQL when you need to.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/parser">Open the formatter</a>
+      <a class="btn" href="/json-parser">JSON only</a>
+      <a class="btn" href="/xml-parser">XML only</a>
     </div>
+  </section>
 
-    <div class="card" onclick="navigateTo('xml-parser')">
-        <div class="card-icon">&lt;/&gt;</div>
-        <h3>XML Parser</h3>
-        <p>Parse and format XML documents with validation. Clean structure visualization.</p>
-    </div>
+  <section class="section" aria-labelledby="tools-title">
+    <h2 class="section-title" id="tools-title">Tools</h2>
+    <p class="section-lead">Each tool opens straight into an editor. Nothing to install and no account.</p>
 
-    <div class="card" onclick="navigateTo('json-to-xml')">
-        <div class="card-icon">🔄</div>
-        <h3>JSON to XML</h3>
-        <p>Convert JSON data to XML format instantly. Preserve data structure and hierarchy.</p>
-    </div>
-
-    <div class="card" onclick="navigateTo('xml-to-json')">
-        <div class="card-icon">↔️</div>
-        <h3>XML to JSON</h3>
-        <p>Transform XML documents into JSON format. Fast and accurate conversion.</p>
-    </div>
-
-    <div class="card" onclick="navigateTo('yaml-converter')">
-        <div class="card-icon">📄</div>
-        <h3>YAML Converter</h3>
-        <p>Convert between JSON/XML and YAML format. Perfect for config files.</p>
-    </div>
-
-    <div class="card" onclick="navigateTo('toml-converter')">
-        <div class="card-icon">⚙️</div>
-        <h3>TOML Converter</h3>
-        <p>Convert JSON/XML to TOML format and vice versa. Configuration made simple.</p>
-    </div>
-
-    <div class="card" onclick="navigateTo('csv-converter')">
-        <div class="card-icon">📊</div>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/parser">
+        <span class="icon">{&lt;&gt;}</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Both formats in one editor, with a tree view and conversions to every other format.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/json-parser">
+        <span class="icon">{ }</span>
+        <h3>JSON Formatter</h3>
+        <p>Pretty-print, minify and repair JSON. Errors show the exact line and column.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/xml-parser">
+        <span class="icon">&lt;/&gt;</span>
+        <h3>XML Formatter</h3>
+        <p>Indent XML, check that it is well-formed and convert it to JSON.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
         <h3>CSV Converter</h3>
-        <p>Convert CSV to JSON/XML format and vice versa. Configuration made simple.</p>
+        <p>Turn a CSV file into JSON, XML or SQL INSERT statements.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/yaml-converter">
+        <span class="icon">yml</span>
+        <h3>YAML Converter</h3>
+        <p>JSON to YAML, and Spring Boot application.properties to YAML and back.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/toml-converter">
+        <span class="icon">[ ]</span>
+        <h3>TOML Converter</h3>
+        <p>Convert JSON or XML into TOML for Cargo.toml, pyproject.toml and similar files.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/mapper">
+        <span class="icon">cls</span>
+        <h3>Object Mapper</h3>
+        <p>Generate Java, Python, JavaScript or TypeScript classes from a JSON sample.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/share">
+        <span class="icon">↗</span>
+        <h3>Share Drop</h3>
+        <p>Send text or a file to another device with a short-lived link or key.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/learnings">
+        <span class="icon">?</span>
+        <h3>Learn</h3>
+        <p>Short guides to JSON, XML, YAML and TOML syntax, with examples.</p>
+        <span class="go">Open →</span>
+      </a>
     </div>
-</div>
+  </section>
 
-<section class="features">
-    <h2>Features & Capabilities</h2>
-    <p class="features-subtitle">Everything you need for data transformation and parsing</p>
+  <section class="section" aria-labelledby="why-title">
+    <h2 class="section-title" id="why-title">What makes it useful</h2>
+    <p class="section-lead">The details that save time when you are debugging an API response or a config file.</p>
 
-    <div class="features-grid">
-        <div class="feature-item">
-            <h4>🎨 Format & Beautify</h4>
-            <p>Automatically format and indent your JSON, XML, and other data structures for better readability.</p>
-        </div>
-
-        <div class="feature-item">
-            <h4>🔍 Validate & Repair</h4>
-            <p>Detect syntax errors and fix common issues in your data files automatically.</p>
-        </div>
-
-        <div class="feature-item">
-            <h4>🌳 Tree View</h4>
-            <p>Visualize complex data structures in an interactive tree format for easy navigation.</p>
-        </div>
-
-        <div class="feature-item">
-            <h4>⚡ Fast Processing</h4>
-            <p>Handle large files efficiently with optimized parsing algorithms and instant results.</p>
-        </div>
-
-        <div class="feature-item">
-            <h4>🔄 Multi-Format</h4>
-            <p>Support for JSON, XML, YAML, and TOML with seamless conversion between formats.</p>
-        </div>
-
-        <div class="feature-item">
-            <h4>💾 Sort & Minify</h4>
-            <p>Organize data alphabetically and compress files by removing unnecessary whitespace.</p>
-        </div>
+    <div class="grid grid-3">
+      <div class="card feature">
+        <h3>Errors you can act on</h3>
+        <p>Instead of "unexpected token", you get the line, the column and what is wrong, such as a trailing comma or a key without quotes. The line is highlighted in red.</p>
+      </div>
+      <div class="card feature">
+        <h3>Your data stays exact</h3>
+        <p>Large IDs like 12345678901234567890, decimals like 1.50 and duplicate keys are kept as written. Many formatters quietly change them.</p>
+      </div>
+      <div class="card feature">
+        <h3>Checked as you type</h3>
+        <p>The right panel updates while you edit, so you see the moment the document becomes valid again.</p>
+      </div>
+      <div class="card feature">
+        <h3>Fold and explore</h3>
+        <p>Collapse any object or element, or switch to the tree view, which shows how many items each array holds.</p>
+      </div>
+      <div class="card feature">
+        <h3>Repair broken JSON</h3>
+        <p>One click fixes unquoted keys, trailing commas, comments and missing closing brackets.</p>
+      </div>
+      <div class="card feature">
+        <h3>Works on your phone</h3>
+        <p>The editor and viewer stack vertically on small screens and each scrolls on its own.</p>
+      </div>
     </div>
-</section>
-<section class="seo-content">
-   <h4> A Comprehensive Guide to Modern Data Parsing and Conversion</h4>
-    In the modern era of web development, data is the backbone of every application. Whether you are building a mobile app, a web platform, or a microservice, you are constantly dealing with different data serialization formats like JSON, XML, YAML, and TOML. However, raw data is often minified and difficult to interpret. This is where JSON XML Editor becomes an essential part of your developer toolkit.
+  </section>
 
-    <h4>The Importance of JSON and XML Beautification</h4>
-    When developers fetch data from APIs, the response is usually a single-line string to save bandwidth. While efficient for machines, it is a nightmare for human debugging. Our JSON and XML Parsers allow you to instantly transform this "ugly" code into a structured, color-coded format. By using a Tree View, developers can collapse nested objects and focus only on the data points that matter, significantly reducing debugging time.
-
-    <h4>Smart Data Repair: Beyond Simple Formatting</h4>
-    One of the most frustrating experiences for a developer is a "Syntax Error" due to a missing comma or an unquoted key. Unlike standard formatters, our tool includes a Smart Repair feature. It intelligently identifies common human errors in JSON strings and fixes them on the fly, ensuring your workflow remains uninterrupted.
-
-    <h4>Multi-Format Conversions for Modern Workflows</h4>
-    Different environments require different formats. While JSON is the king of APIs, YAML and TOML are preferred for configuration files due to their readability. Our Universal Converter allows you to seamlessly switch between:
-
-    JSON to XML for legacy system compatibility.
-
-    XML to JSON for easier frontend integration.
-
-    YAML and TOML conversions for DevOps and server-side configurations.
-
-    <h4> Privacy-First</h4> Why Client-Side Processing Matters
-   <p> Your data security is our priority. While basic formatting is done directly in your browser, some advanced features like <strong>Repair</strong> and <strong>Complex Conversions</strong> are processed through our secure servers.</p>
+  <section class="section page-narrow prose" aria-labelledby="about-title" style="margin-left:auto;margin-right:auto;">
+    <h2 id="about-title">Who uses these tools</h2>
+    <p>Mostly developers and testers who deal with data they didn't write: an API response that arrives as one long line, an XML message from a partner system, or a config file that suddenly won't load. Paste it in, and within a second you can see its structure and whether it's valid.</p>
+    <p>A few common situations:</p>
     <ul>
-        <li><strong>No Data Logging:</strong> We do not save or store any of your JSON/XML data.</li>
-        <li><strong>Instant Deletion:</strong> Your data is deleted from our memory the moment processing is finished.</li>
+      <li><strong>Debugging an API.</strong> Copy the response body from your browser's network tab or from Postman and format it to find the field you need.</li>
+      <li><strong>Fixing a config file.</strong> Paste the JSON or YAML that your app refuses to start with. The error message points to the line.</li>
+      <li><strong>Moving data between systems.</strong> Convert XML from an older service into JSON, or a spreadsheet export into SQL inserts.</li>
+      <li><strong>Reviewing changes.</strong> Sort the keys of two versions of a document so a diff shows only what really changed.</li>
     </ul>
-    <h4>Optimizing for Production: Sorting and Minification</h4>
-    Before deploying your code, it is crucial to optimize. Our tool allows you to Sort JSON/XML keys alphabetically for better organization and Minify the final output to reduce file size. This ensures your application loads faster while maintaining a clean codebase.
-</section>
+
+    <h2>What happens to your data</h2>
+    <p>Formatting, minifying, validation and the tree view run in your browser. Repair, sorting and conversions are handled by our server and the result is sent straight back. Share Drop keeps what you share in memory for a short time so the link works. The <a href="/privacy">privacy policy</a> explains the details, including the analytics this site uses.</p>
+  </section>
+</main>
 
 <div id="footer"></div>
-<script>
-    function navigateTo(name){
-        if(name==='xml-parser'){
-            window.location.href = '/xml-parser';
-        }else if(name==='json-parser'){
-            window.location.href = '/json-parser';
-        }else if(name==='json-xml-converter'){
-            window.location.href = '/parser';
-        }else if(name==='xml-json-converter'){
-            window.location.href = '/parser';
-        }else if(name==='toml-converter'){
-            window.location.href = '/toml-converter';
-        }else if(name==='yaml-converter'){
-            window.location.href = '/yaml-converter';
-        }else if(name==='csv-converter'){
-            window.location.href = '/csv-converter';
-        }else{
-            window.location.href = '/parser';
-        }
-
-    }
-</script>
-
-<script src="/js/layout-loader.js"></script>
+<script src="/js/layout-loader.js?v=4"></script>
 </body>
 </html>

@@ -44,17 +44,21 @@ public class JsonToTomlParseServiceImpl implements ParserService {
         return "JSON_TO_TOML";
     }
 
+    // Keys inside a [table] are relative to it; only table headers use the full dotted path.
+    // All plain key/values (including arrays of values) must come before any sub-table,
+    // otherwise TOML assigns them to the last opened table.
     private static void writeObject(StringBuilder toml, JsonNode node, String prefix) {
         Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
 
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> entry = fields.next();
-            String key = entry.getKey();
+            String key = tomlKey(entry.getKey());
             JsonNode value = entry.getValue();
-            String fullKey = prefix.isEmpty() ? key : prefix + "." + key;
 
             if (value.isValueNode()) {
-                writePrimitive(toml, fullKey, value);
+                writePrimitive(toml, key, value);
+            } else if (value.isArray() && !value.isEmpty() && value.get(0).isValueNode()) {
+                writePrimitiveArray(toml, key, value);
             }
         }
 
@@ -62,41 +66,33 @@ public class JsonToTomlParseServiceImpl implements ParserService {
         while (fields.hasNext()) {
             Map.Entry<String, JsonNode> entry = fields.next();
             JsonNode value = entry.getValue();
-            String key = entry.getKey();
+            String key = tomlKey(entry.getKey());
             String fullKey = prefix.isEmpty() ? key : prefix + "." + key;
 
             if (value.isObject()) {
                 toml.append("\n[").append(fullKey).append("]\n");
                 writeObject(toml, value, fullKey);
-            }
-
-            if (value.isArray()) {
-                writeArray(toml, fullKey, value);
+            } else if (value.isArray() && !value.isEmpty() && !value.get(0).isValueNode()) {
+                writeTableArray(toml, fullKey, value);
             }
         }
     }
 
-    private static void writeArray(StringBuilder toml, String key, JsonNode array) {
-        if (array.isEmpty()) return;
+    private static void writeTableArray(StringBuilder toml, String key, JsonNode array) {
+        for (JsonNode item : array) {
+            if (!item.isObject())
+                throw new IllegalArgumentException("Mixed arrays not allowed in TOML: " + key);
 
-        JsonNode first = array.get(0);
+            toml.append("\n[[")
+                    .append(key)
+                    .append("]]\n");
 
-        if (first.isValueNode()) {
-            writePrimitiveArray(toml, key, array);
-        } else if (first.isObject()) {
-            for (JsonNode item : array) {
-                if (!item.isObject())
-                    throw new IllegalArgumentException("Mixed arrays not allowed in TOML: " + key);
-
-                toml.append("\n[[")
-                        .append(key)
-                        .append("]]\n");
-
-                writeObject(toml, item, key);
-            }
-        } else {
-            throw new IllegalArgumentException("Unsupported array type: " + key);
+            writeObject(toml, item, key);
         }
+    }
+
+    private static String tomlKey(String key) {
+        return key.matches("[A-Za-z0-9_-]+") ? key : "\"" + escape(key) + "\"";
     }
 
     private static void writePrimitive(StringBuilder toml, String key, JsonNode value) {
