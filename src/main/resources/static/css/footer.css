@@ -10,7 +10,7 @@
 
 .app-footer .footer-grid {
     display: grid;
-    grid-template-columns: 1.4fr repeat(3, 1fr);
+    grid-template-columns: 1.3fr repeat(4, 1fr);
     gap: 32px;
     max-width: 1120px;
     margin: 0 auto;

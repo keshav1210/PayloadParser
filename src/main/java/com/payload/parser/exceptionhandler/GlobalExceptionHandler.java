@@ -4,7 +4,11 @@ import com.payload.parser.model.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import com.payload.parser.serviceImpl.ShareServiceImpl;
+
+import java.util.Map;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
@@ -36,6 +40,16 @@ public class GlobalExceptionHandler {
             </body>
             </html>
             """;
+
+    // Share Drop uploads above the limit (thrown by Spring's multipart parser or ShareServiceImpl)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, Object>> uploadTooLarge(MaxUploadSizeExceededException ex) {
+        long mb = ShareServiceImpl.MAX_FILE_SIZE / (1024 * 1024);
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(Map.of(
+                        "success", false,
+                        "message", "File is too large. The maximum size is " + mb + " MB."));
+    }
 
     // Unknown URLs must answer 404, not 200, or search engines index them as "soft 404" pages
     @ExceptionHandler(NoResourceFoundException.class)

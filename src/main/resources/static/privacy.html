@@ -20,6 +20,8 @@
       gtag('config', 'G-LPTNYNJB94');
     }
   </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
 </head>
 <body>
 <div id="header"></div>
@@ -37,10 +39,10 @@
 
     <h2>Data you paste into the tools</h2>
     <h3>Handled in your browser</h3>
-    <p>Formatting, minifying, validation, the tree view and code folding run entirely in your browser. For these, your data is not sent to our server.</p>
+    <p>Formatting, minifying, validation, Repair, the tree view and code folding run entirely in your browser. For these, your data is not sent to our server.</p>
 
     <h3>Handled on our server</h3>
-    <p>Repair, Sort and all Convert buttons (to XML, JSON, YAML, TOML, CSV and SQL), as well as the Object Mapper, send the content of the editor to our server. The server processes it in memory, sends the result back and does not write your data to a database, a file or our logs.</p>
+    <p>Sort and all Convert buttons (to XML, JSON, YAML, TOML, CSV and SQL), as well as the Object Mapper, send the content of the editor to our server. The server processes it in memory, sends the result back and does not write your data to a database, a file or our logs.</p>
 
     <h3>Share Drop</h3>
     <p>When you create a share link, the text or file is kept in the server's memory so that the link or key works. It is removed automatically after a short time. If you choose a one-time link, it is removed as soon as it has been opened once. Anyone who has the link or key can open the content while it exists, so don't share secrets this way.</p>
@@ -50,7 +52,7 @@
     <ul>
       <li><strong>CLIENT_ID cookie.</strong> A random identifier that lets us limit how many requests one visitor can make per minute, which keeps the service available for everyone. It contains no personal information and expires after one year.</li>
       <li><strong>Google Analytics cookies.</strong> See the next section.</li>
-      <li><strong>Local storage.</strong> The editor remembers small preferences, such as your chosen indentation, in your browser. Your data itself is never saved there.</li>
+      <li><strong>Local storage.</strong> Your browser remembers your preferences (indentation, light or dark theme) and the last text you had in each editor, so it's still there after a refresh. This stays on your device and is never sent to us. Click <strong>Clear</strong> in the editor to remove the saved text, or clear your browser's site data to remove everything.</li>
     </ul>
 
     <h2>Analytics</h2>
@@ -77,6 +79,6 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/layout-loader.js?v=6"></script>
 </body>
 </html>

@@ -64,6 +64,9 @@ function initEditor() {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
         e.preventDefault();
         selectAllIn(rightCodeEditor);
+      } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'Backslash') {
+        e.preventDefault();
+        jumpToMatch();
       }
     });
   }
@@ -237,6 +240,9 @@ function handleEditorKeydown(e) {
     // Native select-all stops at the last *visible* character, dropping folded lines
     e.preventDefault();
     selectAllIn(codeEditor);
+  } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'Backslash') {
+    e.preventDefault();
+    jumpToMatch();
   } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
     formatCode(false, null, null);
@@ -398,6 +404,8 @@ function extractText(root) {
 }
 
 function setEditorText(text) {
+  editorHook('replace', text);
+  bumpDoc('left');
   const r = renderLines(text, 'plain', 'left');
   codeEditor.innerHTML  = r.code;
   lineNumbers.innerHTML = r.numbers;
@@ -939,7 +947,250 @@ function hasFoldedLines(side) {
   return folds[side].list.some(f => f.folded);
 }
 
+// ══════════════════════════════════════════════════════════════════════════════
+//  Bracket / tag matching
+//  Put the cursor on { } [ ] or inside an XML tag: the tag and its partner are
+//  highlighted (plus both line numbers), in the editor and in the Text View.
+//  Ctrl+Shift+\ jumps to the partner.
+// ══════════════════════════════════════════════════════════════════════════════
+const docVersion = { left: 0, right: 0 };
+const matchCache = { left: null, right: null };
+const HAS_HIGHLIGHT_API = typeof CSS !== 'undefined' && CSS.highlights && typeof Highlight !== 'undefined';
+let fallbackMarked = [];
+let markedLineNums = [];
+
+// Lets editor-tools.js (undo, autosave, find) react to editor changes
+function editorHook(type, arg) {
+  if (typeof EditorTools !== 'undefined') EditorTools.hook(type, arg);
+}
+
+function bumpDoc(side) {
+  docVersion[side]++;
+  editorHook('doc', side);
+}
+
+function matchLang(side) {
+  if (side === 'right') return lastOutput ? lastOutput.lang : null;
+  return formatTypeEl ? formatTypeEl.value : 'json';
+}
+
+// Build (once per document version) the list of matching pairs
+function getMatchIndex(side) {
+  const els = panelEls(side);
+  const lang = matchLang(side);
+  const cached = matchCache[side];
+  if (cached && cached.version === docVersion[side] && cached.lang === lang) return cached;
+
+  const lines = Array.from(els.code.children, c => c.textContent);
+  const index = { version: docVersion[side], lang, lines, pairs: new Map(), tags: [] };
+
+  if (lang === 'json') {
+    const stack = [];
+    lines.forEach((line, li) => {
+      let inStr = false;
+      for (let ci = 0; ci < line.length; ci++) {
+        const ch = line[ci];
+        if (inStr) {
+          if (ch === '\\') ci++;
+          else if (ch === '"') inStr = false;
+          continue;
+        }
+        if (ch === '"') inStr = true;
+        else if (ch === '{' || ch === '[') stack.push({ li, ci, ch });
+        else if (ch === '}' || ch === ']') {
+          const want = ch === '}' ? '{' : '[';
+          const close = { li, ci, len: 1 };
+          if (stack.length && stack[stack.length - 1].ch === want) {
+            const open = stack.pop();
+            const o = { li: open.li, ci: open.ci, len: 1 };
+            index.pairs.set(open.li + ':' + open.ci, { self: o, other: close });
+            index.pairs.set(li + ':' + ci, { self: close, other: o });
+          } else {
+            index.pairs.set(li + ':' + ci, { self: close, other: null });
+          }
+        }
+      }
+    });
+    stack.forEach(open => index.pairs.set(open.li + ':' + open.ci, { self: { li: open.li, ci: open.ci, len: 1 }, other: null }));
+  } else if (lang === 'xml') {
+    const TAG = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[?!][^>]*>|<(\/?)([A-Za-z_:][\w:.\-]*)(?:[^>"']|"[^"]*"|'[^']*')*?(\/?)>/g;
+    const stack = [];
+    lines.forEach((line, li) => {
+      let m;
+      TAG.lastIndex = 0;
+      while ((m = TAG.exec(line))) {
+        if (!m[2]) continue;                         // comment, CDATA, PI, doctype
+        const tag = { li, ci: m.index, len: m[0].length, name: m[2], other: null };
+        if (m[3]) { index.tags.push(tag); continue; }   // self-closing: no partner
+        if (!m[1]) { stack.push(tag); index.tags.push(tag); continue; }
+        let j = stack.length - 1;
+        while (j >= 0 && stack[j].name !== tag.name) j--;
+        if (j >= 0) {
+          const open = stack[j];
+          stack.length = j;
+          open.other = tag;
+          tag.other = open;
+        }
+        index.tags.push(tag);
+      }
+    });
+  }
+
+  matchCache[side] = index;
+  return index;
+}
+
+// Caret → { side, li, col } when it sits inside one of the code panels
+function caretPosition() {
+  const sel = window.getSelection();
+  if (!sel.rangeCount || !sel.isCollapsed) return null;
+  const node = sel.focusNode;
+  for (const side of ['left', 'right']) {
+    const code = panelEls(side).code;
+    if (!code || !code.contains(node) || code === node) continue;
+    let line = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+    while (line && line.parentElement !== code) line = line.parentElement;
+    if (!line || !line.classList.contains('code-line')) return null;
+    const li = Array.prototype.indexOf.call(code.children, line);
+    const r = document.createRange();
+    r.setStart(line, 0);
+    r.setEnd(sel.focusNode, sel.focusOffset);
+    return { side, li, col: r.toString().length };
+  }
+  return null;
+}
+
+function findMatch(pos) {
+  const index = getMatchIndex(pos.side);
+  if (index.lang === 'json') {
+    // bracket just before the caret wins, then the one just after it
+    for (const ci of [pos.col - 1, pos.col]) {
+      const hit = index.pairs.get(pos.li + ':' + ci);
+      if (hit) return { self: hit.self, other: hit.other };
+    }
+  } else if (index.lang === 'xml') {
+    const tag = index.tags.find(t => t.li === pos.li && pos.col > t.ci && pos.col < t.ci + t.len)
+             || index.tags.find(t => t.li === pos.li && (pos.col === t.ci || pos.col === t.ci + t.len));
+    if (tag) {
+      if (!tag.other && /\/>$/.test(index.lines[tag.li].slice(tag.ci, tag.ci + tag.len))) return null;
+      return { self: tag, other: tag.other };
+    }
+  }
+  return null;
+}
+
+// (line, column, length) → DOM Range inside the rendered line
+function textRange(code, li, ci, len) {
+  const line = code.children[li];
+  if (!line) return null;
+  const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  let pos = 0, startSet = false, node;
+  while ((node = walker.nextNode())) {
+    const end = pos + node.nodeValue.length;
+    if (!startSet && ci < end) { range.setStart(node, ci - pos); startSet = true; }
+    if (startSet && ci + len <= end) { range.setEnd(node, ci + len - pos); return range; }
+    pos = end;
+  }
+  return null;
+}
+
+function clearMatchHighlight() {
+  if (HAS_HIGHLIGHT_API) {
+    CSS.highlights.delete('bracket-match');
+    CSS.highlights.delete('bracket-unmatched');
+  }
+  fallbackMarked.forEach(e => e.classList.remove('match-hl', 'match-bad'));
+  fallbackMarked = [];
+  markedLineNums.forEach(e => e.classList.remove('match-line'));
+  markedLineNums = [];
+  document.querySelectorAll('.match-info').forEach(e => e.remove());
+}
+
+function updateMatchHighlight() {
+  clearMatchHighlight();
+  const pos = caretPosition();
+  if (!pos) return;
+  const match = findMatch(pos);
+  if (!match) return;
+
+  const els = panelEls(pos.side);
+  const parts = [match.self, match.other].filter(Boolean);
+  const ranges = parts.map(p => textRange(els.code, p.li, p.ci, p.len)).filter(Boolean);
+  const good = !!match.other;
+
+  if (HAS_HIGHLIGHT_API) {
+    CSS.highlights.set(good ? 'bracket-match' : 'bracket-unmatched', new Highlight(...ranges));
+  } else {
+    // Older browsers: colour the syntax-highlight spans that contain the tag
+    ranges.forEach(r => {
+      const walker = document.createTreeWalker(r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentNode, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = walker.nextNode())) {
+        if (r.intersectsNode(n) && n.parentElement && n.parentElement.tagName === 'SPAN') {
+          n.parentElement.classList.add(good ? 'match-hl' : 'match-bad');
+          fallbackMarked.push(n.parentElement);
+        }
+      }
+    });
+  }
+
+  parts.forEach(p => {
+    const num = els.nums && els.nums.children[p.li];
+    if (num) { num.classList.add('match-line'); markedLineNums.push(num); }
+  });
+
+  // Tell the user where the partner is (it may be far off screen)
+  const statusEl = pos.side === 'left' ? inputStatus : outputStatus;
+  if (statusEl) {
+    const info = document.createElement('span');
+    info.className = 'match-info';
+    if (good) {
+      const other = match.other;
+      const snippet = getMatchIndex(pos.side).lines[other.li].slice(other.ci, other.ci + Math.min(other.len, 30));
+      info.textContent = `Matches ${snippet}${other.len > 30 ? '…' : ''} on line ${other.li + 1}  ·  Ctrl+Shift+\\ to jump`;
+    } else {
+      info.textContent = 'No matching bracket or tag';
+      info.classList.add('bad');
+    }
+    statusEl.appendChild(info);
+  }
+}
+
+// Ctrl+Shift+\ : move the caret to the partner and scroll it into view
+function jumpToMatch() {
+  const pos = caretPosition();
+  if (!pos) return false;
+  const match = findMatch(pos);
+  if (!match || !match.other) return false;
+  const els = panelEls(pos.side);
+  const o = match.other;
+  // JSON: caret right after the bracket; XML: caret just inside the tag
+  const r = o.len === 1 ? textRange(els.code, o.li, o.ci, 1) : textRange(els.code, o.li, o.ci + 1, 0);
+  if (!r) return false;
+  r.collapse(o.len !== 1);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+  const line = els.code.children[o.li];
+  if (line) {
+    const top = line.offsetTop;
+    if (top < els.code.scrollTop || top > els.code.scrollTop + els.code.clientHeight - LINE_HEIGHT * 2) {
+      els.code.scrollTop = Math.max(0, top - els.code.clientHeight / 2);
+    }
+  }
+  return true;
+}
+
+let matchTimer = null;
+document.addEventListener('selectionchange', () => {
+  clearTimeout(matchTimer);
+  matchTimer = setTimeout(updateMatchHighlight, 30);
+});
+
 function setLeft(text, lang) {
+  editorHook('replace', text);
+  bumpDoc('left');
   const r = renderLines(text, lang, 'left');
   codeEditor.innerHTML  = r.code;
   lineNumbers.innerHTML = r.numbers;
@@ -951,6 +1202,7 @@ function setLeft(text, lang) {
 
 // Right panel Text View
 function showOutputText(text, lang) {
+  bumpDoc('right');
   const hl = lang === 'json' || lang === 'xml' ? lang : 'plain';
   const r  = renderLines(text, hl, 'right');
   rightFoldIcons.innerHTML   = r.icons;
@@ -987,14 +1239,36 @@ function countNodes(ast, limit) {
   return count;
 }
 
+// path (array of keys / indexes) → { row, node, setOpen } for every row built so far
+let treeRegistry = new Map();
+const pathKey = path => JSON.stringify(path);
+
+// ['customer', 'address', 0, 'city'] → $.customer.address[0].city
+function jsonPath(path) {
+  return '$' + path.map(p => typeof p === 'number' ? `[${p}]`
+    : /^[A-Za-z_$][\w$]*$/.test(p) ? '.' + p
+    : `['${String(p).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}']`).join('');
+}
+
 function renderTree(ast) {
   showTreeView();
   rightTreeContent.textContent = '';
+  treeRegistry = new Map();
   const expandDepth = countNodes(ast, TREE_FULL_EXPAND) <= TREE_FULL_EXPAND ? Infinity : 2;
   const frag = document.createDocumentFragment();
-  buildTreeNode(ast, null, 0, frag, expandDepth);
+  buildTreeNode(ast, null, 0, frag, expandDepth, []);
   rightTreeContent.appendChild(frag);
   rightTreeContent.scrollTop = 0;
+  editorHook('doc', 'right');
+}
+
+// Open every ancestor of `path` (building rows as needed) and return its entry
+function revealTreePath(path) {
+  for (let i = 0; i < path.length; i++) {
+    const entry = treeRegistry.get(pathKey(path.slice(0, i)));
+    if (entry && entry.setOpen) entry.setOpen(true);
+  }
+  return treeRegistry.get(pathKey(path));
 }
 
 function el(tag, cls, txt) {
@@ -1004,9 +1278,20 @@ function el(tag, cls, txt) {
   return e;
 }
 
-function buildTreeNode(node, key, depth, parentEl, expandDepth) {
+function buildTreeNode(node, key, depth, parentEl, expandDepth, path) {
   const row = el('div', 'tree-row');
   row.style.paddingLeft = (depth * 18) + 'px';
+  const entry = { row, node, setOpen: null };
+  treeRegistry.set(pathKey(path), entry);
+
+  // Hover button: copy this node's JSONPath
+  const copyPath = el('button', 'tree-copy', 'copy path');
+  copyPath.type = 'button';
+  copyPath.title = jsonPath(path);
+  copyPath.addEventListener('click', e => {
+    e.stopPropagation();
+    copyText(jsonPath(path), outputStatus);
+  });
 
   const isContainer = node.type === 'object' || node.type === 'array';
   const children    = node.type === 'object' ? node.entries : node.type === 'array' ? node.items : null;
@@ -1021,6 +1306,7 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth) {
   if (!isContainer) {
     const cls = { string: 'tree-string', number: 'tree-number', boolean: 'tree-boolean' }[node.type] || 'tree-null';
     row.appendChild(el('span', cls, node.raw));
+    row.appendChild(copyPath);
     parentEl.appendChild(row);
     return;
   }
@@ -1033,6 +1319,7 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth) {
   row.appendChild(el('span', 'bracket', open));
   row.appendChild(el('span', 'tree-count', label));
   row.appendChild(el('span', 'bracket', close));
+  row.appendChild(copyPath);
   parentEl.appendChild(row);
   if (!children.length) return;
 
@@ -1043,8 +1330,14 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth) {
   const setOpen = (isOpen) => {
     if (isOpen && !built) {
       const frag = document.createDocumentFragment();
-      if (node.type === 'object') children.forEach(e => buildTreeNode(e.value, unquote(e.key.raw), depth + 1, frag, expandDepth));
-      else children.forEach((item, i) => buildTreeNode(item, String(i), depth + 1, frag, expandDepth));
+      if (node.type === 'object') {
+        children.forEach(e => {
+          const k = unquote(e.key.raw);
+          buildTreeNode(e.value, k, depth + 1, frag, expandDepth, path.concat(k));
+        });
+      } else {
+        children.forEach((item, i) => buildTreeNode(item, String(i), depth + 1, frag, expandDepth, path.concat(i)));
+      }
       box.appendChild(frag);
       built = true;
     }
@@ -1052,6 +1345,7 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth) {
     toggle.textContent = isOpen ? '▾' : '▸';
     row.classList.toggle('collapsed', !isOpen);
   };
+  entry.setOpen = setOpen;
 
   row.classList.add('tree-branch');
   row.addEventListener('click', () => setOpen(box.style.display === 'none'));
@@ -1094,7 +1388,9 @@ function detectFormat(text) {
 // Switches the format selector when the content is obviously JSON or XML
 function resolveInputType(text) {
   const current = formatTypeEl ? formatTypeEl.value : 'json';
-  const detected = detectFormat(text);
+  let detected = detectFormat(text);
+  // On pages that offer YAML: "key: value" lines or a leading "---" mean YAML
+  if (!detected && hasOption(formatTypeEl, 'yaml') && /^\s*(---|[\w"'.-][^\n]*:(\s|$)|- )/.test(text)) detected = 'yaml';
   if (detected && detected !== current && hasOption(formatTypeEl, detected)) setFormatType(detected);
   return formatTypeEl ? formatTypeEl.value : (detected || 'json');
 }
@@ -1285,6 +1581,10 @@ function minifyCode() {
 
 // ── Clear all ─────────────────────────────────────────────────────────────────
 function clearAll() {
+  editorHook('replace', '');
+  bumpDoc('left');
+  bumpDoc('right');
+  clearMatchHighlight();
   if (codeEditor) codeEditor.textContent = '';
   if (foldIconsEl) foldIconsEl.innerHTML = '';
   if (lineNumbers) lineNumbers.innerHTML = numberColumn(1);
@@ -1337,8 +1637,24 @@ const SAMPLE_XML = `<?xml version="1.0"?>
    </customer>
 </customers>`;
 
+const SAMPLE_YAML = `# Service configuration
+server:
+  port: 8080
+  host: 0.0.0.0
+database:
+  url: jdbc:postgresql://localhost:5432/app
+  pool:
+    min: 2
+    max: 10
+features:
+  - search
+  - exports
+debug: false
+`;
+
 function loadSample() {
   const type = formatTypeEl ? formatTypeEl.value : 'json';
+  if (type === 'yaml') { formatCode(true, SAMPLE_YAML, 'yaml', true); return; }
   if (type === 'xml') formatCode(true, SAMPLE_XML, 'xml', true);
   else                formatCode(true, SAMPLE_JSON, 'json', true);
 }
@@ -1352,6 +1668,8 @@ function changeViewType() {
 // ── Debounced input handler for live validation ─────────────────────────────
 let inputDebounceTimer = null;
 function handleEditorInput() {
+  bumpDoc('left');
+  editorHook('edit');
   clearTimeout(inputDebounceTimer);
 
   // Line indexes change while editing: drop stale fold markers / error marks
@@ -1376,13 +1694,22 @@ function formatData(type, filters) {
   if (!input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
   const selectedType = resolveInputType(input);
 
-  let apiType = type;
   if (type === 'REPAIR') {
-    apiType = selectedType === 'xml' ? 'XML_FORMAT' : 'JSON_FORMAT';
+    if (selectedType === 'yaml') {
+      setStatus(inputStatus, null, '⚠ Repair works on JSON and XML. For YAML, click Validate YAML to see the exact error.');
+      return;
+    }
+    repairInput(input, selectedType === 'xml' ? 'xml' : 'json');
+    return;
   }
-  if (['TOML', 'YAML', 'CSV', 'SQL'].includes(type)) {
+
+  let apiType = type;
+  if (selectedType === 'yaml' && type === 'YAML') apiType = 'YAML_FORMAT';
+  else if (selectedType === 'yaml' && type === 'JSON') apiType = 'YAML_TO_JSON';
+  else if (['TOML', 'YAML', 'CSV', 'SQL'].includes(type)) {
     apiType = selectedType.toUpperCase() + '_TO_' + type;
   }
+  if (apiType === 'YAML_FORMAT' || apiType === 'YAML_TO_JSON') setFormatType('yaml');
 
   setStatus(outputStatus, null, '⏳ Processing…');
 
@@ -1400,27 +1727,84 @@ function formatData(type, filters) {
   })
   .then(res => {
     if (!res.success) {
+      // YAML errors come back as "line N, column M: message" → highlight that line
+      const pos = /line (\d+), column (\d+): (.*)/.exec(res.message || '');
+      if (pos && (apiType === 'YAML_FORMAT' || apiType === 'YAML_TO_JSON')) {
+        showParseError('yaml', input, { isParseError: true, line: +pos[1], col: +pos[2], message: pos[3] }, true);
+        return;
+      }
       showOutputError('Failed: ' + (res.message || 'Unknown error'));
       return;
     }
     let fmt = 'json';
-    if (['XML_FORMAT', 'JSON_TO_XML', 'XML_SORT', 'CSV_TO_XML'].includes(apiType))   fmt = 'xml';
-    else if (['JSON_TO_YAML', 'XML_TO_YAML', 'PROPERTY_TO_YAML'].includes(apiType)) fmt = 'yaml';
+    if (['JSON_TO_XML', 'XML_SORT', 'CSV_TO_XML'].includes(apiType))   fmt = 'xml';
+    else if (['JSON_TO_YAML', 'XML_TO_YAML', 'PROPERTY_TO_YAML', 'YAML_FORMAT'].includes(apiType)) fmt = 'yaml';
     else if (['JSON_TO_TOML', 'XML_TO_TOML'].includes(apiType))                     fmt = 'toml';
     else if (['JSON_TO_CSV', 'XML_TO_CSV'].includes(apiType))                       fmt = 'csv';
     else if (['JSON_TO_SQL', 'XML_TO_SQL', 'CSV_TO_SQL'].includes(apiType))         fmt = 'sql';
     else if (apiType === 'YAML_TO_PROPERTY')                                        fmt = 'property';
 
     const cleanData = String(res.parsedData == null ? '' : res.parsedData).replace(/\r\n/g, '\n');
-    if (['REPAIR', 'JSON_SORT', 'XML_SORT'].includes(type)) {
+    if (['JSON_SORT', 'XML_SORT'].includes(type)) {
       formatCode(true, cleanData, fmt, true);          // result replaces the editor content
-      const done = type === 'REPAIR' ? 'repaired' : 'sorted';
-      setStatus(inputStatus, true, `✓ ${fmt.toUpperCase()} ${done}`);
+      setStatus(inputStatus, true, `✓ ${fmt.toUpperCase()} sorted`);
+    } else if (apiType === 'YAML_FORMAT') {
+      formatCode(true, cleanData, 'yaml', true);
+      setStatus(inputStatus, true, '✓ Valid YAML, re-indented (comments are not kept)');
     } else {
       formatCode(true, cleanData, fmt, false);         // conversion → right panel
     }
   })
   .catch(err => showOutputError(err && err.message ? err.message : 'Network error while processing'));
+}
+
+// ── Repair (runs in the browser, see repair.js) ───────────────────────────────
+function repairInput(input, type) {
+  const label = type.toUpperCase();
+  const repairer = type === 'xml'
+    ? (typeof XmlRepair !== 'undefined' ? XmlRepair : null)
+    : (typeof JsonRepair !== 'undefined' ? JsonRepair : null);
+  if (!repairer) {
+    showOutputError('Repair is not available on this page');
+    return;
+  }
+
+  let result;
+  try {
+    result = repairer.repair(input);
+  } catch (e) {
+    setStatus(inputStatus, false, `✗ Could not repair the ${label}: ${e.message}`);
+    showOutputError(`Could not repair the ${label}: ${e.message}`);
+    return;
+  }
+
+  // Load the repaired text; formatCode reports any error that is still left
+  formatCode(true, result.text, type, true);
+  if (!currentAst) {
+    setStatus(inputStatus, false, `✗ Repair fixed ${result.fixes.length} kind(s) of problem, but the ${label} is still invalid. See the error on the right.`);
+    return;
+  }
+
+  if (!result.fixes.length) {
+    setStatus(inputStatus, true, `✓ Nothing to repair: the ${label} was already valid`);
+    return;
+  }
+  setStatus(inputStatus, true, `✓ ${label} repaired: ${result.fixes.join(' · ')}`);
+
+  // Short report above the tree so the user can see what changed
+  if (rightTreeContent && rightTreeContent.style.display !== 'none') {
+    const box = el('div', 'repair-report');
+    box.appendChild(el('strong', null, `Repaired ${label}`));
+    const ul = document.createElement('ul');
+    result.fixes.forEach(f => ul.appendChild(el('li', null, f)));
+    box.appendChild(ul);
+    const close = el('button', 'repair-report-close', '×');
+    close.type = 'button';
+    close.title = 'Dismiss';
+    close.addEventListener('click', () => box.remove());
+    box.appendChild(close);
+    rightTreeContent.insertBefore(box, rightTreeContent.firstChild);
+  }
 }
 
 function showOutputError(message) {

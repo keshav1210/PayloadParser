@@ -1,5 +1,5 @@
 <header class="app-header">
-    <link rel="stylesheet" href="/css/header.css?v=4">
+    <link rel="stylesheet" href="/css/header.css?v=7">
     <a class="brand" href="/" aria-label="JSON XML Editor home">
         <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -105,11 +105,29 @@
     <nav class="nav-links" aria-label="Main">
         <a href="/">Home</a>
         <a href="/parser">Formatter</a>
-        <a href="/mapper">Object Mapper</a>
+        <details class="nav-menu">
+            <summary>Tools</summary>
+            <div class="nav-menu-panel">
+                <a href="/compare">JSON &amp; XML Compare</a>
+                <a href="/json-schema">JSON Schema</a>
+                <a href="/jwt-decoder">JWT Decoder</a>
+                <a href="/encode-decode">Encode / Decode</a>
+                <a href="/mapper">Object Mapper</a>
+                <a href="/csv-converter">CSV Converter</a>
+                <a href="/yaml-converter">YAML Converter</a>
+                <a href="/toml-converter">TOML Converter</a>
+                <a href="/qr-code-generator">QR Code Generator</a>
+                <span class="nav-menu-divider" role="separator"></span>
+                <a href="https://www.convertfigure.com/" target="_blank" rel="noopener" class="nav-external">Image &amp; PDF tools <span aria-hidden="true">↗</span><small>ConvertFigure: convert images, PDFs, QR codes, SVG icons</small></a>
+            </div>
+        </details>
         <a href="/share">Share Drop</a>
         <a href="/learnings">Learn</a>
         <a href="/contact">Contact</a>
     </nav>
 
-    <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <div class="header-actions">
+        <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Switch theme">&#9728;</button>
+        <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    </div>
 </header>

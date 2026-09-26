@@ -325,7 +325,7 @@
           "name": "Is there a size limit?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Text drops of several megabytes work fine. Files larger than about 1 MB are currently rejected, so compress bigger files or split them first."
+            "text": "Files can be up to 30 MB. Text drops of several megabytes work too. For bigger files, compress them or split them into parts first."
           }
         },
         {
@@ -349,6 +349,8 @@
   ]
 }
     </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
 </head>
 <body>
 <div id="header"></div>
@@ -433,7 +435,7 @@
                 <div class="drop-zone" id="dropZone">
                     <div class="dz-icon">📂</div>
                     <h3>Drop a file here or <span style="color:var(--accent)">browse</span></h3>
-                    <p>Any type — images, documents, archives, audio, video, code…</p>
+                    <p>Any type — images, documents, archives, audio, video, code… up to 30 MB</p>
                     <button class="btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">Browse File</button>
                     <input type="file" id="fileInput">
                 </div>
@@ -587,7 +589,7 @@
         </details>
         <details>
           <summary>Is there a size limit?</summary>
-          <p>Text drops of several megabytes work fine. Files larger than about 1 MB are currently rejected, so compress bigger files or split them first.</p>
+          <p>Files can be up to 30 MB. Text drops of several megabytes work too. For bigger files, compress them or split them into parts first.</p>
         </details>
         <details>
           <summary>Do I need an account?</summary>
@@ -611,6 +613,7 @@
     // Your exact endpoints from the controller:
     const EP_TEXT     = BASE_URL + '/data/share/text';   // POST — JSON body
     const EP_FILE     = BASE_URL + '/data/share/file';   // POST — multipart/form-data
+    const MAX_FILE_BYTES = 30 * 1024 * 1024;             // keep in sync with ShareServiceImpl.MAX_FILE_SIZE
 
     // Output page (same folder)
     const OUTPUT_PAGE = 'output.html';
@@ -717,6 +720,17 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
 
     function selectFile(f) {
       if (!f) return;
+      if (f.size > MAX_FILE_BYTES) {
+        $('fileInput').value = '';
+        toast(`"${f.name}" is ${fmtSize(f.size)}. The maximum is 30 MB.`, 'error');
+        setStatus('File too large — the maximum is 30 MB', 'err');
+        return;
+      }
+      if (f.size === 0) {
+        $('fileInput').value = '';
+        toast(`"${f.name}" is empty`, 'error');
+        return;
+      }
       selectedFile = f;
       $('fpIcon').textContent = getIcon(f.name);
       $('fpName').textContent = f.name;
@@ -847,7 +861,7 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       $('shareBtn').disabled = true;
       if ($('shareMailBtn')) $('shareMailBtn').disabled = true;
       setStatus('Uploading ' + selectedFile.name + '…', 'run');
-      setProgress(20);
+      setProgress(2);
 
       try {
         const fd = new FormData();
@@ -856,16 +870,22 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
         fd.append('sourcePage',      window.location.pathname);
         if (email) fd.append('email', email);
 
-        const res = await fetch(EP_FILE, {
-          method: 'POST',
-          body:   fd
+        const { status, json } = await uploadWithProgress(EP_FILE, fd, pct => {
+          setProgress(Math.max(2, Math.round(pct * 0.95)));
+          setStatus(`Uploading ${selectedFile.name}… ${pct}%`, 'run');
         });
 
-        setProgress(80);
-        const json = await res.json();
-
-        if (!res.ok || !json.success) {
-          throw new Error(json.message || `Server error ${res.status}`);
+        if (status === 413) {
+          throw new Error((json && json.message) || 'File is too large. The maximum size is 30 MB.');
+        }
+        if (status === 429) {
+          throw new Error('Too many requests — please wait a minute and try again.');
+        }
+        if (!json) {
+          throw new Error(`Unexpected server response (HTTP ${status})`);
+        }
+        if (status >= 400 || !json.success) {
+          throw new Error(json.message || `Server error ${status}`);
         }
 
         setProgress(100);
@@ -893,6 +913,27 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       $('shareBtn').disabled = false;
       if ($('shareMailBtn')) $('shareMailBtn').disabled = false;
       setTimeout(() => setProgress(0), 1400);
+    }
+
+    // fetch() can't report upload progress, so large files use XMLHttpRequest
+    function uploadWithProgress(url, formData, onProgress) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.upload.onprogress = e => {
+          if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+        };
+        xhr.onload = () => {
+          let json = null;
+          try { json = JSON.parse(xhr.responseText); } catch (_) { /* not JSON (e.g. a proxy error page) */ }
+          // The rate limiter answers with a redirect to /429
+          const status = /\/429$/.test(xhr.responseURL || '') ? 429 : xhr.status;
+          resolve({ status, json });
+        };
+        xhr.onerror = () => reject(new Error('Network error — the upload was interrupted'));
+        xhr.ontimeout = () => reject(new Error('The upload timed out'));
+        xhr.send(formData);
+      });
     }
 
     // ─── Show success modal ───────────────────────────────────────────────────────
@@ -1092,6 +1133,6 @@ if ($('apiBaseLabel')) $('apiBaseLabel').textContent = BASE_URL;
       }
     })();
 </script>
-<script src="/js/layout-loader.js?v=4"></script>
+<script src="/js/layout-loader.js?v=6"></script>
 </body>
 </html>

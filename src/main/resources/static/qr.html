@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Free QR Code Generator – URL, Phone Call, WhatsApp, Wi-Fi, vCard</title>
+  <meta name="description" content="Make a QR code for a website, a phone call, SMS, WhatsApp, email, Wi-Fi or a contact card. Add your logo, pick colours and download PNG or SVG. Free, no sign-up, codes never expire.">
+  <link rel="canonical" href="https://jsonxmleditor.com/qr-code-generator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Free QR Code Generator">
+  <meta property="og:description" content="QR codes for links, phone calls, WhatsApp, Wi-Fi and contacts. Logo, colours, PNG and SVG download.">
+  <meta property="og:url" content="https://jsonxmleditor.com/qr-code-generator">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/tools.css?v=2">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "QR Code Generator",
+      "url": "https://jsonxmleditor.com/qr-code-generator",
+      "description": "Create QR codes for URLs, phone calls, SMS, WhatsApp, email, Wi-Fi and vCards, with logo and colour options.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "QR Code Generator", "item": "https://jsonxmleditor.com/qr-code-generator" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Do these QR codes expire?", "acceptedAnswer": { "@type": "Answer", "text": "No. The information is stored inside the code itself, not on our server, so the code keeps working for as long as the printed image exists. There is no scan limit and no subscription." } },
+        { "@type": "Question", "name": "How does a phone call QR code work?", "acceptedAnswer": { "@type": "Answer", "text": "The code contains a tel: link such as tel:+919876543210. When someone scans it, the phone app opens with the number filled in and they tap Call. Phones never dial on their own without that tap; this is a safety rule built into Android and iOS." } },
+        { "@type": "Question", "name": "Can I hide my phone number in the QR code?", "acceptedAnswer": { "@type": "Answer", "text": "Not with a normal phone call. The dialer always shows the number it is about to call, and caller records show it afterwards. To take calls without revealing your number, use a call-masking or virtual-number service and put that number in the code, or use a WhatsApp or contact form link instead." } },
+        { "@type": "Question", "name": "Why won't my QR code scan?", "acceptedAnswer": { "@type": "Answer", "text": "The usual causes are low contrast, a light code on a dark background, a missing quiet zone around the code, a logo that is too big or a print that is too small. Keep a dark code on a light background, a margin of at least 4 modules, and print it at least 2 cm (about 0.8 in) wide." } },
+        { "@type": "Question", "name": "Is my data sent anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. The code is generated in your browser. Wi-Fi passwords, phone numbers and contact details never leave your device." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>QR Code Generator</h1>
+    <p>Make a QR code that opens a website, starts a phone call, sends a WhatsApp message, joins Wi-Fi or saves a contact. Add a logo, choose colours and download it as PNG or SVG. Codes are created in your browser and never expire.</p>
+  </section>
+
+  <input type="hidden" id="qrType" value="url">
+  <div class="tabs qr-types" role="tablist" aria-label="QR code type">
+    <button type="button" class="tab-btn" role="tab" data-qr-type="url">Website</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="phone">Phone call</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="whatsapp">WhatsApp</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="sms">SMS</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="email">Email</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="wifi">Wi-Fi</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="vcard">Contact card</button>
+    <button type="button" class="tab-btn" role="tab" data-qr-type="text">Text</button>
+  </div>
+
+  <div class="qr-layout">
+    <div class="qr-form">
+      <section class="pane qr-card">
+        <div class="pane-head">Content</div>
+        <div class="qr-body">
+          <div class="qr-fields" data-fields="url">
+            <div class="field"><label for="qrUrl">Web address</label>
+              <input id="qrUrl" class="text-input" type="url" placeholder="https://example.com" autocomplete="off"></div>
+          </div>
+
+          <div class="qr-fields" data-fields="phone" hidden>
+            <div class="field"><label for="qrPhone">Phone number</label>
+              <input id="qrPhone" class="text-input" type="tel" placeholder="+91 98765 43210" autocomplete="off"></div>
+            <p class="qr-note">Include the country code (for example <code>+91</code> or <code>+1</code>) so the call works from any country.</p>
+          </div>
+
+          <div class="qr-fields" data-fields="whatsapp" hidden>
+            <div class="field"><label for="qrWaNumber">WhatsApp number</label>
+              <input id="qrWaNumber" class="text-input" type="tel" placeholder="+91 98765 43210" autocomplete="off"></div>
+            <div class="field"><label for="qrWaBody">Pre-filled message <span class="muted">(optional)</span></label>
+              <textarea id="qrWaBody" class="text-input" rows="3" placeholder="Hi, I found you through your QR code"></textarea></div>
+          </div>
+
+          <div class="qr-fields" data-fields="sms" hidden>
+            <div class="field"><label for="qrSmsNumber">Phone number</label>
+              <input id="qrSmsNumber" class="text-input" type="tel" placeholder="+1 555 123 4567" autocomplete="off"></div>
+            <div class="field"><label for="qrSmsBody">Message <span class="muted">(optional)</span></label>
+              <textarea id="qrSmsBody" class="text-input" rows="3"></textarea></div>
+          </div>
+
+          <div class="qr-fields" data-fields="email" hidden>
+            <div class="field"><label for="qrEmailTo">Email address</label>
+              <input id="qrEmailTo" class="text-input" type="email" placeholder="hello@example.com" autocomplete="off"></div>
+            <div class="field"><label for="qrEmailSubject">Subject <span class="muted">(optional)</span></label>
+              <input id="qrEmailSubject" class="text-input" type="text"></div>
+            <div class="field"><label for="qrEmailBody">Message <span class="muted">(optional)</span></label>
+              <textarea id="qrEmailBody" class="text-input" rows="3"></textarea></div>
+          </div>
+
+          <div class="qr-fields" data-fields="wifi" hidden>
+            <div class="field"><label for="qrWifiSsid">Network name (SSID)</label>
+              <input id="qrWifiSsid" class="text-input" type="text" autocomplete="off"></div>
+            <div class="field"><label for="qrWifiSec">Security</label>
+              <select id="qrWifiSec">
+                <option value="WPA">WPA / WPA2 / WPA3</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">No password</option>
+              </select></div>
+            <div class="field" id="qrWifiPassWrap"><label for="qrWifiPass">Password</label>
+              <input id="qrWifiPass" class="text-input" type="text" autocomplete="off" spellcheck="false"></div>
+            <label class="check"><input type="checkbox" id="qrWifiHidden"> Hidden network</label>
+          </div>
+
+          <div class="qr-fields" data-fields="vcard" hidden>
+            <div class="qr-row">
+              <div class="field"><label for="qrVcFirst">First name</label><input id="qrVcFirst" class="text-input" type="text"></div>
+              <div class="field"><label for="qrVcLast">Last name</label><input id="qrVcLast" class="text-input" type="text"></div>
+            </div>
+            <div class="qr-row">
+              <div class="field"><label for="qrVcPhone">Phone</label><input id="qrVcPhone" class="text-input" type="tel"></div>
+              <div class="field"><label for="qrVcEmail">Email</label><input id="qrVcEmail" class="text-input" type="email"></div>
+            </div>
+            <div class="qr-row">
+              <div class="field"><label for="qrVcOrg">Company</label><input id="qrVcOrg" class="text-input" type="text"></div>
+              <div class="field"><label for="qrVcTitle">Job title</label><input id="qrVcTitle" class="text-input" type="text"></div>
+            </div>
+            <div class="field"><label for="qrVcUrl">Website</label><input id="qrVcUrl" class="text-input" type="url"></div>
+            <div class="field"><label for="qrVcAddress">Address</label><input id="qrVcAddress" class="text-input" type="text"></div>
+          </div>
+
+          <div class="qr-fields" data-fields="text" hidden>
+            <div class="field"><label for="qrText">Text</label>
+              <textarea id="qrText" class="text-input" rows="5"></textarea></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pane qr-card">
+        <div class="pane-head">Style <span class="actions"><button type="button" class="mini-btn" id="qrReset">Reset</button></span></div>
+        <div class="qr-body">
+          <div class="qr-row">
+            <div class="field"><label for="qrFg">Code colour</label><input id="qrFg" type="color" value="#000000" class="qr-color"></div>
+            <div class="field"><label for="qrBg">Background</label><input id="qrBg" type="color" value="#ffffff" class="qr-color"></div>
+          </div>
+          <div class="field"><label for="qrSize">Image size <output id="qrSizeOut" class="muted"></output></label>
+            <input id="qrSize" type="range" min="128" max="2048" step="32" value="512"></div>
+          <div class="qr-row">
+            <div class="field"><label for="qrMargin">Margin (modules)</label>
+              <select id="qrMargin"><option>0</option><option>1</option><option>2</option><option>3</option><option selected>4</option><option>6</option><option>8</option></select></div>
+            <div class="field"><label for="qrLevel">Error correction</label>
+              <select id="qrLevel">
+                <option value="L">Low (7%)</option>
+                <option value="M" selected>Medium (15%)</option>
+                <option value="Q">Quartile (25%)</option>
+                <option value="H">High (30%)</option>
+              </select></div>
+          </div>
+          <div class="field"><label for="qrLogo">Logo in the centre <span class="muted">(optional)</span></label>
+            <div class="qr-logo-row">
+              <input id="qrLogo" type="file" accept="image/*">
+              <button type="button" class="mini-btn" id="qrLogoClear" hidden>Remove logo</button>
+            </div>
+            <p class="qr-note">Adding a logo switches error correction to High so the code still scans.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="qr-output">
+      <section class="pane qr-card">
+        <div class="pane-head">Your QR code</div>
+        <div class="qr-body">
+          <div id="qrPreview" class="qr-preview empty">
+            <canvas id="qrCanvas" aria-label="QR code preview"></canvas>
+            <p class="qr-placeholder">Fill in the form to see your code.</p>
+          </div>
+          <p id="qrHint" class="qr-hint"></p>
+          <div id="qrError" class="error-box" hidden></div>
+          <div id="qrWarn" class="summary warn" hidden></div>
+          <div class="qr-actions">
+            <button type="button" class="btn btn-primary" id="qrPng">Download PNG</button>
+            <button type="button" class="btn" id="qrSvg">Download SVG</button>
+            <button type="button" class="btn" id="qrCopy">Copy image</button>
+          </div>
+          <p id="qrStats" class="qr-stats"></p>
+          <details class="qr-payload-wrap">
+            <summary>Encoded content</summary>
+            <pre id="qrPayload" class="code-output"></pre>
+          </details>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+    <h2>What you can put in a QR code</h2>
+    <ul>
+      <li><strong>Website</strong>: opens a page. Good for menus, flyers, product packaging and business cards.</li>
+      <li><strong>Phone call</strong>: opens the phone app with your number ready, so people call with one tap instead of typing it.</li>
+      <li><strong>WhatsApp</strong>: opens a chat with you, optionally with a message already written, such as "I'd like to book a table".</li>
+      <li><strong>SMS and email</strong>: start a text or an email with the recipient, subject and message filled in.</li>
+      <li><strong>Wi-Fi</strong>: guests scan and join your network without typing the password. Handy for cafés, offices and home.</li>
+      <li><strong>Contact card</strong>: a vCard that saves your name, number, email and company straight to the phone's contacts.</li>
+    </ul>
+
+    <h2>About phone call QR codes</h2>
+    <p>A call QR code holds a <code>tel:</code> link. On Android and iPhone, scanning it opens the dialer with the number filled in, and the person taps <strong>Call</strong>. Phones never place a call without that tap: it is a safety rule in both systems, so no QR code can start a call on its own.</p>
+    <p>The number itself can't be kept secret this way. The camera shows the link before it's opened, the dialer shows the number, and the call log keeps it. If you need people to reach you without seeing your personal number, you have a few options:</p>
+    <ul>
+      <li>Use a <strong>virtual or call-masking number</strong> from a telephony provider and put that number in the code. Calls forward to your phone and your real number stays private.</li>
+      <li>Use a <strong>WhatsApp</strong> code for a WhatsApp Business account, or a <strong>website</strong> code that leads to a contact form.</li>
+    </ul>
+
+    <h2>Tips for codes that always scan</h2>
+    <ul>
+      <li>Keep a <strong>dark code on a light background</strong>. Inverted codes and low-contrast colours fail on many phones; the generator warns you when that happens.</li>
+      <li>Leave the <strong>margin</strong> (quiet zone) around the code. Four modules is the standard.</li>
+      <li>Print at least <strong>2 cm (0.8 in)</strong> wide, and bigger for posters that are scanned from a distance: roughly one tenth of the scanning distance.</li>
+      <li>Shorter content makes a simpler code that scans faster. Use a short URL for long links.</li>
+      <li>For print, download the <strong>SVG</strong>. It stays sharp at any size.</li>
+      <li>Test the printed code with two or three different phones before you print hundreds.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Do these QR codes expire?</summary>
+        <p>No. The information is stored inside the code itself, not on our server, so the code keeps working for as long as the printed image exists. There is no scan limit and no subscription.</p>
+      </details>
+      <details>
+        <summary>How does a phone call QR code work?</summary>
+        <p>The code contains a tel: link such as tel:+919876543210. When someone scans it, the phone app opens with the number filled in and they tap Call. Phones never dial on their own without that tap; this is a safety rule built into Android and iOS.</p>
+      </details>
+      <details>
+        <summary>Can I hide my phone number in the QR code?</summary>
+        <p>Not with a normal phone call. The dialer always shows the number it is about to call, and caller records show it afterwards. To take calls without revealing your number, use a call-masking or virtual-number service and put that number in the code, or use a WhatsApp or contact form link instead.</p>
+      </details>
+      <details>
+        <summary>Why won't my QR code scan?</summary>
+        <p>The usual causes are low contrast, a light code on a dark background, a missing quiet zone around the code, a logo that is too big or a print that is too small. Keep a dark code on a light background, a margin of at least 4 modules, and print it at least 2 cm (about 0.8 in) wide.</p>
+      </details>
+      <details>
+        <summary>Is my data sent anywhere?</summary>
+        <p>No. The code is generated in your browser. Wi-Fi passwords, phone numbers and contact details never leave your device.</p>
+      </details>
+    </div>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/vendor/qrcode.js?v=1"></script>
+<script src="/js/qr.js?v=1"></script>
+</body>
+</html>

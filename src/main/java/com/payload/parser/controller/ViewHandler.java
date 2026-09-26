@@ -94,6 +94,31 @@ public class ViewHandler {
         return "health.html";
     }
 
+    @GetMapping("/compare")
+    public String compare() {
+        return "compare.html";
+    }
+
+    @GetMapping("/jwt-decoder")
+    public String jwtDecoder() {
+        return "jwt.html";
+    }
+
+    @GetMapping("/encode-decode")
+    public String encodeDecode() {
+        return "encode.html";
+    }
+
+    @GetMapping("/json-schema")
+    public String jsonSchema() {
+        return "schema.html";
+    }
+
+    @GetMapping("/qr-code-generator")
+    public String qrCodeGenerator() {
+        return "qr.html";
+    }
+
     @GetMapping("/mapper")
     public String  objectMapper(){
         return "objectconverter.html";

@@ -249,6 +249,12 @@ public String converter(ConvertRequest request) {
         StringBuilder sb = new StringBuilder();
 
         for (ClassInfo classInfo : classes.values()) {
+            boolean usesList = classInfo.getFields().values().stream()
+                    .anyMatch(t -> convertToJavaType(t, classes).startsWith("List<"));
+            if (usesList) {
+                sb.append("import java.util.List;\n");
+            }
+
             // Add Lombok annotations if selected
             if (useLombok) {
                 sb.append("import lombok.Data;\n");
@@ -260,6 +266,9 @@ public String converter(ConvertRequest request) {
                 sb.append("@AllArgsConstructor\n");
             }
 
+            if (usesList && !useLombok) {
+                sb.append("\n");
+            }
             sb.append("public class ").append(classInfo.getName()).append(" {\n");
 
             // Fields
@@ -411,6 +420,12 @@ public String converter(ConvertRequest request) {
 
     private String generateCSharpCode(Map<String, ClassInfo> classes) {
         StringBuilder sb = new StringBuilder();
+        boolean usesList = classes.values().stream()
+                .flatMap(c -> c.getFields().values().stream())
+                .anyMatch(t -> convertToCSharpType(t, classes).startsWith("List<"));
+        if (usesList) {
+            sb.append("using System.Collections.Generic;\n\n");
+        }
 
         for (ClassInfo classInfo : classes.values()) {
             sb.append("public class ").append(classInfo.getName()).append("\n{\n");
@@ -450,11 +465,16 @@ public String converter(ConvertRequest request) {
     private String findRootClass(Map<String, ClassInfo> classes) {
         Set<String> referencedClasses = new HashSet<>();
 
-        // Collect all classes that are referenced as field types
+        // Collect all classes that are referenced as field types (directly or as List<...>)
         for (ClassInfo classInfo : classes.values()) {
             for (String fieldType : classInfo.getFields().values()) {
-                if (classes.containsKey(fieldType)) {
-                    referencedClasses.add(fieldType);
+                String inner = fieldType;
+                Matcher list;
+                while ((list = LIST_TYPE.matcher(inner)).matches()) {
+                    inner = list.group(1);
+                }
+                if (classes.containsKey(inner)) {
+                    referencedClasses.add(inner);
                 }
             }
         }
@@ -495,11 +515,14 @@ public String converter(ConvertRequest request) {
 
             sb.append(fieldIndent).append("\"").append(snakeCaseFieldName).append("\": ");
 
-            // Check if this field type is a nested class
+            // Check if this field type is a nested class (or a list of one)
+            Matcher list = LIST_TYPE.matcher(fieldType);
             if (classes.containsKey(fieldType)) {
                 // Recursively generate JSON for nested class
                 String nestedJson = generateJSONForClass(fieldType, classes, indentLevel + 1,format);
                 sb.append(nestedJson);
+            } else if (list.matches() && classes.containsKey(list.group(1))) {
+                sb.append("[").append(generateJSONForClass(list.group(1), classes, indentLevel + 1, format)).append("]");
             } else {
                 // Use primitive type
                 String jsonValue = convertToJSONType(fieldType, classes);
@@ -514,25 +537,40 @@ public String converter(ConvertRequest request) {
         return sb.toString();
     }
 
-    // Type conversion helpers
+    // Type conversion helpers.
+    // inferTypeFromValue produces types like "String", "int", "Address" or "List<String>" /
+    // "List<List<Integer>>"; each language translates them recursively.
+    private static final Pattern LIST_TYPE = Pattern.compile("^List<(.+)>$");
+
     private String convertToJavaType(String type, Map<String, ClassInfo> classes) {
+        return javaType(type, classes, false);
+    }
+
+    // boxed: element types of a List must be objects (Integer, not int)
+    private String javaType(String type, Map<String, ClassInfo> classes, boolean boxed) {
         if (classes.containsKey(type)) {
             return type;
+        }
+        Matcher list = LIST_TYPE.matcher(type);
+        if (list.matches()) {
+            return "List<" + javaType(list.group(1), classes, true) + ">";
         }
 
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
-                return "int";
+                return boxed ? "Integer" : "int";
+            case "long":
+                return boxed ? "Long" : "long";
             case "string":
             case "str":
                 return "String";
             case "float":
             case "double":
-                return "double";
+                return boxed ? "Double" : "double";
             case "boolean":
             case "bool":
-                return "boolean";
+                return boxed ? "Boolean" : "boolean";
             case "list":
                 return "List<Object>";
             default:
@@ -543,6 +581,10 @@ public String converter(ConvertRequest request) {
     private String convertToTypeScriptType(String type, Map<String, ClassInfo> classes) {
         if (classes.containsKey(type)) {
             return type;
+        }
+        Matcher list = LIST_TYPE.matcher(type);
+        if (list.matches()) {
+            return convertToTypeScriptType(list.group(1), classes) + "[]";
         }
 
         switch (type.toLowerCase()) {
@@ -568,11 +610,17 @@ public String converter(ConvertRequest request) {
         if (classes.containsKey(type)) {
             return type;
         }
+        Matcher list = LIST_TYPE.matcher(type);
+        if (list.matches()) {
+            return "List<" + convertToCSharpType(list.group(1), classes) + ">";
+        }
 
         switch (type.toLowerCase()) {
             case "int":
             case "integer":
                 return "int";
+            case "long":
+                return "long";
             case "string":
                 return "string";
             case "float":
@@ -591,6 +639,10 @@ public String converter(ConvertRequest request) {
     private String convertToJSONType(String type, Map<String, ClassInfo> classes) {
         if (classes.containsKey(type)) {
             return "{}";
+        }
+        Matcher list = LIST_TYPE.matcher(type);
+        if (list.matches()) {
+            return "[" + convertToJSONType(list.group(1), classes) + "]";
         }
 
         switch (type.toLowerCase()) {
@@ -736,8 +788,36 @@ public String converter(ConvertRequest request) {
             String convertedFieldName = convertFieldNameByFormat(fieldName, format);
 
             String fieldType = inferTypeFromValue(value, fieldName, allClasses, format);
-            currentClass.addField(convertedFieldName, fieldType);
+            String existing = currentClass.getFields().get(convertedFieldName);
+            currentClass.addField(convertedFieldName, existing == null ? fieldType : mergeTypes(existing, fieldType));
         }
+    }
+
+    // Combine the types seen for the same field in different array items
+    private String mergeTypes(String a, String b) {
+        if (a.equals(b)) return a;
+        if ("Object".equals(a)) return b;          // null in one item, a real value in another
+        if ("Object".equals(b)) return a;
+        Set<String> numbers = Set.of("int", "long", "double");
+        if (numbers.contains(a) && numbers.contains(b)) {
+            return a.equals("double") || b.equals("double") ? "double" : "long";
+        }
+        Matcher la = LIST_TYPE.matcher(a), lb = LIST_TYPE.matcher(b);
+        if (la.matches() && lb.matches()) {
+            return "List<" + mergeTypes(la.group(1), lb.group(1)) + ">";
+        }
+        return "Object";
+    }
+
+    // "orders" → "Order", "categories" → "Category", "data" → "DataItem"
+    private String singularClassName(String fieldName) {
+        String name = capitalize(toCamelCase(fieldName));
+        if (name.endsWith("ies") && name.length() > 3) return name.substring(0, name.length() - 3) + "y";
+        if (name.endsWith("ses") || name.endsWith("xes") || name.endsWith("ches") || name.endsWith("shes")) {
+            return name.substring(0, name.length() - 2);
+        }
+        if (name.endsWith("s") && !name.endsWith("ss") && name.length() > 1) return name.substring(0, name.length() - 1);
+        return name + "Item";
     }
 
     private String inferTypeFromValue(Object value, String fieldName, Map<String, ClassInfo> allClasses, String format) {
@@ -755,25 +835,35 @@ public String converter(ConvertRequest request) {
             return "boolean";
         } else if (value instanceof List) {
             List<?> list = (List<?>) value;
-            if (!list.isEmpty()) {
-                Object firstElement = list.get(0);
-                if (firstElement instanceof Map) {
-                    // Nested object in array
-                    String nestedClassName = capitalize(toCamelCase(fieldName)) + "Item";
-                    ClassInfo nestedClass = new ClassInfo(nestedClassName);
-                    analyzeJSONStructure((Map<String, Object>) firstElement, nestedClass, allClasses, nestedClassName, format);
-                    allClasses.put(nestedClassName, nestedClass);
-                    return "List<" + nestedClassName + ">";
-                } else {
-                    String elementType = inferTypeFromValue(firstElement, fieldName, allClasses, format);
-                    return "List<" + elementType + ">";
-                }
+            List<Object> items = new ArrayList<>();
+            for (Object item : list) {
+                if (item != null) items.add(item);
             }
-            return "List<Object>";
+            if (items.isEmpty()) {
+                return "List<Object>";
+            }
+            if (items.stream().allMatch(Map.class::isInstance)) {
+                // Array of objects: one class built from every item, so fields that only
+                // appear in some items are still included
+                String nestedClassName = singularClassName(fieldName);
+                ClassInfo nestedClass = allClasses.getOrDefault(nestedClassName, new ClassInfo(nestedClassName));
+                for (Object item : items) {
+                    analyzeJSONStructure((Map<String, Object>) item, nestedClass, allClasses, nestedClassName, format);
+                }
+                allClasses.put(nestedClassName, nestedClass);
+                return "List<" + nestedClassName + ">";
+            }
+            String elementType = null;
+            for (Object item : items) {
+                String t = inferTypeFromValue(item, fieldName, allClasses, format);
+                elementType = elementType == null ? t : mergeTypes(elementType, t);
+            }
+            return "List<" + elementType + ">";
         } else if (value instanceof Map) {
             // Nested object
             String nestedClassName = capitalize(toCamelCase(fieldName));
-            ClassInfo nestedClass = new ClassInfo(nestedClassName);
+            // Reuse the class when the same object appears in several array items, so fields merge
+            ClassInfo nestedClass = allClasses.getOrDefault(nestedClassName, new ClassInfo(nestedClassName));
             analyzeJSONStructure((Map<String, Object>) value, nestedClass, allClasses, nestedClassName, format);
             allClasses.put(nestedClassName, nestedClass);
             return nestedClassName;

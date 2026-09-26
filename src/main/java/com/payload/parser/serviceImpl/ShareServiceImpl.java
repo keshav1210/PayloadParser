@@ -5,6 +5,7 @@ import com.payload.parser.model.ShareMeta;
 import com.payload.parser.service.ShareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.util.UUID;
 
 @Service
 public class ShareServiceImpl implements ShareService {
-    private static final long MAX_FILE_SIZE = 40 * 1024* 1024; // 40
+    // Keep in sync with spring.servlet.multipart.max-file-size and MAX_FILE_BYTES in share.html
+    public static final long MAX_FILE_SIZE = 30L * 1024 * 1024; // 30 MB
     @Autowired
     private Cache<String, ShareMeta> cache;
 
@@ -61,9 +63,7 @@ public class ShareServiceImpl implements ShareService {
 
     public void validateFile(MultipartFile file) {
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new RuntimeException(
-                    "File too large. Max allowed is 300 KB"
-            );
+            throw new MaxUploadSizeExceededException(MAX_FILE_SIZE);
         }
     }
 

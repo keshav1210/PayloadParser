@@ -1547,3 +1547,217 @@ select:focus-visible,
         padding-top: 12px;
     }
 }
+
+/* Repair report shown above the tree after a successful repair */
+.repair-report {
+    position: relative;
+    background: rgba(63, 185, 80, 0.08);
+    border: 1px solid rgba(63, 185, 80, 0.35);
+    border-radius: 6px;
+    padding: 10px 34px 10px 14px;
+    margin: 0 0 12px;
+    font-family: 'Segoe UI', -apple-system, Roboto, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: normal;
+    color: #cfe9d4;
+}
+
+.repair-report strong {
+    color: #7ee08f;
+}
+
+.repair-report ul {
+    margin: 4px 0 0 18px;
+}
+
+.repair-report-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #9aa3b2;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.repair-report-close:hover {
+    color: #fff;
+}
+
+/* Bracket / tag matching */
+::highlight(bracket-match) {
+    background-color: rgba(255, 215, 0, 0.28);
+    text-decoration: underline;
+    text-decoration-color: #ffd700;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+::highlight(bracket-unmatched) {
+    background-color: rgba(255, 107, 107, 0.35);
+    text-decoration: underline wavy #ff6b6b;
+}
+
+/* Fallback for browsers without the CSS Highlight API */
+.match-hl {
+    background: rgba(255, 215, 0, 0.28);
+    border-radius: 2px;
+    box-shadow: 0 2px 0 #ffd700;
+}
+
+.match-bad {
+    background: rgba(255, 107, 107, 0.35);
+    border-radius: 2px;
+}
+
+.line-numbers .code-line.match-line {
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.status .match-info {
+    float: right;
+    margin-left: 12px;
+    color: #c9b25b;
+}
+
+.status .match-info.bad {
+    color: #ff8a8a;
+}
+
+/* Undo / redo buttons */
+.icon-btn.icon-only {
+    padding: 5px 9px;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* Tree: copy JSONPath on hover */
+.tree-copy {
+    margin-left: 10px;
+    padding: 0 7px;
+    font: 11px/18px 'Segoe UI', -apple-system, Roboto, Arial, sans-serif;
+    color: #9aa3b2;
+    background: #262b35;
+    border: 1px solid #353b48;
+    border-radius: 4px;
+    cursor: pointer;
+    visibility: hidden;
+    vertical-align: 1px;
+}
+
+.tree-row:hover > .tree-copy,
+.tree-copy:focus-visible {
+    visibility: visible;
+}
+
+.tree-copy:hover {
+    color: #fff;
+    border-color: #4a5264;
+}
+
+/* Find bar */
+.find-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #151922;
+    border-bottom: 1px solid #262b35;
+}
+
+.find-bar[hidden] {
+    display: none;
+}
+
+.find-bar input {
+    flex: 1;
+    min-width: 0;
+    background: #0f1115;
+    color: #e6e9ef;
+    border: 1px solid #353b48;
+    border-radius: 5px;
+    padding: 5px 9px;
+    font: 13px 'Consolas', 'Courier New', monospace;
+    outline: none;
+}
+
+.find-bar input:focus {
+    border-color: #2f6fed;
+}
+
+.find-bar.none input {
+    border-color: #a04a4a;
+}
+
+.find-count {
+    font-size: 12px;
+    color: #9aa3b2;
+    white-space: nowrap;
+    min-width: 64px;
+    text-align: right;
+}
+
+.find-btn {
+    background: transparent;
+    color: #cfd6e6;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 3px 7px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.find-btn:hover {
+    background: #262b35;
+}
+
+.find-btn.on {
+    border-color: #2f6fed;
+    color: #fff;
+    background: rgba(47, 111, 237, 0.2);
+}
+
+::highlight(find-left),
+::highlight(find-right) {
+    background-color: rgba(234, 179, 8, 0.28);
+}
+
+::highlight(find-current-left),
+::highlight(find-current-right) {
+    background-color: rgba(249, 115, 22, 0.75);
+    color: #fff;
+}
+
+.tree-row.find-row-current {
+    background: rgba(249, 115, 22, 0.22);
+    box-shadow: inset 3px 0 0 #f97316;
+}
+
+/* JSONPath query bar */
+.query-bar .query-label {
+    font: 600 14px 'Consolas', 'Courier New', monospace;
+    color: #e8c790;
+}
+
+.query-bar .query-paths {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #9aa3b2;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+html[data-theme="light"] .query-bar .query-label {
+    color: #9a3412;
+}

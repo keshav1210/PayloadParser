@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JSON Compare – Diff Two JSON or XML Files Online</title>
+  <meta name="description" content="Compare two JSON or XML documents and see exactly what was added, removed or changed, by path. Ignore key order, view a side-by-side diff. Runs in your browser.">
+  <link rel="canonical" href="https://jsonxmleditor.com/compare">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON & XML Compare">
+  <meta property="og:description" content="See what changed between two JSON or XML documents, listed by path, with a side-by-side diff.">
+  <meta property="og:url" content="https://jsonxmleditor.com/compare">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/tools.css?v=2">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON & XML Compare",
+      "url": "https://jsonxmleditor.com/compare",
+      "description": "Compare two JSON or XML documents and see what was added, removed or changed, by path.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://jsonxmleditor.com/compare" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Does key order count as a difference?", "acceptedAnswer": { "@type": "Answer", "text": "Not by default. JSON objects have no meaningful key order, so \"Ignore key order\" is on. Turn it off if you need to know that keys were rearranged, for example when a test compares raw text." } },
+        { "@type": "Question", "name": "How are arrays compared?", "acceptedAnswer": { "@type": "Answer", "text": "Items are matched by content first, so inserting one item in the middle shows up as one addition instead of making every later item look changed. Items that don't match anything are compared position by position." } },
+        { "@type": "Question", "name": "Is my data uploaded anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. The comparison runs entirely in your browser. Your two inputs are saved in this browser's local storage so they survive a refresh; Clear removes them." } },
+        { "@type": "Question", "name": "Can I compare plain text or config files?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Choose Text as the format, or paste anything that isn't JSON or XML, and you get a line-by-line diff. Turn on \"Ignore whitespace\" to skip differences in spacing and indentation." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>JSON &amp; XML Compare</h1>
+    <p>Paste two versions of a document to see what was added, removed or changed. JSON and XML are compared by structure, so formatting and key order don't get in the way.</p>
+  </section>
+
+  <div class="tool-bar">
+    <button type="button" class="btn btn-primary" id="cmpRun" title="Compare (Ctrl+Enter)">Compare</button>
+    <button type="button" class="btn" id="cmpSwap" title="Swap the two sides">⇄ Swap</button>
+    <button type="button" class="btn" id="cmpSample">Load sample</button>
+    <button type="button" class="btn" id="cmpClear">Clear</button>
+    <span class="spacer"></span>
+    <label class="check" id="cmpIgnoreOrderWrap"><input type="checkbox" id="cmpIgnoreOrder" checked> Ignore key order</label>
+    <label class="check"><input type="checkbox" id="cmpIgnoreWs"> Ignore whitespace</label>
+    <label class="check">Format
+      <select id="cmpMode" aria-label="Format">
+        <option value="auto">Auto-detect</option>
+        <option value="json">JSON</option>
+        <option value="xml">XML</option>
+        <option value="text">Text</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane" aria-label="Original">
+      <div class="pane-head">Original <span class="muted">(before)</span>
+        <span class="actions">
+          <button type="button" class="mini-btn" data-format="left">Format</button>
+          <button type="button" class="mini-btn" data-upload="left">Upload</button>
+        </span>
+      </div>
+      <textarea id="cmpLeft" class="code-input" spellcheck="false" placeholder="Paste the original JSON, XML or text here, or drop a file"></textarea>
+    </section>
+    <section class="pane" aria-label="Changed">
+      <div class="pane-head">Changed <span class="muted">(after)</span>
+        <span class="actions">
+          <button type="button" class="mini-btn" data-format="right">Format</button>
+          <button type="button" class="mini-btn" data-upload="right">Upload</button>
+        </span>
+      </div>
+      <textarea id="cmpRight" class="code-input" spellcheck="false" placeholder="Paste the changed version here"></textarea>
+    </section>
+  </div>
+
+  <section class="result" id="cmpResult" hidden aria-live="polite">
+    <div class="summary" id="cmpSummary"></div>
+    <div class="tabs" id="cmpTabs" role="tablist">
+      <button type="button" class="tab-btn" role="tab" data-tab="changes" id="cmpTabChanges" aria-selected="true">Changes</button>
+      <button type="button" class="tab-btn" role="tab" data-tab="diff" aria-selected="false">Side by side</button>
+      <span class="muted" style="margin-left:auto;align-self:center;font-size:13px;color:var(--muted)">Compared as <strong id="cmpLang">JSON</strong></span>
+    </div>
+    <div id="cmpChanges">
+      <table class="change-table">
+        <thead><tr><th style="width:110px">Change</th><th>Path</th><th>Before</th><th>After</th></tr></thead>
+        <tbody id="cmpChangeBody"></tbody>
+      </table>
+    </div>
+    <div id="cmpDiff" hidden>
+      <div class="diff-view" id="cmpDiffView"></div>
+    </div>
+  </section>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+    <h2>How to compare two JSON files</h2>
+    <ol>
+      <li>Paste the older version on the left and the newer one on the right, drop a file on each side, or use <strong>Upload</strong>.</li>
+      <li>The comparison runs as you type. The format is detected automatically, or pick JSON, XML or Text yourself.</li>
+      <li>Read the <strong>Changes</strong> tab for a list of differences, or switch to <strong>Side by side</strong> to see them in context.</li>
+    </ol>
+
+    <h2>Structure, not text</h2>
+    <p>A plain text diff flags every line that moved or was re-indented. That's noisy for JSON, where these two are the same data:</p>
+    <pre><code>{"name": "Ada", "role": "admin"}</code></pre>
+    <pre><code>{
+  "role": "admin",
+  "name": "Ada"
+}</code></pre>
+    <p>This tool parses both sides and compares the values, so it reports "no differences" here. What it does report is listed by path, for example <code>$.items[1].qty</code> changed from <code>2</code> to <code>3</code>, which you can paste straight into a test or a bug report.</p>
+
+    <h2>Reading the results</h2>
+    <ul>
+      <li><strong>Added</strong>: the key or array item exists only in the changed version.</li>
+      <li><strong>Removed</strong>: it exists only in the original.</li>
+      <li><strong>Changed</strong>: it exists in both, with a different value or type. A number that became a string, like <code>42</code> → <code>"42"</code>, counts as changed.</li>
+      <li><strong>Key order</strong>: only shown when "Ignore key order" is off, if the same keys appear in a different order.</li>
+    </ul>
+    <p>Numbers are compared by value, so <code>1.0</code> and <code>1</code> are equal, while large IDs like <code>12345678901234567890</code> are compared digit by digit so they are never rounded.</p>
+
+    <h2>Comparing XML</h2>
+    <p>XML is compared the same way after it is converted to a tree: elements become keys, repeated elements become arrays and attributes become fields that start with <code>@</code>, so an attribute change shows up as a path like <code>$.order['@id']</code>. Whitespace between tags and different indentation don't count as changes.</p>
+
+    <h2>Where it helps</h2>
+    <ul>
+      <li>Checking what changed in an API response between two releases.</li>
+      <li>Reviewing a config change before deploying it.</li>
+      <li>Finding why a snapshot test failed without scrolling through a thousand-line text diff.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Does key order count as a difference?</summary>
+        <p>Not by default. JSON objects have no meaningful key order, so "Ignore key order" is on. Turn it off if you need to know that keys were rearranged, for example when a test compares raw text.</p>
+      </details>
+      <details>
+        <summary>How are arrays compared?</summary>
+        <p>Items are matched by content first, so inserting one item in the middle shows up as one addition instead of making every later item look changed. Items that don't match anything are compared position by position.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded anywhere?</summary>
+        <p>No. The comparison runs entirely in your browser. Your two inputs are saved in this browser's local storage so they survive a refresh; Clear removes them.</p>
+      </details>
+      <details>
+        <summary>Can I compare plain text or config files?</summary>
+        <p>Yes. Choose Text as the format, or paste anything that isn't JSON or XML, and you get a line-by-line diff. Turn on "Ignore whitespace" to skip differences in spacing and indentation.</p>
+      </details>
+    </div>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/repair.js?v=5"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/compare.js?v=1"></script>
+</body>
+</html>

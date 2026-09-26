@@ -20,8 +20,7 @@ function toggleMenu() {
 
 // Tool pages that live under the "Formatter" menu item
 const NAV_ALIASES = {
-    '/json-parser': '/parser', '/xml-parser': '/parser', '/csv-converter': '/parser',
-    '/yaml-converter': '/parser', '/toml-converter': '/parser',
+    '/json-parser': '/parser', '/xml-parser': '/parser',
     '/json-xml-converter': '/parser', '/xml-json-converter': '/parser'
 };
 
@@ -33,12 +32,24 @@ function markActiveNavLink(root) {
         if (href === path) {
             a.classList.add('active');
             a.setAttribute('aria-current', 'page');
+            const menu = a.closest('.nav-menu');
+            if (menu) menu.classList.add('active');
         }
     });
+
+    // Tools menu: close on outside click and Escape
+    const menu = root.querySelector('.nav-menu');
+    if (menu) {
+        document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.open = false; });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
+    }
 }
 
-loadFragment("header", "/header.html?v=4", markActiveNavLink);
-loadFragment("footer", "/footer.html?v=4", root => {
+loadFragment("header", "/header.html?v=8", root => {
+    markActiveNavLink(root);
+    if (window.updateThemeButtons) window.updateThemeButtons();
+});
+loadFragment("footer", "/footer.html?v=8", root => {
     const year = root.querySelector('.footer-year');
     if (year) year.textContent = new Date().getFullYear();
 });

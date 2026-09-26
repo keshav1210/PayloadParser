@@ -1,0 +1,443 @@
+/* ==========================================================
+   theme-light.css - light theme overrides for every page.
+   Active when <html data-theme="light"> (set by theme.js).
+   ========================================================== */
+
+/* ── Shared design tokens (site.css pages, learnings) ───────── */
+html[data-theme="light"] {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #f3f5f8;
+    --surface-3: #eaeef3;
+    --border: #dfe3ea;
+    --border-strong: #cfd5de;
+    --text: #1f2328;
+    --text-strong: #0d1117;
+    --muted: #59636e;
+    --link: #1a5fd6;
+    --code: #9a3412;
+
+    /* Share Drop / shared-link page variables */
+    --s1: #ffffff;
+    --s2: #f3f5f8;
+    --s3: #eaeef3;
+    --bh: #cfd5de;
+    color-scheme: light;
+}
+
+html[data-theme="light"] body {
+    background: #f6f7f9;
+    color: #1f2328;
+}
+
+html[data-theme="light"] a:hover {
+    color: #0b3d91;
+}
+
+/* ── Header & footer ────────────────────────────────────────── */
+html[data-theme="light"] .app-header {
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom-color: #e3e6eb;
+}
+
+html[data-theme="light"] .app-header .brand,
+html[data-theme="light"] .app-header .brand-name {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .nav-links a {
+    color: #4b5563;
+}
+
+html[data-theme="light"] .app-header .nav-links a:hover {
+    background: #eef1f5;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .nav-links a.active {
+    background: #e8effd;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .menu-toggle,
+html[data-theme="light"] .app-header .theme-toggle {
+    border-color: #d0d7de;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .theme-toggle:hover {
+    background: #eef1f5;
+}
+
+html[data-theme="light"] .app-footer {
+    background: #ffffff;
+    border-top-color: #e3e6eb;
+    color: #59636e;
+}
+
+html[data-theme="light"] .app-footer .footer-section h4,
+html[data-theme="light"] .app-footer .footer-brand {
+    color: #0d1117 !important;
+}
+
+html[data-theme="light"] .app-footer .footer-section a {
+    color: #59636e;
+}
+
+html[data-theme="light"] .app-footer .footer-section a:hover {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-footer .footer-bottom {
+    border-top-color: #e3e6eb;
+    color: #6e7781;
+}
+
+/* ── site.css components ────────────────────────────────────── */
+html[data-theme="light"] .tool-card:hover,
+html[data-theme="light"] .contact-option:hover {
+    background: #f6f8fa;
+    border-color: #b6c6e3;
+}
+
+html[data-theme="light"] .prose pre,
+html[data-theme="light"] .code-block {
+    background: #f6f8fa;
+    border-color: #dfe3ea;
+}
+
+html[data-theme="light"] .prose pre code,
+html[data-theme="light"] .code-block pre {
+    color: #1f2328;
+}
+
+html[data-theme="light"] .section h4 {
+    color: #1a5fd6;
+}
+
+/* ── Tool pages: toolbar, buttons, panels ───────────────────── */
+html[data-theme="light"] .controls,
+html[data-theme="light"] .toolbar,
+html[data-theme="light"] .tool-intro {
+    background: #ffffff;
+    border-bottom-color: #e3e6eb;
+}
+
+html[data-theme="light"] .tool-intro h1 {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .tool-intro p,
+html[data-theme="light"] .indent-control {
+    color: #59636e;
+}
+
+html[data-theme="light"] .btn {
+    background: #ffffff;
+    color: #1f2328;
+    border-color: #d0d7de;
+}
+
+html[data-theme="light"] .btn:hover {
+    background: #f3f4f6;
+    border-color: #b8c0cc;
+}
+
+html[data-theme="light"] .btn-primary,
+html[data-theme="light"] .convert-btn {
+    background: #2f6fed;
+    border-color: #2f6fed;
+    color: #ffffff;
+}
+
+html[data-theme="light"] .btn-primary:hover,
+html[data-theme="light"] .convert-btn:hover {
+    background: #1f5fdb;
+    border-color: #1f5fdb;
+}
+
+html[data-theme="light"] .btn-secondary,
+html[data-theme="light"] .btn-danger {
+    background: transparent;
+    color: #424a53;
+}
+
+html[data-theme="light"] .btn-secondary:hover {
+    background: #f3f4f6;
+    color: #0d1117;
+}
+
+html[data-theme="light"] select {
+    background: #ffffff;
+    color: #1f2328;
+    border-color: #d0d7de;
+}
+
+html[data-theme="light"] .container,
+html[data-theme="light"] .main-container {
+    background: #dfe3ea;
+}
+
+html[data-theme="light"] .middle-controls,
+html[data-theme="light"] .middle-gap {
+    background: #f6f7f9;
+}
+
+html[data-theme="light"] .panel,
+html[data-theme="light"] .editor-panel {
+    background: #ffffff;
+}
+
+html[data-theme="light"] .panel-header {
+    background: #eef2fb;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .panel-title {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .select-group label {
+    color: #424a53;
+}
+
+html[data-theme="light"] .expand-btn {
+    color: #59636e;
+}
+
+html[data-theme="light"] .expand-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #0d1117;
+}
+
+html[data-theme="light"] .icon-btn {
+    background: #ffffff;
+    color: #424a53;
+    border-color: #d0d7de;
+}
+
+html[data-theme="light"] .icon-btn:hover {
+    background: #f3f4f6;
+    color: #0d1117;
+}
+
+/* Code areas */
+html[data-theme="light"] .editor-wrapper,
+html[data-theme="light"] #rightEditorWrapper,
+html[data-theme="light"] .code-editor,
+html[data-theme="light"] #rightCodeEditor,
+html[data-theme="light"] .tree-view,
+html[data-theme="light"] #rightTreeContent,
+html[data-theme="light"] .editor {
+    background: #ffffff;
+    color: #1f2328;
+}
+
+html[data-theme="light"] .line-numbers-area {
+    background: #f6f8fa;
+    border-right-color: #e3e6eb;
+}
+
+html[data-theme="light"] .line-numbers,
+html[data-theme="light"] .fold-arrow {
+    color: #8c959f;
+}
+
+html[data-theme="light"] .fold-arrow:hover {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .code-editor:empty::before,
+html[data-theme="light"] .editor::placeholder,
+html[data-theme="light"] .placeholder {
+    color: #8c959f;
+}
+
+html[data-theme="light"] .status,
+html[data-theme="light"] .status-bar {
+    background: #f6f8fa;
+    color: #59636e;
+    border-top-color: #e3e6eb;
+}
+
+html[data-theme="light"] .success       { color: #1a7f37; }
+html[data-theme="light"] .error-text    { color: #cf222e; }
+html[data-theme="light"] .warning       { color: #9a6700; }
+html[data-theme="light"] .status .match-info { color: #7d4e00; }
+html[data-theme="light"] .status .match-info.bad { color: #cf222e; }
+
+/* Syntax colours (VS Code "Light+" palette) */
+html[data-theme="light"] .key,
+html[data-theme="light"] .tree-key        { color: #0451a5; }
+html[data-theme="light"] .string,
+html[data-theme="light"] .tree-string     { color: #a31515; }
+html[data-theme="light"] .number,
+html[data-theme="light"] .tree-number     { color: #098658; }
+html[data-theme="light"] .boolean,
+html[data-theme="light"] .null,
+html[data-theme="light"] .tree-boolean,
+html[data-theme="light"] .tree-null       { color: #0000ff; }
+html[data-theme="light"] .bracket         { color: #795e26; }
+html[data-theme="light"] .xml-tag         { color: #800000; }
+html[data-theme="light"] .xml-attr        { color: #e50000; }
+html[data-theme="light"] .xml-attr-value  { color: #0000ff; }
+html[data-theme="light"] .xml-text        { color: #1f2328; }
+html[data-theme="light"] .xml-comment     { color: #008000; }
+html[data-theme="light"] .xml-cdata       { color: #795e26; }
+
+html[data-theme="light"] .tree-count,
+html[data-theme="light"] .tree-colon,
+html[data-theme="light"] .tree-expand {
+    color: #6e7781;
+}
+
+html[data-theme="light"] .tree-row:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .tree-copy {
+    background: #f6f8fa;
+    color: #59636e;
+    border-color: #d0d7de;
+}
+
+html[data-theme="light"] .code-line.folded {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .code-line.error-line {
+    background: rgba(207, 34, 46, 0.1);
+}
+
+html[data-theme="light"] .line-numbers .code-line.match-line {
+    color: #9a6700;
+}
+
+/* Errors and repair report */
+html[data-theme="light"] .error {
+    background: #ffebe9;
+    color: #82071e;
+    border-left-color: #cf222e;
+}
+
+html[data-theme="light"] .error-message { color: #82071e; }
+html[data-theme="light"] .error-tip     { color: #7d4e00; }
+
+html[data-theme="light"] .error-snippet {
+    background: #f6f8fa;
+    color: #1f2328;
+}
+
+html[data-theme="light"] .repair-report {
+    background: #dafbe1;
+    border-color: #4ac26b;
+    color: #116329;
+}
+
+html[data-theme="light"] .repair-report strong {
+    color: #1a7f37;
+}
+
+/* Find bar */
+html[data-theme="light"] .find-bar {
+    background: #f6f8fa;
+    border-bottom-color: #e3e6eb;
+}
+
+html[data-theme="light"] .find-bar input {
+    background: #ffffff;
+    color: #1f2328;
+    border-color: #d0d7de;
+}
+
+html[data-theme="light"] .find-count {
+    color: #59636e;
+}
+
+html[data-theme="light"] .find-btn {
+    color: #424a53;
+}
+
+html[data-theme="light"] .find-btn:hover {
+    background: #eaeef2;
+}
+
+html[data-theme="light"] .find-btn.on {
+    color: #0d1117;
+}
+
+/* Article below the tools */
+html[data-theme="light"] .content-section {
+    background: #ffffff;
+    border-color: #e3e6eb;
+    color: #1f2328;
+}
+
+html[data-theme="light"] .content-section h2,
+html[data-theme="light"] .content-section h3,
+html[data-theme="light"] .content-section strong,
+html[data-theme="light"] .content-section td:first-child {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .content-section a,
+html[data-theme="light"] .related-tools a strong {
+    color: #1a5fd6;
+}
+
+html[data-theme="light"] .content-section code {
+    background: #eff1f3;
+    color: #9a3412;
+}
+
+html[data-theme="light"] .content-section pre {
+    background: #f6f8fa;
+    border-color: #e3e6eb;
+    color: #1f2328;
+}
+
+html[data-theme="light"] .content-section th {
+    color: #59636e;
+}
+
+html[data-theme="light"] .content-section th,
+html[data-theme="light"] .content-section td {
+    border-bottom-color: #e3e6eb;
+}
+
+html[data-theme="light"] .faq details,
+html[data-theme="light"] .related-tools a {
+    background: #f6f8fa;
+    border-color: #e3e6eb;
+    color: #1f2328;
+}
+
+html[data-theme="light"] .faq summary {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .faq details[open] summary {
+    border-bottom-color: #e3e6eb;
+}
+
+/* ── Share Drop pages ───────────────────────────────────────── */
+html[data-theme="light"] .guide h2,
+html[data-theme="light"] .guide strong,
+html[data-theme="light"] .guide summary {
+    color: #0d1117;
+}
+
+html[data-theme="light"] .guide a {
+    color: #1a5fd6;
+}
+
+html[data-theme="light"] .guide code {
+    color: #9a3412;
+}
+
+/* The gradient Share button keeps its colours in both themes */
+html[data-theme="light"] .btn-share {
+    background: linear-gradient(135deg, #4f8cff, #00ddb3);
+    border: none;
+    color: #ffffff;
+}

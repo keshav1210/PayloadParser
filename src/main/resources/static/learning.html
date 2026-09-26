@@ -68,6 +68,8 @@
   ]
 }
     </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
 </head>
 <body>
 <div id="header"></div>
@@ -465,50 +467,63 @@ password = "secure_password"</pre>
 
     <!-- Repair Function -->
     <div class="section" id="repair">
-        <h2>🔧 Repair Function</h2>
+        <h2>&#x1F527; Repair Function</h2>
 
         <p>
-            Repair takes JSON that won't parse and fixes the mistakes that most often come from
-            hand-editing or from copying JavaScript code. It is available for JSON in the formatter.
+            Repair takes JSON or XML that won't parse and rebuilds it so it becomes valid. It runs in your
+            browser, and the status bar lists every change it made so you can check the result.
         </p>
 
         <div class="function-card">
-            <h4>What Repair fixes:</h4>
+            <h4>What Repair fixes in JSON:</h4>
             <ul>
-                <li>Keys without quotes, such as <code>{name: "Rahul"}</code></li>
-                <li>Trailing commas after the last item in an object or array</li>
-                <li>Comments written as <code>// …</code> or <code>/* … */</code></li>
-                <li>Brackets or braces that were never closed</li>
+                <li>Missing or extra commas, and trailing commas</li>
+                <li>Keys without quotes, single quotes, backticks and curly quotes</li>
+                <li>Missing colons, missing values and quotes inside strings that weren't escaped</li>
+                <li>Missing <code>{</code>, <code>}</code>, <code>[</code> or <code>]</code>, including JSON that was cut off</li>
+                <li>Comments (<code>//</code>, <code>/* */</code> and <code>#</code>)</li>
+                <li>Python and JavaScript values: <code>True</code>, <code>False</code>, <code>None</code>, <code>undefined</code>, <code>NaN</code></li>
+                <li>Code fences, JSONP wrappers, log text before the JSON, and <code>ObjectId("…")</code>-style values</li>
+                <li>JSON Lines (one object per line), which become a single array</li>
             </ul>
 
-            <h4>What it doesn't fix:</h4>
+            <h4>What Repair fixes in XML:</h4>
             <ul>
-                <li>Single quotes around keys or strings</li>
-                <li>Missing commas between properties</li>
-                <li>Python values like <code>True</code>, <code>False</code> or <code>None</code></li>
+                <li>Unclosed, mismatched and overlapping tags, and closing tags with the wrong capitalisation</li>
+                <li>Attribute values without quotes, attributes without a value and duplicate attributes</li>
+                <li>A bare <code>&amp;</code> or <code>&lt;</code> in text, and HTML entities like <code>&amp;nbsp;</code></li>
+                <li>More than one root element, and HTML-style tags like <code>&lt;br&gt;</code></li>
             </ul>
-            <p>For those, the validator shows the exact line and column so you can correct them by hand.</p>
         </div>
 
         <h3>Example</h3>
         <h4>Before Repair:</h4>
         <div class="code-block">
-                <pre>{name: "Rahul", age: 28, // added later
- "skills": ["JS", "Python",],</pre>
+                <pre>// exported from the admin tool
+{
+  name: 'Ada Lovelace',
+  "active": True,
+  "manager": None
+  "langs": ["en", "fr",],</pre>
         </div>
 
         <h4>After Repair:</h4>
         <div class="code-block">
                 <pre>{
-  "name": "Rahul",
-  "age": 28,
-  "skills": [
-    "JS",
-    "Python"
+  "name": "Ada Lovelace",
+  "active": true,
+  "manager": null,
+  "langs": [
+    "en",
+    "fr"
   ]
 }</pre>
         </div>
-        <p>The keys got their quotes, the comment and the trailing comma are gone, and the missing closing brace was added.</p>
+        <p>
+            The comment is gone, the key has quotes, single quotes became double quotes, <code>True</code> and
+            <code>None</code> were converted, the missing comma was added, the trailing commas were removed and the
+            object was closed.
+        </p>
 
         <span class="tag">Fix Errors</span>
         <span class="tag">Auto-correct</span>
@@ -781,5 +796,5 @@ port = "5432"</pre>
 
 <div id="footer"></div>
 
-    <script src="/js/layout-loader.js?v=4"></script>
+    <script src="/js/layout-loader.js?v=6"></script>
     <script src="/js/learning.js"></script>

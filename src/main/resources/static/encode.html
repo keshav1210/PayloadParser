@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Base64, URL &amp; JSON Encode/Decode – Timestamp Converter</title>
+  <meta name="description" content="Encode and decode Base64, Base64URL, URL, HTML entities, JSON strings and hex, and convert Unix timestamps to dates. UTF-8 safe and runs in your browser.">
+  <link rel="canonical" href="https://jsonxmleditor.com/encode-decode">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Encode / Decode Toolkit">
+  <meta property="og:description" content="Base64, URL, HTML, JSON string, hex and Unix timestamp conversions in one place.">
+  <meta property="og:url" content="https://jsonxmleditor.com/encode-decode">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/tools.css?v=2">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Encode / Decode Toolkit",
+      "url": "https://jsonxmleditor.com/encode-decode",
+      "description": "Base64, Base64URL, URL, HTML entity, JSON string, hex and Unix timestamp conversions.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Encode / Decode", "item": "https://jsonxmleditor.com/encode-decode" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is Base64 encryption?", "acceptedAnswer": { "@type": "Answer", "text": "No. Base64 only changes how bytes are written so they survive systems that expect text. Anyone can decode it, so it gives no protection to passwords or other secrets." } },
+        { "@type": "Question", "name": "What's the difference between Base64 and Base64URL?", "acceptedAnswer": { "@type": "Answer", "text": "Base64URL uses - and _ instead of + and / and usually drops the = padding, so the result can go into URLs and file names without escaping. JWTs use Base64URL. The decoder here accepts both." } },
+        { "@type": "Question", "name": "Why does decoding show hex instead of text?", "acceptedAnswer": { "@type": "Answer", "text": "The decoded bytes aren't readable UTF-8 text, for example an image or a zip file. The tool shows them as hex, tells you what kind of file they look like, and lets you download them." } },
+        { "@type": "Question", "name": "Is the timestamp in seconds or milliseconds?", "acceptedAnswer": { "@type": "Answer", "text": "It's detected from the number of digits: up to 11 digits is read as seconds, 12 to 13 as milliseconds, and longer numbers as microseconds or nanoseconds. The result says which one was used." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>Encode / Decode</h1>
+    <p>Base64, URL encoding, HTML entities, JSON strings, hex and Unix timestamps. Results update as you type, and nothing leaves your browser.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Conversion">
+    <button type="button" class="tab-btn" role="tab" data-mode="base64">Base64</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="base64url">Base64URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="url">URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="html">HTML entities</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="json">JSON string</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="hex">Hex</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="time">Unix timestamp</button>
+  </div>
+
+  <div class="tool-bar">
+    <span id="encDir" role="group" aria-label="Direction" style="display:inline-flex;gap:6px">
+      <button type="button" class="btn tab-toggle" data-dir="encode" aria-selected="true">Encode</button>
+      <button type="button" class="btn tab-toggle" data-dir="decode" aria-selected="false">Decode</button>
+    </span>
+    <button type="button" class="btn" id="encNow" hidden>Now</button>
+    <button type="button" class="btn" id="encFile" title="Encode a file (up to 10 MB) as Base64">File to Base64</button>
+    <button type="button" class="btn" id="encSwap" title="Use the output as the new input and switch direction">⇄ Swap</button>
+    <button type="button" class="btn" id="encClear">Clear</button>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane">
+      <div class="pane-head">Input</div>
+      <textarea id="encInput" class="code-input" spellcheck="false" style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Output <span class="muted" id="encStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="encDownload" hidden>Download</button>
+          <button type="button" class="mini-btn" id="encCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="encOutput" class="code-input" spellcheck="false" readonly style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+  </div>
+  <p id="encNote" class="meta" style="margin-top:10px"></p>
+  <div id="encError" class="error-box" hidden style="margin-top:10px"></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+    <h2>What each conversion is for</h2>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Conversion</th><th>Typical use</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Base64</td><td>Binary data in JSON, email attachments, Basic auth headers</td><td><code>Hello</code> → <code>SGVsbG8=</code></td></tr>
+        <tr><td>Base64URL</td><td>JWTs and values that go into URLs</td><td><code>&lt;&lt;?</code> → <code>PDw_</code></td></tr>
+        <tr><td>URL</td><td>Query string values and path segments</td><td><code>a b&amp;c</code> → <code>a%20b%26c</code></td></tr>
+        <tr><td>HTML entities</td><td>Showing user text safely inside HTML</td><td><code>&lt;b&gt;</code> → <code>&amp;lt;b&amp;gt;</code></td></tr>
+        <tr><td>JSON string</td><td>Putting text inside a JSON value, or reading an escaped payload from a log</td><td><code>line "1"</code> → <code>"line \"1\""</code></td></tr>
+        <tr><td>Hex</td><td>Looking at raw bytes, hashes and binary protocols</td><td><code>Hi</code> → <code>4869</code></td></tr>
+        <tr><td>Unix timestamp</td><td>Reading <code>created_at</code> values, JWT <code>exp</code> claims and log times</td><td><code>1700000000</code> → 2023-11-14T22:13:20Z</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Unicode works properly</h2>
+    <p>JavaScript's built-in <code>btoa()</code> fails on text like <code>café</code> or emoji. This tool converts text to UTF-8 bytes first, so every character round-trips correctly and the Base64 matches what Java, Python and most servers produce.</p>
+
+    <h2>Unescaping JSON from logs</h2>
+    <p>Logs and message queues often store a JSON payload as an escaped string, full of <code>\"</code> and <code>\n</code>. Choose <strong>JSON string</strong> and <strong>Decode</strong> to turn it back into readable JSON. If the result is JSON itself, it is formatted for you.</p>
+
+    <h2>Decoding files</h2>
+    <p>When Base64 or hex decodes to something that isn't text, such as an image or a zip archive, you'll see the bytes as hex, a hint about the file type, and a <strong>Download</strong> button. Going the other way, <strong>File to Base64</strong> encodes any file up to 10 MB without uploading it.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is Base64 encryption?</summary>
+        <p>No. Base64 only changes how bytes are written so they survive systems that expect text. Anyone can decode it, so it gives no protection to passwords or other secrets.</p>
+      </details>
+      <details>
+        <summary>What's the difference between Base64 and Base64URL?</summary>
+        <p>Base64URL uses - and _ instead of + and / and usually drops the = padding, so the result can go into URLs and file names without escaping. JWTs use Base64URL. The decoder here accepts both.</p>
+      </details>
+      <details>
+        <summary>Why does decoding show hex instead of text?</summary>
+        <p>The decoded bytes aren't readable UTF-8 text, for example an image or a zip file. The tool shows them as hex, tells you what kind of file they look like, and lets you download them.</p>
+      </details>
+      <details>
+        <summary>Is the timestamp in seconds or milliseconds?</summary>
+        <p>It's detected from the number of digits: up to 11 digits is read as seconds, 12 to 13 as milliseconds, and longer numbers as microseconds or nanoseconds. The result says which one was used.</p>
+      </details>
+    </div>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/encode.js?v=1"></script>
+</body>
+</html>

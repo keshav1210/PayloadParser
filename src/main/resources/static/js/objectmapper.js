@@ -285,6 +285,23 @@ public class Address
             return;
         }
 
+        // Go, Kotlin, Rust, Pydantic and Zod are generated in the browser (classgen.js)
+        if (typeof ClassGen !== 'undefined' && ClassGen.handles(outputLang)) {
+            if (inputLang !== 'json') {
+                outputEditor.value = `// ${ClassGen.LANGS[outputLang]} are generated from a JSON sample.\n// Choose JSON as the input language.`;
+                updateStatus('Choose JSON as the input language');
+                return;
+            }
+            try {
+                outputEditor.value = ClassGen.generate(inputCode, outputLang);
+                updateStatus(`Generated ${ClassGen.LANGS[outputLang]}`);
+            } catch (e) {
+                outputEditor.value = '// Error: ' + e.message;
+                updateStatus('Conversion failed: ' + e.message);
+            }
+            return;
+        }
+
         updateStatus('Converting...');
         outputEditor.value = '// Converting...';
 

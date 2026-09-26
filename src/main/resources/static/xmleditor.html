@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
   <title>XML Formatter &amp; Validator – Pretty Print XML Online</title>
   <meta name="description" content="Format and validate XML in your browser. See errors by line and column, fold elements, minify, and convert XML to JSON, YAML, TOML or CSV.">
   <link rel="canonical" href="https://jsonxmleditor.com/xml-parser">
@@ -19,9 +20,10 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=7">
   <link rel="stylesheet" href="/css/sharemodel.css?v=4">
   <link rel="stylesheet" href="/css/sql-modal.css?v=4">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -117,14 +119,11 @@
   <p>Paste XML to indent it, check that it is well-formed and see it as a tree. Comments, CDATA and the XML declaration are kept.</p>
 </section>
 
-
-
-
 <!-- Top Controls -->
 <div class="controls">
     <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
     <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
-    <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
     <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
     <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
     <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
@@ -148,7 +147,7 @@
             <div class="panel-header-controls" id="leftPanelControls">
                 <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
                 <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
-                <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+                <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
                 <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
                 <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
                 <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
@@ -257,6 +256,29 @@
 </table>
 </div>
 
+<h2>Repairing broken XML</h2>
+<p>Click <strong>Repair</strong> and the editor rebuilds the document so it becomes well-formed. It runs in your browser and lists every change. For example:</p>
+<pre><code>&lt;order id=7&gt;
+  &lt;item&gt;Fish &amp; chips
+  &lt;price currency=EUR&gt;9.50&lt;/Price&gt;
+&lt;/order&gt;</code></pre>
+<p>becomes</p>
+<pre><code>&lt;order id="7"&gt;
+  &lt;item&gt;
+    Fish &amp;amp; chips
+    &lt;price currency="EUR"&gt;9.50&lt;/price&gt;
+  &lt;/item&gt;
+&lt;/order&gt;</code></pre>
+<p>The attribute values got quotes, the bare <code>&amp;</code> was escaped, <code>&lt;/Price&gt;</code> was matched to <code>&lt;price&gt;</code> despite the different capitalisation, and the <code>&lt;item&gt;</code> that was never closed was closed. Repair also:</p>
+<ul>
+  <li>Closes elements in the right order when tags overlap, like <code>&lt;a&gt;&lt;b&gt;&lt;/a&gt;&lt;/b&gt;</code></li>
+  <li>Removes closing tags that have no opening tag</li>
+  <li>Wraps several root elements in a single <code>&lt;root&gt;</code></li>
+  <li>Turns HTML habits into XML: <code>&lt;br&gt;</code> becomes <code>&lt;br/&gt;</code> and <code>&amp;nbsp;</code> becomes <code>&amp;#160;</code></li>
+  <li>Closes comments, CDATA sections and attribute values that were left open</li>
+</ul>
+<p>Repair can only guess where an unclosed element was meant to end, so check the result, especially around the lines it mentions.</p>
+
 <h2>What formatting changes and what it keeps</h2>
 <p>Each element goes on its own line, indented by two spaces, four spaces or a tab. An element that only holds text stays on one line, like <code>&lt;city&gt;Boston&lt;/city&gt;</code>. The XML declaration, comments, CDATA sections, processing instructions and namespace prefixes such as <code>soap:Envelope</code> are all kept. Whitespace between elements is replaced by the new indentation, and character references like <code>&amp;#65;</code> are written out as the character they stand for.</p>
 
@@ -303,9 +325,13 @@
   <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
   <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
   <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
-  <li><a href="/yaml-converter"><strong>YAML Converter</strong>JSON to YAML, and properties files to YAML and back.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Validator</strong>Validate YAML, convert YAML to JSON and back, and properties files.</a></li>
   <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
-  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, TypeScript, Go, Kotlin, Rust or Pydantic types.</a></li>
+  <li><a href="/compare"><strong>JSON &amp; XML Compare</strong>See what changed between two versions, by path.</a></li>
+  <li><a href="/json-schema"><strong>JSON Schema</strong>Generate a schema from a sample, or validate against one.</a></li>
+  <li><a href="/jwt-decoder"><strong>JWT Decoder</strong>Read claims, check expiry and verify signatures.</a></li>
+  <li><a href="/encode-decode"><strong>Encode / Decode</strong>Base64, URL, JSON strings, hex and timestamps.</a></li>
 </ul>
 </article>
 
@@ -453,7 +479,10 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js?v=4"></script>
-<script src="/js/jsonxmlformatter.js?v=4"></script>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/repair.js?v=5"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/jsonpath.js?v=1"></script>
+<script src="/js/editor-tools.js?v=2"></script>
 </body>
 </html>

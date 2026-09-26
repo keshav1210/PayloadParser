@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON to Java, TypeScript, Python and C# Class Generator</title>
-    <meta name="description" content="Paste a JSON sample and get Java (Lombok or POJO), TypeScript, Python, JavaScript or C# classes. Nested objects become their own classes.">
+    <title>JSON to Java, TypeScript, Go, Kotlin &amp; Rust Class Generator</title>
+    <meta name="description" content="Paste a JSON sample and get Java, TypeScript, Python, C#, Go, Kotlin, Rust, Pydantic or Zod types. Nested objects become their own classes.">
     <link rel="canonical" href="https://jsonxmleditor.com/mapper">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#111317">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="JSON XML Editor">
     <meta property="og:title" content="JSON to Class Generator">
-    <meta property="og:description" content="Turn a JSON sample into Java, TypeScript, Python, JavaScript or C# classes.">
+    <meta property="og:description" content="Turn a JSON sample into Java, TypeScript, Python, C#, Go, Kotlin, Rust, Pydantic or Zod types.">
     <meta property="og:url" content="https://jsonxmleditor.com/mapper">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="icon" href="/favicon.png" type="image/png">
@@ -69,7 +69,7 @@
           "name": "Which languages can I generate?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#."
+            "text": "Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#, plus Go structs with json tags, Kotlin data classes for kotlinx.serialization, Rust structs for serde, Pydantic v2 models and Zod schemas. The last five are generated in your browser and keep the original JSON key names through tags, aliases or renames."
           }
         },
         {
@@ -101,6 +101,8 @@
   ]
 }
     </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
 </head>
 <body>
 <div id="header"></div>
@@ -183,6 +185,11 @@
                     <option value="javascript">JavaScript</option>
                     <option value="typescript">TypeScript</option>
                     <option value="csharp">C#</option>
+                    <option value="go">Go</option>
+                    <option value="kotlin">Kotlin</option>
+                    <option value="rust">Rust (serde)</option>
+                    <option value="pydantic">Python (Pydantic)</option>
+                    <option value="zod">TypeScript (Zod)</option>
                   <!--  <option value="cpp">C++</option>
                     <option value="go">Go</option>
                     <option value="rust">Rust</option>-->
@@ -237,7 +244,7 @@
     <h2>How to generate classes from JSON</h2>
     <ol>
         <li>Paste a JSON object into the left panel, or click <strong>Load Sample</strong>.</li>
-        <li>Pick the output language on the right: Java, TypeScript, Python, JavaScript or C#.</li>
+        <li>Pick the output language on the right: Java, TypeScript, Python, JavaScript, C#, Go, Kotlin, Rust, Pydantic or Zod.</li>
         <li>For Java, choose Lombok or a plain POJO and which constructors you want.</li>
         <li>Click <strong>Convert</strong>, then <strong>Copy Output</strong>.</li>
     </ol>
@@ -246,6 +253,17 @@
     <p>Every JSON object becomes a class, and nested objects get a class of their own, named after their key. The top-level class is called <code>RootObject</code>, so rename it to fit your code. In Java, C# and TypeScript, field types come from the sample values: text becomes <code>String</code>, whole numbers become <code>int</code>, decimals become <code>double</code>, and so on. For example, with Java and Lombok:</p>
 <pre>{ "userName": "ada", "age": 36, "address": { "city": "London" } }</pre>
     <p>produces an <code>Address</code> class with a <code>city</code> field, and a <code>RootObject</code> class with <code>userName</code>, <code>age</code> and <code>address</code>, each annotated with <code>@Data</code> and the constructor annotations you picked.</p>
+
+    <h2>Go, Kotlin, Rust, Pydantic and Zod</h2>
+    <p>These are built from the JSON sample right in your browser, following each language's usual style:</p>
+    <ul>
+        <li><strong>Go</strong>: exported struct fields with <code>json:"key"</code> tags; optional fields become pointers with <code>omitempty</code>.</li>
+        <li><strong>Kotlin</strong>: <code>@Serializable</code> data classes; keys that aren't valid camelCase names get <code>@SerialName</code>.</li>
+        <li><strong>Rust</strong>: <code>serde</code> structs with snake_case fields, <code>#[serde(rename)]</code> where needed and <code>Option&lt;T&gt;</code> for optional values.</li>
+        <li><strong>Pydantic</strong>: v2 <code>BaseModel</code> classes with snake_case fields and <code>Field(alias=...)</code> for the original keys.</li>
+        <li><strong>Zod</strong>: one schema per object plus a TypeScript type from <code>z.infer</code>.</li>
+    </ul>
+    <p>If you paste an array of objects, fields missing from some items are marked optional and fields that are sometimes <code>null</code> become nullable.</p>
 
     <h2>Tips for better results</h2>
     <ul>
@@ -262,7 +280,7 @@
     <div class="faq">
         <details>
           <summary>Which languages can I generate?</summary>
-          <p>Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#.</p>
+          <p>Java (with Lombok annotations or as a plain POJO), TypeScript, Python, JavaScript and C#, plus Go structs with json tags, Kotlin data classes for kotlinx.serialization, Rust structs for serde, Pydantic v2 models and Zod schemas. The last five are generated in your browser and keep the original JSON key names through tags, aliases or renames.</p>
         </details>
         <details>
           <summary>Why is my top-level class called RootObject?</summary>
@@ -368,7 +386,8 @@
 
 <br>
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=4"></script>
-<script src="/js/objectmapper.js"></script>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/classgen.js?v=1"></script>
+<script src="/js/objectmapper.js?v=2"></script>
 </body>
 </html>

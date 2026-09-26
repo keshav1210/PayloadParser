@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JWT Decoder – Decode and Verify JSON Web Tokens</title>
+  <meta name="description" content="Decode a JWT to read its header and payload, see expiry dates in plain language, and verify the signature with a secret or public key. Runs in your browser; tokens are never sent.">
+  <link rel="canonical" href="https://jsonxmleditor.com/jwt-decoder">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JWT Decoder">
+  <meta property="og:description" content="Read a JSON Web Token's header and claims, check expiry and verify the signature, without sending the token anywhere.">
+  <meta property="og:url" content="https://jsonxmleditor.com/jwt-decoder">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/tools.css?v=2">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JWT Decoder",
+      "url": "https://jsonxmleditor.com/jwt-decoder",
+      "description": "Decode JSON Web Tokens, check expiry and verify signatures in the browser.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JWT Decoder", "item": "https://jsonxmleditor.com/jwt-decoder" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is it safe to paste a real token here?", "acceptedAnswer": { "@type": "Answer", "text": "The token is decoded and verified inside your browser and is never sent to our server or saved. Still, treat production tokens like passwords: anyone who has a valid token can use it until it expires." } },
+        { "@type": "Question", "name": "Why can I read the payload without the secret?", "acceptedAnswer": { "@type": "Answer", "text": "A standard JWT is signed, not encrypted. The header and payload are only base64url-encoded, so anyone can read them. The signature stops people from changing the contents, not from reading them. Never put passwords or other secrets in a JWT payload." } },
+        { "@type": "Question", "name": "Which algorithms can be verified?", "acceptedAnswer": { "@type": "Answer", "text": "HS256, HS384 and HS512 with a shared secret; RS256, RS384, RS512, PS256, PS384 and PS512 with an RSA public key; and ES256, ES384 and ES512 with an EC public key. Keys can be pasted as PEM (BEGIN PUBLIC KEY) or as a JWK or JWKS." } },
+        { "@type": "Question", "name": "What do exp, iat and nbf mean?", "acceptedAnswer": { "@type": "Answer", "text": "They are times in seconds since 1 January 1970 (UTC). exp is when the token expires, iat is when it was issued and nbf is the time before which it must not be accepted. The decoder shows each one as a date and as a relative time such as \"in 45 minutes\"." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>JWT Decoder</h1>
+    <p>Paste a JSON Web Token to read its header and claims, see when it expires, and optionally verify its signature. Everything happens in your browser; the token is never sent or stored.</p>
+  </section>
+
+  <div class="tool-bar">
+    <button type="button" class="btn" id="jwtSample">Load sample token</button>
+    <button type="button" class="btn" id="jwtClear">Clear</button>
+  </div>
+
+  <div class="pane-grid">
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Encoded token</div>
+        <textarea id="jwtInput" class="code-input" spellcheck="false" style="white-space:pre-wrap;word-break:break-all;min-height:220px" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOi…  (a leading &quot;Bearer&quot; is fine)"></textarea>
+      </section>
+      <section class="pane">
+        <div class="pane-head">Verify signature <span class="muted">(optional)</span></div>
+        <div style="padding:12px 14px" class="field">
+          <label for="jwtKey" id="jwtKeyLabel">Secret</label>
+          <textarea id="jwtKey" class="code-input" spellcheck="false" style="min-height:90px;border:1px solid var(--border-strong);border-radius:7px"></textarea>
+          <div><span id="jwtVerify" class="badge warn"></span></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <div id="jwtError" class="error-box" hidden></div>
+      <div id="jwtOut" class="stack" hidden>
+        <div class="summary">
+          <span id="jwtStatus" class="badge ok"></span>
+          <span>Algorithm <strong id="jwtAlg"></strong></span>
+        </div>
+        <ul id="jwtWarnings" class="error-box" style="margin:0;padding-left:30px" hidden></ul>
+        <section class="pane">
+          <div class="pane-head">Header <span class="actions"><button type="button" class="mini-btn" id="jwtCopyHeader">Copy</button></span></div>
+          <pre id="jwtHeader" class="code-output json-view"></pre>
+        </section>
+        <section class="pane">
+          <div class="pane-head">Payload <span class="actions"><button type="button" class="mini-btn" id="jwtCopyPayload">Copy</button></span></div>
+          <pre id="jwtPayload" class="code-output json-view"></pre>
+        </section>
+        <section class="pane">
+          <div class="pane-head">Claims</div>
+          <dl id="jwtClaims" class="kv"></dl>
+        </section>
+        <section class="pane">
+          <div class="pane-head">Signature</div>
+          <pre id="jwtSignature" class="code-output"></pre>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+    <h2>What's inside a JWT</h2>
+    <p>A JSON Web Token is three base64url strings joined by dots:</p>
+    <pre><code>header.payload.signature</code></pre>
+    <ul>
+      <li>The <strong>header</strong> says how the token was signed, for example <code>{"alg": "HS256", "typ": "JWT"}</code>.</li>
+      <li>The <strong>payload</strong> holds the claims: who the token is about (<code>sub</code>), who issued it (<code>iss</code>), who it's for (<code>aud</code>) and when it expires (<code>exp</code>), plus anything the issuer adds, such as roles.</li>
+      <li>The <strong>signature</strong> is computed from the first two parts and a key. If anyone changes the header or payload, the signature no longer matches.</li>
+    </ul>
+    <p>Decoding only reverses the base64url step, which is why you can read any token without a key. That also means a JWT payload is not private: don't put passwords, card numbers or other secrets in it.</p>
+
+    <h2>Checking expiry</h2>
+    <p>The times in a JWT are Unix timestamps in seconds. The decoder turns <code>exp</code>, <code>iat</code> and <code>nbf</code> into readable dates, in UTC and in your local time zone, and shows at the top whether the token is still valid. A common bug is writing milliseconds instead of seconds (a 13-digit number); the decoder warns you when it sees that.</p>
+
+    <h2>Verifying the signature</h2>
+    <p>Paste the key under <strong>Verify signature</strong>:</p>
+    <ul>
+      <li><strong>HS256 / HS384 / HS512</strong>: the shared secret, exactly as the server uses it.</li>
+      <li><strong>RS*, PS* and ES*</strong>: the public key as PEM (<code>-----BEGIN PUBLIC KEY-----</code>) or as JSON (a JWK, or a JWKS with a <code>keys</code> array; the key whose <code>kid</code> matches the header is used).</li>
+    </ul>
+    <p>Verification uses your browser's built-in Web Crypto API. A green result means the token was signed with that key and hasn't been changed since. Your server still has to check <code>exp</code>, <code>aud</code> and <code>iss</code> itself.</p>
+
+    <h2>Warnings the decoder shows</h2>
+    <ul>
+      <li><code>alg: "none"</code>: the token isn't signed at all. Servers must never accept it.</li>
+      <li>No <code>exp</code> claim: the token is valid forever unless the server tracks it.</li>
+      <li>Very long lifetimes (over 30 days): a leaked token stays usable for a long time.</li>
+      <li>Times written in milliseconds or as strings.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is it safe to paste a real token here?</summary>
+        <p>The token is decoded and verified inside your browser and is never sent to our server or saved. Still, treat production tokens like passwords: anyone who has a valid token can use it until it expires.</p>
+      </details>
+      <details>
+        <summary>Why can I read the payload without the secret?</summary>
+        <p>A standard JWT is signed, not encrypted. The header and payload are only base64url-encoded, so anyone can read them. The signature stops people from changing the contents, not from reading them. Never put passwords or other secrets in a JWT payload.</p>
+      </details>
+      <details>
+        <summary>Which algorithms can be verified?</summary>
+        <p>HS256, HS384 and HS512 with a shared secret; RS256, RS384, RS512, PS256, PS384 and PS512 with an RSA public key; and ES256, ES384 and ES512 with an EC public key. Keys can be pasted as PEM (BEGIN PUBLIC KEY) or as a JWK or JWKS.</p>
+      </details>
+      <details>
+        <summary>What do exp, iat and nbf mean?</summary>
+        <p>They are times in seconds since 1 January 1970 (UTC). exp is when the token expires, iat is when it was issued and nbf is the time before which it must not be accepted. The decoder shows each one as a date and as a relative time such as "in 45 minutes".</p>
+      </details>
+    </div>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/jwt.js?v=1"></script>
+</body>
+</html>

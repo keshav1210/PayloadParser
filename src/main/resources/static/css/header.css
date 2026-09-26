@@ -101,3 +101,151 @@
         font-size: 15px;
     }
 }
+
+.app-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.app-header .theme-toggle {
+    background: none;
+    border: 1px solid #2a2f3a;
+    border-radius: 6px;
+    color: #e6e9ef;
+    font-size: 16px;
+    line-height: 1;
+    width: 34px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.app-header .theme-toggle:hover {
+    background: #1c1f26;
+}
+
+@media (min-width: 861px) {
+    .app-header .header-actions {
+        order: 3;
+    }
+}
+
+/* Tools dropdown */
+.app-header .nav-menu {
+    position: relative;
+}
+
+.app-header .nav-menu > summary {
+    list-style: none;
+    cursor: pointer;
+    color: #aeb6c4;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border-radius: 6px;
+    user-select: none;
+}
+
+.app-header .nav-menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.app-header .nav-menu > summary::after {
+    content: ' \25BE';
+    font-size: 11px;
+}
+
+.app-header .nav-menu > summary:hover,
+.app-header .nav-menu[open] > summary {
+    background: #1c1f26;
+    color: #ffffff;
+}
+
+.app-header .nav-menu.active > summary {
+    background: #1c2433;
+    color: #ffffff;
+    box-shadow: inset 0 -2px 0 #2f6fed;
+}
+
+.app-header .nav-menu-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 220px;
+    padding: 6px;
+    background: #16181d;
+    border: 1px solid #2a2f3a;
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 1100;
+}
+
+.app-header .nav-menu-panel a {
+    display: block;
+    white-space: nowrap;
+}
+
+html[data-theme="light"] .app-header .nav-menu > summary {
+    color: #4b5563;
+}
+
+html[data-theme="light"] .app-header .nav-menu > summary:hover,
+html[data-theme="light"] .app-header .nav-menu[open] > summary {
+    background: #eef1f5;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .nav-menu.active > summary {
+    background: #e8effd;
+    color: #0d1117;
+}
+
+html[data-theme="light"] .app-header .nav-menu-panel {
+    background: #ffffff;
+    border-color: #dfe3ea;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 860px) {
+    .app-header .nav-menu > summary {
+        padding: 11px 12px;
+        font-size: 15px;
+    }
+
+    .app-header .nav-menu-panel {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0 0 0 14px;
+        min-width: 0;
+    }
+}
+
+/* Divider + external link in the Tools menu */
+.app-header .nav-menu-divider {
+    height: 1px;
+    margin: 4px 6px;
+    background: #2a2f3a;
+}
+
+.app-header .nav-menu-panel a.nav-external small {
+    display: block;
+    font-size: 11.5px;
+    color: #7c8595;
+    font-weight: 400;
+    white-space: normal;
+    max-width: 240px;
+    margin-top: 2px;
+}
+
+html[data-theme="light"] .app-header .nav-menu-divider {
+    background: #e3e6eb;
+}
+
+html[data-theme="light"] .app-header .nav-menu-panel a.nav-external small {
+    color: #6e7781;
+}

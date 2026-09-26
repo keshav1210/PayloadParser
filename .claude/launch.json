@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "app",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "C:/PayloadParser/PayloadParser/mvnw.cmd", "-q", "spring-boot:run"],
+      "port": 8085,
+      "cwd": "C:/PayloadParser/PayloadParser"
+    }
+  ]
+}

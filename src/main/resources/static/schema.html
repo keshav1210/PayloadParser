@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JSON Schema Generator &amp; Validator Online</title>
+  <meta name="description" content="Generate a JSON Schema from a sample document, or validate JSON against a schema and see every problem by path. Supports draft 2020-12 and older drafts. Runs in your browser.">
+  <link rel="canonical" href="https://jsonxmleditor.com/json-schema">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON Schema Generator & Validator">
+  <meta property="og:description" content="Create a JSON Schema from an example, or check JSON against a schema.">
+  <meta property="og:url" content="https://jsonxmleditor.com/json-schema">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/tools.css?v=2">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON Schema Generator & Validator",
+      "url": "https://jsonxmleditor.com/json-schema",
+      "description": "Generate a JSON Schema from a sample, or validate JSON against a schema.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JSON Schema", "item": "https://jsonxmleditor.com/json-schema" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Which JSON Schema drafts are supported?", "acceptedAnswer": { "@type": "Answer", "text": "The generator writes draft 2020-12. The validator understands the common keywords of draft 4, 6, 7, 2019-09 and 2020-12, including $ref to definitions inside the same schema. References to other files or URLs are not followed." } },
+        { "@type": "Question", "name": "How does the generator decide which fields are required?", "acceptedAnswer": { "@type": "Answer", "text": "A field is required when it appears in every example of that object. If you paste an array of objects and one item lacks a field, that field stays optional. You can switch required fields off entirely." } },
+        { "@type": "Question", "name": "Why is my date or email not detected?", "acceptedAnswer": { "@type": "Answer", "text": "Formats are guessed from the sample values: ISO 8601 dates and times, email addresses, http(s) URLs and UUIDs. Other values stay plain strings. You can add or remove a format in the generated schema by hand." } },
+        { "@type": "Question", "name": "Is my data sent anywhere?", "acceptedAnswer": { "@type": "Answer", "text": "No. Generating and validating both run in your browser. Your inputs are kept in this browser's local storage so they survive a refresh." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>JSON Schema Generator &amp; Validator</h1>
+    <p>Create a JSON Schema from an example document, or check a JSON document against a schema and see exactly which values break which rules.</p>
+  </section>
+
+  <div class="tabs" id="schemaTabs" role="tablist">
+    <button type="button" class="tab-btn" role="tab" data-tab="generate" aria-selected="true">Generate schema</button>
+    <button type="button" class="tab-btn" role="tab" data-tab="validate" aria-selected="false">Validate JSON</button>
+  </div>
+
+  <section id="genPanel">
+    <div class="tool-bar">
+      <button type="button" class="btn" id="genSampleBtn">Load sample</button>
+      <span class="spacer"></span>
+      <label class="check"><input type="checkbox" id="optRequired" checked> Required fields</label>
+      <label class="check"><input type="checkbox" id="optFormats" checked> Detect formats</label>
+      <label class="check"><input type="checkbox" id="optAdditional" checked> Allow extra properties</label>
+    </div>
+    <div class="pane-grid">
+      <section class="pane">
+        <div class="pane-head">Sample JSON</div>
+        <textarea id="genSample" class="code-input" spellcheck="false" placeholder="Paste an example document. Arrays of objects give the best results: fields missing from some items become optional."></textarea>
+      </section>
+      <section class="pane">
+        <div class="pane-head">Generated schema
+          <span class="actions">
+            <button type="button" class="mini-btn" id="genUse" title="Validate the sample against this schema">Validate with it</button>
+            <button type="button" class="mini-btn" id="genCopy">Copy</button>
+          </span>
+        </div>
+        <textarea id="genOut" class="code-input" spellcheck="false" readonly></textarea>
+      </section>
+    </div>
+    <div id="genError" class="error-box" hidden style="margin-top:12px"></div>
+  </section>
+
+  <section id="valPanel" hidden>
+    <div class="tool-bar">
+      <button type="button" class="btn" id="valSampleBtn">Load sample with errors</button>
+    </div>
+    <div class="pane-grid">
+      <section class="pane">
+        <div class="pane-head">Schema</div>
+        <textarea id="valSchema" class="code-input" spellcheck="false" placeholder='{ "type": "object", "required": ["id"], … }'></textarea>
+      </section>
+      <section class="pane">
+        <div class="pane-head">JSON data</div>
+        <textarea id="valData" class="code-input" spellcheck="false" placeholder="The document to check"></textarea>
+      </section>
+    </div>
+    <section class="result" id="valResult" hidden aria-live="polite">
+      <div class="summary" id="valSummary"></div>
+      <table class="change-table" id="valErrors" hidden style="margin-top:12px">
+        <thead><tr><th>Path</th><th>Problem</th><th style="width:150px">Rule</th></tr></thead>
+        <tbody id="valErrorBody"></tbody>
+      </table>
+    </section>
+  </section>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+    <h2>What JSON Schema is for</h2>
+    <p>A JSON Schema describes what a valid document looks like: which fields exist, their types, which ones are required and what values are allowed. Teams use it to document APIs (OpenAPI uses it for request and response bodies), to validate input on a server, and to catch bad test data before it reaches production.</p>
+
+    <h2>Generating a schema from an example</h2>
+    <p>Paste a real response or config file and the generator writes a draft 2020-12 schema:</p>
+    <ul>
+      <li>Every object gets its <code>properties</code>, with a type for each one. Whole numbers become <code>integer</code>; numbers with decimals become <code>number</code>.</li>
+      <li>In arrays, all items are merged. If a field appears in some items but not others, it is kept but not required. If a value is sometimes <code>null</code>, the type allows null too.</li>
+      <li>Strings that look like ISO dates, email addresses, http(s) URLs or UUIDs get a <code>format</code>.</li>
+      <li>Turn off <strong>Allow extra properties</strong> to add <code>"additionalProperties": false</code>, which rejects any field the schema doesn't list.</li>
+    </ul>
+    <p>A generated schema is a starting point. Tighten it by hand, for example with <code>minimum</code>, <code>maxLength</code>, <code>enum</code> or <code>pattern</code>, before relying on it.</p>
+
+    <h2>Validating JSON</h2>
+    <p>Switch to <strong>Validate JSON</strong>, paste a schema and a document, and every problem is listed with the path of the value, a plain explanation and the rule that failed, for example <code>$.orders[0].qty</code>: "0 is less than the minimum 1".</p>
+    <p>Supported keywords: <code>type</code>, <code>enum</code>, <code>const</code>, <code>properties</code>, <code>required</code>, <code>additionalProperties</code>, <code>patternProperties</code>, <code>propertyNames</code>, <code>minProperties</code>/<code>maxProperties</code>, <code>dependentRequired</code>, <code>items</code>, <code>prefixItems</code>, <code>additionalItems</code>, <code>contains</code>, <code>minItems</code>/<code>maxItems</code>, <code>uniqueItems</code>, <code>minLength</code>/<code>maxLength</code>, <code>pattern</code>, <code>format</code>, <code>minimum</code>/<code>maximum</code> and their exclusive forms, <code>multipleOf</code>, <code>allOf</code>, <code>anyOf</code>, <code>oneOf</code>, <code>not</code>, <code>if</code>/<code>then</code>/<code>else</code> and <code>$ref</code> within the same schema.</p>
+    <p>For production use, validate in your application with a full implementation such as Ajv (JavaScript), networknt json-schema-validator (Java) or jsonschema (Python). This page is for quick checks while you work.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Which JSON Schema drafts are supported?</summary>
+        <p>The generator writes draft 2020-12. The validator understands the common keywords of draft 4, 6, 7, 2019-09 and 2020-12, including $ref to definitions inside the same schema. References to other files or URLs are not followed.</p>
+      </details>
+      <details>
+        <summary>How does the generator decide which fields are required?</summary>
+        <p>A field is required when it appears in every example of that object. If you paste an array of objects and one item lacks a field, that field stays optional. You can switch required fields off entirely.</p>
+      </details>
+      <details>
+        <summary>Why is my date or email not detected?</summary>
+        <p>Formats are guessed from the sample values: ISO 8601 dates and times, email addresses, http(s) URLs and UUIDs. Other values stay plain strings. You can add or remove a format in the generated schema by hand.</p>
+      </details>
+      <details>
+        <summary>Is my data sent anywhere?</summary>
+        <p>No. Generating and validating both run in your browser. Your inputs are kept in this browser's local storage so they survive a refresh.</p>
+      </details>
+    </div>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/schema.js?v=1"></script>
+</body>
+</html>

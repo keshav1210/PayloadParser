@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
   <title>JSON Formatter &amp; Validator – Beautify and Fix JSON Online</title>
   <meta name="description" content="Paste JSON to beautify, validate or minify it. Errors show the exact line and column, broken JSON can be repaired, and large numbers are kept intact.">
   <link rel="canonical" href="https://jsonxmleditor.com/json-parser">
@@ -19,9 +20,10 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=4">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=7">
   <link rel="stylesheet" href="/css/sql-modal.css?v=4">
   <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -82,7 +84,7 @@
           "name": "Can I format JSON with comments (JSONC)?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Comments aren't valid JSON, so the validator will flag them. Click Repair to strip // comments, then format as usual."
+            "text": "Comments aren't valid JSON, so the validator will flag them. Click Repair to remove // and /* */ comments, then format as usual."
           }
         },
         {
@@ -90,7 +92,7 @@
           "name": "Does it support JSON Lines (NDJSON)?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Not as a single document, because every line is a separate JSON value. Format one line at a time, or wrap the lines in [ ] with commas between them."
+            "text": "Yes. Paste the lines and click Repair: each line becomes one item in a single JSON array, which you can then format, browse as a tree or convert."
           }
         }
       ]
@@ -117,14 +119,11 @@
   <p>Paste JSON to pretty-print it, check it for syntax errors and browse it as a tree. Nothing to install.</p>
 </section>
 
-
-
-
 <!-- Top Controls -->
 <div class="controls">
     <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
     <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
-    <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
     <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
     <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
     <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
@@ -148,7 +147,7 @@
             <div class="panel-header-controls" id="leftPanelControls">
                 <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
                 <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
-                <button title="Fix unquoted keys, trailing commas, comments and unclosed brackets" class="btn" onclick="formatData('REPAIR')">Repair</button>
+                <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
                 <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
                 <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
                 <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
@@ -243,17 +242,33 @@
 </ul>
 
 <h2>Fixing broken JSON</h2>
-<p><strong>Repair</strong> handles unquoted keys, trailing commas, <code>//</code> comments and brackets that were never closed, all in one go. This input:</p>
-<pre><code>{name: "Ada", langs: ["en", "fr",],}</code></pre>
+<p><strong>Repair</strong> fixes the mistakes that come from hand-editing, from copying JavaScript or Python code, or from a response that got cut off. It runs in your browser and lists everything it changed. This input, pasted from a Python script:</p>
+<pre><code>// exported from the admin tool
+{
+  name: 'Ada Lovelace',
+  "active": True,
+  "manager": None
+  "langs": ["en", "fr",],</code></pre>
 <p>comes back as:</p>
 <pre><code>{
-  "name": "Ada",
+  "name": "Ada Lovelace",
+  "active": true,
+  "manager": null,
   "langs": [
     "en",
     "fr"
   ]
 }</code></pre>
-<p>Repair doesn't guess at single quotes, missing commas between properties or Python values such as <code>None</code>. For those, the validator points to the line so you can fix it by hand.</p>
+<p>It removed the comment, quoted the key, switched to double quotes, converted <code>True</code> and <code>None</code>, added the missing comma, dropped the trailing comma and closed the object. Repair also handles:</p>
+<ul>
+  <li>A missing <code>{</code>, <code>}</code> or <code>]</code>, including JSON that was cut off halfway</li>
+  <li>Curly quotes (<code>“ ”</code>) from word processors and chat apps, and quotes inside strings that weren't escaped</li>
+  <li><code>undefined</code>, <code>NaN</code> and <code>Infinity</code>, which become <code>null</code></li>
+  <li>Markdown code fences, JSONP wrappers like <code>callback({...})</code> and log text in front of the JSON</li>
+  <li>MongoDB shell values such as <code>ObjectId("…")</code> and <code>ISODate("…")</code></li>
+  <li>Several JSON objects one after another (JSON Lines), which are wrapped in an array</li>
+</ul>
+<p>If something still can't be fixed automatically, the validator points to the exact line and column that is left.</p>
 
 <h2>Pretty-print or minify?</h2>
 <p>Pretty-printed JSON is for people. There's one value per line, indented by depth, which makes it easy to read and to compare in a code review. Minified JSON is for machines. It fits on one line and is smaller, which helps in request bodies, environment variables and anywhere a single line is required. After you click <strong>Minify</strong>, the status bar shows the new size and how many bytes were saved.</p>
@@ -276,11 +291,11 @@
   </details>
   <details>
     <summary>Can I format JSON with comments (JSONC)?</summary>
-    <p>Comments aren't valid JSON, so the validator will flag them. Click Repair to strip // comments, then format as usual.</p>
+    <p>Comments aren't valid JSON, so the validator will flag them. Click Repair to remove // and /* */ comments, then format as usual.</p>
   </details>
   <details>
     <summary>Does it support JSON Lines (NDJSON)?</summary>
-    <p>Not as a single document, because every line is a separate JSON value. Format one line at a time, or wrap the lines in [ ] with commas between them.</p>
+    <p>Yes. Paste the lines and click Repair: each line becomes one item in a single JSON array, which you can then format, browse as a tree or convert.</p>
   </details>
 </div>
 
@@ -289,9 +304,13 @@
   <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
   <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
   <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
-  <li><a href="/yaml-converter"><strong>YAML Converter</strong>JSON to YAML, and properties files to YAML and back.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Validator</strong>Validate YAML, convert YAML to JSON and back, and properties files.</a></li>
   <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
-  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, Python, JavaScript or TypeScript classes.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, TypeScript, Go, Kotlin, Rust or Pydantic types.</a></li>
+  <li><a href="/compare"><strong>JSON &amp; XML Compare</strong>See what changed between two versions, by path.</a></li>
+  <li><a href="/json-schema"><strong>JSON Schema</strong>Generate a schema from a sample, or validate against one.</a></li>
+  <li><a href="/jwt-decoder"><strong>JWT Decoder</strong>Read claims, check expiry and verify signatures.</a></li>
+  <li><a href="/encode-decode"><strong>Encode / Decode</strong>Base64, URL, JSON strings, hex and timestamps.</a></li>
 </ul>
 </article>
 
@@ -439,7 +458,10 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js?v=4"></script>
-<script src="/js/jsonxmlformatter.js?v=4"></script>
+<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/repair.js?v=5"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/jsonpath.js?v=1"></script>
+<script src="/js/editor-tools.js?v=2"></script>
 </body>
 </html>
