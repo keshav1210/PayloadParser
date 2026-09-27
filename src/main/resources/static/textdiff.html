@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Text Diff Checker – Compare Two Texts or Code Online</title>
+  <meta name="description" content="Compare two texts or code files and see what changed, line by line with changed words highlighted. Side-by-side or unified view, ignore options, .patch export.">
+  <link rel="canonical" href="https://jsonxmleditor.com/text-diff">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Text &amp; Code Diff Checker">
+  <meta property="og:description" content="Side-by-side or unified diff of any two texts, with changed words highlighted and patch export.">
+  <meta property="og:url" content="https://jsonxmleditor.com/text-diff">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Text &amp; Code Diff Checker">
+  <meta name="twitter:description" content="Side-by-side or unified diff of any two texts, with changed words highlighted and patch export.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Text Diff Checker",
+      "url": "https://jsonxmleditor.com/text-diff",
+      "description": "Compare two texts or code files by line, word or character, with side-by-side and unified views.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Side-by-side and unified views",
+        "Line, word or character comparison",
+        "Changed words highlighted",
+        "Ignore whitespace or case",
+        "Unified .patch export",
+        "Open files"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Text Diff",
+          "item": "https://jsonxmleditor.com/text-diff"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my text uploaded to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The comparison runs entirely in your browser, so it's safe for private code, contracts or logs. The last texts you compared are kept only in this browser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How large can the files be?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Files up to 20 MB can be opened. Very large files with many scattered changes can take a few seconds; if a comparison takes longer than 5 seconds it is stopped and you are told."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a unified diff?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The format Git and the patch tool use: removed lines start with a minus, added lines with a plus, and a few unchanged lines around each change give context. Download it with the .patch button."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why are two lines shown as different when they look the same?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They probably differ in invisible characters such as trailing spaces, tabs versus spaces, or a non-breaking space. Tick Ignore whitespace, or compare by characters to see exactly where."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I compare Word or PDF documents?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Copy the text out of the document and paste it here. The tool compares plain text, not formatting."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Text Diff</span></nav>
+  <section class="tool-head">
+    <h1>Text Diff Checker</h1>
+    <p>Paste two versions of any text, code, config or log file to see exactly what changed. Changed lines are paired up and the words that differ inside them are highlighted. Nothing is uploaded.</p>
+  </section>
+
+<div class="tool-bar">
+    <label class="field-inline">Compare by
+      <select id="tdMode">
+        <option value="lines" selected>Lines</option>
+        <option value="words">Words</option>
+        <option value="chars">Characters</option>
+      </select>
+    </label>
+    <label class="field-inline">View
+      <select id="tdView">
+        <option value="split" selected>Side by side</option>
+        <option value="unified">Unified</option>
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" id="tdIgnoreWs"> Ignore whitespace</label>
+    <label class="check"><input type="checkbox" id="tdIgnoreCase"> Ignore case</label>
+    <label class="check"><input type="checkbox" id="tdOnlyChanges" checked> Hide unchanged lines</label>
+    <span class="spacer"></span>
+    <button type="button" class="btn" id="tdSwap" title="Swap left and right">⇄ Swap</button>
+    <button type="button" class="btn" id="tdClear">Clear</button>
+  </div>
+
+  <div class="pane-grid sql-grid">
+    <section class="pane">
+      <div class="pane-head"><input id="tdLeftName" class="td-name" value="original" aria-label="Name of the original text"><span class="actions"><label class="mini-btn file-btn">Open file<input type="file" id="tdLeftFile" hidden></label></span></div>
+      <textarea id="tdLeft" class="code-input td-input" spellcheck="false" aria-label="Original text" placeholder="Original text, or drop a file here"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head"><input id="tdRightName" class="td-name" value="changed" aria-label="Name of the changed text"><span class="actions"><label class="mini-btn file-btn">Open file<input type="file" id="tdRightFile" hidden></label></span></div>
+      <textarea id="tdRight" class="code-input td-input" spellcheck="false" aria-label="Changed text" placeholder="Changed text, or drop a file here"></textarea>
+    </section>
+  </div>
+
+  <div class="result">
+    <div class="td-result-head">
+      <div id="tdSummary" class="summary"></div>
+      <button type="button" class="btn" id="tdPatch">Download .patch</button>
+    </div>
+    <div id="tdError" class="error-box" hidden style="margin-top:12px"></div>
+    <div id="tdOut" class="td-view"></div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to compare two texts</h2>
+    <ol>
+      <li>Paste the original on the left and the new version on the right, or use <strong>Open file</strong> or drag a file onto either box.</li>
+      <li>The difference appears below as you type. Removed lines are red, added lines are green, and within a changed line the exact words that differ are highlighted.</li>
+      <li>Switch to <strong>Unified</strong> for the compact view Git uses, or download a <code>.patch</code> file you can apply with <code>git apply</code> or <code>patch -p0</code>.</li>
+    </ol>
+
+    <h2>Lines, words or characters?</h2>
+    <ul>
+      <li><strong>Lines</strong> suits code, config files, CSV and logs, where each line is a unit.</li>
+      <li><strong>Words</strong> suits prose: articles, contracts and documentation, where a paragraph is often one long line.</li>
+      <li><strong>Characters</strong> finds tiny differences, such as a changed digit in an ID or a swapped letter.</li>
+    </ul>
+
+    <h2>Ignoring noise</h2>
+    <p><strong>Ignore whitespace</strong> hides changes that are only indentation or trailing spaces, which is useful after reformatting code. <strong>Ignore case</strong> treats <code>SELECT</code> and <code>select</code> as the same. Windows (CRLF) and Unix (LF) line endings are always treated as equal. <strong>Hide unchanged lines</strong> keeps three lines of context around each change so long files stay readable.</p>
+
+    <h2>Comparing JSON or XML?</h2>
+    <p>For structured data, a text diff reports changes caused by key order or formatting. The <a href="/compare">JSON &amp; XML Compare</a> tool compares the data itself and lists differences by path, such as <code>$.items[2].price</code>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is my text uploaded to a server?</summary>
+        <p>No. The comparison runs entirely in your browser, so it's safe for private code, contracts or logs. The last texts you compared are kept only in this browser.</p>
+      </details>
+      <details>
+        <summary>How large can the files be?</summary>
+        <p>Files up to 20 MB can be opened. Very large files with many scattered changes can take a few seconds; if a comparison takes longer than 5 seconds it is stopped and you are told.</p>
+      </details>
+      <details>
+        <summary>What is a unified diff?</summary>
+        <p>The format Git and the patch tool use: removed lines start with a minus, added lines with a plus, and a few unchanged lines around each change give context. Download it with the .patch button.</p>
+      </details>
+      <details>
+        <summary>Why are two lines shown as different when they look the same?</summary>
+        <p>They probably differ in invisible characters such as trailing spaces, tabs versus spaces, or a non-breaking space. Tick Ignore whitespace, or compare by characters to see exactly where.</p>
+      </details>
+      <details>
+        <summary>Can I compare Word or PDF documents?</summary>
+        <p>Copy the text out of the document and paste it here. The tool compares plain text, not formatting.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/compare">
+        <span class="icon">≠</span>
+        <h3>JSON &amp; XML Compare</h3>
+        <p>See every difference between two JSON or XML documents.</p>
+      </a>
+      <a class="tool-card" href="/code-beautifier">
+        <span class="icon">&lt;/&gt;</span>
+        <h3>HTML, CSS &amp; JS Beautifier</h3>
+        <p>Beautify or minify HTML, CSS and JavaScript, and see how many bytes you save.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/markdown-editor">
+        <span class="icon">md</span>
+        <h3>Markdown Editor</h3>
+        <p>Write Markdown with a live preview, then export HTML or a README.md.</p>
+      </a>
+      <a class="tool-card" href="/parser">
+        <span class="icon">{ }</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Format, validate, repair and minify JSON or XML, with a tree view and code folding.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/vendor/diff.min.js?v=7.0.0"></script>
+<script src="/js/textdiff.js?v=1"></script>
+</body>
+</html>

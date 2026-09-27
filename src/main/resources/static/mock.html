@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Mock Data Generator – Fake JSON, CSV &amp; SQL Test Data</title>
+  <meta name="description" content="Generate realistic fake data from a sample JSON or a JSON Schema: names, emails, addresses, prices and dates. Export up to 1,000 records as JSON, CSV or SQL.">
+  <link rel="canonical" href="https://jsonxmleditor.com/mock-data-generator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Mock Data Generator: JSON, CSV &amp; SQL">
+  <meta property="og:description" content="Realistic fake test data from a JSON sample or JSON Schema, as JSON, CSV or SQL INSERTs.">
+  <meta property="og:url" content="https://jsonxmleditor.com/mock-data-generator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Mock Data Generator: JSON, CSV &amp; SQL">
+  <meta name="twitter:description" content="Realistic fake test data from a JSON sample or JSON Schema, as JSON, CSV or SQL INSERTs.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Mock Data Generator",
+      "url": "https://jsonxmleditor.com/mock-data-generator",
+      "description": "Generate realistic fake JSON, CSV or SQL test data from a sample document or a JSON Schema.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "From a sample JSON or a JSON Schema",
+        "Realistic names, emails, addresses and prices",
+        "Consistent fields within each record",
+        "Up to 1,000 records",
+        "JSON, NDJSON, CSV and SQL output",
+        "Repeatable results with a seed"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Mock Data Generator",
+          "item": "https://jsonxmleditor.com/mock-data-generator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is the generated data real?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Every value is invented. Names are combined at random from lists of common first and last names, and emails, phone numbers and card numbers use ranges reserved for examples and testing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many records can I generate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Up to 1,000 at a time. Generate again with a different seed for more batches."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does it choose values for my fields?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "First from the value's own format in your sample (a date stays a date, a UUID stays a UUID), then from the field name (price, email, city, status, createdAt and about 60 others), and finally from the type. Unknown text fields get short placeholder words."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use it with Postman, json-server or Mockoon?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Download the JSON array and load it as the response body or data file. For json-server, set the root name to the resource name, for example users."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my schema or sample uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Everything is generated in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Mock Data Generator</span></nav>
+  <section class="tool-head">
+    <h1>Mock Data Generator</h1>
+    <p>Paste one example record, or a JSON Schema, and get as many realistic fake records as you need. Field names guide the values: <code>email</code> gets an email that matches the person's name, <code>price</code> gets a price, <code>createdAt</code> gets a timestamp.</p>
+  </section>
+
+<div class="tabs" role="tablist" aria-label="Source">
+    <button type="button" class="tab-btn" role="tab" data-mock-src="sample" aria-selected="true">From a sample</button>
+    <button type="button" class="tab-btn" role="tab" data-mock-src="schema" aria-selected="false">From a JSON Schema</button>
+  </div>
+
+  <div class="tool-bar">
+    <label class="field-inline">Records <input id="mockCount" class="text-input" type="number" min="1" max="1000" value="10" style="width:90px"></label>
+    <label class="field-inline">Format
+      <select id="mockFormat">
+        <option value="json" selected>JSON array</option>
+        <option value="ndjson">NDJSON (one per line)</option>
+        <option value="csv">CSV</option>
+        <option value="sql">SQL INSERT</option>
+      </select>
+    </label>
+    <label class="field-inline">Table / root name <input id="mockTable" class="text-input" type="text" value="users" style="width:120px" spellcheck="false"></label>
+    <label class="field-inline" title="The same seed always gives the same data">Seed <input id="mockSeed" class="text-input" type="text" placeholder="random" style="width:100px" spellcheck="false"></label>
+    <label class="check"><input type="checkbox" id="mockArray" checked> Always an array</label>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn-primary" id="mockGenerate">↻ Generate</button>
+  </div>
+
+  <div class="pane-grid sql-grid">
+    <section class="pane">
+      <div class="pane-head"><span id="mockInputLabel">Sample JSON</span></div>
+      <textarea id="mockInput" class="code-input" spellcheck="false" aria-label="Sample JSON or JSON Schema"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Generated data <span class="muted" id="mockStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="mockDownload">Download</button>
+          <button type="button" class="mini-btn" id="mockCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="mockOutput" class="code-input" spellcheck="false" readonly aria-label="Generated data"></textarea>
+    </section>
+  </div>
+  <div id="mockError" class="error-box" hidden style="margin-top:12px"></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Two ways to describe your data</h2>
+    <ul>
+      <li><strong>From a sample</strong>: paste one real-looking record (or an array of them). Every field keeps its type and shape: nested objects stay nested, arrays get a few items, dates stay dates and codes like <code>ORD-10231</code> keep their pattern.</li>
+      <li><strong>From a JSON Schema</strong>: the generator follows <code>type</code>, <code>enum</code>, <code>minimum</code>/<code>maximum</code>, <code>minLength</code>/<code>maxLength</code>, <code>format</code> (email, uri, date, date-time, uuid, ipv4…), <code>required</code>, <code>minItems</code>/<code>maxItems</code>, <code>$ref</code> and <code>oneOf</code>/<code>anyOf</code>/<code>allOf</code>. Optional fields are sometimes left out, as in real data. No schema yet? Create one from a sample with the <a href="/json-schema">JSON Schema generator</a>.</li>
+    </ul>
+
+    <h2>Realistic, consistent records</h2>
+    <p>Each record is built around one made-up person and company, so <code>firstName</code>, <code>lastName</code>, <code>email</code> and <code>username</code> agree, and <code>city</code> matches <code>country</code> and the phone number's format. Names come from many cultures. Values that must never be real are drawn from reserved ranges: <code>example.com</code> email domains, fictional 555-01xx phone numbers in North America, and card numbers from payment providers' published test lists.</p>
+
+    <h2>Output formats</h2>
+    <ul>
+      <li><strong>JSON array</strong> for mock APIs, fixtures and front-end prototypes.</li>
+      <li><strong>NDJSON</strong> (one JSON object per line) for log pipelines, BigQuery and Elasticsearch bulk loads.</li>
+      <li><strong>CSV</strong> for spreadsheets and BI tools. Nested fields become columns such as <code>address.city</code>.</li>
+      <li><strong>SQL INSERT</strong> statements to seed a development database, using the table name you enter.</li>
+    </ul>
+
+    <h2>Repeatable test data</h2>
+    <p>Enter any <strong>seed</strong>, such as <code>demo</code>, and you get exactly the same records every time, on any computer. That makes screenshots, demos and snapshot tests stable. Leave it empty for fresh data on every click.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is the generated data real?</summary>
+        <p>No. Every value is invented. Names are combined at random from lists of common first and last names, and emails, phone numbers and card numbers use ranges reserved for examples and testing.</p>
+      </details>
+      <details>
+        <summary>How many records can I generate?</summary>
+        <p>Up to 1,000 at a time. Generate again with a different seed for more batches.</p>
+      </details>
+      <details>
+        <summary>How does it choose values for my fields?</summary>
+        <p>First from the value's own format in your sample (a date stays a date, a UUID stays a UUID), then from the field name (price, email, city, status, createdAt and about 60 others), and finally from the type. Unknown text fields get short placeholder words.</p>
+      </details>
+      <details>
+        <summary>Can I use it with Postman, json-server or Mockoon?</summary>
+        <p>Yes. Download the JSON array and load it as the response body or data file. For json-server, set the root name to the resource name, for example users.</p>
+      </details>
+      <details>
+        <summary>Is my schema or sample uploaded?</summary>
+        <p>No. Everything is generated in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/json-schema">
+        <span class="icon">✓</span>
+        <h3>JSON Schema</h3>
+        <p>Generate a schema from a sample, or validate JSON against a schema.</p>
+      </a>
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
+        <h3>CSV Converter</h3>
+        <p>Turn CSV into JSON, XML or SQL INSERT statements.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>Generate UUID v4, UUID v7, ULID and Nano IDs in bulk.</p>
+      </a>
+      <a class="tool-card" href="/mapper">
+        <span class="icon">cls</span>
+        <h3>Object Mapper</h3>
+        <p>Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust or Zod types from JSON.</p>
+      </a>
+      <a class="tool-card" href="/curl-to-code">
+        <span class="icon">curl</span>
+        <h3>cURL to Code</h3>
+        <p>Turn a curl command into fetch, axios, Python, Java, Spring, Go, C# or PHP.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/mock.js?v=2"></script>
+</body>
+</html>

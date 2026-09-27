@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Regex Tester Online – Test &amp; Explain Regular Expressions</title>
+  <meta name="description" content="Test regex with live highlighting, groups and replace. Every part of the pattern is explained in plain English, with code for JavaScript, Java and Python.">
+  <link rel="canonical" href="https://jsonxmleditor.com/regex-tester">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Regex Tester &amp; Explainer">
+  <meta property="og:description" content="Live regex matching with groups, replace, a plain-English explanation and ready-to-paste code.">
+  <meta property="og:url" content="https://jsonxmleditor.com/regex-tester">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Regex Tester &amp; Explainer">
+  <meta name="twitter:description" content="Live regex matching with groups, replace, a plain-English explanation and ready-to-paste code.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Regex Tester",
+      "url": "https://jsonxmleditor.com/regex-tester",
+      "description": "Test and debug regular expressions with live matches, capture groups, replace and a plain-English explanation.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Live match highlighting",
+        "Capture and named groups",
+        "Find and replace",
+        "Plain-English explanation",
+        "JavaScript, Java and Python code",
+        "Shareable links"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Regex Tester",
+          "item": "https://jsonxmleditor.com/regex-tester"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which regex flavour does this tester use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It uses the JavaScript (ECMAScript) engine built into your browser, including lookbehind, named groups and Unicode property escapes. Everyday patterns work the same in Java, Python, PHP and .NET; the page lists the main differences, and the code panel adapts the syntax for Java and Python."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I match across multiple lines?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the m flag so ^ and $ match at the start and end of every line, and the s flag so . also matches line breaks."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I use a capture group in the replacement?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Write $1, $2 and so on for numbered groups, $<name> for a named group and $& for the whole match. For example, the pattern (\\w+)@(\\w+) with the replacement $2 at $1 turns \"ann@example\" into \"example at ann\"."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my text sent to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Matching runs in your browser in a background worker. The pattern and text are saved only in this browser so they are still there when you come back."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my pattern only find one match?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Without the g (global) flag a regular expression stops at the first match. Tick g to find them all."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Regex Tester</span></nav>
+  <section class="tool-head">
+    <h1>Regex Tester</h1>
+    <p>Type a regular expression and see every match highlighted as you type. Check capture groups, try a replacement, read what each part of the pattern does, and copy working code for JavaScript, Java or Python.</p>
+  </section>
+
+<div class="tool-bar">
+    <select id="rxSamples" aria-label="Load a common pattern">
+      <option value="">Common patterns…</option>
+      <option value="email">Email address</option>
+      <option value="url">URL</option>
+      <option value="ipv4">IPv4 address</option>
+      <option value="date">Date (YYYY-MM-DD) with named groups</option>
+      <option value="phone">Phone number</option>
+      <option value="hex">Hex colour</option>
+      <option value="uuid">UUID</option>
+      <option value="password">Strong password check</option>
+      <option value="html">Matching HTML tags</option>
+      <option value="dupes">Repeated words</option>
+      <option value="trim">Leading and trailing spaces</option>
+    </select>
+    <button type="button" class="btn" id="rxClear">Clear</button>
+    <span class="spacer"></span>
+    <button type="button" class="btn" id="rxShare">Copy share link</button>
+  </div>
+
+  <div class="rx-pattern-row">
+    <span class="rx-slash" aria-hidden="true">/</span>
+    <input id="rxPattern" class="text-input rx-pattern" type="text" spellcheck="false" autocomplete="off" aria-label="Regular expression" placeholder="Type a pattern, e.g. \d{3}-\d{4}">
+    <span class="rx-slash" id="rxSlashFlags" aria-hidden="true">/g</span>
+  </div>
+  <div class="rx-flags" role="group" aria-label="Flags">
+    <label class="check" title="Find every match, not just the first"><input type="checkbox" data-flag="g" checked> <code>g</code> global</label>
+    <label class="check" title="Ignore upper and lower case"><input type="checkbox" data-flag="i"> <code>i</code> ignore case</label>
+    <label class="check" title="^ and $ match at every line"><input type="checkbox" data-flag="m"> <code>m</code> multiline</label>
+    <label class="check" title="The dot also matches line breaks"><input type="checkbox" data-flag="s"> <code>s</code> dot matches newline</label>
+    <label class="check" title="Full Unicode: \u{…} and \p{…}"><input type="checkbox" data-flag="u"> <code>u</code> unicode</label>
+    <label class="check" title="Match only at lastIndex"><input type="checkbox" data-flag="y"> <code>y</code> sticky</label>
+  </div>
+
+  <div id="rxError" class="error-box" hidden></div>
+
+  <div class="pane-grid rx-grid">
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Test text <span class="actions"><span id="rxSummary" class="summary rx-summary"></span></span></div>
+        <div class="rx-editor">
+          <div id="rxBackdrop" class="rx-backdrop" aria-hidden="true"></div>
+          <textarea id="rxText" class="code-input rx-text" spellcheck="false" aria-label="Test text" placeholder="Paste the text to search"></textarea>
+        </div>
+      </section>
+      <section class="pane">
+        <div class="pane-head">
+          <label class="check"><input type="checkbox" id="rxReplaceOn"> Replace</label>
+          <span class="actions"><button type="button" class="mini-btn" id="rxCopyReplace">Copy result</button></span>
+        </div>
+        <div id="rxReplaceWrap" hidden>
+          <div class="rx-replace-row">
+            <input id="rxReplace" class="text-input" type="text" spellcheck="false" aria-label="Replacement" placeholder="Replacement: $1, $<name>, $& = whole match">
+          </div>
+          <pre id="rxReplaceOut" class="code-output rx-out"></pre>
+        </div>
+      </section>
+    </div>
+
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Matches <span class="actions"><button type="button" class="mini-btn" id="rxCopyMatches">Copy all</button></span></div>
+        <div class="rx-scroll">
+          <table class="change-table rx-table" id="rxMatches" hidden>
+            <thead><tr><th style="width:40px">#</th><th>Match</th><th style="width:90px">Position</th><th>Groups</th></tr></thead>
+            <tbody id="rxMatchBody"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="pane">
+        <div class="pane-head">Explanation</div>
+        <ol id="rxExplain" class="rx-explain"></ol>
+      </section>
+      <section class="pane">
+        <div class="pane-head">Code
+          <span class="actions">
+            <select id="rxCodeLang" aria-label="Language" class="mini-select">
+              <option value="js">JavaScript</option>
+              <option value="java">Java</option>
+              <option value="python">Python</option>
+            </select>
+            <button type="button" class="mini-btn" id="rxCopyCode">Copy</button>
+          </span>
+        </div>
+        <pre id="rxCode" class="code-output"></pre>
+      </section>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to use the regex tester</h2>
+    <ol>
+      <li>Type your pattern in the top box. You don't need the surrounding slashes.</li>
+      <li>Tick the flags you need. <code>g</code> finds every match instead of stopping at the first one.</li>
+      <li>Paste some sample text. Matches are highlighted straight away, and the table lists each match with its position and capture groups.</li>
+      <li>Tick <strong>Replace</strong> to try a substitution, then copy the ready-made code for your language.</li>
+    </ol>
+    <p>Everything runs in your browser; your pattern and text are not uploaded. Your last session is kept in this browser, and <strong>Copy share link</strong> puts the whole test into a link you can send to a colleague.</p>
+
+    <h2>Regex cheat sheet</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:150px">Syntax</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>.</code></td><td>Any character except a line break (with the <code>s</code> flag, line breaks too)</td></tr>
+        <tr><td><code>\d</code> <code>\w</code> <code>\s</code></td><td>A digit, a word character (letter, digit, underscore), a whitespace character. Capitals mean the opposite: <code>\D</code> is "not a digit".</td></tr>
+        <tr><td><code>[abc]</code> <code>[^abc]</code></td><td>One of a, b or c; any character except a, b or c. Ranges work too: <code>[a-z0-9]</code>.</td></tr>
+        <tr><td><code>^</code> <code>$</code></td><td>Start and end of the text (of each line with the <code>m</code> flag)</td></tr>
+        <tr><td><code>\b</code></td><td>A word boundary: <code>\bcat\b</code> finds "cat" but not "catalog"</td></tr>
+        <tr><td><code>*</code> <code>+</code> <code>?</code></td><td>Zero or more, one or more, zero or one of the previous item</td></tr>
+        <tr><td><code>{3}</code> <code>{2,5}</code> <code>{2,}</code></td><td>Exactly 3, between 2 and 5, 2 or more</td></tr>
+        <tr><td><code>*?</code> <code>+?</code></td><td>Lazy versions: match as little as possible</td></tr>
+        <tr><td><code>(…)</code> <code>(?:…)</code></td><td>A capturing group; a group that is not captured</td></tr>
+        <tr><td><code>(?&lt;name&gt;…)</code></td><td>A named group, used as <code>$&lt;name&gt;</code> in replacements</td></tr>
+        <tr><td><code>a|b</code></td><td>a or b</td></tr>
+        <tr><td><code>(?=…)</code> <code>(?!…)</code></td><td>Lookahead: followed by (or not followed by) something, without including it in the match</td></tr>
+        <tr><td><code>(?&lt;=…)</code> <code>(?&lt;!…)</code></td><td>Lookbehind: preceded by (or not preceded by) something</td></tr>
+        <tr><td><code>\1</code></td><td>Backreference: the same text that group 1 matched</td></tr>
+      </tbody>
+    </table>
+
+    <h2>JavaScript, Java and Python differences</h2>
+    <p>The tester uses your browser's JavaScript engine. Most everyday patterns behave the same in Java and Python, but a few details differ:</p>
+    <ul>
+      <li><strong>Named groups in Python</strong> are written <code>(?P&lt;name&gt;…)</code> and referenced as <code>(?P=name)</code>. The Python snippet converts them for you.</li>
+      <li><strong>Backslashes in Java strings</strong> must be doubled: <code>\d</code> becomes <code>"\\d"</code>. The Java snippet does this for you.</li>
+      <li><strong>Flags</strong>: JavaScript's <code>g</code> has no equivalent flag in Java or Python; you loop with <code>find()</code> or <code>finditer()</code> instead. <code>s</code> is <code>Pattern.DOTALL</code> / <code>re.DOTALL</code>.</li>
+      <li><strong>Possessive quantifiers</strong> such as <code>a++</code> and atomic groups work in Java (and Python 3.11+), but not in JavaScript.</li>
+      <li>Python's <code>re.match()</code> only matches at the start of the string; use <code>re.search()</code> to behave like this tester.</li>
+    </ul>
+
+    <h2>Why is my regex slow?</h2>
+    <p>Patterns with nested repetition, such as <code>(a+)+$</code> or <code>(.*,)*</code>, can take exponentially long on text that almost matches. This is called catastrophic backtracking, and it's a known cause of outages and denial-of-service bugs. The tester stops any pattern that runs for more than 1.5 seconds and tells you. Fix it by making the repeated part more specific, for example <code>[^,]*,</code> instead of <code>.*,</code>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Which regex flavour does this tester use?</summary>
+        <p>It uses the JavaScript (ECMAScript) engine built into your browser, including lookbehind, named groups and Unicode property escapes. Everyday patterns work the same in Java, Python, PHP and .NET; the page lists the main differences, and the code panel adapts the syntax for Java and Python.</p>
+      </details>
+      <details>
+        <summary>How do I match across multiple lines?</summary>
+        <p>Use the <code>m</code> flag so <code>^</code> and <code>$</code> match at the start and end of every line, and the <code>s</code> flag so <code>.</code> also matches line breaks.</p>
+      </details>
+      <details>
+        <summary>How do I use a capture group in the replacement?</summary>
+        <p>Write <code>$1</code>, <code>$2</code> and so on for numbered groups, <code>$&lt;name&gt;</code> for a named group and <code>$&amp;</code> for the whole match. For example, the pattern <code>(\w+)@(\w+)</code> with the replacement <code>$2 at $1</code> turns "ann@example" into "example at ann".</p>
+      </details>
+      <details>
+        <summary>Is my text sent to a server?</summary>
+        <p>No. Matching runs in your browser in a background worker. The pattern and text are saved only in this browser so they are still there when you come back.</p>
+      </details>
+      <details>
+        <summary>Why does my pattern only find one match?</summary>
+        <p>Without the <code>g</code> (global) flag a regular expression stops at the first match. Tick <code>g</code> to find them all.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+      <a class="tool-card" href="/json-schema">
+        <span class="icon">✓</span>
+        <h3>JSON Schema</h3>
+        <p>Generate a schema from a sample, or validate JSON against a schema.</p>
+      </a>
+      <a class="tool-card" href="/compare">
+        <span class="icon">≠</span>
+        <h3>JSON &amp; XML Compare</h3>
+        <p>See every difference between two JSON or XML documents.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/regex.js?v=1"></script>
+</body>
+</html>

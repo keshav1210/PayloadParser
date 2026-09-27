@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://jsonxmleditor.com/</loc><lastmod>2026-09-24</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/</loc><lastmod>2026-09-27</lastmod></url>
   <url><loc>https://jsonxmleditor.com/parser</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/json-parser</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/xml-parser</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/csv-converter</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/yaml-converter</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/toml-converter</loc><lastmod>2026-09-24</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/tools</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/regex-tester</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/sql-formatter</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/cron-expression</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/hash-generator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/uuid-generator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/password-generator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/mock-data-generator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/curl-to-code</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/text-diff</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/markdown-editor</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/timestamp-converter</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/subnet-calculator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/number-base-converter</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/chmod-calculator</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/code-beautifier</loc><lastmod>2026-09-27</lastmod></url>
   <url><loc>https://jsonxmleditor.com/compare</loc><lastmod>2026-09-26</lastmod></url>
   <url><loc>https://jsonxmleditor.com/json-schema</loc><lastmod>2026-09-26</lastmod></url>
   <url><loc>https://jsonxmleditor.com/jwt-decoder</loc><lastmod>2026-09-26</lastmod></url>

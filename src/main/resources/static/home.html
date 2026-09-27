@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JSON XML Editor – Format, Validate and Convert JSON &amp; XML</title>
-  <meta name="description" content="Free online tools to format, validate and minify JSON and XML, and convert between JSON, XML, YAML, TOML, CSV and SQL. No sign-up needed.">
+  <meta name="description" content="Format, validate and convert JSON and XML, plus a SQL formatter, regex tester, JWT decoder, cron explainer and UUID, hash and password generators. Free.">
   <link rel="canonical" href="https://jsonxmleditor.com/">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#111317">
@@ -17,14 +17,28 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="/favicon.png">
-  <link rel="stylesheet" href="/css/site.css?v=4">
+  <link rel="stylesheet" href="/css/site.css?v=5">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "JSON XML Editor",
-  "url": "https://jsonxmleditor.com/",
-  "description": "Free online tools to format, validate and convert JSON, XML, YAML, TOML and CSV."
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://jsonxmleditor.com/#website",
+      "name": "JSON XML Editor",
+      "url": "https://jsonxmleditor.com/",
+      "description": "Free online developer tools: format, validate and convert JSON, XML, YAML, TOML, CSV and SQL, plus regex, JWT, cron, hash, UUID and password tools.",
+      "publisher": { "@id": "https://jsonxmleditor.com/#org" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://jsonxmleditor.com/#org",
+      "name": "JSON XML Editor",
+      "url": "https://jsonxmleditor.com/",
+      "logo": "https://jsonxmleditor.com/favicon.png",
+      "email": "jsonxmleditor@gmail.com"
+    }
+  ]
 }
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
@@ -101,6 +115,24 @@
         <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
         <span class="go">Open →</span>
       </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify or minify SQL for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Live matches, capture groups and replace, with each part of the pattern explained.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Explainer</h3>
+        <p>Read crontab, Spring and Quartz schedules in plain English and see the next runs.</p>
+        <span class="go">Open →</span>
+      </a>
       <a class="tool-card" href="/csv-converter">
         <span class="icon">a,b</span>
         <h3>CSV Converter</h3>
@@ -123,6 +155,24 @@
         <span class="icon">cls</span>
         <h3>Object Mapper</h3>
         <p>Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust, Pydantic or Zod types from a JSON sample.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-256, SHA-512 and HMAC for text or files, plus checksum checks.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>UUID v4 and v7, ULID and Nano ID in bulk, and a decoder for existing IDs.</p>
+        <span class="go">Open →</span>
+      </a>
+      <a class="tool-card" href="/password-generator">
+        <span class="icon">***</span>
+        <h3>Password Generator</h3>
+        <p>Strong random passwords and passphrases with a strength estimate.</p>
         <span class="go">Open →</span>
       </a>
       <a class="tool-card" href="/share">
@@ -150,6 +200,7 @@
         <span class="go">Open →</span>
       </a>
     </div>
+    <p class="section-more"><a class="btn" href="/tools">Browse all tools →</a> <span class="muted">or press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere to search</span></p>
   </section>
 
   <section class="section" aria-labelledby="why-title">
@@ -201,6 +252,6 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=6"></script>
+<script src="/js/layout-loader.js?v=10"></script>
 </body>
 </html>

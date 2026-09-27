@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Binary, Hex, Decimal &amp; Octal Converter (Any Base)</title>
+  <meta name="description" content="Convert numbers between binary, octal, decimal, hexadecimal and any base from 2 to 36. No size limit, with two's complement for 8, 16, 32 and 64-bit integers.">
+  <link rel="canonical" href="https://jsonxmleditor.com/number-base-converter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Number Base Converter: Binary, Hex, Decimal, Octal">
+  <meta property="og:description" content="Convert between binary, octal, decimal, hex and any base up to 36, with signed integer views.">
+  <meta property="og:url" content="https://jsonxmleditor.com/number-base-converter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Number Base Converter: Binary, Hex, Decimal, Octal">
+  <meta name="twitter:description" content="Convert between binary, octal, decimal, hex and any base up to 36, with signed integer views.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Number Base Converter",
+      "url": "https://jsonxmleditor.com/number-base-converter",
+      "description": "Convert numbers between binary, octal, decimal, hexadecimal and bases 2 to 36.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Binary, octal, decimal and hex",
+        "Any base from 2 to 36",
+        "Arbitrarily large numbers",
+        "Two's complement 8/16/32/64-bit",
+        "Grouped digits"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Number Base Converter",
+          "item": "https://jsonxmleditor.com/number-base-converter"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert binary to decimal?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Type or paste the binary number into the Binary box; the decimal value appears immediately. By hand, add the powers of two where there is a 1: 1011 = 8 + 0 + 2 + 1 = 11."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a size limit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The converter uses arbitrary-precision integers, so numbers with hundreds of digits convert exactly, without the rounding you get beyond 2^53 in ordinary JavaScript numbers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I paste values with 0x or 0b prefixes?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. 0x, 0b and 0o prefixes are accepted, as are spaces, underscores and commas used as digit separators."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it convert fractions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, only whole numbers (positive or negative). Fractions often have no exact representation in another base; for example 0.1 in decimal repeats forever in binary."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is anything sent to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Conversion happens in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Number Base Converter</span></nav>
+  <section class="tool-head">
+    <h1>Number Base Converter</h1>
+    <p>Type a number in any box and the others update instantly. It handles numbers of any size, accepts prefixes like <code>0x</code> and <code>0b</code>, and shows how the value looks as a signed or unsigned 8, 16, 32 or 64-bit integer.</p>
+  </section>
+
+<section class="pane">
+    <div class="qr-body base-grid">
+      <div class="field"><label for="baseDec">Decimal (base 10)</label>
+        <div class="base-row"><input id="baseDec" class="text-input" type="text" spellcheck="false" autocomplete="off" inputmode="numeric"><button type="button" class="mini-btn" data-copy-field="baseDec">Copy</button></div></div>
+      <div class="field"><label for="baseHex">Hexadecimal (base 16)</label>
+        <div class="base-row"><input id="baseHex" class="text-input" type="text" spellcheck="false" autocomplete="off"><button type="button" class="mini-btn" data-copy-field="baseHex">Copy</button></div></div>
+      <div class="field"><label for="baseBin">Binary (base 2)</label>
+        <div class="base-row"><input id="baseBin" class="text-input" type="text" spellcheck="false" autocomplete="off" inputmode="numeric"><button type="button" class="mini-btn" data-copy-field="baseBin">Copy</button></div></div>
+      <div class="field"><label for="baseOct">Octal (base 8)</label>
+        <div class="base-row"><input id="baseOct" class="text-input" type="text" spellcheck="false" autocomplete="off" inputmode="numeric"><button type="button" class="mini-btn" data-copy-field="baseOct">Copy</button></div></div>
+      <div class="field"><label for="baseCustom">Other base <select id="baseCustomBase" class="mini-select" aria-label="Base"></select></label>
+        <div class="base-row"><input id="baseCustom" class="text-input" type="text" spellcheck="false" autocomplete="off"><button type="button" class="mini-btn" data-copy-field="baseCustom">Copy</button></div></div>
+    </div>
+    <div id="baseError" class="error-box" hidden style="margin:0 14px 14px"></div>
+  </section>
+
+  <section class="pane" style="margin-top:14px">
+    <div class="pane-head">More views <span class="muted" id="baseBits"></span></div>
+    <div class="rx-scroll" style="max-height:none"><table class="change-table kv-table"><tbody id="baseExtra"></tbody></table></div>
+  </section>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How number bases work</h2>
+    <p>A base (or radix) is how many digits a number system uses. Decimal uses ten (0–9), binary two (0 and 1), octal eight (0–7) and hexadecimal sixteen (0–9 then A–F). Each position is worth the base times the position to its right, so hex <code>2F</code> is 2 × 16 + 15 = 47.</p>
+
+    <h2>Where you meet each base</h2>
+    <ul>
+      <li><strong>Binary</strong>: bit flags, network masks, bitwise operations and hardware registers.</li>
+      <li><strong>Hexadecimal</strong>: colours (<code>#2F6FED</code>), memory addresses, byte dumps, hashes and UUIDs. One hex digit is exactly four bits, so two digits make a byte.</li>
+      <li><strong>Octal</strong>: mainly Unix file permissions (<code>chmod 755</code>).</li>
+      <li><strong>Base 36</strong>: compact IDs and short links, since it uses every digit and letter.</li>
+    </ul>
+
+    <h2>Negative numbers and two's complement</h2>
+    <p>Computers store negative integers in <strong>two's complement</strong>: the value −1 in 8 bits is <code>11111111</code> (0xFF), the same bits as unsigned 255. The table above shows both readings for 8, 16, 32 and 64-bit widths whenever the number fits. This explains why a byte read from a file might show as −56 in Java (whose <code>byte</code> is signed) but 200 elsewhere.</p>
+
+    <h2>Converting in code</h2>
+    <ul>
+      <li><strong>JavaScript</strong>: <code>(255).toString(16)</code> and <code>parseInt('ff', 16)</code>; use <code>BigInt</code> for values beyond 2<sup>53</sup>.</li>
+      <li><strong>Java</strong>: <code>Integer.toBinaryString(n)</code>, <code>Long.parseLong("ff", 16)</code>, or <code>new BigInteger(s, 36)</code>.</li>
+      <li><strong>Python</strong>: <code>bin(n)</code>, <code>hex(n)</code>, <code>oct(n)</code> and <code>int('ff', 16)</code>.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I convert binary to decimal?</summary>
+        <p>Type or paste the binary number into the Binary box; the decimal value appears immediately. By hand, add the powers of two where there is a 1: 1011 = 8 + 0 + 2 + 1 = 11.</p>
+      </details>
+      <details>
+        <summary>Is there a size limit?</summary>
+        <p>No. The converter uses arbitrary-precision integers, so numbers with hundreds of digits convert exactly, without the rounding you get beyond 2^53 in ordinary JavaScript numbers.</p>
+      </details>
+      <details>
+        <summary>Can I paste values with 0x or 0b prefixes?</summary>
+        <p>Yes. 0x, 0b and 0o prefixes are accepted, as are spaces, underscores and commas used as digit separators.</p>
+      </details>
+      <details>
+        <summary>Does it convert fractions?</summary>
+        <p>No, only whole numbers (positive or negative). Fractions often have no exact representation in another base; for example 0.1 in decimal repeats forever in binary.</p>
+      </details>
+      <details>
+        <summary>Is anything sent to a server?</summary>
+        <p>No. Conversion happens in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/chmod-calculator">
+        <span class="icon">rwx</span>
+        <h3>Chmod Calculator</h3>
+        <p>Convert Unix permissions between 755, rwxr-xr-x and chmod commands.</p>
+      </a>
+      <a class="tool-card" href="/subnet-calculator">
+        <span class="icon">/24</span>
+        <h3>Subnet Calculator</h3>
+        <p>CIDR ranges, masks, host counts and subnet splits for IPv4 and IPv6.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.</p>
+      </a>
+      <a class="tool-card" href="/timestamp-converter">
+        <span class="icon">⌚</span>
+        <h3>Timestamp Converter</h3>
+        <p>Unix timestamps to dates and back, and times across time zones.</p>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>Generate UUID v4, UUID v7, ULID and Nano IDs in bulk.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/numbase.js?v=1"></script>
+</body>
+</html>

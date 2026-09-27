@@ -1,5 +1,5 @@
 <header class="app-header">
-    <link rel="stylesheet" href="/css/header.css?v=7">
+    <link rel="stylesheet" href="/css/header.css?v=10">
     <a class="brand" href="/" aria-label="JSON XML Editor home">
         <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -107,18 +107,47 @@
         <a href="/parser">Formatter</a>
         <details class="nav-menu">
             <summary>Tools</summary>
-            <div class="nav-menu-panel">
-                <a href="/compare">JSON &amp; XML Compare</a>
-                <a href="/json-schema">JSON Schema</a>
-                <a href="/jwt-decoder">JWT Decoder</a>
-                <a href="/encode-decode">Encode / Decode</a>
-                <a href="/mapper">Object Mapper</a>
-                <a href="/csv-converter">CSV Converter</a>
-                <a href="/yaml-converter">YAML Converter</a>
-                <a href="/toml-converter">TOML Converter</a>
-                <a href="/qr-code-generator">QR Code Generator</a>
-                <span class="nav-menu-divider" role="separator"></span>
-                <a href="https://www.convertfigure.com/" target="_blank" rel="noopener" class="nav-external">Image &amp; PDF tools <span aria-hidden="true">↗</span><small>ConvertFigure: convert images, PDFs, QR codes, SVG icons</small></a>
+            <div class="nav-menu-panel nav-menu-grid">
+                <div class="nav-menu-col">
+                    <span class="nav-menu-label">Format &amp; convert</span>
+                    <a href="/sql-formatter">SQL Formatter</a>
+                    <a href="/code-beautifier">HTML/CSS/JS Beautifier</a>
+                    <a href="/markdown-editor">Markdown Editor</a>
+                    <a href="/json-schema">JSON Schema</a>
+                    <a href="/mapper">Object Mapper</a>
+                    <a href="/curl-to-code">cURL to Code</a>
+                    <a href="/yaml-converter">YAML Converter</a>
+                    <a href="/csv-converter">CSV Converter</a>
+                    <a href="/toml-converter">TOML Converter</a>
+                </div>
+                <div class="nav-menu-col">
+                    <span class="nav-menu-label">Inspect &amp; debug</span>
+                    <a href="/compare">JSON &amp; XML Compare</a>
+                    <a href="/text-diff">Text Diff</a>
+                    <a href="/regex-tester">Regex Tester</a>
+                    <a href="/jwt-decoder">JWT Decoder</a>
+                    <a href="/cron-expression">Cron Explainer</a>
+                    <a href="/encode-decode">Encode / Decode</a>
+                    <a href="/timestamp-converter">Timestamp Converter</a>
+                </div>
+                <div class="nav-menu-col">
+                    <span class="nav-menu-label">Generate</span>
+                    <a href="/mock-data-generator">Mock Data</a>
+                    <a href="/hash-generator">Hash Generator</a>
+                    <a href="/uuid-generator">UUID Generator</a>
+                    <a href="/password-generator">Password Generator</a>
+                    <a href="/qr-code-generator">QR Code Generator</a>
+                </div>
+                <div class="nav-menu-col">
+                    <span class="nav-menu-label">Network &amp; system</span>
+                    <a href="/subnet-calculator">Subnet Calculator</a>
+                    <a href="/chmod-calculator">Chmod Calculator</a>
+                    <a href="/number-base-converter">Number Base Converter</a>
+                </div>
+                <div class="nav-menu-foot">
+                    <a href="/tools" class="nav-all-tools">All tools →</a>
+                    <a href="https://www.convertfigure.com/" target="_blank" rel="noopener" class="nav-external">Image &amp; PDF tools <span aria-hidden="true">↗</span><small>ConvertFigure: convert images, PDFs, QR codes, SVG icons</small></a>
+                </div>
             </div>
         </details>
         <a href="/share">Share Drop</a>
@@ -127,6 +156,7 @@
     </nav>
 
     <div class="header-actions">
+        <button type="button" class="cmdk-trigger" onclick="window.openToolPalette && openToolPalette()" aria-label="Search tools" title="Search tools (Ctrl+K)"><span aria-hidden="true">⌕</span><span class="cmdk-trigger-text">Search tools</span><kbd class="cmdk-trigger-kbd">Ctrl K</kbd></button>
         <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Switch theme">&#9728;</button>
         <button type="button" class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
     </div>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Chmod Calculator – Linux File Permissions (755, 644)</title>
+  <meta name="description" content="Tick permissions to get the chmod number, or type 755 or rwxr-xr-x to see what it means. Covers setuid, setgid, sticky bit and umask, with ready commands.">
+  <link rel="canonical" href="https://jsonxmleditor.com/chmod-calculator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Chmod Calculator for Linux &amp; Unix Permissions">
+  <meta property="og:description" content="Convert between 755, rwxr-xr-x and chmod commands, including special bits and umask.">
+  <meta property="og:url" content="https://jsonxmleditor.com/chmod-calculator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Chmod Calculator for Linux &amp; Unix Permissions">
+  <meta name="twitter:description" content="Convert between 755, rwxr-xr-x and chmod commands, including special bits and umask.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Chmod Calculator",
+      "url": "https://jsonxmleditor.com/chmod-calculator",
+      "description": "Convert Unix file permissions between octal, symbolic and checkbox forms, with umask.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Octal and symbolic permissions",
+        "Setuid, setgid and sticky bit",
+        "Reads ls -l output",
+        "chmod commands",
+        "umask calculator"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Chmod Calculator",
+          "item": "https://jsonxmleditor.com/chmod-calculator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does chmod 755 mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The owner can read, write and execute (7); the group and everyone else can read and execute (5). It is the usual setting for folders and for scripts or programs that everyone may run."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between 644 and 755?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "755 adds execute permission for everyone. Use 644 for ordinary files and 755 for folders and executable scripts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is chmod 777 dangerous?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every user and every process on the machine can modify or replace the file. On a web server that can let an attacker who gains limited access change your code. Fix ownership with chown, or use group permissions, instead."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I apply permissions recursively?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "chmod -R 755 folder changes everything, but it also makes plain files executable. The find commands above set folders and files separately, which is usually what you want."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work on macOS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. macOS uses the same Unix permission model and chmod syntax."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Chmod Calculator</span></nav>
+  <section class="tool-head">
+    <h1>Chmod Calculator</h1>
+    <p>Tick the permissions you want and copy the <code>chmod</code> command, or type a mode such as <code>755</code> or <code>rwxr-xr-x</code> to see exactly who can do what. You can also paste the permission column from <code>ls -l</code>.</p>
+  </section>
+
+<div class="cron-presets" style="margin-top:0">
+    <span class="muted">Common:</span>
+    <button type="button" class="chip" data-preset="644">644 files</button>
+    <button type="button" class="chip" data-preset="755">755 folders &amp; scripts</button>
+    <button type="button" class="chip" data-preset="600">600 private keys</button>
+    <button type="button" class="chip" data-preset="700">700 private folder</button>
+    <button type="button" class="chip" data-preset="775">775 shared group</button>
+    <button type="button" class="chip" data-preset="400">400 read-only</button>
+    <button type="button" class="chip" data-preset="1777">1777 like /tmp</button>
+    <button type="button" class="chip" data-preset="2775">2775 setgid folder</button>
+  </div>
+
+  <div class="pane-grid cron-grid">
+    <section class="pane">
+      <div class="pane-head">Permissions</div>
+      <div class="qr-body">
+        <table class="change-table chmod-grid">
+          <thead><tr><th></th><th>Read</th><th>Write</th><th>Execute</th><th>Special</th></tr></thead>
+          <tbody>
+            <tr><th>Owner (u)</th><td><input type="checkbox" data-bit="400" aria-label="Owner read"></td><td><input type="checkbox" data-bit="200" aria-label="Owner write"></td><td><input type="checkbox" data-bit="100" aria-label="Owner execute"></td><td><label class="check"><input type="checkbox" data-bit="4000"> setuid</label></td></tr>
+            <tr><th>Group (g)</th><td><input type="checkbox" data-bit="040" aria-label="Group read"></td><td><input type="checkbox" data-bit="020" aria-label="Group write"></td><td><input type="checkbox" data-bit="010" aria-label="Group execute"></td><td><label class="check"><input type="checkbox" data-bit="2000"> setgid</label></td></tr>
+            <tr><th>Others (o)</th><td><input type="checkbox" data-bit="004" aria-label="Others read"></td><td><input type="checkbox" data-bit="002" aria-label="Others write"></td><td><input type="checkbox" data-bit="001" aria-label="Others execute"></td><td><label class="check"><input type="checkbox" data-bit="1000"> sticky</label></td></tr>
+          </tbody>
+        </table>
+        <div class="qr-row" style="margin-top:14px">
+          <div class="field"><label for="chmodOctal">Octal</label><input id="chmodOctal" class="text-input chmod-big" type="text" spellcheck="false" autocomplete="off" inputmode="numeric"></div>
+          <div class="field"><label for="chmodSymbolic">Symbolic</label><input id="chmodSymbolic" class="text-input chmod-big" type="text" spellcheck="false" autocomplete="off"></div>
+        </div>
+        <div id="chmodError" class="error-box" hidden></div>
+        <div id="chmodWarn" class="summary warn" hidden></div>
+      </div>
+    </section>
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Commands</div>
+        <div class="qr-body">
+          <div class="field"><label for="chmodFile">File or folder</label><input id="chmodFile" class="text-input" type="text" value="file" spellcheck="false" autocomplete="off"></div>
+          <div class="chmod-cmd"><code id="chmodCmd"></code><button type="button" class="mini-btn" data-copy-el="chmodCmd">Copy</button></div>
+          <div class="chmod-cmd"><code id="chmodCmdSym"></code><button type="button" class="mini-btn" data-copy-el="chmodCmdSym">Copy</button></div>
+          <p class="muted" style="font-size:13px;margin:10px 0 4px">Apply to a whole tree (folders also get execute so they can be opened):</p>
+          <div class="chmod-cmd"><code id="chmodCmdRec"></code><button type="button" class="mini-btn" data-copy-el="chmodCmdRec">Copy</button></div>
+          <p class="muted" style="font-size:13px;margin:10px 0 0">In <code>ls -l</code> it shows as <code id="chmodLs"></code></p>
+        </div>
+      </section>
+      <section class="pane">
+        <div class="pane-head">What it means</div>
+        <ul id="chmodDesc" class="chmod-desc"></ul>
+      </section>
+      <section class="pane">
+        <div class="pane-head">umask calculator</div>
+        <div class="qr-body">
+          <div class="hash-compare" style="border-top:none;padding:0">
+            <label for="chmodUmask">umask</label>
+            <input id="chmodUmask" class="text-input" type="text" value="022" style="max-width:100px" spellcheck="false" autocomplete="off">
+          </div>
+          <p id="chmodUmaskOut" style="margin:10px 0 0;font-size:14px"></p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How Linux permissions work</h2>
+    <p>Every file has three sets of permissions: for its <strong>owner</strong>, its <strong>group</strong>, and <strong>others</strong> (everyone else). Each set can allow <strong>read</strong> (r = 4), <strong>write</strong> (w = 2) and <strong>execute</strong> (x = 1). Add the numbers for each set and you get the familiar three-digit mode: rwx = 7, r-x = 5, so <code>rwxr-xr-x</code> is <code>755</code>.</p>
+    <p>For a folder the meanings shift slightly: read lets you list its contents, write lets you create and delete files in it, and execute lets you enter it (<code>cd</code>) and reach the files inside.</p>
+
+    <h2>Which permissions should I use?</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:80px">Mode</th><th style="width:120px">Symbolic</th><th>Typical use</th></tr></thead>
+      <tbody>
+        <tr><td>644</td><td>rw-r--r--</td><td>Normal files: web pages, config files, source code</td></tr>
+        <tr><td>755</td><td>rwxr-xr-x</td><td>Folders, scripts and programs everyone may run</td></tr>
+        <tr><td>600</td><td>rw-------</td><td>SSH private keys, <code>.env</code> files, anything secret. SSH refuses keys that others can read.</td></tr>
+        <tr><td>700</td><td>rwx------</td><td>Your <code>~/.ssh</code> folder and other private folders</td></tr>
+        <tr><td>664 / 775</td><td>rw-rw-r--</td><td>Files and folders a team shares through a common group</td></tr>
+        <tr><td>777</td><td>rwxrwxrwx</td><td>Almost never. Anyone on the machine can change or replace the file.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Special bits</h2>
+    <ul>
+      <li><strong>Setuid (4000)</strong>: a program runs with its owner's rights. <code>passwd</code> uses it to update the password file. Shown as <code>s</code> in the owner's execute slot.</li>
+      <li><strong>Setgid (2000)</strong>: on a folder, new files inherit the folder's group, which keeps shared project folders tidy. Shown as <code>s</code> in the group slot.</li>
+      <li><strong>Sticky bit (1000)</strong>: in a shared folder, users can delete only their own files. <code>/tmp</code> is <code>1777</code>. Shown as <code>t</code>.</li>
+    </ul>
+    <p>A capital <code>S</code> or <code>T</code> means the special bit is set but execute is not, which is usually a mistake.</p>
+
+    <h2>What umask does</h2>
+    <p>The umask removes permissions from new files and folders. New files start from 666 and folders from 777, then the umask bits are taken away. With the common umask <code>022</code>, new files get 644 and new folders 755. A stricter <code>077</code> gives 600 and 700.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>What does chmod 755 mean?</summary>
+        <p>The owner can read, write and execute (7); the group and everyone else can read and execute (5). It is the usual setting for folders and for scripts or programs that everyone may run.</p>
+      </details>
+      <details>
+        <summary>What is the difference between 644 and 755?</summary>
+        <p>755 adds execute permission for everyone. Use 644 for ordinary files and 755 for folders and executable scripts.</p>
+      </details>
+      <details>
+        <summary>Why is chmod 777 dangerous?</summary>
+        <p>Every user and every process on the machine can modify or replace the file. On a web server that can let an attacker who gains limited access change your code. Fix ownership with chown, or use group permissions, instead.</p>
+      </details>
+      <details>
+        <summary>How do I apply permissions recursively?</summary>
+        <p><code>chmod -R 755 folder</code> changes everything, but it also makes plain files executable. The <code>find</code> commands above set folders and files separately, which is usually what you want.</p>
+      </details>
+      <details>
+        <summary>Does this work on macOS?</summary>
+        <p>Yes. macOS uses the same Unix permission model and chmod syntax.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/subnet-calculator">
+        <span class="icon">/24</span>
+        <h3>Subnet Calculator</h3>
+        <p>CIDR ranges, masks, host counts and subnet splits for IPv4 and IPv6.</p>
+      </a>
+      <a class="tool-card" href="/number-base-converter">
+        <span class="icon">0x</span>
+        <h3>Number Base Converter</h3>
+        <p>Binary, octal, decimal, hex and any base up to 36, with two's complement.</p>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.</p>
+      </a>
+      <a class="tool-card" href="/password-generator">
+        <span class="icon">***</span>
+        <h3>Password Generator</h3>
+        <p>Strong random passwords and passphrases, with a strength estimate.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/chmod.js?v=1"></script>
+</body>
+</html>

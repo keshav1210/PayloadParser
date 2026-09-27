@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Subnet Calculator – IPv4 &amp; IPv6 CIDR Calculator</title>
+  <meta name="description" content="Find the network, broadcast, host range, mask and host count of any IPv4 or IPv6 CIDR block, split it into smaller subnets, and check if an IP is inside.">
+  <link rel="canonical" href="https://jsonxmleditor.com/subnet-calculator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="IPv4 &amp; IPv6 Subnet (CIDR) Calculator">
+  <meta property="og:description" content="Network, broadcast, host range, masks, subnet splits and address type for IPv4 and IPv6.">
+  <meta property="og:url" content="https://jsonxmleditor.com/subnet-calculator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="IPv4 &amp; IPv6 Subnet (CIDR) Calculator">
+  <meta name="twitter:description" content="Network, broadcast, host range, masks, subnet splits and address type for IPv4 and IPv6.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Subnet Calculator",
+      "url": "https://jsonxmleditor.com/subnet-calculator",
+      "description": "Calculate IPv4 and IPv6 CIDR ranges, masks and host counts, and split networks into subnets.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "IPv4 and IPv6",
+        "Network, broadcast and host range",
+        "Subnet and wildcard masks",
+        "Subnet splitting",
+        "Address type detection",
+        "IP-in-range check"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Subnet Calculator",
+          "item": "https://jsonxmleditor.com/subnet-calculator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many usable hosts are in a /24?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "254. A /24 has 256 addresses; the first (network) and last (broadcast) can't be assigned to devices. In AWS and Azure subnets, 5 addresses are reserved, leaving 251."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a wildcard mask?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The inverse of the subnet mask: 0.0.0.255 for a /24. Cisco access lists and OSPF use wildcard masks, where 0 bits must match and 1 bits can be anything."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between a subnet mask and a prefix?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They say the same thing in two ways. 255.255.255.0 has 24 bits set to 1, so it equals /24. The calculator accepts either form."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does /31 have two usable addresses?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RFC 3021 allows /31 networks for point-to-point links between two routers, where no network or broadcast address is needed, so both addresses are usable."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my network information sent anywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All calculations run in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Subnet Calculator</span></nav>
+  <section class="tool-head">
+    <h1>Subnet Calculator</h1>
+    <p>Enter an IP address with a prefix, like <code>10.0.0.0/16</code>, or with a mask, like <code>192.168.1.10 255.255.255.0</code>. You get the network and broadcast addresses, the usable host range and the masks, and you can split the block into smaller subnets. IPv6 works too.</p>
+  </section>
+
+<section class="pane cron-main">
+    <div class="cron-input-row">
+      <label for="cidrInput" class="sr-only">IP address and prefix</label>
+      <input id="cidrInput" class="text-input cron-input" type="text" spellcheck="false" autocomplete="off" placeholder="192.168.1.10/24">
+    </div>
+    <div class="cron-presets" style="margin:4px 0 0">
+      <span class="muted">Try:</span>
+      <button type="button" class="chip" data-cidr="10.0.0.0/8">10.0.0.0/8</button>
+      <button type="button" class="chip" data-cidr="172.16.0.0/12">172.16.0.0/12</button>
+      <button type="button" class="chip" data-cidr="192.168.0.0/16">192.168.0.0/16</button>
+      <button type="button" class="chip" data-cidr="10.0.0.0/22">10.0.0.0/22</button>
+      <button type="button" class="chip" data-cidr="203.0.113.7 255.255.255.240">mask form</button>
+      <button type="button" class="chip" data-cidr="2001:db8:abcd::/48">2001:db8:abcd::/48</button>
+    </div>
+    <div id="cidrError" class="error-box" hidden></div>
+  </section>
+
+  <div class="pane-grid cron-grid" style="margin-top:14px">
+    <section class="pane">
+      <div class="pane-head">Details</div>
+      <div class="rx-scroll" style="max-height:none"><table class="change-table kv-table"><tbody id="cidrTable"></tbody></table></div>
+    </section>
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Is an IP in this range?</div>
+        <div class="hash-compare" style="border-top:none">
+          <input id="cidrCheck" class="text-input" type="text" spellcheck="false" autocomplete="off" placeholder="e.g. 192.168.1.200" aria-label="IP address to check">
+          <span id="cidrCheckResult" class="badge"></span>
+        </div>
+      </section>
+      <section class="pane" id="cidrSplit" hidden>
+        <div class="pane-head">Split into subnets <span class="muted" id="cidrSplitCount"></span>
+          <span class="actions"><select id="cidrSplitPrefix" class="mini-select" aria-label="New prefix length"></select></span>
+        </div>
+        <div class="rx-scroll">
+          <table class="change-table"><thead><tr><th>Subnet</th><th>Host range</th><th>Hosts</th></tr></thead><tbody id="cidrSplitBody"></tbody></table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How CIDR notation works</h2>
+    <p>In <code>192.168.1.0/24</code>, the number after the slash is the <strong>prefix length</strong>: how many bits, from the left, identify the network. An IPv4 address has 32 bits, so a /24 leaves 8 bits for hosts, which gives 2<sup>8</sup> = 256 addresses. The first is the network address and the last is the broadcast address, so 254 can be given to devices.</p>
+
+    <h2>Common IPv4 prefixes</h2>
+    <table class="change-table">
+      <thead><tr><th>Prefix</th><th>Subnet mask</th><th>Addresses</th><th>Usable hosts</th></tr></thead>
+      <tbody>
+        <tr><td>/8</td><td>255.0.0.0</td><td>16,777,216</td><td>16,777,214</td></tr>
+        <tr><td>/16</td><td>255.255.0.0</td><td>65,536</td><td>65,534</td></tr>
+        <tr><td>/20</td><td>255.255.240.0</td><td>4,096</td><td>4,094</td></tr>
+        <tr><td>/22</td><td>255.255.252.0</td><td>1,024</td><td>1,022</td></tr>
+        <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td></tr>
+        <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td></tr>
+        <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td></tr>
+        <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+        <tr><td>/31</td><td>255.255.255.254</td><td>2</td><td>2 (point-to-point, RFC 3021)</td></tr>
+        <tr><td>/32</td><td>255.255.255.255</td><td>1</td><td>1 (a single host)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Private address ranges</h2>
+    <p>These ranges are reserved for internal networks (RFC 1918) and are not routed on the public internet: <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code> and <code>192.168.0.0/16</code>. <code>100.64.0.0/10</code> is used by internet providers for carrier-grade NAT. The calculator labels these and other special ranges (loopback, link-local, documentation, multicast) automatically.</p>
+
+    <h2>Planning a cloud network</h2>
+    <p>When you create an AWS VPC, Azure VNet or Google Cloud VPC, you pick one block, often a /16, and split it into subnets per availability zone and tier. Use <strong>Split into subnets</strong> to see the ranges. Note that AWS and Azure reserve 5 addresses in every subnet, not just 2, so a /24 gives you 251 usable addresses there. Leave room to grow, and avoid ranges that overlap your office network or VPN.</p>
+
+    <h2>IPv6 in brief</h2>
+    <p>IPv6 addresses have 128 bits, written as eight groups of hexadecimal. Leading zeros can be dropped and one run of zero groups can be written as <code>::</code>. A site usually receives a /48 and gives each network a /64, so there are 65,536 subnets of 18 quintillion addresses each. IPv6 has no broadcast address, so the whole range is shown instead.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How many usable hosts are in a /24?</summary>
+        <p>254. A /24 has 256 addresses; the first (network) and last (broadcast) can't be assigned to devices. In AWS and Azure subnets, 5 addresses are reserved, leaving 251.</p>
+      </details>
+      <details>
+        <summary>What is a wildcard mask?</summary>
+        <p>The inverse of the subnet mask: 0.0.0.255 for a /24. Cisco access lists and OSPF use wildcard masks, where 0 bits must match and 1 bits can be anything.</p>
+      </details>
+      <details>
+        <summary>What is the difference between a subnet mask and a prefix?</summary>
+        <p>They say the same thing in two ways. 255.255.255.0 has 24 bits set to 1, so it equals /24. The calculator accepts either form.</p>
+      </details>
+      <details>
+        <summary>Why does /31 have two usable addresses?</summary>
+        <p>RFC 3021 allows /31 networks for point-to-point links between two routers, where no network or broadcast address is needed, so both addresses are usable.</p>
+      </details>
+      <details>
+        <summary>Is my network information sent anywhere?</summary>
+        <p>No. All calculations run in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/chmod-calculator">
+        <span class="icon">rwx</span>
+        <h3>Chmod Calculator</h3>
+        <p>Convert Unix permissions between 755, rwxr-xr-x and chmod commands.</p>
+      </a>
+      <a class="tool-card" href="/number-base-converter">
+        <span class="icon">0x</span>
+        <h3>Number Base Converter</h3>
+        <p>Binary, octal, decimal, hex and any base up to 36, with two's complement.</p>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/cidr.js?v=1"></script>
+</body>
+</html>

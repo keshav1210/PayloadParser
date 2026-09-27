@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>cURL to Code – Convert curl to Python, Java, JS &amp; Go</title>
+  <meta name="description" content="Paste a curl command and get working code for fetch, axios, Python requests, Java HttpClient, Spring RestClient, Go, C# or PHP, with headers, JSON and forms.">
+  <link rel="canonical" href="https://jsonxmleditor.com/curl-to-code">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="cURL to Code Converter">
+  <meta property="og:description" content="Convert curl commands into fetch, axios, Python, Java, Spring, Go, C# and PHP code.">
+  <meta property="og:url" content="https://jsonxmleditor.com/curl-to-code">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="cURL to Code Converter">
+  <meta name="twitter:description" content="Convert curl commands into fetch, axios, Python, Java, Spring, Go, C# and PHP code.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "cURL to Code Converter",
+      "url": "https://jsonxmleditor.com/curl-to-code",
+      "description": "Convert curl commands into HTTP client code for JavaScript, Python, Java, Spring, Go, C# and PHP.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "8 languages and libraries",
+        "Headers, JSON bodies and forms",
+        "Basic auth and cookies",
+        "Browser \"Copy as cURL\" for bash and Windows",
+        "Timeouts and redirects"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "cURL to Code",
+          "item": "https://jsonxmleditor.com/curl-to-code"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is my curl command sent to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It's parsed and converted in your browser, so tokens and cookies in the command stay on your computer."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does the code follow redirects when curl didn't, or the other way round?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "curl only follows redirects with -L. The generated code matches that where the library allows it; the Spring RestClient tab notes where the default differs."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it handle multi-line commands?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Commands split over several lines with a backslash (bash), a caret (Windows cmd) or a backtick (PowerShell) are joined automatically."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which Java version does the code need?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The java.net.http HttpClient code needs Java 11 or later, and the text blocks used for JSON bodies need Java 15 or later. The Spring code needs Spring Framework 6.1 or later (Spring Boot 3.2+) for RestClient."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it convert code back to curl?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not yet. Browser developer tools can copy any request as curl, which you can then paste here."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">cURL to Code</span></nav>
+  <section class="tool-head">
+    <h1>cURL to Code</h1>
+    <p>Paste a <code>curl</code> command, for example from your browser's <em>Copy as cURL</em> or an API's documentation, and get the same request as code in your language. Headers, JSON bodies, form uploads, basic auth, cookies, timeouts and redirects are converted.</p>
+  </section>
+
+<div class="pane-grid sql-grid">
+    <section class="pane">
+      <div class="pane-head">curl command
+        <span class="actions">
+          <button type="button" class="mini-btn" id="curlSample">Sample</button>
+          <button type="button" class="mini-btn" id="curlClear">Clear</button>
+        </span>
+      </div>
+      <textarea id="curlInput" class="code-input" spellcheck="false" aria-label="curl command" placeholder="curl https://api.example.com/users -H 'Authorization: Bearer …'"></textarea>
+      <div class="curl-summary" id="curlSummary"></div>
+    </section>
+    <section class="pane">
+      <div class="tabs curl-tabs" role="tablist" aria-label="Language">
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="fetch">JS fetch</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="axios">axios</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="python">Python</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="java">Java</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="spring">Spring</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="go">Go</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="csharp">C#</button>
+        <button type="button" class="tab-btn" role="tab" data-curl-lang="php">PHP</button>
+        <span class="spacer"></span>
+        <button type="button" class="mini-btn" id="curlCopy">Copy</button>
+      </div>
+      <pre id="curlOutput" class="code-output curl-output"></pre>
+    </section>
+  </div>
+  <div id="curlError" class="error-box" hidden style="margin-top:12px"></div>
+  <ul id="curlNotes" class="summary warn curl-notes" hidden></ul>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Getting a curl command from your browser</h2>
+    <ol>
+      <li>Open the browser's developer tools (<kbd>F12</kbd>) and go to the <strong>Network</strong> tab.</li>
+      <li>Perform the action on the page, then right-click the request.</li>
+      <li>Choose <strong>Copy › Copy as cURL</strong>. Both the bash and the Windows (cmd) versions work here.</li>
+    </ol>
+    <p>Browser copies include every header the browser sent, such as <code>sec-ch-ua</code> and <code>accept-language</code>. Most APIs only need <code>Authorization</code>, <code>Content-Type</code> and perhaps a cookie, so trim the rest from the generated code.</p>
+
+    <h2>Supported curl options</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:230px">Option</th><th>Converted to</th></tr></thead>
+      <tbody>
+        <tr><td><code>-X</code>, <code>--request</code></td><td>The HTTP method</td></tr>
+        <tr><td><code>-H</code>, <code>--header</code></td><td>Request headers</td></tr>
+        <tr><td><code>-d</code>, <code>--data</code>, <code>--data-raw</code>, <code>--data-binary</code></td><td>The request body; JSON bodies become real objects in Python, JavaScript and axios</td></tr>
+        <tr><td><code>--json</code></td><td>A JSON body with the right Content-Type and Accept headers</td></tr>
+        <tr><td><code>--data-urlencode</code>, <code>-G</code></td><td>URL-encoded form data, or query parameters with <code>-G</code></td></tr>
+        <tr><td><code>-F</code>, <code>--form</code></td><td>Multipart form fields and file uploads</td></tr>
+        <tr><td><code>-u</code>, <code>--user</code></td><td>Basic authentication</td></tr>
+        <tr><td><code>-b</code>, <code>--cookie</code>, <code>-A</code>, <code>-e</code></td><td>Cookie, User-Agent and Referer headers</td></tr>
+        <tr><td><code>-L</code>, <code>-m</code>, <code>--connect-timeout</code></td><td>Following redirects and timeouts</td></tr>
+        <tr><td><code>-I</code>, <code>--head</code></td><td>A HEAD request</td></tr>
+      </tbody>
+    </table>
+    <p>Output-only options such as <code>-s</code>, <code>-v</code>, <code>-o</code> and <code>-w</code> are ignored because they don't change the request. Anything that can't be reproduced exactly, such as reading a body from a file or <code>-k</code>, is listed under the code.</p>
+
+    <h2>Keep secrets out of shared code</h2>
+    <p>Copied commands often include live tokens and session cookies. The conversion happens entirely in your browser, but check the generated code before you commit it or paste it into a chat. Move tokens into environment variables or a secrets manager.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is my curl command sent to a server?</summary>
+        <p>No. It's parsed and converted in your browser, so tokens and cookies in the command stay on your computer.</p>
+      </details>
+      <details>
+        <summary>Why does the code follow redirects when curl didn't, or the other way round?</summary>
+        <p>curl only follows redirects with -L. The generated code matches that where the library allows it; the Spring RestClient tab notes where the default differs.</p>
+      </details>
+      <details>
+        <summary>Does it handle multi-line commands?</summary>
+        <p>Yes. Commands split over several lines with a backslash (bash), a caret (Windows cmd) or a backtick (PowerShell) are joined automatically.</p>
+      </details>
+      <details>
+        <summary>Which Java version does the code need?</summary>
+        <p>The java.net.http HttpClient code needs Java 11 or later, and the text blocks used for JSON bodies need Java 15 or later. The Spring code needs Spring Framework 6.1 or later (Spring Boot 3.2+) for RestClient.</p>
+      </details>
+      <details>
+        <summary>Can it convert code back to curl?</summary>
+        <p>Not yet. Browser developer tools can copy any request as curl, which you can then paste here.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/jwt-decoder">
+        <span class="icon">jwt</span>
+        <h3>JWT Decoder</h3>
+        <p>Read a token's claims, check expiry and verify the signature.</p>
+      </a>
+      <a class="tool-card" href="/parser">
+        <span class="icon">{ }</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Format, validate, repair and minify JSON or XML, with a tree view and code folding.</p>
+      </a>
+      <a class="tool-card" href="/mapper">
+        <span class="icon">cls</span>
+        <h3>Object Mapper</h3>
+        <p>Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust or Zod types from JSON.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/mock-data-generator">
+        <span class="icon">{…}</span>
+        <h3>Mock Data Generator</h3>
+        <p>Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.</p>
+      </a>
+      <a class="tool-card" href="/timestamp-converter">
+        <span class="icon">⌚</span>
+        <h3>Timestamp Converter</h3>
+        <p>Unix timestamps to dates and back, and times across time zones.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/curl.js?v=1"></script>
+</body>
+</html>

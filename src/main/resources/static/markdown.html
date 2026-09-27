@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Markdown Editor – Live Preview, Export to PDF &amp; HTML</title>
+  <meta name="description" content="Write Markdown with a live preview and export it to PDF, HTML or README.md. GitHub tables, task lists and code blocks work, with a toolbar and word count.">
+  <link rel="canonical" href="https://jsonxmleditor.com/markdown-editor">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Markdown Editor: Live Preview &amp; Markdown to PDF">
+  <meta property="og:description" content="Write Markdown with instant preview and export it as a PDF, an HTML page or a .md file.">
+  <meta property="og:url" content="https://jsonxmleditor.com/markdown-editor">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Markdown Editor: Live Preview &amp; Markdown to PDF">
+  <meta name="twitter:description" content="Write Markdown with instant preview and export it as a PDF, an HTML page or a .md file.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Markdown Editor",
+      "url": "https://jsonxmleditor.com/markdown-editor",
+      "description": "Online Markdown editor with live preview, GitHub-flavoured Markdown and export to PDF and HTML.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Live preview",
+        "GitHub-flavoured Markdown",
+        "Formatting toolbar and shortcuts",
+        "Export to PDF, HTML or .md",
+        "Word count and reading time",
+        "Autosave in the browser"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Markdown Editor",
+          "item": "https://jsonxmleditor.com/markdown-editor"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert Markdown to PDF?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Write or paste your Markdown, click Download PDF, and choose Save as PDF as the destination in the print window. The PDF keeps tables, code blocks, links and images, and the text stays selectable."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which Markdown flavour is supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "GitHub-flavoured Markdown (GFM): the standard CommonMark syntax plus tables, task lists, strikethrough, fenced code blocks and automatic links. What you see is close to how GitHub, GitLab and most documentation sites render it."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my document saved?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, automatically in this browser's local storage, so it's still there when you come back. It is never sent to a server. Download it as a .md file to keep a copy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I make a line break without a new paragraph?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "End the line with two spaces or a backslash, or tick \"Treat single line breaks as new lines\" to make every line break count, as in GitHub comments."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert Markdown to HTML?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Copy HTML puts the rendered HTML on your clipboard, and Download HTML page saves a complete web page with simple, readable styling."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the preview support diagrams or maths?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not yet. Mermaid diagrams and LaTeX maths are shown as code blocks."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Markdown Editor</span></nav>
+  <section class="tool-head">
+    <h1>Markdown Editor</h1>
+    <p>Write on the left and see the result on the right as you type. Tables, task lists and fenced code blocks work as on GitHub. When you are done, save it as a PDF to share, copy the HTML, or download a README.md or a standalone HTML page.</p>
+  </section>
+
+<div class="tool-bar md-toolbar" role="toolbar" aria-label="Formatting">
+    <button type="button" class="mini-btn" data-md="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+    <button type="button" class="mini-btn" data-md="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+    <button type="button" class="mini-btn" data-md="strike" title="Strikethrough"><s>S</s></button>
+    <button type="button" class="mini-btn" data-md="h1" title="Heading 1">H1</button>
+    <button type="button" class="mini-btn" data-md="h2" title="Heading 2">H2</button>
+    <button type="button" class="mini-btn" data-md="h3" title="Heading 3">H3</button>
+    <button type="button" class="mini-btn" data-md="ul" title="Bullet list">• List</button>
+    <button type="button" class="mini-btn" data-md="ol" title="Numbered list">1. List</button>
+    <button type="button" class="mini-btn" data-md="task" title="Task list">☐ Task</button>
+    <button type="button" class="mini-btn" data-md="quote" title="Quote">❝</button>
+    <button type="button" class="mini-btn" data-md="code" title="Inline code">&lt;/&gt;</button>
+    <button type="button" class="mini-btn" data-md="codeblock" title="Code block">{ }</button>
+    <button type="button" class="mini-btn" data-md="link" title="Link (Ctrl+Shift+K)">Link</button>
+    <button type="button" class="mini-btn" data-md="image" title="Image">Image</button>
+    <button type="button" class="mini-btn" data-md="table" title="Table">Table</button>
+    <button type="button" class="mini-btn" data-md="hr" title="Divider">―</button>
+    <span class="spacer"></span>
+    <div class="tabs md-views" role="tablist" aria-label="Layout">
+      <button type="button" class="tab-btn" role="tab" data-md-view="edit">Write</button>
+      <button type="button" class="tab-btn" role="tab" data-md-view="split">Split</button>
+      <button type="button" class="tab-btn" role="tab" data-md-view="preview">Preview</button>
+    </div>
+  </div>
+
+  <div class="md-layout" id="mdLayout" data-view="split">
+    <section class="pane md-edit">
+      <div class="pane-head">Markdown
+        <span class="actions">
+          <label class="mini-btn file-btn">Open<input type="file" id="mdOpen" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden></label>
+          <button type="button" class="mini-btn" id="mdSample">Sample</button>
+          <button type="button" class="mini-btn" id="mdClear">Clear</button>
+        </span>
+      </div>
+      <textarea id="mdInput" class="code-input md-input" spellcheck="true" aria-label="Markdown"></textarea>
+    </section>
+    <section class="pane md-view">
+      <div class="pane-head">Preview <span class="muted" id="mdStats"></span></div>
+      <div id="mdPreview" class="md-preview prose"></div>
+    </section>
+  </div>
+
+  <div class="tool-bar" style="padding-top:14px">
+    <label class="check"><input type="checkbox" id="mdBreaks"> Treat single line breaks as new lines</label>
+    <span class="spacer"></span>
+    <button type="button" class="btn" id="mdCopyMd">Copy Markdown</button>
+    <button type="button" class="btn" id="mdCopyHtml">Copy HTML</button>
+    <button type="button" class="btn" id="mdDownloadMd">Download .md</button>
+    <button type="button" class="btn" id="mdDownloadHtml">Download HTML</button>
+    <label class="field-inline">Paper
+      <select id="mdPaper">
+        <option value="A4" selected>A4</option>
+        <option value="letter">Letter</option>
+        <option value="legal">Legal</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary" id="mdDownloadPdf">Download PDF</button>
+  </div>
+  <p id="mdPdfHint" class="summary md-pdf-hint" hidden>In the print window, set <strong>Destination</strong> to <strong>Save as PDF</strong> and click <strong>Save</strong>. For a clean page, untick <strong>Headers and footers</strong> under More settings.</p>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Markdown cheat sheet</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:45%">You type</th><th>You get</th></tr></thead>
+      <tbody>
+        <tr><td><code># Heading</code>, <code>## Smaller</code></td><td>Headings, levels 1 to 6</td></tr>
+        <tr><td><code>**bold**</code>, <code>_italic_</code>, <code>~~strike~~</code></td><td><strong>bold</strong>, <em>italic</em>, <del>strike</del></td></tr>
+        <tr><td><code>[text](https://example.com)</code></td><td>A link</td></tr>
+        <tr><td><code>![alt text](image.png)</code></td><td>An image</td></tr>
+        <tr><td><code>- item</code> or <code>1. item</code></td><td>Bullet or numbered list</td></tr>
+        <tr><td><code>- [ ] todo</code>, <code>- [x] done</code></td><td>Task list with checkboxes</td></tr>
+        <tr><td><code>&gt; quote</code></td><td>A block quote</td></tr>
+        <tr><td><code>`code`</code> and <code>```js</code> … <code>```</code></td><td>Inline code and a code block</td></tr>
+        <tr><td><code>| a | b |</code> + <code>|---|---|</code></td><td>A table; <code>:---:</code> centres a column</td></tr>
+        <tr><td><code>---</code></td><td>A horizontal line</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Writing a good README</h2>
+    <p>A README is the first thing people see in your repository. A useful one answers, in this order: what the project does, how to install it, a minimal usage example, how to configure it, and how to contribute or get help. Keep the first paragraph short enough to read on a phone. Click <strong>Sample</strong> for a starting structure.</p>
+
+    <h2>Keyboard shortcuts</h2>
+    <ul>
+      <li><kbd>Ctrl</kbd>+<kbd>B</kbd> bold, <kbd>Ctrl</kbd>+<kbd>I</kbd> italic, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> link</li>
+      <li><kbd>Tab</kbd> inserts two spaces, for nested lists</li>
+      <li>Select several lines and click a list or quote button to apply it to all of them; click again to remove it.</li>
+    </ul>
+
+    <h2>Convert Markdown to PDF</h2>
+    <p>Click <strong>Download PDF</strong> and choose <strong>Save as PDF</strong> in the window that opens. The PDF is created by your browser's own engine, so:</p>
+    <ul>
+      <li>text stays sharp, selectable and searchable, and links remain clickable;</li>
+      <li>every language and emoji prints correctly, using the fonts on your computer;</li>
+      <li>headings stay with the text that follows them, and code blocks, table rows and images are not split across pages;</li>
+      <li>pages are numbered, and you can pick A4, Letter or Legal paper.</li>
+    </ul>
+    <p>The file is named after your first heading. Nothing is uploaded: the document goes straight from this page to your PDF. It's a quick way to share release notes, a README, meeting notes or documentation with people who don't use Markdown.</p>
+
+    <h2>Safe preview</h2>
+    <p>Markdown may contain raw HTML. The preview removes scripts, event handlers and other active content before showing it, so pasting a README from an unknown source can't run code in your browser. Your text is saved in this browser only and never uploaded.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I convert Markdown to PDF?</summary>
+        <p>Write or paste your Markdown, click <strong>Download PDF</strong>, and choose <strong>Save as PDF</strong> as the destination in the print window. The PDF keeps tables, code blocks, links and images, and the text stays selectable.</p>
+      </details>
+      <details>
+        <summary>Which Markdown flavour is supported?</summary>
+        <p>GitHub-flavoured Markdown (GFM): the standard CommonMark syntax plus tables, task lists, strikethrough, fenced code blocks and automatic links. What you see is close to how GitHub, GitLab and most documentation sites render it.</p>
+      </details>
+      <details>
+        <summary>Is my document saved?</summary>
+        <p>Yes, automatically in this browser's local storage, so it's still there when you come back. It is never sent to a server. Download it as a .md file to keep a copy.</p>
+      </details>
+      <details>
+        <summary>How do I make a line break without a new paragraph?</summary>
+        <p>End the line with two spaces or a backslash, or tick "Treat single line breaks as new lines" to make every line break count, as in GitHub comments.</p>
+      </details>
+      <details>
+        <summary>Can I convert Markdown to HTML?</summary>
+        <p>Yes. Copy HTML puts the rendered HTML on your clipboard, and Download HTML page saves a complete web page with simple, readable styling.</p>
+      </details>
+      <details>
+        <summary>Does the preview support diagrams or maths?</summary>
+        <p>Not yet. Mermaid diagrams and LaTeX maths are shown as code blocks.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/text-diff">
+        <span class="icon">±</span>
+        <h3>Text Diff</h3>
+        <p>Compare any two texts or code files line by line, word by word or by character.</p>
+      </a>
+      <a class="tool-card" href="/code-beautifier">
+        <span class="icon">&lt;/&gt;</span>
+        <h3>HTML, CSS &amp; JS Beautifier</h3>
+        <p>Beautify or minify HTML, CSS and JavaScript, and see how many bytes you save.</p>
+      </a>
+      <a class="tool-card" href="/parser">
+        <span class="icon">{ }</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Format, validate, repair and minify JSON or XML, with a tree view and code folding.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/share">
+        <span class="icon">↗</span>
+        <h3>Share Drop</h3>
+        <p>Send text or a file to another device with a short-lived link.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/vendor/marked.min.js?v=14.1.4"></script>
+<script src="/js/vendor/purify.min.js?v=3.2.4"></script>
+<script src="/js/markdown.js?v=2"></script>
+</body>
+</html>

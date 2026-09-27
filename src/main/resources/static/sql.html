@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>SQL Formatter Online – MySQL, PostgreSQL, SQL Server</title>
+  <meta name="description" content="Format messy SQL into clean, readable queries or minify it to one line. Supports MySQL, PostgreSQL, SQL Server, Oracle, SQLite, BigQuery and Snowflake.">
+  <link rel="canonical" href="https://jsonxmleditor.com/sql-formatter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="SQL Formatter &amp; Beautifier">
+  <meta property="og:description" content="Beautify or minify SQL for MySQL, PostgreSQL, SQL Server, Oracle, SQLite, BigQuery and Snowflake.">
+  <meta property="og:url" content="https://jsonxmleditor.com/sql-formatter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="SQL Formatter &amp; Beautifier">
+  <meta name="twitter:description" content="Beautify or minify SQL for MySQL, PostgreSQL, SQL Server, Oracle, SQLite, BigQuery and Snowflake.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "SQL Formatter",
+      "url": "https://jsonxmleditor.com/sql-formatter",
+      "description": "Format and minify SQL queries for 15+ database dialects in the browser.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "15+ SQL dialects",
+        "Keyword case",
+        "Indent style",
+        "Minify",
+        "Syntax highlighting",
+        "Download .sql"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "SQL Formatter",
+          "item": "https://jsonxmleditor.com/sql-formatter"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which databases are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Standard SQL, MySQL, MariaDB, PostgreSQL, SQL Server (T-SQL), Oracle PL/SQL, SQLite, BigQuery, Snowflake, Amazon Redshift, Spark SQL, Hive, Trino/Presto, IBM Db2, SingleStore, TiDB and Couchbase N1QL."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does formatting change what my query does?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Only whitespace and, if you choose, the letter case of keywords change. String values, quoted identifiers and comments are kept exactly as written."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do I get a parse error?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The formatter needs to understand the syntax, so an unclosed quote or bracket, or syntax from a different database, stops it. Check the dialect first: for example, square-bracket names only work with SQL Server selected."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it format stored procedures?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It formats the SQL statements inside them. Procedural blocks in PL/SQL and T-SQL are handled on a best-effort basis; very long procedures with vendor-specific control flow may keep some of their original layout."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my SQL sent to your server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The formatter runs in your browser and nothing is uploaded."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">SQL Formatter</span></nav>
+  <section class="tool-head">
+    <h1>SQL Formatter</h1>
+    <p>Paste a query and get it back neatly indented, with keywords in the case you like. Pick your database so its special syntax is understood, or switch to Minify to squeeze it onto one line.</p>
+  </section>
+
+<div class="tool-bar">
+    <button type="button" class="btn btn-primary" data-sql-mode="format">Format</button>
+    <button type="button" class="btn" data-sql-mode="minify">Minify</button>
+    <label class="field-inline">Dialect
+      <select id="sqlDialect">
+        <option value="sql">Standard SQL</option>
+        <option value="mysql">MySQL</option>
+        <option value="mariadb">MariaDB</option>
+        <option value="postgresql" selected>PostgreSQL</option>
+        <option value="transactsql">SQL Server (T-SQL)</option>
+        <option value="plsql">Oracle PL/SQL</option>
+        <option value="sqlite">SQLite</option>
+        <option value="bigquery">BigQuery</option>
+        <option value="snowflake">Snowflake</option>
+        <option value="redshift">Amazon Redshift</option>
+        <option value="spark">Spark SQL</option>
+        <option value="hive">Hive</option>
+        <option value="trino">Trino / Presto</option>
+        <option value="db2">IBM Db2</option>
+        <option value="singlestoredb">SingleStore</option>
+        <option value="tidb">TiDB</option>
+        <option value="n1ql">Couchbase N1QL</option>
+      </select>
+    </label>
+    <span class="spacer"></span>
+    <button type="button" class="btn" id="sqlSample">Load sample</button>
+    <label class="btn file-btn">Open .sql<input type="file" id="sqlFile" accept=".sql,.txt,text/plain" hidden></label>
+    <button type="button" class="btn" id="sqlClear">Clear</button>
+  </div>
+
+  <div class="tool-bar sql-options" id="sqlOptions">
+    <label class="field-inline">Keywords
+      <select id="sqlCase">
+        <option value="upper" selected>UPPERCASE</option>
+        <option value="lower">lowercase</option>
+        <option value="preserve">Keep as typed</option>
+      </select>
+    </label>
+    <label class="field-inline">Indent
+      <select id="sqlIndent">
+        <option value="2" selected>2 spaces</option>
+        <option value="4">4 spaces</option>
+        <option value="tab">Tabs</option>
+      </select>
+    </label>
+    <label class="field-inline">Style
+      <select id="sqlStyle">
+        <option value="standard" selected>Standard</option>
+        <option value="tabularLeft">Tabular, left</option>
+        <option value="tabularRight">Tabular, right</option>
+      </select>
+    </label>
+    <label class="field-inline">AND / OR
+      <select id="sqlLogical">
+        <option value="before" selected>Start of line</option>
+        <option value="after">End of line</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="pane-grid sql-grid">
+    <section class="pane">
+      <div class="pane-head">Your SQL <span class="muted">Ctrl+Enter to format</span></div>
+      <textarea id="sqlInput" class="code-input" spellcheck="false" aria-label="SQL input" placeholder="Paste a query, or several separated by semicolons"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Result <span class="muted" id="sqlStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="sqlUse" title="Move the result into the input">Use as input</button>
+          <button type="button" class="mini-btn" id="sqlDownload">Download</button>
+          <button type="button" class="mini-btn" id="sqlCopy">Copy</button>
+        </span>
+      </div>
+      <pre id="sqlOutput" class="code-output sql-view" tabindex="0" aria-label="Formatted SQL"></pre>
+    </section>
+  </div>
+  <div id="sqlError" class="error-box" hidden style="margin-top:12px"></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Why format SQL?</h2>
+    <p>Queries copied from logs, ORMs or a colleague's chat message usually arrive as one long line. Formatting puts each clause on its own line, indents joins and subqueries, and lines up conditions, so you can see at a glance what a query selects, how tables are joined and where a filter is missing. It also makes code reviews and diffs of SQL files much easier to read.</p>
+
+    <h2>How to use it</h2>
+    <ol>
+      <li>Paste one query or a whole script. Separate statements with semicolons.</li>
+      <li>Choose your database under <strong>Dialect</strong>. This matters for syntax that only some databases have, such as PostgreSQL's <code>::</code> casts and <code>$$</code> function bodies, SQL Server's <code>[square brackets]</code> and <code>TOP</code>, or MySQL's backticks.</li>
+      <li>Pick the keyword case and indentation your team uses. The result updates as you type.</li>
+      <li>Copy the result, download it as a <code>.sql</code> file, or click <strong>Minify</strong> for a single-line version.</li>
+    </ol>
+
+    <h2>Formatting styles</h2>
+    <ul>
+      <li><strong>Standard</strong> puts each clause keyword on its own line and indents what follows. It's the most common style in open-source projects.</li>
+      <li><strong>Tabular, left</strong> and <strong>right</strong> place keywords in a fixed-width column so the column names and conditions line up vertically, a style many data teams prefer for long analytical queries.</li>
+      <li><strong>AND / OR at the start of the line</strong> makes it easy to comment out one condition while debugging.</li>
+    </ul>
+
+    <h2>When to minify SQL</h2>
+    <p>Minifying removes comments and extra whitespace while leaving string values and quoted names untouched. It's handy for putting a query into a JSON config, a log message or a single-line environment variable. Keep the formatted version in your repository; minified SQL is hard to review.</p>
+
+    <h2>Your queries stay private</h2>
+    <p>Formatting runs entirely in your browser, so table names, customer data in <code>WHERE</code> clauses and connection details are never sent to our server. Your last query is remembered in this browser only.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Which databases are supported?</summary>
+        <p>Standard SQL, MySQL, MariaDB, PostgreSQL, SQL Server (T-SQL), Oracle PL/SQL, SQLite, BigQuery, Snowflake, Amazon Redshift, Spark SQL, Hive, Trino/Presto, IBM Db2, SingleStore, TiDB and Couchbase N1QL.</p>
+      </details>
+      <details>
+        <summary>Does formatting change what my query does?</summary>
+        <p>No. Only whitespace and, if you choose, the letter case of keywords change. String values, quoted identifiers and comments are kept exactly as written.</p>
+      </details>
+      <details>
+        <summary>Why do I get a parse error?</summary>
+        <p>The formatter needs to understand the syntax, so an unclosed quote or bracket, or syntax from a different database, stops it. Check the dialect first: for example, square-bracket names only work with SQL Server selected.</p>
+      </details>
+      <details>
+        <summary>Can it format stored procedures?</summary>
+        <p>It formats the SQL statements inside them. Procedural blocks in PL/SQL and T-SQL are handled on a best-effort basis; very long procedures with vendor-specific control flow may keep some of their original layout.</p>
+      </details>
+      <details>
+        <summary>Is my SQL sent to your server?</summary>
+        <p>No. The formatter runs in your browser and nothing is uploaded.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
+        <h3>CSV Converter</h3>
+        <p>Turn CSV into JSON, XML or SQL INSERT statements.</p>
+      </a>
+      <a class="tool-card" href="/parser">
+        <span class="icon">{ }</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Format, validate, repair and minify JSON or XML, with a tree view and code folding.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/compare">
+        <span class="icon">≠</span>
+        <h3>JSON &amp; XML Compare</h3>
+        <p>See every difference between two JSON or XML documents.</p>
+      </a>
+      <a class="tool-card" href="/mapper">
+        <span class="icon">cls</span>
+        <h3>Object Mapper</h3>
+        <p>Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust or Zod types from JSON.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/vendor/sql-formatter.min.js?v=15.6.9"></script>
+<script src="/js/sql.js?v=2"></script>
+</body>
+</html>

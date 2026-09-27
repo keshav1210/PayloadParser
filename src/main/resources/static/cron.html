@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Cron Expression Explainer – Crontab, Spring &amp; Quartz</title>
+  <meta name="description" content="Read any cron expression in plain English and see its next 10 run times. Works with Linux crontab, Spring @Scheduled and Quartz, including L, W and #.">
+  <link rel="canonical" href="https://jsonxmleditor.com/cron-expression">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Cron Expression Explainer">
+  <meta property="og:description" content="Understand any crontab, Spring or Quartz schedule in plain English and see when it runs next.">
+  <meta property="og:url" content="https://jsonxmleditor.com/cron-expression">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Cron Expression Explainer">
+  <meta name="twitter:description" content="Understand any crontab, Spring or Quartz schedule in plain English and see when it runs next.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Cron Expression Explainer",
+      "url": "https://jsonxmleditor.com/cron-expression",
+      "description": "Explain cron expressions in plain English and list their next run times, for Unix crontab, Spring and Quartz.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Plain-English description",
+        "Next 10 run times",
+        "Local time or UTC",
+        "Unix, Spring and Quartz syntax",
+        "L, W and # support",
+        "Field-by-field breakdown"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Cron Expression Explainer",
+          "item": "https://jsonxmleditor.com/cron-expression"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does */5 mean in cron?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "*/5 means every 5th value of that field, starting from the lowest one. In the minute field that is minutes 0, 5, 10 … 55, so */5 * * * * runs every five minutes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I run a cron job every 30 seconds?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Linux crontab can't go below one minute. Spring and Quartz have a seconds field, so */30 * * * * * runs every 30 seconds. With plain crontab, a common workaround is two entries, one of them starting with sleep 30;."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why didn't my cron job run at the time I expected?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The most common causes are the server running in UTC instead of your local time zone, day-of-week numbering that differs between tools (Quartz counts Sunday as 1), and the crontab rule that runs a job when either day field matches. Paste your expression here and compare the next run times with what you expected."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between 0 and 7 for day of week?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In crontab and Spring both 0 and 7 mean Sunday. In Quartz the range is 1 to 7, where 1 is Sunday and 7 is Saturday."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my expression sent anywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Parsing and the run-time calculation happen in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Cron Expression Explainer</span></nav>
+  <section class="tool-head">
+    <h1>Cron Expression Explainer</h1>
+    <p>Paste a cron schedule to read it in plain English, check each field and see exactly when it will run next. It understands Linux crontab, Spring <code>@Scheduled</code> and Quartz, and tells you which one it thinks you are using.</p>
+  </section>
+
+<section class="pane cron-main">
+    <div class="cron-input-row">
+      <label for="cronInput" class="sr-only">Cron expression</label>
+      <input id="cronInput" class="text-input cron-input" type="text" spellcheck="false" autocomplete="off" placeholder="e.g. */15 9-17 * * MON-FRI">
+      <button type="button" class="btn" id="cronCopy">Copy</button>
+    </div>
+    <p id="cronDesc" class="cron-desc" aria-live="polite"></p>
+    <div class="cron-meta">
+      <span class="muted" id="cronDetected"></span>
+      <label class="field-inline">Format
+        <select id="cronDialect">
+          <option value="auto" selected>Detect automatically</option>
+          <option value="unix">Unix / Linux crontab</option>
+          <option value="spring">Spring</option>
+          <option value="quartz">Quartz</option>
+        </select>
+      </label>
+      <label class="field-inline">Show times in
+        <select id="cronTz">
+          <option value="local" id="cronTzLocal" selected>Local time</option>
+          <option value="utc">UTC</option>
+        </select>
+      </label>
+    </div>
+    <div id="cronWarn" class="summary warn" hidden></div>
+  </section>
+
+  <div class="cron-presets" aria-label="Examples">
+    <span class="muted">Examples:</span>
+    <button type="button" class="chip" data-cron="*/5 * * * *">Every 5 minutes</button>
+    <button type="button" class="chip" data-cron="0 * * * *">Every hour</button>
+    <button type="button" class="chip" data-cron="0 0 * * *">Every day at midnight</button>
+    <button type="button" class="chip" data-cron="30 9 * * MON-FRI">Weekdays at 09:30</button>
+    <button type="button" class="chip" data-cron="0 8 * * 1">Mondays at 08:00</button>
+    <button type="button" class="chip" data-cron="0 0 1 * *">First of the month</button>
+    <button type="button" class="chip" data-cron="0 2 * * 0">Sundays at 02:00</button>
+    <button type="button" class="chip" data-cron="*/15 9-17 * * 1-5">Every 15 min, office hours</button>
+    <button type="button" class="chip" data-cron="0 */30 * * * *">Spring: every 30 minutes</button>
+    <button type="button" class="chip" data-cron="0 0 18 L * ?" data-dialect="quartz">Quartz: last day of month</button>
+    <button type="button" class="chip" data-cron="0 0 10 ? * 6#3" data-dialect="quartz">Quartz: third Friday</button>
+  </div>
+
+  <div class="pane-grid cron-grid">
+    <section class="pane">
+      <div class="pane-head">Next 10 runs</div>
+      <ol id="cronRuns" class="cron-runs"></ol>
+    </section>
+    <div class="stack">
+      <section class="pane">
+        <div class="pane-head">Fields</div>
+        <div class="rx-scroll">
+          <table class="change-table cron-table">
+            <thead><tr><th>Field</th><th>Value</th><th>Meaning</th><th>Allowed</th></tr></thead>
+            <tbody id="cronFields"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="pane" id="cronConvert" hidden>
+        <div class="pane-head"><span id="cronConvertLabel"></span> <span class="actions"><button type="button" class="mini-btn" id="cronCopyConvert">Copy</button></span></div>
+        <pre id="cronConvertValue" class="code-output"></pre>
+        <p id="cronConvertNote" class="muted cron-note"></p>
+      </section>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to read a cron expression</h2>
+    <p>A cron expression is a line of fields separated by spaces. Each field says when the job may run, and the job runs whenever <em>all</em> the fields match the current time. Linux crontab uses five fields:</p>
+    <pre><code>┌───────── minute (0-59)
+│ ┌─────── hour (0-23)
+│ │ ┌───── day of month (1-31)
+│ │ │ ┌─── month (1-12 or JAN-DEC)
+│ │ │ │ ┌─ day of week (0-7 or SUN-SAT; 0 and 7 are Sunday)
+│ │ │ │ │
+30 9 * * MON-FRI   →  at 09:30 on weekdays</code></pre>
+    <p>Spring and Quartz add a <strong>seconds</strong> field at the front, and Quartz allows an optional <strong>year</strong> field at the end.</p>
+
+    <h2>Special characters</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:90px">Symbol</th><th>Meaning</th><th style="width:170px">Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>*</code></td><td>Every value</td><td><code>* * * * *</code> every minute</td></tr>
+        <tr><td><code>,</code></td><td>A list of values</td><td><code>0 9,13,17 * * *</code></td></tr>
+        <tr><td><code>-</code></td><td>A range</td><td><code>0 9-17 * * *</code></td></tr>
+        <tr><td><code>/</code></td><td>A step: every n-th value</td><td><code>*/10 * * * *</code> every 10 minutes</td></tr>
+        <tr><td><code>?</code></td><td>No specific value (Spring, Quartz); use it in the day field you don't care about</td><td><code>0 0 12 ? * MON</code></td></tr>
+        <tr><td><code>L</code></td><td>Last: last day of the month, or with a weekday, the last such weekday</td><td><code>L</code>, <code>L-2</code>, <code>5L</code></td></tr>
+        <tr><td><code>W</code></td><td>The weekday (Mon–Fri) nearest a given day of the month</td><td><code>15W</code>, <code>LW</code></td></tr>
+        <tr><td><code>#</code></td><td>The n-th weekday of the month</td><td><code>6#3</code> third Friday in Quartz</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Crontab vs Spring vs Quartz</h2>
+    <ul>
+      <li><strong>Linux crontab</strong> has 5 fields and no seconds. It also accepts shortcuts such as <code>@daily</code>, <code>@weekly</code> and <code>@reboot</code>.</li>
+      <li><strong>Spring</strong> (<code>@Scheduled(cron = "…")</code>) has 6 fields starting with seconds. Days of the week run from 0 or 7 (Sunday) to 6 (Saturday), like crontab, and <code>L</code>, <code>W</code> and <code>#</code> are supported.</li>
+      <li><strong>Quartz</strong> has 6 or 7 fields, and one of day-of-month and day-of-week must be <code>?</code>. Days of the week are numbered differently: <strong>1 is Sunday and 7 is Saturday</strong>. Writing day names (<code>MON</code>, <code>FRI</code>) avoids mistakes when you move a schedule between tools.</li>
+    </ul>
+
+    <h2>A crontab trap: day of month and day of week together</h2>
+    <p>In Linux crontab, if both day fields are restricted, the job runs when <em>either</em> matches. <code>0 0 13 * 5</code> runs on every 13th <em>and</em> on every Friday, not just on Friday the 13th. If one of the two fields starts with <code>*</code> (for example <code>*/2</code>), both must match instead. The explainer follows these rules, and the run list shows you the real result.</p>
+
+    <h2>Time zones</h2>
+    <p>Cron runs in the time zone of the machine or container, which on servers and in Kubernetes is usually UTC. Switch <strong>Show times in</strong> to UTC to see run times the way your server will. In Spring you can pin a zone with <code>@Scheduled(cron = "…", zone = "Asia/Kolkata")</code>, and Kubernetes CronJobs accept a <code>timeZone</code> field.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>What does */5 mean in cron?</summary>
+        <p><code>*/5</code> means every 5th value of that field, starting from the lowest one. In the minute field that is minutes 0, 5, 10 … 55, so <code>*/5 * * * *</code> runs every five minutes.</p>
+      </details>
+      <details>
+        <summary>How do I run a cron job every 30 seconds?</summary>
+        <p>Linux crontab can't go below one minute. Spring and Quartz have a seconds field, so <code>*/30 * * * * *</code> runs every 30 seconds. With plain crontab, a common workaround is two entries, one of them starting with <code>sleep 30;</code>.</p>
+      </details>
+      <details>
+        <summary>Why didn't my cron job run at the time I expected?</summary>
+        <p>The most common causes are the server running in UTC instead of your local time zone, day-of-week numbering that differs between tools (Quartz counts Sunday as 1), and the crontab rule that runs a job when either day field matches. Paste your expression here and compare the next run times with what you expected.</p>
+      </details>
+      <details>
+        <summary>What is the difference between 0 and 7 for day of week?</summary>
+        <p>In crontab and Spring both 0 and 7 mean Sunday. In Quartz the range is 1 to 7, where 1 is Sunday and 7 is Saturday.</p>
+      </details>
+      <details>
+        <summary>Is my expression sent anywhere?</summary>
+        <p>No. Parsing and the run-time calculation happen in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/yaml-converter">
+        <span class="icon">yml</span>
+        <h3>YAML Converter</h3>
+        <p>JSON to YAML, and application.properties to YAML and back.</p>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>Generate UUID v4, UUID v7, ULID and Nano IDs in bulk.</p>
+      </a>
+      <a class="tool-card" href="/jwt-decoder">
+        <span class="icon">jwt</span>
+        <h3>JWT Decoder</h3>
+        <p>Read a token's claims, check expiry and verify the signature.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/cron.js?v=2"></script>
+</body>
+</html>

@@ -45,11 +45,29 @@ function markActiveNavLink(root) {
     }
 }
 
-loadFragment("header", "/header.html?v=8", root => {
+loadFragment("header", "/header.html?v=11", root => {
     markActiveNavLink(root);
+    if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+        root.querySelectorAll('.cmdk-trigger-kbd').forEach(k => { k.textContent = '⌘ K'; });
+        root.querySelectorAll('.cmdk-trigger').forEach(b => { b.title = 'Search tools (⌘K)'; });
+    }
     if (window.updateThemeButtons) window.updateThemeButtons();
 });
-loadFragment("footer", "/footer.html?v=8", root => {
+loadFragment("footer", "/footer.html?v=11", root => {
     const year = root.querySelector('.footer-year');
     if (year) year.textContent = new Date().getFullYear();
 });
+
+// Command palette (Ctrl+K / Cmd+K) on every page
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.append(s);
+    });
+}
+(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=3'))
+    .then(() => loadScript('/js/palette.js?v=1'))
+    .catch(err => console.error('Failed to load the tool search', err));

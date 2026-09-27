@@ -30,6 +30,12 @@ public class CaffeineRateLimiterFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
+        // Keep-alive and uptime pings: no rate limit, no cookie
+        if ("/ping".equals(req.getRequestURI())) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         // USE COOKIE BASED CLIENT ID (Anonymous Unique User)
         String clientId = getClientId(req, res);
 

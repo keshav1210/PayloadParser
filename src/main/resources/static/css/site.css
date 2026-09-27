@@ -484,3 +484,25 @@ pre {
         padding: 18px;
     }
 }
+
+.section-more {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    font-size: 14px;
+}
+
+.section-more .muted { color: var(--muted); }
+
+kbd {
+    display: inline-block;
+    padding: 1px 5px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    background: var(--surface-2);
+    font: 12px var(--mono);
+    color: var(--text);
+}

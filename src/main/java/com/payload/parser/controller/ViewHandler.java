@@ -119,6 +119,86 @@ public class ViewHandler {
         return "qr.html";
     }
 
+    @GetMapping("/tools")
+    public String toolsDirectory() {
+        return "tools.html";
+    }
+
+    @GetMapping("/regex-tester")
+    public String regexTester() {
+        return "regex.html";
+    }
+
+    @GetMapping("/sql-formatter")
+    public String sqlFormatter() {
+        return "sql.html";
+    }
+
+    @GetMapping("/cron-expression")
+    public String cronExpression() {
+        return "cron.html";
+    }
+
+    @GetMapping("/hash-generator")
+    public String hashGenerator() {
+        return "hash.html";
+    }
+
+    @GetMapping("/uuid-generator")
+    public String uuidGenerator() {
+        return "uuid.html";
+    }
+
+    @GetMapping("/password-generator")
+    public String passwordGenerator() {
+        return "password.html";
+    }
+
+    @GetMapping("/mock-data-generator")
+    public String mockData() {
+        return "mock.html";
+    }
+
+    @GetMapping("/curl-to-code")
+    public String curlToCode() {
+        return "curl.html";
+    }
+
+    @GetMapping("/text-diff")
+    public String textDiff() {
+        return "textdiff.html";
+    }
+
+    @GetMapping("/markdown-editor")
+    public String markdownEditor() {
+        return "markdown.html";
+    }
+
+    @GetMapping("/timestamp-converter")
+    public String timestampConverter() {
+        return "timestamp.html";
+    }
+
+    @GetMapping("/subnet-calculator")
+    public String subnetCalculator() {
+        return "subnet.html";
+    }
+
+    @GetMapping("/number-base-converter")
+    public String numberBaseConverter() {
+        return "numbase.html";
+    }
+
+    @GetMapping("/chmod-calculator")
+    public String chmodCalculator() {
+        return "chmod.html";
+    }
+
+    @GetMapping("/code-beautifier")
+    public String codeBeautifier() {
+        return "beautifier.html";
+    }
+
     @GetMapping("/mapper")
     public String  objectMapper(){
         return "objectconverter.html";

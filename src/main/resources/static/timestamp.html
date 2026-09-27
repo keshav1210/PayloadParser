@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Unix Timestamp Converter &amp; Time Zone Converter</title>
+  <meta name="description" content="Convert Unix timestamps in seconds, milliseconds or nanoseconds to dates and back, see ISO 8601 and RFC 2822 formats, and compare times across time zones.">
+  <link rel="canonical" href="https://jsonxmleditor.com/timestamp-converter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Unix Timestamp &amp; Time Zone Converter">
+  <meta property="og:description" content="Epoch time to readable dates and back, ISO 8601 formats and a time zone converter.">
+  <meta property="og:url" content="https://jsonxmleditor.com/timestamp-converter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Unix Timestamp &amp; Time Zone Converter">
+  <meta name="twitter:description" content="Epoch time to readable dates and back, ISO 8601 formats and a time zone converter.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Timestamp Converter",
+      "url": "https://jsonxmleditor.com/timestamp-converter",
+      "description": "Convert Unix timestamps to dates and back, and convert times between time zones.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Seconds, milliseconds, microseconds and nanoseconds",
+        "ISO 8601, RFC 2822 and SQL formats",
+        "Excel serial dates",
+        "Time zone converter with DST",
+        "Live current timestamp"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Timestamp Converter",
+          "item": "https://jsonxmleditor.com/timestamp-converter"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert a Unix timestamp to a date?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste it into the box above. The converter works out whether it is in seconds, milliseconds, microseconds or nanoseconds and shows the date in UTC, in your time zone and in any zone you choose, along with ISO 8601 and other formats."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does a Unix timestamp include a time zone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It always counts from midnight UTC on 1 January 1970, so the same number means the same instant everywhere. The time zone only matters when you display it as a local date and time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does my date show 1970?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The timestamp is usually in the wrong unit: a value in seconds treated as milliseconds lands in January 1970. Check whether your system expects seconds (10 digits) or milliseconds (13 digits)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an Excel serial date?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Excel stores dates as the number of days since 30 December 1899, with the time as a fraction. The converter shows that number, and you can type excel 45000 to turn one back into a date."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are leap seconds counted?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Unix time treats every day as exactly 86,400 seconds, so leap seconds are not counted. This matches how operating systems and programming languages handle it."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Timestamp Converter</span></nav>
+  <section class="tool-head">
+    <h1>Timestamp Converter</h1>
+    <p>Paste a Unix timestamp to see the date it stands for, or type a date to get its timestamp. The unit (seconds, milliseconds, microseconds or nanoseconds) is detected for you. Below, compare one moment across several time zones.</p>
+  </section>
+
+<section class="pane ts-now">
+    <div class="ts-now-grid">
+      <div><span class="muted">Unix time now (seconds)</span><strong id="tsNowS"></strong><button type="button" class="mini-btn" data-copy-now="tsNowS">Copy</button></div>
+      <div><span class="muted">Milliseconds</span><strong id="tsNowMs"></strong><button type="button" class="mini-btn" data-copy-now="tsNowMs">Copy</button></div>
+      <div><span class="muted">UTC</span><strong id="tsNowIso"></strong><button type="button" class="mini-btn" data-copy-now="tsNowIso">Copy</button></div>
+    </div>
+  </section>
+
+  <section class="pane" style="margin-top:14px">
+    <div class="pane-head">Convert a timestamp or date</div>
+    <div class="qr-body">
+      <div class="ts-input-row">
+        <input id="tsInput" class="text-input cron-input" type="text" spellcheck="false" autocomplete="off" aria-label="Timestamp or date" placeholder="1790496000, 2026-09-27T10:30:00Z or now">
+        <button type="button" class="btn" id="tsNowBtn">Now</button>
+      </div>
+      <div class="cron-meta" style="margin-top:10px">
+        <span class="muted" id="tsDetected"></span>
+        <label class="field-inline">Show in <select id="tsZone"></select></label>
+      </div>
+      <div id="tsError" class="error-box" hidden style="margin-top:10px"></div>
+    </div>
+    <div class="rx-scroll" style="max-height:none">
+      <table class="change-table kv-table"><tbody id="tsResult"></tbody></table>
+    </div>
+  </section>
+
+  <section class="pane" style="margin-top:14px">
+    <div class="pane-head">Time zone converter</div>
+    <div class="qr-body tz-controls">
+      <label class="field-inline">Time <input id="tzDate" class="text-input" type="datetime-local"></label>
+      <label class="field-inline">in <select id="tzFrom"></select></label>
+      <button type="button" class="btn" id="tzNow">Now</button>
+      <select id="tzAdd" class="mini-select" aria-label="Add a time zone"></select>
+    </div>
+    <div class="rx-scroll" style="max-height:none">
+      <table class="change-table kv-table"><tbody id="tzRows"></tbody></table>
+    </div>
+  </section>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>What is a Unix timestamp?</h2>
+    <p>A Unix timestamp (also called epoch time or POSIX time) counts the seconds since 00:00:00 UTC on 1 January 1970. Because it's a single number with no time zone, it's the easiest way to store and compare moments in databases, logs and APIs. <code>1790496000</code> is 27 September 2026, 08:00 UTC, everywhere in the world at once.</p>
+
+    <h2>Seconds, milliseconds or more?</h2>
+    <p>Different systems use different units, and mixing them up is a classic bug that puts dates in 1970 or the year 58,000. The converter decides by length:</p>
+    <table class="change-table">
+      <thead><tr><th>Digits (today)</th><th>Unit</th><th>Used by</th></tr></thead>
+      <tbody>
+        <tr><td>10</td><td>Seconds</td><td>Unix, PostgreSQL <code>extract(epoch …)</code>, JWT <code>exp</code>, most APIs</td></tr>
+        <tr><td>13</td><td>Milliseconds</td><td>JavaScript <code>Date.now()</code>, Java <code>System.currentTimeMillis()</code></td></tr>
+        <tr><td>16</td><td>Microseconds</td><td>Python <code>time.time_ns() // 1000</code>, some databases</td></tr>
+        <tr><td>19</td><td>Nanoseconds</td><td>Go <code>time.Now().UnixNano()</code>, Java <code>Instant</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Getting the current timestamp in code</h2>
+    <ul>
+      <li><strong>JavaScript</strong>: <code>Math.floor(Date.now() / 1000)</code></li>
+      <li><strong>Java</strong>: <code>Instant.now().getEpochSecond()</code></li>
+      <li><strong>Python</strong>: <code>int(time.time())</code></li>
+      <li><strong>Go</strong>: <code>time.Now().Unix()</code></li>
+      <li><strong>PostgreSQL</strong>: <code>extract(epoch from now())</code>; MySQL: <code>UNIX_TIMESTAMP()</code></li>
+      <li><strong>Shell</strong>: <code>date +%s</code>, and <code>date -d @1790496000</code> to convert back (GNU)</li>
+    </ul>
+
+    <h2>Time zones and daylight saving</h2>
+    <p>The time zone converter uses the IANA time zone database built into your browser, so daylight-saving changes are applied for the date you choose, not just today. Times that fall outside 07:00–22:00 are marked as night, which helps when you're scheduling a call across countries. Some zones use half- or quarter-hour offsets, such as India (UTC+05:30) and Nepal (UTC+05:45); these are handled too.</p>
+
+    <h2>The year 2038 problem</h2>
+    <p>Systems that store timestamps as a signed 32-bit number can only count up to <code>2147483647</code>, which is 19 January 2038 at 03:14:07 UTC. One second later they wrap around to 1901. Modern languages and databases use 64-bit values, but old embedded devices and some file formats still need checking.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I convert a Unix timestamp to a date?</summary>
+        <p>Paste it into the box above. The converter works out whether it is in seconds, milliseconds, microseconds or nanoseconds and shows the date in UTC, in your time zone and in any zone you choose, along with ISO 8601 and other formats.</p>
+      </details>
+      <details>
+        <summary>Does a Unix timestamp include a time zone?</summary>
+        <p>No. It always counts from midnight UTC on 1 January 1970, so the same number means the same instant everywhere. The time zone only matters when you display it as a local date and time.</p>
+      </details>
+      <details>
+        <summary>Why does my date show 1970?</summary>
+        <p>The timestamp is usually in the wrong unit: a value in seconds treated as milliseconds lands in January 1970. Check whether your system expects seconds (10 digits) or milliseconds (13 digits).</p>
+      </details>
+      <details>
+        <summary>What is an Excel serial date?</summary>
+        <p>Excel stores dates as the number of days since 30 December 1899, with the time as a fraction. The converter shows that number, and you can type <code>excel 45000</code> to turn one back into a date.</p>
+      </details>
+      <details>
+        <summary>Are leap seconds counted?</summary>
+        <p>No. Unix time treats every day as exactly 86,400 seconds, so leap seconds are not counted. This matches how operating systems and programming languages handle it.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+      <a class="tool-card" href="/jwt-decoder">
+        <span class="icon">jwt</span>
+        <h3>JWT Decoder</h3>
+        <p>Read a token's claims, check expiry and verify the signature.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>Generate UUID v4, UUID v7, ULID and Nano IDs in bulk.</p>
+      </a>
+      <a class="tool-card" href="/number-base-converter">
+        <span class="icon">0x</span>
+        <h3>Number Base Converter</h3>
+        <p>Binary, octal, decimal, hex and any base up to 36, with two's complement.</p>
+      </a>
+      <a class="tool-card" href="/mock-data-generator">
+        <span class="icon">{…}</span>
+        <h3>Mock Data Generator</h3>
+        <p>Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/time.js?v=1"></script>
+</body>
+</html>

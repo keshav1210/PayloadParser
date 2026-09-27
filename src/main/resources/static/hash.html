@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Hash Generator – MD5, SHA-256, SHA-512 &amp; HMAC Online</title>
+  <meta name="description" content="Get MD5, SHA-1, SHA-256, SHA-512 and CRC32 hashes of text or files, create HMACs and verify checksums. Files are hashed in your browser, never uploaded.">
+  <link rel="canonical" href="https://jsonxmleditor.com/hash-generator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Hash Generator: MD5, SHA-256, SHA-512, HMAC">
+  <meta property="og:description" content="Hash text or files with MD5, SHA-1, SHA-256, SHA-512 or CRC32, make HMACs and verify checksums, all in your browser.">
+  <meta property="og:url" content="https://jsonxmleditor.com/hash-generator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hash Generator: MD5, SHA-256, SHA-512, HMAC">
+  <meta name="twitter:description" content="Hash text or files with MD5, SHA-1, SHA-256, SHA-512 or CRC32, make HMACs and verify checksums, all in your browser.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Hash Generator",
+      "url": "https://jsonxmleditor.com/hash-generator",
+      "description": "Generate MD5, SHA-1, SHA-2 and CRC32 hashes and HMAC signatures for text or files, and verify checksums.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "MD5, SHA-1, SHA-256, SHA-384, SHA-512, CRC32",
+        "HMAC with text, hex or Base64 keys",
+        "File checksums up to 1 GB",
+        "Checksum verification",
+        "Hex or Base64 output"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Hash Generator",
+          "item": "https://jsonxmleditor.com/hash-generator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can a hash be reversed to get the original text?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Hashes are one-way. But short or common inputs, such as simple passwords, can be found by guessing and comparing, which is why lookup sites can \"reverse\" some MD5 hashes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is my hash different from another tool's?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Usually the input differs slightly: a trailing newline (many command-line tools add one with echo, so use echo -n), different line endings on Windows, or a different text encoding. This tool hashes the exact UTF-8 bytes of what you type."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I get the same result on the command line?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For files: sha256sum file on Linux, shasum -a 256 file on macOS, or certutil -hashfile file SHA256 on Windows. For text: printf %s \"text\" | sha256sum."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Files are read and hashed inside your browser with the Web Crypto API. Nothing is sent to our server."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a size limit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Files up to 1 GB can be hashed. Very large files need enough free memory in the browser tab."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Hash Generator</span></nav>
+  <section class="tool-head">
+    <h1>Hash Generator</h1>
+    <p>Type some text or drop a file to get its MD5, SHA-1, SHA-256, SHA-384, SHA-512 and CRC32 hashes at once. Add a secret key for HMAC signatures, or paste a checksum to check a download. Nothing leaves your browser.</p>
+  </section>
+
+<div class="tabs" role="tablist" aria-label="Input">
+    <button type="button" class="tab-btn" role="tab" data-hash-src="text" aria-selected="true">Text</button>
+    <button type="button" class="tab-btn" role="tab" data-hash-src="file" aria-selected="false">File</button>
+  </div>
+
+  <div class="pane-grid hash-grid">
+    <div class="stack">
+      <section class="pane" id="hashTextPane">
+        <div class="pane-head">Text <span class="muted">UTF-8</span></div>
+        <textarea id="hashText" class="code-input hash-text" spellcheck="false" aria-label="Text to hash"></textarea>
+      </section>
+      <section class="pane" id="hashFilePane" hidden>
+        <div class="pane-head">File</div>
+        <label class="hash-drop" id="hashDrop" tabindex="0">
+          <input type="file" id="hashFile" hidden>
+          <span class="hash-drop-icon" aria-hidden="true">⬆</span>
+          <span id="hashDropText">Drop a file here or click to choose. Up to 1 GB, read locally.</span>
+        </label>
+      </section>
+
+      <section class="pane">
+        <div class="pane-head"><label class="check"><input type="checkbox" id="hashHmacOn"> HMAC (keyed hash)</label></div>
+        <div id="hashKeyWrap" class="hash-key" hidden>
+          <input id="hashKey" class="text-input" type="text" spellcheck="false" autocomplete="off" placeholder="Secret key" aria-label="HMAC key">
+          <select id="hashKeyFormat" aria-label="Key format">
+            <option value="text">Text</option>
+            <option value="hex">Hex</option>
+            <option value="base64">Base64</option>
+          </select>
+        </div>
+      </section>
+      <div id="hashError" class="error-box" hidden></div>
+    </div>
+
+    <section class="pane">
+      <div class="pane-head">Hashes <span class="muted" id="hashMeta"></span>
+        <span class="actions">
+          <select id="hashFormat" class="mini-select" aria-label="Output format">
+            <option value="hex">hex</option>
+            <option value="HEX">HEX</option>
+            <option value="base64">Base64</option>
+          </select>
+        </span>
+      </div>
+      <div class="rx-scroll">
+        <table class="change-table hash-table">
+          <tbody id="hashRows"></tbody>
+        </table>
+      </div>
+      <div class="hash-compare">
+        <label for="hashCompare">Verify a checksum</label>
+        <input id="hashCompare" class="text-input" type="text" spellcheck="false" autocomplete="off" placeholder="Paste the expected hash from the download page">
+        <span id="hashCompareResult" class="badge"></span>
+      </div>
+    </section>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>What is a hash?</h2>
+    <p>A hash function turns any amount of data into a short, fixed-length fingerprint. The same input always gives the same hash, and changing even one character gives a completely different one. That makes hashes useful for checking that a file arrived intact, spotting duplicate files, building cache keys and signing API requests.</p>
+
+    <h2>Which algorithm should I use?</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:110px">Algorithm</th><th style="width:90px">Length</th><th>Use it for</th></tr></thead>
+      <tbody>
+        <tr><td>MD5</td><td>128 bits</td><td>Quick checksums and legacy systems only. It is broken for security: collisions can be created on a laptop.</td></tr>
+        <tr><td>SHA-1</td><td>160 bits</td><td>Legacy use such as older Git objects. Also broken for signatures since 2017.</td></tr>
+        <tr><td>SHA-256</td><td>256 bits</td><td>The safe default: file checksums, API request signing, blockchain and certificates.</td></tr>
+        <tr><td>SHA-384 / SHA-512</td><td>384 / 512 bits</td><td>When a standard asks for them, or a larger security margin. SHA-512 is often faster than SHA-256 on 64-bit CPUs.</td></tr>
+        <tr><td>CRC32</td><td>32 bits</td><td>Detecting accidental corruption, as in zip, gzip and PNG files. Not a security hash.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Verify a downloaded file</h2>
+    <ol>
+      <li>Switch to <strong>File</strong> and drop the file you downloaded.</li>
+      <li>Copy the checksum from the publisher's download page, often labelled SHA-256 or in a <code>.sha256</code> file.</li>
+      <li>Paste it into <strong>Verify a checksum</strong>. The matching algorithm lights up green; if nothing matches, the file is corrupt or not the one the publisher released.</li>
+    </ol>
+    <p>The file is read by your browser and never uploaded, so this works for large installers and private documents alike.</p>
+
+    <h2>HMAC signatures</h2>
+    <p>An HMAC mixes a secret key into the hash, so only someone with the key can produce the same value. Webhook providers such as GitHub, Stripe and Shopify sign their requests with HMAC-SHA256, and many APIs ask you to sign requests the same way. Tick <strong>HMAC</strong>, enter the key as text, hex or Base64, and paste the exact request body to check a signature while you debug. Remember that the body must match byte for byte, including whitespace and line endings.</p>
+
+    <h2>Don't hash passwords with these</h2>
+    <p>MD5 and the SHA family are designed to be fast, which is exactly wrong for storing passwords: attackers can try billions of guesses per second. Store passwords with a slow, salted algorithm made for the job: Argon2id, bcrypt or scrypt. Your framework almost certainly has one built in (for example Spring Security's <code>BCryptPasswordEncoder</code>).</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Can a hash be reversed to get the original text?</summary>
+        <p>No. Hashes are one-way. But short or common inputs, such as simple passwords, can be found by guessing and comparing, which is why lookup sites can "reverse" some MD5 hashes.</p>
+      </details>
+      <details>
+        <summary>Why is my hash different from another tool's?</summary>
+        <p>Usually the input differs slightly: a trailing newline (many command-line tools add one with <code>echo</code>, so use <code>echo -n</code>), different line endings on Windows, or a different text encoding. This tool hashes the exact UTF-8 bytes of what you type.</p>
+      </details>
+      <details>
+        <summary>How do I get the same result on the command line?</summary>
+        <p>For files: <code>sha256sum file</code> on Linux, <code>shasum -a 256 file</code> on macOS, or <code>certutil -hashfile file SHA256</code> on Windows. For text: <code>printf %s "text" | sha256sum</code>.</p>
+      </details>
+      <details>
+        <summary>Are my files uploaded?</summary>
+        <p>No. Files are read and hashed inside your browser with the Web Crypto API. Nothing is sent to our server.</p>
+      </details>
+      <details>
+        <summary>Is there a size limit?</summary>
+        <p>Files up to 1 GB can be hashed. Very large files need enough free memory in the browser tab.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/uuid-generator">
+        <span class="icon">id</span>
+        <h3>UUID Generator</h3>
+        <p>Generate UUID v4, UUID v7, ULID and Nano IDs in bulk.</p>
+      </a>
+      <a class="tool-card" href="/password-generator">
+        <span class="icon">***</span>
+        <h3>Password Generator</h3>
+        <p>Strong random passwords and passphrases, with a strength estimate.</p>
+      </a>
+      <a class="tool-card" href="/jwt-decoder">
+        <span class="icon">jwt</span>
+        <h3>JWT Decoder</h3>
+        <p>Read a token's claims, check expiry and verify the signature.</p>
+      </a>
+      <a class="tool-card" href="/share">
+        <span class="icon">↗</span>
+        <h3>Share Drop</h3>
+        <p>Send text or a file to another device with a short-lived link.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/hash.js?v=1"></script>
+</body>
+</html>

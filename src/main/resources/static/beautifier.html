@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>HTML, CSS &amp; JavaScript Beautifier and Minifier</title>
+  <meta name="description" content="Beautify messy or minified HTML, CSS and JavaScript into readable code, or minify it to cut file size. Choose indentation and brace style, and see bytes saved.">
+  <link rel="canonical" href="https://jsonxmleditor.com/code-beautifier">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="HTML, CSS &amp; JavaScript Beautifier / Minifier">
+  <meta property="og:description" content="Format or minify HTML, CSS and JavaScript in the browser, with size savings shown.">
+  <meta property="og:url" content="https://jsonxmleditor.com/code-beautifier">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="HTML, CSS &amp; JavaScript Beautifier / Minifier">
+  <meta name="twitter:description" content="Format or minify HTML, CSS and JavaScript in the browser, with size savings shown.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "HTML, CSS & JS Beautifier",
+      "url": "https://jsonxmleditor.com/code-beautifier",
+      "description": "Beautify and minify HTML, CSS and JavaScript code in the browser.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Beautify HTML, CSS and JavaScript",
+        "Minify with size comparison",
+        "Indent and brace style options",
+        "Language auto-detection",
+        "Open and download files"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "HTML, CSS & JS Beautifier",
+          "item": "https://jsonxmleditor.com/code-beautifier"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Will minifying break my code?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It shouldn't: the JavaScript minifier only makes changes that keep the same behaviour, and the CSS and HTML minifiers keep strings, preformatted text and scripts intact. Code that relies on function names at runtime can be affected by name shortening; untick that option if so."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I un-minify JavaScript?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Beautifying restores the layout, so the code becomes readable again. Original variable names and comments removed by the minifier can't be recovered; for that you need the project's source map."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it support TypeScript, JSX or SCSS?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Beautifying works for most JSX and SCSS. Minifying expects plain JavaScript and CSS, so compile TypeScript and SCSS first."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my code uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Beautifying and minifying run in your browser. The JavaScript minifier is downloaded the first time you use it and runs locally."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I format JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the JSON Formatter, which also validates and repairs JSON."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">HTML, CSS &amp; JS Beautifier</span></nav>
+  <section class="tool-head">
+    <h1>HTML, CSS & JavaScript Beautifier</h1>
+    <p>Turn minified or messy code into clean, indented code you can read, or minify it for production. Paste code and the language is detected; choose your indentation and click Beautify or Minify.</p>
+  </section>
+
+<div class="tool-bar">
+    <div class="tabs" role="tablist" aria-label="Language" style="margin:0;border:none">
+      <button type="button" class="tab-btn" role="tab" data-lang="html">HTML</button>
+      <button type="button" class="tab-btn" role="tab" data-lang="css">CSS</button>
+      <button type="button" class="tab-btn" role="tab" data-lang="js">JavaScript</button>
+    </div>
+    <span id="cfDetected" class="badge ok" hidden>Language detected</span>
+    <span class="spacer"></span>
+    <button type="button" class="btn btn-primary" id="cfBeautify" title="Ctrl+Enter">Beautify</button>
+    <button type="button" class="btn" id="cfMinify" title="Ctrl+Shift+Enter">Minify</button>
+    <label class="btn file-btn">Open file<input type="file" id="cfFile" accept=".html,.htm,.css,.js,.mjs,.cjs,.jsx,.ts,text/*" hidden></label>
+  </div>
+  <div class="tool-bar sql-options">
+    <label class="field-inline">Indent
+      <select id="cfIndent">
+        <option value="2" selected>2 spaces</option>
+        <option value="4">4 spaces</option>
+        <option value="tab">Tabs</option>
+      </select>
+    </label>
+    <label class="field-inline">Wrap lines at
+      <select id="cfWrap">
+        <option value="0" selected>No limit</option>
+        <option value="80">80</option>
+        <option value="100">100</option>
+        <option value="120">120</option>
+      </select>
+    </label>
+    <label class="field-inline" id="cfBraceWrap">Braces
+      <select id="cfBrace">
+        <option value="collapse" selected>Same line</option>
+        <option value="expand">New line</option>
+        <option value="end-expand">End on new line</option>
+      </select>
+    </label>
+    <label class="field-inline" id="cfAttrsWrap">Attributes
+      <select id="cfAttrs">
+        <option value="auto" selected>Keep on one line</option>
+        <option value="force-expand-multiline">One per line</option>
+        <option value="aligned-multiple">Aligned when wrapping</option>
+      </select>
+    </label>
+    <label class="check" id="cfMangleWrap"><input type="checkbox" id="cfMangle" checked> Shorten variable names when minifying</label>
+  </div>
+
+  <div class="pane-grid sql-grid">
+    <section class="pane">
+      <div class="pane-head">Your code</div>
+      <textarea id="cfInput" class="code-input" spellcheck="false" aria-label="Code input" placeholder="Paste HTML, CSS or JavaScript"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Result <span class="muted" id="cfStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="cfUse">Use as input</button>
+          <button type="button" class="mini-btn" id="cfDownload">Download</button>
+          <button type="button" class="mini-btn" id="cfCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="cfOutput" class="code-input" spellcheck="false" readonly aria-label="Result"></textarea>
+    </section>
+  </div>
+  <div id="cfError" class="error-box" hidden style="margin-top:12px"></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Beautify or minify?</h2>
+    <p><strong>Beautifying</strong> adds consistent indentation and line breaks so you can read code: a minified library you are debugging, a one-line HTML email template, or CSS copied from browser dev tools. <strong>Minifying</strong> does the opposite for production: it removes comments and whitespace (and, for JavaScript, shortens variable names) so files download faster.</p>
+
+    <h2>What minifying changes</h2>
+    <ul>
+      <li><strong>CSS</strong>: removes comments and whitespace, drops the last semicolon in each rule, shortens <code>#ffffff</code> to <code>#fff</code>, <code>0px</code> to <code>0</code> and <code>0.5</code> to <code>.5</code>. Strings, <code>url()</code> values and the spaces required inside <code>calc()</code> are left alone. Comments starting with <code>/*!</code> (licences) are kept.</li>
+      <li><strong>HTML</strong>: removes comments and whitespace between block elements, while keeping single spaces between inline elements so words don't run together. <code>&lt;pre&gt;</code>, <code>&lt;textarea&gt;</code> and scripts are untouched, and inline <code>&lt;style&gt;</code> is minified as CSS.</li>
+      <li><strong>JavaScript</strong>: uses Terser, the minifier webpack uses by default, to remove dead code, simplify expressions and shorten local variable names. Licence comments are kept.</li>
+    </ul>
+    <p>Typical savings are 20–40% for CSS and HTML and 40–70% for JavaScript, before gzip. Servers compress files as well, so the saving over the network is smaller, but minified files also parse faster.</p>
+
+    <h2>In a real project, automate it</h2>
+    <p>This page is handy for one-off files and debugging. For a website you maintain, let your build do it: Vite, webpack and esbuild minify on production builds, and Prettier keeps source code consistently formatted in your editor and CI.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Will minifying break my code?</summary>
+        <p>It shouldn't: the JavaScript minifier only makes changes that keep the same behaviour, and the CSS and HTML minifiers keep strings, preformatted text and scripts intact. Code that relies on function names at runtime can be affected by name shortening; untick that option if so.</p>
+      </details>
+      <details>
+        <summary>Can I un-minify JavaScript?</summary>
+        <p>Beautifying restores the layout, so the code becomes readable again. Original variable names and comments removed by the minifier can't be recovered; for that you need the project's source map.</p>
+      </details>
+      <details>
+        <summary>Does it support TypeScript, JSX or SCSS?</summary>
+        <p>Beautifying works for most JSX and SCSS. Minifying expects plain JavaScript and CSS, so compile TypeScript and SCSS first.</p>
+      </details>
+      <details>
+        <summary>Is my code uploaded?</summary>
+        <p>No. Beautifying and minifying run in your browser. The JavaScript minifier is downloaded the first time you use it and runs locally.</p>
+      </details>
+      <details>
+        <summary>How do I format JSON?</summary>
+        <p>Use the <a href="/json-parser">JSON Formatter</a>, which also validates and repairs JSON.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/parser">
+        <span class="icon">{ }</span>
+        <h3>JSON &amp; XML Formatter</h3>
+        <p>Format, validate, repair and minify JSON or XML, with a tree view and code folding.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/markdown-editor">
+        <span class="icon">md</span>
+        <h3>Markdown Editor</h3>
+        <p>Write Markdown with a live preview, then export HTML or a README.md.</p>
+      </a>
+      <a class="tool-card" href="/text-diff">
+        <span class="icon">±</span>
+        <h3>Text Diff</h3>
+        <p>Compare any two texts or code files line by line, word by word or by character.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/vendor/beautify.js?v=1.15.4"></script>
+<script src="/js/vendor/beautify-css.js?v=1.15.4"></script>
+<script src="/js/vendor/beautify-html.js?v=1.15.4"></script>
+<script src="/js/codefmt.js?v=2"></script>
+</body>
+</html>

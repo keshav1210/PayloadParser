@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>UUID Generator – UUID v4, v7, ULID &amp; Nano ID in Bulk</title>
+  <meta name="description" content="Generate UUID v4, time-ordered UUID v7, ULID or Nano IDs, up to 1,000 at once, as a list, JSON or SQL. Paste an ID to see its version and creation time.">
+  <link rel="canonical" href="https://jsonxmleditor.com/uuid-generator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="UUID Generator: v4, v7, ULID, Nano ID">
+  <meta property="og:description" content="Bulk UUID v4 / v7, ULID and Nano ID generator with a decoder for versions and timestamps.">
+  <meta property="og:url" content="https://jsonxmleditor.com/uuid-generator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="UUID Generator: v4, v7, ULID, Nano ID">
+  <meta name="twitter:description" content="Bulk UUID v4 / v7, ULID and Nano ID generator with a decoder for versions and timestamps.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=5">
+  <link rel="stylesheet" href="/css/tools.css?v=7">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "UUID Generator",
+      "url": "https://jsonxmleditor.com/uuid-generator",
+      "description": "Generate UUID v4, UUID v7, ULID and Nano IDs in bulk, and decode the version and timestamp of existing IDs.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "UUID v4 and v7",
+        "ULID",
+        "Nano ID with custom alphabets",
+        "Up to 1,000 at once",
+        "JSON, SQL and Java output",
+        "UUID and ULID decoder"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "UUID Generator",
+          "item": "https://jsonxmleditor.com/uuid-generator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the difference between a UUID and a GUID?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They are the same thing. GUID is Microsoft's name for a UUID. GUIDs are often written in uppercase and wrapped in braces, which you can switch on above."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I tell when a UUID was created?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Only for time-based versions. Paste a v1, v6 or v7 UUID, or a ULID, into the decoder to see its timestamp. Version 4 UUIDs are fully random and contain no time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are UUID v7 IDs from this page sortable?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. IDs generated in the same millisecond use an increasing counter, so a batch sorts in exactly the order it was created. ULIDs work the same way."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should I store UUIDs as text or binary?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the database's native type when there is one (PostgreSQL uuid, SQL Server uniqueidentifier). Otherwise store 16 bytes in a binary column; text takes 36 bytes and compares more slowly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are the IDs sent anywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. They are generated in your browser and never leave your device."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">UUID Generator</span></nav>
+  <section class="tool-head">
+    <h1>UUID Generator</h1>
+    <p>Generate random UUID v4 or time-ordered UUID v7 identifiers, ULIDs or short Nano IDs, one at a time or up to a thousand at once. Paste an existing ID to find out its version and when it was created.</p>
+  </section>
+
+<div class="tool-bar">
+    <label class="field-inline">Type
+      <select id="uuidKind">
+        <option value="v4" selected>UUID v4 (random)</option>
+        <option value="v7">UUID v7 (time-ordered)</option>
+        <option value="ulid">ULID</option>
+        <option value="nanoid">Nano ID</option>
+      </select>
+    </label>
+    <label class="field-inline">How many
+      <input id="uuidCount" class="text-input" type="number" min="1" max="1000" value="5" style="width:90px">
+    </label>
+    <label class="field-inline">Output
+      <select id="uuidFormat">
+        <option value="lines" selected>One per line</option>
+        <option value="json">JSON array</option>
+        <option value="sql">SQL IN list</option>
+        <option value="csv">Comma separated</option>
+        <option value="java">Java UUID.fromString</option>
+      </select>
+    </label>
+    <button type="button" class="btn btn-primary" id="uuidGenerate" title="Ctrl+Enter">Generate</button>
+  </div>
+  <div class="tool-bar" id="uuidOpts">
+    <label class="check"><input type="checkbox" id="uuidHyphens" checked> Hyphens</label>
+    <label class="check"><input type="checkbox" id="uuidUpper"> Uppercase</label>
+    <label class="check"><input type="checkbox" id="uuidBraces"> {Braces}</label>
+  </div>
+  <div class="tool-bar" id="nanoOpts" hidden>
+    <label class="field-inline">Length
+      <input id="nanoSize" class="text-input" type="number" min="4" max="128" value="21" style="width:80px">
+    </label>
+    <label class="field-inline">Characters
+      <select id="nanoAlpha">
+        <option value="default" selected>URL-safe (A-Z a-z 0-9 _ -)</option>
+        <option value="alnum">Letters and digits</option>
+        <option value="lower">Lowercase and digits</option>
+        <option value="nolookalikes">No look-alike characters</option>
+        <option value="numbers">Digits only</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane">
+      <div class="pane-head">IDs <span class="muted" id="uuidMeta"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="uuidDownload">Download</button>
+          <button type="button" class="mini-btn" id="uuidCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="uuidOutput" class="code-input" spellcheck="false" readonly aria-label="Generated IDs"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Decode an ID</div>
+      <div class="qr-body">
+        <input id="uuidInspect" class="text-input" type="text" spellcheck="false" autocomplete="off" placeholder="Paste a UUID or ULID" aria-label="ID to decode" style="width:100%">
+      </div>
+      <dl id="uuidInspectOut" class="kv"></dl>
+    </section>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Which ID should I use?</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:120px">Type</th><th style="width:170px">Example</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>UUID v4</td><td><code>9b2e…-4c1a-…</code></td><td>The universal default. 122 random bits, supported by every database and language. Doesn't reveal when it was made.</td></tr>
+        <tr><td>UUID v7</td><td><code>0192…-7b3c-…</code></td><td>Database primary keys. It starts with a timestamp, so new rows are inserted in order, which keeps B-tree indexes compact and fast. Standardised in RFC 9562 (2024).</td></tr>
+        <tr><td>ULID</td><td><code>01J8Z3…</code></td><td>Sortable IDs that are shorter (26 characters), case-insensitive and URL-safe. Popular in event logs and distributed systems.</td></tr>
+        <tr><td>Nano ID</td><td><code>V1StGXR8_Z5jdHi6B-myT</code></td><td>Short IDs in URLs, such as share links or invite codes. The default 21 characters are about as collision-resistant as a UUID v4.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>UUID v4 vs UUID v7 for primary keys</h2>
+    <p>Random v4 UUIDs land all over the index, so each insert touches a different page. On large tables that means more disk reads, page splits and a bloated index. UUID v7 puts a millisecond timestamp in the first 48 bits, so new keys arrive in order, much like an auto-increment number, while still being unique across servers without coordination. PostgreSQL 18 adds a built-in <code>uuidv7()</code> function, and libraries exist for Java, .NET, Go and Python.</p>
+    <p>The catch: a v7 UUID reveals roughly when the record was created. If that matters, for example for user IDs in public URLs, use v4.</p>
+
+    <h2>How unique is a UUID?</h2>
+    <p>A version 4 UUID has 122 random bits. You would need to generate about a billion UUIDs per second for around 85 years before the chance of a single duplicate reached 50%. In practice, a bug in how the random numbers are produced is a far bigger risk than a collision. This page uses your browser's cryptographically secure generator (<code>crypto.getRandomValues</code>).</p>
+
+    <h2>Generating UUIDs in code</h2>
+    <ul>
+      <li><strong>Java</strong>: <code>UUID.randomUUID()</code> for v4.</li>
+      <li><strong>JavaScript</strong>: <code>crypto.randomUUID()</code> in browsers and Node.js.</li>
+      <li><strong>Python</strong>: <code>uuid.uuid4()</code>; Python 3.14 adds <code>uuid.uuid7()</code>.</li>
+      <li><strong>PostgreSQL</strong>: <code>gen_random_uuid()</code>, and <code>uuidv7()</code> from version 18.</li>
+      <li><strong>MySQL</strong>: <code>UUID()</code> returns a version 1 UUID; store it as <code>BINARY(16)</code> with <code>UUID_TO_BIN(UUID(), 1)</code> for better index order.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>What is the difference between a UUID and a GUID?</summary>
+        <p>They are the same thing. GUID is Microsoft's name for a UUID. GUIDs are often written in uppercase and wrapped in braces, which you can switch on above.</p>
+      </details>
+      <details>
+        <summary>Can I tell when a UUID was created?</summary>
+        <p>Only for time-based versions. Paste a v1, v6 or v7 UUID, or a ULID, into the decoder to see its timestamp. Version 4 UUIDs are fully random and contain no time.</p>
+      </details>
+      <details>
+        <summary>Are UUID v7 IDs from this page sortable?</summary>
+        <p>Yes. IDs generated in the same millisecond use an increasing counter, so a batch sorts in exactly the order it was created. ULIDs work the same way.</p>
+      </details>
+      <details>
+        <summary>Should I store UUIDs as text or binary?</summary>
+        <p>Use the database's native type when there is one (PostgreSQL <code>uuid</code>, SQL Server <code>uniqueidentifier</code>). Otherwise store 16 bytes in a binary column; text takes 36 bytes and compares more slowly.</p>
+      </details>
+      <details>
+        <summary>Are the IDs sent anywhere?</summary>
+        <p>No. They are generated in your browser and never leave your device.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/hash-generator">
+        <span class="icon">#</span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.</p>
+      </a>
+      <a class="tool-card" href="/password-generator">
+        <span class="icon">***</span>
+        <h3>Password Generator</h3>
+        <p>Strong random passwords and passphrases, with a strength estimate.</p>
+      </a>
+      <a class="tool-card" href="/encode-decode">
+        <span class="icon">b64</span>
+        <h3>Encode / Decode</h3>
+        <p>Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/mapper">
+        <span class="icon">cls</span>
+        <h3>Object Mapper</h3>
+        <p>Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust or Zod types from JSON.</p>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/uuid.js?v=1"></script>
+</body>
+</html>
