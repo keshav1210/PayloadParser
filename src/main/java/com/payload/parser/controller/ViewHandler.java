@@ -65,13 +65,48 @@ public class ViewHandler {
     }
 
     @GetMapping("/json-xml-converter")
-    public String  jsonXmlConverter(){
-        return "xmleditor.html";
+    public ResponseEntity<Void> jsonXmlConverter() {
+        return permanentRedirect("/json-to-xml");
     }
 
     @GetMapping("/xml-json-converter")
-    public String  xmlJSONParser(){
-        return "xmleditor.html";
+    public ResponseEntity<Void> xmlJSONParser() {
+        return permanentRedirect("/xml-to-json");
+    }
+
+    // Old URLs move permanently, so search engines transfer their ranking to the new page
+    private static ResponseEntity<Void> permanentRedirect(String path) {
+        return ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).header(HttpHeaders.LOCATION, path).build();
+    }
+
+    @GetMapping("/json-validator")
+    public String jsonValidator() {
+        return "json-validator.html";
+    }
+
+    @GetMapping("/json-viewer")
+    public String jsonViewer() {
+        return "json-viewer.html";
+    }
+
+    @GetMapping("/json-minifier")
+    public String jsonMinifier() {
+        return "json-minifier.html";
+    }
+
+    @GetMapping("/json-to-xml")
+    public String jsonToXml() {
+        return "json-to-xml.html";
+    }
+
+    @GetMapping("/xml-to-json")
+    public String xmlToJson() {
+        return "xml-to-json.html";
+    }
+
+    @GetMapping("/json-to-csv")
+    public String jsonToCsv() {
+        return "json-to-csv.html";
     }
 
     @GetMapping("/toml-converter")

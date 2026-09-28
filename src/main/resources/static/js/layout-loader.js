@@ -1,6 +1,10 @@
 function loadFragment(id, file, onLoad) {
     const target = document.getElementById(id);
     if (!target) return;
+    if (target.firstElementChild) {
+        if (onLoad) onLoad(target);
+        return;
+    }
     fetch(file)
         .then(res => res.text())
         .then(html => {
@@ -19,7 +23,8 @@ function toggleMenu() {
 }
 
 const NAV_ALIASES = {
-    '/json-parser': '/parser', '/xml-parser': '/parser',
+    '/json-parser': '/parser', '/xml-parser': '/parser', '/json-validator': '/parser', '/json-viewer': '/parser',
+    '/json-minifier': '/parser', '/json-to-xml': '/parser', '/xml-to-json': '/parser', '/json-to-csv': '/parser',
     '/json-xml-converter': '/parser', '/xml-json-converter': '/parser'
 };
 
@@ -51,7 +56,7 @@ loadFragment("header", "/header.html?v=11", root => {
     }
     if (window.updateThemeButtons) window.updateThemeButtons();
 });
-loadFragment("footer", "/footer.html?v=11", root => {
+loadFragment("footer", "/footer.html?v=12", root => {
     const year = root.querySelector('.footer-year');
     if (year) year.textContent = new Date().getFullYear();
 });
@@ -65,7 +70,7 @@ function loadScript(src) {
         document.head.append(s);
     });
 }
-(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=4'))
+(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=5'))
     .then(() => loadScript('/js/palette.js?v=1'))
     .catch(err => console.error('Failed to load the tool search', err));
 

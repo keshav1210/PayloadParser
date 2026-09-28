@@ -494,3 +494,16 @@ kbd {
     font: 12px var(--mono);
     color: var(--text);
 }
+
+.popular-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+    margin-top: 28px;
+    font-size: 14px;
+}
+
+.popular-links a { color: var(--link); text-decoration: none; }
+.popular-links a:hover { text-decoration: underline; }
+.popular-links .muted { color: var(--muted); }

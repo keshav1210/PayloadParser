@@ -59,8 +59,9 @@ public class CommonUtils {
     }
 
     public static String buidCsv(List<Map<String, Object>> rows, String delimiter) throws IOException {
-        // Get headers from first row
-        Set<String> headers = new LinkedHashSet<>(rows.get(0).keySet());
+        // Headers from every row, in first-seen order, so fields missing from the first record aren't lost
+        Set<String> headers = new LinkedHashSet<>();
+        rows.forEach(row -> headers.addAll(row.keySet()));
         List<String> headerList = new ArrayList<>(headers);
 
         // Build CSV

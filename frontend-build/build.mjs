@@ -57,6 +57,24 @@ function shortId(rel) {
   return id;
 }
 
+const FRAGMENTS = Object.fromEntries(['header', 'footer'].map(name => {
+  const html = fs.readFileSync(path.join(SRC, `${name}.html`), 'utf8');
+  const links = html.match(/<link\b[^>]*>/g) || [];
+  return [name, { links, body: links.reduce((s, l) => s.replace(l, ''), html).trim() }];
+}));
+
+function inlineFragments(html) {
+  let out = html;
+  const heads = [];
+  for (const [name, frag] of Object.entries(FRAGMENTS)) {
+    const slot = `<div id="${name}"></div>`;
+    if (!out.includes(slot)) continue;
+    out = out.replace(slot, `<div id="${name}">${frag.body}</div>`);
+    for (const l of frag.links) if (!out.includes(l)) heads.push(l);
+  }
+  return heads.length ? out.replace('</head>', `${heads.join('\n')}\n</head>`) : out;
+}
+
 function walk(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(d => {
     const p = path.join(dir, d.name);
@@ -97,7 +115,7 @@ for (const file of walk(SRC)) {
     if (r.errors.length) throw new Error(`${rel}: ${r.errors.join('; ')}`);
     output = r.styles;
   } else {
-    output = await minifyHtml(input, HTML);
+    output = await minifyHtml(inlineFragments(input), HTML);
   }
   fs.writeFileSync(dest, output);
   before += Buffer.byteLength(input);

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://jsonxmleditor.com/</loc><lastmod>2026-09-27</lastmod></url>
-  <url><loc>https://jsonxmleditor.com/parser</loc><lastmod>2026-09-24</lastmod></url>
-  <url><loc>https://jsonxmleditor.com/json-parser</loc><lastmod>2026-09-24</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/parser</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-parser</loc><lastmod>2026-09-28</lastmod></url>
   <url><loc>https://jsonxmleditor.com/xml-parser</loc><lastmod>2026-09-24</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-validator</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-viewer</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-minifier</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-to-xml</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/xml-to-json</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/json-to-csv</loc><lastmod>2026-09-28</lastmod></url>
   <url><loc>https://jsonxmleditor.com/csv-converter</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/yaml-converter</loc><lastmod>2026-09-24</lastmod></url>
   <url><loc>https://jsonxmleditor.com/toml-converter</loc><lastmod>2026-09-24</lastmod></url>
-  <url><loc>https://jsonxmleditor.com/tools</loc><lastmod>2026-09-27</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/tools</loc><lastmod>2026-09-28</lastmod></url>
   <url><loc>https://jsonxmleditor.com/regex-tester</loc><lastmod>2026-09-27</lastmod></url>
   <url><loc>https://jsonxmleditor.com/sql-formatter</loc><lastmod>2026-09-27</lastmod></url>
   <url><loc>https://jsonxmleditor.com/cron-expression</loc><lastmod>2026-09-27</lastmod></url>
@@ -28,9 +34,9 @@
   <url><loc>https://jsonxmleditor.com/jwt-decoder</loc><lastmod>2026-09-26</lastmod></url>
   <url><loc>https://jsonxmleditor.com/qr-code-generator</loc><lastmod>2026-09-26</lastmod></url>
   <url><loc>https://jsonxmleditor.com/encode-decode</loc><lastmod>2026-09-26</lastmod></url>
-  <url><loc>https://jsonxmleditor.com/mapper</loc></url>
-  <url><loc>https://jsonxmleditor.com/learnings</loc></url>
-  <url><loc>https://jsonxmleditor.com/share</loc></url>
-  <url><loc>https://jsonxmleditor.com/privacy</loc></url>
-  <url><loc>https://jsonxmleditor.com/contact</loc></url>
+  <url><loc>https://jsonxmleditor.com/mapper</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/learnings</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/share</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/privacy</loc><lastmod>2026-09-28</lastmod></url>
+  <url><loc>https://jsonxmleditor.com/contact</loc><lastmod>2026-09-28</lastmod></url>
 </urlset>

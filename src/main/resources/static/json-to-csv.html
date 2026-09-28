@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JSON to CSV Converter – Export JSON to Excel-Ready CSV</title>
+  <meta name="description" content="Convert a JSON array to CSV for Excel or Google Sheets. Nested fields are flattened into columns like address.city, and every field gets its own column.">
+  <link rel="canonical" href="https://jsonxmleditor.com/json-to-csv">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON to CSV Converter">
+  <meta property="og:description" content="Convert a JSON array to CSV for Excel or Google Sheets. Nested fields are flattened into columns like address.city, and every field gets its own column.">
+  <meta property="og:url" content="https://jsonxmleditor.com/json-to-csv">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/json-to-csv.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JSON to CSV Converter – JSON XML Editor">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/json-to-csv.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="JSON to CSV Converter">
+  <meta name="twitter:description" content="Convert a JSON array to CSV for Excel or Google Sheets. Nested fields are flattened into columns like address.city, and every field gets its own column.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=7">
+  <link rel="stylesheet" href="/css/sql-modal.css?v=4">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON to CSV Converter",
+      "url": "https://jsonxmleditor.com/json-to-csv",
+      "description": "Convert a JSON array to CSV for Excel or Google Sheets. Nested fields are flattened into columns like address.city, and every field gets its own column.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "JSON to CSV",
+          "item": "https://jsonxmleditor.com/json-to-csv"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How are nested JSON objects converted to CSV?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They are flattened into columns joined with dots, so {\"address\": {\"city\": \"Pune\"}} becomes a column named address.city. Arrays become numbered columns such as tags[0] and tags[1]."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if objects have different fields?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Every field from every object becomes a column. Rows that don't have a field get an empty cell."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I open the result in Excel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Click Convert to CSV, then Export CSV to download a .csv file, and open it in Excel, Google Sheets or LibreOffice."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which delimiter is used?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A comma, the standard for CSV. Values that contain commas, quotes or line breaks are wrapped in quotes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It's converted on our server in memory and returned immediately."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+
+<div id="header"></div>
+
+<section class="tool-intro">
+  <h1>JSON to CSV Converter</h1>
+  <p>Paste a JSON array and click <strong>Convert to CSV</strong>. Each object becomes a row and each field a column, including nested fields, ready to open in Excel or Google Sheets.</p>
+</section>
+
+<div class="controls">
+    <button class="btn btn-primary" onclick="formatData('CSV')">Convert to CSV</button>
+    <button title="Check and re-indent the data (Ctrl+Enter)" class="btn" onclick="formatCode(false,null,null)">Format</button>
+    <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+    <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+    <button type="button" class="btn btn-secondary" id="downloadCsvBtn">Export CSV</button>
+    <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
+</div>
+
+<div class="container" id="mainContainer">
+
+    <div class="panel" id="leftPanel">
+        <div class="panel-header" id="leftPanelHeader">
+            <span>Editor (Formatted View)</span>
+            <div class="panel-header-controls" id="leftPanelControls">
+                <button title="Check and re-indent the data (Ctrl+Enter)" class="btn" onclick="formatCode(false,null,null)">Format</button>
+                <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+                <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
+                <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+                <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+                <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+                <select id="formatType" style="display:none;"><option value="json">JSON</option></select>
+            </div>
+            <button class="expand-btn" onclick="toggleExpand('left')" id="leftExpandBtn">
+                <span id="leftExpandIcon">⛶</span>
+            </button>
+        </div>
+
+        <div class="editor-wrapper">
+            <div class="line-numbers-area">
+                <div class="fold-icons" id="foldIcons"></div>
+                <div class="line-numbers" id="lineNumbers">1</div>
+            </div>
+            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>
+        </div>
+
+        <div class="status" id="inputStatus">Ready — paste or type JSON here</div>
+    </div>
+
+    <div class="middle-controls" id="middleControls">
+        <select id="formatType2" onchange="document.getElementById('formatType').value = this.value;">
+            <option value="json">JSON</option>
+        </select>
+        <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
+        <button data-for="json" class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
+        <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
+        <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+        <button class="btn btn-primary" onclick="formatData('CSV')">Convert to CSV</button>
+        <button class="btn" id="convertToSqlBtn">Convert to SQL</button>
+    </div>
+
+    <div class="panel" id="rightPanel">
+        <div class="panel-header" id="rightPanelHeader">
+            <span>Viewer</span>
+            <select id="viewType" onchange="changeViewType()">
+                <option value="tree">Tree View</option>
+                <option value="formated">Text View</option>
+            </select>
+            <div class="panel-header-controls" id="rightPanelControls">
+                <button data-for="json" class="btn" onclick="formatData('JSON_TO_XML')">Convert to XML</button>
+                <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
+                <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+                <button class="btn btn-primary" onclick="formatData('CSV')">Convert to CSV</button>
+            </div>
+            <button class="expand-btn" onclick="toggleExpand('right')" id="rightExpandBtn">
+                <span id="rightExpandIcon">⛶</span>
+            </button>
+        </div>
+
+        <div class="editor-wrapper" id="rightEditorWrapper" style="display: none;">
+            <div class="line-numbers-area" id="rightLineNumbersArea">
+                <div class="fold-icons" id="rightFoldIcons"></div>
+                <div class="line-numbers" id="rightLineNumbers">1</div>
+            </div>
+            <div class="code-editor" id="rightCodeEditor"></div>
+        </div>
+        <div class="tree-view" id="rightTreeContent" style="padding:20px;color:#858585;">
+            Tree view will appear here after formatting
+        </div>
+
+        <div class="status" id="outputStatus">Ready</div>
+    </div>
+
+</div>
+
+<article class="content-section">
+<h2>How to convert JSON to CSV</h2>
+<ol>
+  <li>Paste JSON into the editor, usually an array of objects such as an API response.</li>
+  <li>Click <strong>Convert to CSV</strong> to see the result, then <strong>Export CSV</strong> to download it as a <code>.csv</code> file.</li>
+  <li>Open the file in Excel, Google Sheets, LibreOffice or any BI tool.</li>
+</ol>
+
+<h2>How the conversion works</h2>
+<ul>
+  <li><strong>Rows</strong>: each object in the top-level array becomes one row. A single object becomes a single row.</li>
+  <li><strong>Columns</strong>: every field found in any object gets a column, in the order fields first appear. Objects that lack a field get an empty cell.</li>
+  <li><strong>Nested objects</strong> are flattened with dots: <code>{"address": {"city": "Pune"}}</code> becomes the column <code>address.city</code>.</li>
+  <li><strong>Arrays</strong> become numbered columns: <code>tags[0]</code>, <code>tags[1]</code> and so on.</li>
+  <li>Values containing commas, quotes or line breaks are quoted as the CSV standard requires, so spreadsheets read them correctly.</li>
+</ul>
+<p>For example:</p>
+<pre>[
+  {"id": 1, "name": "Ada", "address": {"city": "London"}},
+  {"id": 2, "name": "Linus", "email": "linus@example.com"}
+]</pre>
+<p>becomes:</p>
+<pre>id,name,address.city,email
+1,Ada,London,
+2,Linus,,linus@example.com</pre>
+
+<h2>Tips</h2>
+<ul>
+  <li>If your data is wrapped, for example <code>{"data": [...]}</code>, paste only the array for one row per item.</li>
+  <li>Excel may show long numbers such as phone numbers or IDs in scientific notation; format those columns as Text after importing.</li>
+  <li>Going the other way? The <a href="/csv-converter">CSV converter</a> turns CSV into JSON, XML or SQL.</li>
+</ul>
+<p>Conversion runs on our server in memory; the data isn't stored.</p>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>How are nested JSON objects converted to CSV?</summary>
+    <p>They are flattened into columns joined with dots, so {&quot;address&quot;: {&quot;city&quot;: &quot;Pune&quot;}} becomes a column named address.city. Arrays become numbered columns such as tags[0] and tags[1].</p>
+  </details>
+  <details>
+    <summary>What if objects have different fields?</summary>
+    <p>Every field from every object becomes a column. Rows that don't have a field get an empty cell.</p>
+  </details>
+  <details>
+    <summary>Can I open the result in Excel?</summary>
+    <p>Yes. Click Convert to CSV, then Export CSV to download a .csv file, and open it in Excel, Google Sheets or LibreOffice.</p>
+  </details>
+  <details>
+    <summary>Which delimiter is used?</summary>
+    <p>A comma, the standard for CSV. Values that contain commas, quotes or line breaks are wrapped in quotes.</p>
+  </details>
+  <details>
+    <summary>Is my data stored?</summary>
+    <p>No. It's converted on our server in memory and returned immediately.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Validator</strong>Validate YAML, convert YAML to JSON and back, and properties files.</a></li>
+  <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, TypeScript, Go, Kotlin, Rust or Pydantic types.</a></li>
+  <li><a href="/compare"><strong>JSON &amp; XML Compare</strong>See what changed between two versions, by path.</a></li>
+  <li><a href="/json-schema"><strong>JSON Schema</strong>Generate a schema from a sample, or validate against one.</a></li>
+  <li><a href="/jwt-decoder"><strong>JWT Decoder</strong>Read claims, check expiry and verify signatures.</a></li>
+  <li><a href="/encode-decode"><strong>Encode / Decode</strong>Base64, URL, JSON strings, hex and timestamps.</a></li>
+  <li><a href="/sql-formatter"><strong>SQL Formatter</strong>Beautify or minify SQL for every major database.</a></li>
+  <li><a href="/regex-tester"><strong>Regex Tester</strong>Test regular expressions with live matches and explanations.</a></li>
+  <li><a href="/uuid-generator"><strong>UUID Generator</strong>UUID v4, v7, ULID and Nano ID in bulk.</a></li>
+  <li><a href="/json-validator"><strong>JSON Validator</strong>Check JSON syntax and see the exact line of every error.</a></li>
+  <li><a href="/json-viewer"><strong>JSON Viewer</strong>Explore JSON as a collapsible tree with search and JSONPath.</a></li>
+  <li><a href="/json-minifier"><strong>JSON Minifier</strong>Strip whitespace from JSON for smaller payloads.</a></li>
+  <li><a href="/json-to-xml"><strong>JSON to XML</strong>Convert JSON into well-formed XML.</a></li>
+  <li><a href="/xml-to-json"><strong>XML to JSON</strong>Convert XML, attributes and all, into JSON.</a></li>
+  <li><a href="/tools"><strong>All tools</strong>Every formatter, converter and generator on the site.</a></li>
+</ul>
+</article>
+
+<div id="footer"></div>
+
+<div id="sqlModalOverlay" class="sql-modal-overlay" style="display: none;">
+    <div class="sql-modal">
+        <div class="sql-modal-header">
+            <h3>Convert to SQL</h3>
+            <button type="button" class="sql-modal-close" id="sqlModalCloseBtn">&times;</button>
+        </div>
+
+        <div class="sql-modal-body">
+            <div class="sql-form-group">
+                <label for="sqlTableName">Table name</label>
+                <input
+                        type="text"
+                        id="sqlTableName"
+                        class="sql-input"
+                        value="users"
+                        placeholder="Enter table name"
+                />
+            </div>
+
+            <div class="sql-form-group">
+                <label for="sqlDbType">Dialect</label>
+                <select id="sqlDbType" class="sql-select">
+                    <option value="POSTGRES">PostgreSQL</option>
+                    <option value="MYSQL">MySQL</option>
+                    <option value="SQLSERVER">SQL Server</option>
+                    <option value="SQLITE">SQLite</option>
+                </select>
+            </div>
+
+            <div class="sql-form-group sql-checkbox-group">
+                <label class="sql-checkbox-label">
+                    <input
+                            type="checkbox"
+                            id="sqlIncludeNulls"
+                            checked
+                    />
+                    <span>Include NULLs</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="sql-modal-footer">
+            <button type="button" class="btn btn-secondary" id="sqlModalCancelBtn">
+                Cancel
+            </button>
+            <button type="button" class="btn" id="sqlGenerateBtn">
+                Generate
+            </button>
+        </div>
+    </div>
+</div>
+<div class="sd-overlay" id="sdOverlay">
+    <div class="sd-modal">
+
+        <div id="sdForm">
+            <h3>Share Content</h3>
+            <p class="sd-sub">Choose what to share and generate an instant link</p>
+
+            <div class="sd-source-row">
+                <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
+                <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
+            </div>
+
+            <div class="sd-toggle-row">
+                <div class="sd-toggle-label">
+                    <strong>🔥 One-time link</strong>
+                    Content deleted from server after first view
+                </div>
+                <label class="sd-toggle">
+                    <input type="checkbox" id="sdOneTime">
+                    <span class="sd-toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="sd-email-box">
+                <label for="sdEmail">Recipient Email (Optional)</label>
+                <div class="sd-email-input-wrapper">
+                    <span class="sd-email-icon">✉️</span>
+                    <input type="email" id="sdEmail" class="sd-email-input" placeholder="recipient@example.com">
+                </div>
+            </div>
+
+            <div class="sd-error" id="sdError"></div>
+
+            <div class="sd-actions" style="flex-wrap: wrap;">
+                <button onclick="closeSdModal()" style="flex: 1 1 25%;">✕ Cancel</button>
+                <button onclick="doShare(false)" style="flex: 1 1 35%; border-color:#4f8cff;color:#4f8cff;font-weight:700">⚡ Generate Link</button>
+                <button onclick="doShare(true)" class="sd-btn-mail" style="flex: 1 1 100%;">✉️ Upload & Send on Mail</button>
+            </div>
+        </div>
+
+        <div class="sd-loader" id="sdLoader">
+            <div class="sd-spinner"></div>
+            Uploading to server…
+        </div>
+
+        <div id="sdSuccess" style="display:none">
+            <div class="sd-check">✓</div>
+            <h3>Share Drop Ready!</h3>
+            <p class="sd-sub" id="sdSuccessSub">—</p>
+
+            <div class="sd-key-card">
+                <div class="sd-key-label">
+                    <span>🔑 Drop Key</span>
+                    <span style="font-size:.68rem;color:#6e6e88">Use in Receive Drop</span>
+                </div>
+                <div class="sd-key-row">
+                    <div class="sd-key-badge" id="sdKeyText">-----</div>
+                    <button class="sd-btn-copy-key" id="sdCopyKeyBtn" onclick="sdCopyKey()">⎘ Copy Key</button>
+                </div>
+            </div>
+
+            <div class="sd-url-row">
+                <span class="sd-url-text" id="sdUrlText">—</span>
+                <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
+            </div>
+
+            <div class="sd-email-status" id="sdEmailStatus"></div>
+
+            <div class="sd-actions" style="margin-top: 14px;">
+                <button onclick="window.open(document.getElementById('sdUrlText').textContent,'_blank')">👁 Open</button>
+                <button onclick="closeSdModal()">✕ Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/js/layout-loader.js?v=13"></script>
+<script src="/js/repair.js?v=5"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/jsonpath.js?v=1"></script>
+<script src="/js/editor-tools.js?v=2"></script>
+</body>
+</html>
