@@ -11,7 +11,6 @@ body {
     min-height: 100vh;
 }
 
-/* Main Container */
 .container {
     max-width: 1200px;
     margin: 3rem auto;
@@ -30,7 +29,6 @@ h1 {
     margin-bottom: 3rem;
 }
 
-/* Blog Grid */
 .blog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -38,7 +36,6 @@ h1 {
     margin-top: 2rem;
 }
 
-/* Blog Card */
 .blog-card {
     background: #16181d;
     border-radius: 12px;
@@ -107,7 +104,6 @@ h1 {
     color: #93c5fd;
 }
 
-/* Article View */
 .article-view {
     display: none;
     max-width: 900px;
@@ -207,7 +203,6 @@ h1 {
     padding: 0;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     h1 {
         font-size: 2rem;

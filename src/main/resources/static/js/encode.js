@@ -1,7 +1,3 @@
-/* ============================================================
-   encode.js - Base64, URL, HTML entity, JSON string, hex and
-   Unix timestamp conversions. Runs entirely in the browser.
-   ============================================================ */
 
 'use strict';
 
@@ -10,7 +6,6 @@ const Codec = (() => {
   const enc = new TextEncoder();
   const dec = new TextDecoder('utf-8', { fatal: true });
 
-  // ── helpers ────────────────────────────────────────────────────────────────
   function bytesToBase64(bytes) {
     let bin = '';
     const CHUNK = 0x8000;
@@ -30,14 +25,12 @@ const Codec = (() => {
     return out;
   }
 
-  // Decoded bytes → text, or a hex dump if they aren't valid UTF-8 text
   function bytesToDisplay(bytes) {
     try {
       const text = dec.decode(bytes);
-      // eslint-disable-next-line no-control-regex
       const binary = /[\x00-\x08\x0e-\x1f]/.test(text.slice(0, 4000));
       if (!binary) return { text };
-    } catch (_) { /* not UTF-8 */ }
+    } catch (_) {  }
     const sig = sniff(bytes);
     const hex = Array.from(bytes.subarray(0, 512), b => b.toString(16).padStart(2, '0')).join(' ');
     return {
@@ -66,7 +59,6 @@ const Codec = (() => {
     return doc.querySelector('textarea').value;
   }
 
-  // ── Timestamp ──────────────────────────────────────────────────────────────
   function relative(ms) {
     const diff = (ms - Date.now()) / 1000, abs = Math.abs(diff);
     const units = [['year', 31536000], ['day', 86400], ['hour', 3600], ['minute', 60], ['second', 1]];
@@ -122,7 +114,6 @@ const Codec = (() => {
     };
   }
 
-  // ── Modes ──────────────────────────────────────────────────────────────────
   const MODES = {
     base64: {
       label: 'Base64',
@@ -156,7 +147,7 @@ const Codec = (() => {
         try {
           const value = JSON.parse(t);
           const out = { text: typeof value === 'string' ? value : JSON.stringify(value, null, 2) };
-          try { const inner = JSON.parse(out.text); out.text = JSON.stringify(inner, null, 2); out.note = 'The unescaped text is itself JSON, so it has been formatted.'; } catch (_) { /* plain text */ }
+          try { const inner = JSON.parse(out.text); out.text = JSON.stringify(inner, null, 2); out.note = 'The unescaped text is itself JSON, so it has been formatted.'; } catch (_) {  }
           return out;
         } catch (_) {
           throw new Error('This is not a valid JSON string. Check for a backslash that isn\'t followed by a valid escape such as \\n, \\" or \\u00e9.');
@@ -182,7 +173,6 @@ const Codec = (() => {
     },
   };
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   let els, mode = 'base64', direction = 'encode', lastBinary = null;
 
   function run() {
@@ -250,7 +240,6 @@ const Codec = (() => {
     $('encClear').addEventListener('click', () => { els.input.value = ''; run(); els.input.focus(); });
     els.now.addEventListener('click', () => { els.input.value = String(Math.floor(Date.now() / 1000)); run(); });
 
-    // File → Base64 (data stays in the browser)
     const fileInput = Object.assign(document.createElement('input'), { type: 'file', hidden: true });
     els.file.after(fileInput);
     els.file.addEventListener('click', () => fileInput.click());

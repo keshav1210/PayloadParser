@@ -1,24 +1,19 @@
-/* ============================================================
-   editor-tools.js - undo/redo, autosave and find for the editor pages.
-   Loaded after jsonxmlformatter.js, which calls EditorTools.hook().
-   ============================================================ */
 
 'use strict';
 
 const EditorTools = (() => {
   const DRAFT_KEY = 'jxe.draft:' + location.pathname;
-  const MAX_DRAFT_CHARS = 2000000;     // stay well inside the ~5 MB localStorage quota
+  const MAX_DRAFT_CHARS = 2000000;
   const MAX_HISTORY = 50;
 
   const undoStack = [];
   const redoStack = [];
-  let suppress = false;          // true while we restore text ourselves
-  let lastProgrammatic = false;  // last change came from Format/Repair/Sort/… (native undo can't revert it)
+  let suppress = false;
+  let lastProgrammatic = false;
   let saveTimer = null;
   let ready = false;
   let undoBtn, redoBtn;
 
-  // ── called by jsonxmlformatter.js ─────────────────────────────────────────
   function hook(type, arg) {
     if (!ready) return;
     if (type === 'replace') {
@@ -42,22 +37,19 @@ const EditorTools = (() => {
     }
   }
 
-  // ── Undo / redo for whole-document changes ────────────────────────────────
-  // Typing is handled by the browser's own undo; this covers Format, Minify,
-  // Repair, Sort, Clear, Load Sample, file uploads and pastes that replace everything.
   function showInEditor(text) {
     suppress = true;
     try {
       let lang = 'plain';
       const detected = detectFormat(text);
-      if (detected === 'json') { try { parseJsonAst(text); lang = 'json'; } catch (_) { /* invalid */ } }
-      if (detected === 'xml')  { try { parseXmlDocument(text); lang = 'xml'; } catch (_) { /* invalid */ } }
+      if (detected === 'json') { try { parseJsonAst(text); lang = 'json'; } catch (_) {  } }
+      if (detected === 'xml')  { try { parseXmlDocument(text); lang = 'xml'; } catch (_) {  } }
       if (lang !== 'plain') setFormatType(lang);
       if (text) setLeft(text, lang); else clearAll();
     } finally {
       suppress = false;
     }
-    if (text.trim()) formatCode(false, null, null, null, true);   // refresh the right panel
+    if (text.trim()) formatCode(false, null, null, null, true);
     lastProgrammatic = true;
     updateButtons();
     scheduleSave();
@@ -97,7 +89,6 @@ const EditorTools = (() => {
     }
   }
 
-  // ── Autosave (this browser only) ──────────────────────────────────────────
   function scheduleSave() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveDraft, 700);
@@ -116,14 +107,14 @@ const EditorTools = (() => {
         type: formatTypeEl ? formatTypeEl.value : null,
         savedAt: Date.now(),
       }));
-    } catch (_) { /* storage full or disabled */ }
+    } catch (_) {  }
   }
 
   function restoreDraft() {
-    if (new URLSearchParams(location.search).has('drop')) return;   // a shared drop is loading
+    if (new URLSearchParams(location.search).has('drop')) return;
     if (getEditorText().trim()) return;
     let draft = null;
-    try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (_) { /* ignore */ }
+    try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (_) {  }
     if (!draft || !draft.text || !draft.text.trim()) return;
     if (draft.type) setFormatType(draft.type);
     showInEditor(draft.text);
@@ -132,7 +123,6 @@ const EditorTools = (() => {
     setStatus(inputStatus, null, '↺ Restored your text from last time. Click Clear to start fresh.');
   }
 
-  // ── Setup ────────────────────────────────────────────────────────────────
   function init() {
     if (typeof codeEditor === 'undefined' || !codeEditor) return;
 
@@ -169,12 +159,11 @@ const EditorTools = (() => {
 })();
 
 
-/* ─────────────────────────────── Find ─────────────────────────────── */
 const Find = (() => {
   const MAX_MATCHES = 10000;
   const MAX_PAINTED = 2000;
   const HAS_HL = typeof CSS !== 'undefined' && CSS.highlights && typeof Highlight !== 'undefined';
-  const state = {};   // side → { bar, input, count, caseBtn, matches, current, caseSensitive, timer }
+  const state = {};
 
   function makeBar(side) {
     const panel = document.getElementById(side === 'left' ? 'leftPanel' : 'rightPanel');
@@ -293,7 +282,6 @@ const Find = (() => {
     }
     st.bar.classList.remove('none');
 
-    // keep the position near the previous match when the document changes
     let start = 0;
     if (!resetCurrent && previous && st.mode === 'code') {
       const k = st.matches.findIndex(m => m.li > previous.li || (m.li === previous.li && m.ci >= previous.ci));
@@ -335,7 +323,6 @@ const Find = (() => {
     if (line) scrollIntoPanel(code, line, range);
   }
 
-  // Unfold any folded block that hides this line
   function revealLine(side, li) {
     folds[side].list.forEach(f => {
       if (f.folded && li > f.start && li <= f.end) {
@@ -382,7 +369,6 @@ const Find = (() => {
     }
   }
 
-  // Re-run the search when the searched panel's content changes
   function onDocChange(side) {
     const st = state[side];
     if (!st || st.bar.hidden || !st.input.value) return;
@@ -399,7 +385,7 @@ const Find = (() => {
       const active = document.activeElement;
       const inLeft = active && document.getElementById('leftPanel')?.contains(active);
       const inRight = active && document.getElementById('rightPanel')?.contains(active);
-      if (!inLeft && !inRight) return;          // elsewhere: keep the browser's own find
+      if (!inLeft && !inRight) return;
       e.preventDefault();
       open(inLeft ? 'left' : 'right');
     });
@@ -409,7 +395,6 @@ const Find = (() => {
 })();
 
 
-/* ─────────────────────────────── JSONPath query ─────────────────────────────── */
 const Query = (() => {
   let bar, input, info, pathsToggle;
   let active = false, rendering = false, timer = null;
@@ -444,7 +429,6 @@ const Query = (() => {
     close.title = 'Close the query and show the whole document (Esc)';
     close.addEventListener('click', closeBar);
     bar.append(label, input, info, pathsWrap, help, close);
-    // below the find bar if there is one, otherwise under the header
     const findBar = header.nextElementSibling && header.nextElementSibling.classList.contains('find-bar') ? header.nextElementSibling : header;
     findBar.after(bar);
 
@@ -507,7 +491,6 @@ const Query = (() => {
     setStatus(outputStatus, true, `JSONPath ${q}  ·  ${results.length} match${results.length === 1 ? '' : 'es'}`);
   }
 
-  // Keep the results in sync while the query bar is open
   function onDocChange(side) {
     if (!active || rendering || side !== 'right') return;
     clearTimeout(timer);

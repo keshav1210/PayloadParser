@@ -1,9 +1,4 @@
-/* ==========================================================
-   theme-light.css - light theme overrides for every page.
-   Active when <html data-theme="light"> (set by theme.js).
-   ========================================================== */
 
-/* ── Shared design tokens (site.css pages, learnings) ───────── */
 html[data-theme="light"] {
     --bg: #f6f7f9;
     --surface: #ffffff;
@@ -17,7 +12,6 @@ html[data-theme="light"] {
     --link: #1a5fd6;
     --code: #9a3412;
 
-    /* Share Drop / shared-link page variables */
     --s1: #ffffff;
     --s2: #f3f5f8;
     --s3: #eaeef3;
@@ -34,7 +28,6 @@ html[data-theme="light"] a:hover {
     color: #0b3d91;
 }
 
-/* ── Header & footer ────────────────────────────────────────── */
 html[data-theme="light"] .app-header {
     background: rgba(255, 255, 255, 0.94);
     border-bottom-color: #e3e6eb;
@@ -93,7 +86,6 @@ html[data-theme="light"] .app-footer .footer-bottom {
     color: #6e7781;
 }
 
-/* ── site.css components ────────────────────────────────────── */
 html[data-theme="light"] .tool-card:hover,
 html[data-theme="light"] .contact-option:hover {
     background: #f6f8fa;
@@ -115,7 +107,6 @@ html[data-theme="light"] .section h4 {
     color: #1a5fd6;
 }
 
-/* ── Tool pages: toolbar, buttons, panels ───────────────────── */
 html[data-theme="light"] .controls,
 html[data-theme="light"] .toolbar,
 html[data-theme="light"] .tool-intro {
@@ -221,7 +212,6 @@ html[data-theme="light"] .icon-btn:hover {
     color: #0d1117;
 }
 
-/* Code areas */
 html[data-theme="light"] .editor-wrapper,
 html[data-theme="light"] #rightEditorWrapper,
 html[data-theme="light"] .code-editor,
@@ -266,7 +256,6 @@ html[data-theme="light"] .warning       { color: #9a6700; }
 html[data-theme="light"] .status .match-info { color: #7d4e00; }
 html[data-theme="light"] .status .match-info.bad { color: #cf222e; }
 
-/* Syntax colours (VS Code "Light+" palette) */
 html[data-theme="light"] .key,
 html[data-theme="light"] .tree-key        { color: #0451a5; }
 html[data-theme="light"] .string,
@@ -313,7 +302,6 @@ html[data-theme="light"] .line-numbers .code-line.match-line {
     color: #9a6700;
 }
 
-/* Errors and repair report */
 html[data-theme="light"] .error {
     background: #ffebe9;
     color: #82071e;
@@ -338,7 +326,6 @@ html[data-theme="light"] .repair-report strong {
     color: #1a7f37;
 }
 
-/* Find bar */
 html[data-theme="light"] .find-bar {
     background: #f6f8fa;
     border-bottom-color: #e3e6eb;
@@ -366,7 +353,6 @@ html[data-theme="light"] .find-btn.on {
     color: #0d1117;
 }
 
-/* Article below the tools */
 html[data-theme="light"] .content-section {
     background: #ffffff;
     border-color: #e3e6eb;
@@ -420,7 +406,6 @@ html[data-theme="light"] .faq details[open] summary {
     border-bottom-color: #e3e6eb;
 }
 
-/* ── Share Drop pages ───────────────────────────────────────── */
 html[data-theme="light"] .guide h2,
 html[data-theme="light"] .guide strong,
 html[data-theme="light"] .guide summary {
@@ -435,7 +420,6 @@ html[data-theme="light"] .guide code {
     color: #9a3412;
 }
 
-/* The gradient Share button keeps its colours in both themes */
 html[data-theme="light"] .btn-share {
     background: linear-gradient(135deg, #4f8cff, #00ddb3);
     border: none;

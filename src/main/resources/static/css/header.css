@@ -130,7 +130,6 @@
     }
 }
 
-/* Tools dropdown */
 .app-header .nav-menu {
     position: relative;
 }
@@ -225,7 +224,6 @@ html[data-theme="light"] .app-header .nav-menu-panel {
     }
 }
 
-/* Divider + external link in the Tools menu */
 .app-header .nav-menu-divider {
     height: 1px;
     margin: 4px 6px;
@@ -250,7 +248,6 @@ html[data-theme="light"] .app-header .nav-menu-panel a.nav-external small {
     color: #6e7781;
 }
 
-/* ---------- Grouped Tools menu ---------- */
 .app-header .nav-menu-panel.nav-menu-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(160px, 1fr));
@@ -313,7 +310,6 @@ html[data-theme="light"] .app-header .nav-menu-foot a.nav-all-tools { color: #1f
     }
 }
 
-/* ---------- Search button (opens the command palette) ---------- */
 .app-header .cmdk-trigger {
     display: inline-flex;
     align-items: center;
@@ -361,7 +357,6 @@ html[data-theme="light"] .app-header .cmdk-trigger-kbd { border-color: #d0d7de; 
     .app-header .cmdk-trigger { width: 34px; justify-content: center; padding: 0; }
 }
 
-/* ---------- Command palette ---------- */
 html.cmdk-open { overflow: hidden; }
 
 .cmdk {

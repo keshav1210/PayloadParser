@@ -1,10 +1,5 @@
-/* ============================================================
-   tools-list.js - one list of every tool on the site.
-   Used by the Ctrl+K command palette and the /tools directory.
-   ============================================================ */
 
 window.SITE_TOOLS = [
-  // Format & validate
   { name: 'JSON & XML Formatter', href: '/parser', cat: 'Format & validate', icon: '{ }',
     desc: 'Format, validate, repair and minify JSON or XML, with a tree view and code folding.',
     keys: 'beautify pretty print lint validator repair fix minify tree viewer' },
@@ -27,7 +22,6 @@ window.SITE_TOOLS = [
     desc: 'Write Markdown with a live preview, then export PDF, HTML or a README.md.',
     keys: 'markdown md readme preview editor github gfm html pdf convert markdown to pdf' },
 
-  // Convert
   { name: 'JSON to XML', href: '/json-xml-converter', cat: 'Convert', icon: '⇄',
     desc: 'Convert JSON into well-formed XML.', keys: 'json xml convert' },
   { name: 'XML to JSON', href: '/xml-json-converter', cat: 'Convert', icon: '⇄',
@@ -40,7 +34,10 @@ window.SITE_TOOLS = [
     desc: 'Convert JSON or XML into TOML.', keys: 'toml cargo pyproject' },
   { name: 'Object Mapper', href: '/mapper', cat: 'Convert', icon: 'cls',
     desc: 'Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust or Zod types from JSON.',
-    keys: 'json to java pojo lombok typescript interface class generator pydantic kotlin go struct rust zod' },
+    keys: 'json to java pojo lombok typescript interface class generator pydantic kotlin go struct rust zod tostring dto to json record' },
+  { name: 'Java toString() to JSON', href: '/mapper#tostring', cat: 'Convert', icon: 'dto',
+    desc: 'Turn Lombok DTO, Kotlin data class or record toString() output into JSON.',
+    keys: 'tostring java lombok dto to json log object record kotlin data class convert' },
   { name: 'cURL to Code', href: '/curl-to-code', cat: 'Convert', icon: 'curl',
     desc: 'Turn a curl command into fetch, axios, Python, Java, Spring, Go, C# or PHP.',
     keys: 'curl convert code fetch axios python requests java spring restclient go csharp php http request' },
@@ -51,7 +48,6 @@ window.SITE_TOOLS = [
     desc: 'Binary, octal, decimal, hex and any base up to 36, with two\'s complement.',
     keys: 'binary hex decimal octal base converter radix two\'s complement bits' },
 
-  // Inspect & compare
   { name: 'JSON & XML Compare', href: '/compare', cat: 'Inspect & debug', icon: '≠',
     desc: 'See every difference between two JSON or XML documents.', keys: 'diff compare difference' },
   { name: 'Text Diff', href: '/text-diff', cat: 'Inspect & debug', icon: '±',
@@ -69,7 +65,6 @@ window.SITE_TOOLS = [
     desc: 'Base64, URL, HTML entities, JSON strings, hex and Unix timestamps.',
     keys: 'base64 url encode decode html entities hex timestamp epoch' },
 
-  // Generate
   { name: 'Hash Generator', href: '/hash-generator', cat: 'Generate', icon: '#',
     desc: 'MD5, SHA-1, SHA-256, SHA-512 and HMAC for text or files.',
     keys: 'hash md5 sha1 sha256 sha512 hmac checksum file' },
@@ -85,7 +80,6 @@ window.SITE_TOOLS = [
     desc: 'Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.',
     keys: 'mock fake data generator test data json csv sql schema faker dummy' },
 
-  // Network & system
   { name: 'Subnet Calculator', href: '/subnet-calculator', cat: 'Network & system', icon: '/24',
     desc: 'CIDR ranges, masks, host counts and subnet splits for IPv4 and IPv6.',
     keys: 'cidr subnet ip calculator ipv4 ipv6 netmask network broadcast range' },
@@ -93,7 +87,6 @@ window.SITE_TOOLS = [
     desc: 'Convert Unix permissions between 755, rwxr-xr-x and chmod commands.',
     keys: 'chmod permissions unix linux octal rwx umask file' },
 
-  // Share & more
   { name: 'Share Drop', href: '/share', cat: 'Share & more', icon: '↗',
     desc: 'Send text or a file to another device with a short-lived link.', keys: 'share file transfer send link' },
   { name: 'Image & PDF tools', href: 'https://www.convertfigure.com/', cat: 'Share & more', icon: 'img', external: true,

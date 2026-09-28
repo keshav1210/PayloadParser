@@ -1,13 +1,7 @@
-/* ============================================================
-   hash.js - Hash generator: MD5, SHA-1, SHA-256, SHA-384, SHA-512
-   and CRC32 for text or files, plus HMAC. SHA uses Web Crypto;
-   MD5 and CRC32 are implemented here. Runs in the browser.
-   ============================================================ */
 
 'use strict';
 
 const HashTool = (() => {
-  // ── MD5 (RFC 1321) ─────────────────────────────────────────────────────────
   const S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
     4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21];
   const K = Array.from({ length: 64 }, (_, i) => Math.floor(Math.abs(Math.sin(i + 1)) * 2 ** 32) >>> 0);
@@ -44,7 +38,6 @@ const HashTool = (() => {
     return out;
   }
 
-  // ── CRC32 (IEEE 802.3, as used by zip and gzip) ────────────────────────────
   const CRC_TABLE = (() => {
     const t = new Uint32Array(256);
     for (let n = 0; n < 256; n++) {
@@ -63,7 +56,6 @@ const HashTool = (() => {
     return out;
   }
 
-  // ── HMAC for MD5 (Web Crypto has no MD5) ───────────────────────────────────
   function hmacMd5(key, msg) {
     if (key.length > 64) key = md5(key);
     const k = new Uint8Array(64);
@@ -112,7 +104,6 @@ const HashTool = (() => {
     return new TextEncoder().encode(text);
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const MAX_FILE = 1024 * 1024 * 1024;
   let els, source = 'text', fileBytes = null, fileName = '', timer = null, results = {}, runId = 0;

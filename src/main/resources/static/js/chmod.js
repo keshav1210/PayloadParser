@@ -1,13 +1,7 @@
-/* ============================================================
-   chmod.js - Unix file permission calculator: checkboxes, octal
-   (755), symbolic (rwxr-xr-x) and u=rwx,g=rx,o=rx forms, special
-   bits, and a umask calculator.
-   ============================================================ */
 
 'use strict';
 
 const ChmodTool = (() => {
-  // mode is a 12-bit number: special (setuid 4, setgid 2, sticky 1) then user, group, other
   function fromOctal(s) {
     const t = s.trim().replace(/^0o?/i, '') || '0';
     if (!/^[0-7]{1,4}$/.test(t)) throw new Error('Octal permissions use 3 or 4 digits from 0 to 7, e.g. 755 or 2775.');
@@ -15,8 +9,8 @@ const ChmodTool = (() => {
   }
 
   function fromSymbolic(s) {
-    let t = s.trim().replace(/[.+@]$/, '');                                  // SELinux / ACL markers
-    if (/^[-dlcbps]/.test(t) && t.length === 10) t = t.slice(1);            // ls -l output with file type
+    let t = s.trim().replace(/[.+@]$/, '');
+    if (/^[-dlcbps]/.test(t) && t.length === 10) t = t.slice(1);
     if (!/^[r-][w-][xsS-][r-][w-][xsS-][r-][w-][xtT-]$/.test(t)) throw new Error('Symbolic permissions look like rwxr-xr-x (9 characters, optionally after the file type from ls -l).');
     let mode = 0;
     const bits = [[0, 0o400], [1, 0o200], [3, 0o040], [4, 0o020], [6, 0o004], [7, 0o002]];
@@ -71,13 +65,11 @@ const ChmodTool = (() => {
     return w;
   }
 
-  // ── umask ──────────────────────────────────────────────────────────────────
   function umask(s) {
     const m = fromOctal(s) & 0o777;
     return { files: 0o666 & ~m, dirs: 0o777 & ~m };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   let els, mode = 0o755, lock = false;
 
@@ -97,7 +89,7 @@ const ChmodTool = (() => {
     const w = warnings(mode);
     els.warn.hidden = !w.length;
     els.warn.textContent = w.join(' ');
-    try { localStorage.setItem('jxe.chmod', String(mode)); } catch (_) { /* ignore */ }
+    try { localStorage.setItem('jxe.chmod', String(mode)); } catch (_) {  }
   }
 
   function renderUmask() {
@@ -114,7 +106,7 @@ const ChmodTool = (() => {
       cmdRecursive: $('chmodCmdRec'), ls: $('chmodLs'), desc: $('chmodDesc'), warn: $('chmodWarn'), umask: $('chmodUmask'), umaskOut: $('chmodUmaskOut'),
     };
     if (!els.octal) return;
-    try { const s = localStorage.getItem('jxe.chmod'); if (s !== null && !Number.isNaN(+s)) mode = +s; } catch (_) { /* ignore */ }
+    try { const s = localStorage.getItem('jxe.chmod'); if (s !== null && !Number.isNaN(+s)) mode = +s; } catch (_) {  }
     const fromHash = location.hash.slice(1);
     if (/^[0-7]{3,4}$/.test(fromHash)) mode = parseInt(fromHash, 8);
 

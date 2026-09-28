@@ -1,17 +1,12 @@
-/* ============================================================
-   qr.js - QR code generator (runs in the browser).
-   Encoding by qrcode-generator (MIT, js/vendor/qrcode.js).
-   ============================================================ */
 
 'use strict';
 
 const QrTool = (() => {
   const $ = id => document.getElementById(id);
-  qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];   // non-Latin text and emoji
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
 
   let els, logoImg = null, current = null, timer = null;
 
-  // ── Payload builders ───────────────────────────────────────────────────────
   const val = id => ($(id) ? $(id).value.trim() : '');
   const phoneDigits = s => s.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
 
@@ -23,7 +18,6 @@ const QrTool = (() => {
     return p;
   }
 
-  // vCard / Wi-Fi escaping
   const escVcard = s => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
   const escWifi = s => s.replace(/([\\;,:"])/g, '\\$1');
 
@@ -94,7 +88,6 @@ const QrTool = (() => {
     vcard: 'Scanning offers to save this contact to the phone.',
   };
 
-  // ── Rendering ──────────────────────────────────────────────────────────────
   function luminance(hex) {
     const n = parseInt(hex.slice(1), 16);
     const c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
@@ -126,7 +119,6 @@ const QrTool = (() => {
       }
     }
     if (logoImg) {
-      // Logo covers at most ~20% of the width; error correction H restores the hidden modules
       const box = Math.round(n * 0.2) * scale;
       const x = Math.round((size - box) / 2), y = x;
       const pad = Math.max(2, Math.round(scale * 0.8));
@@ -200,7 +192,6 @@ const QrTool = (() => {
     els.stats.textContent = `Version ${(n - 17) / 4} · ${n}×${n} modules · ${size}×${size} px · error correction ${level}`;
     els.hint.textContent = HINTS[type];
 
-    // Scannability warnings
     const lf = luminance(fg), lb = luminance(bg);
     const ratio = (Math.max(lf, lb) + 0.05) / (Math.min(lf, lb) + 0.05);
     const warns = [];
@@ -224,7 +215,6 @@ const QrTool = (() => {
     render();
   }
 
-  // ── Export ─────────────────────────────────────────────────────────────────
   function fileBase() {
     return 'qr-' + (current ? current.type : 'code');
   }

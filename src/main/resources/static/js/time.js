@@ -1,15 +1,9 @@
-/* ============================================================
-   time.js - Unix timestamp converter and time zone converter.
-   Uses the browser's Intl time zone database; runs locally.
-   ============================================================ */
 
 'use strict';
 
 const TimeTool = (() => {
-  // ── Helpers ────────────────────────────────────────────────────────────────
   const pad = (n, w = 2) => String(n).padStart(w, '0');
 
-  // Offset of a zone from UTC at a given instant, in minutes
   function zoneOffset(ms, zone) {
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: zone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -20,7 +14,6 @@ const TimeTool = (() => {
     return Math.round((asUtc - Math.floor(ms / 1000) * 1000) / 60000);
   }
 
-  // Instant for a wall-clock time in a zone (handles DST: tries both nearby offsets)
   function wallToInstant(y, mo, d, h, mi, s, zone) {
     const guess = Date.UTC(y, mo - 1, d, h, mi, s);
     const o1 = zoneOffset(guess, zone);
@@ -65,8 +58,6 @@ const TimeTool = (() => {
     return { year: d.getUTCFullYear(), week: 1 + Math.round(((d - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7) };
   }
 
-  // ── Parse any input into an instant ────────────────────────────────────────
-  // Returns { ms, unit, note } or throws
   function parseInput(raw) {
     const s = raw.trim();
     if (!s) return null;
@@ -82,7 +73,6 @@ const TimeTool = (() => {
       if (!Number.isFinite(ms) || Math.abs(ms) > 8.64e15) throw new Error('That timestamp is outside the range a date can represent.');
       return { ms: Math.round(ms), unit };
     }
-    // Excel serial date: "excel 45000" or "45000.5 excel"
     const excel = s.match(/^excel\s+(\d+(?:\.\d+)?)$|^(\d+(?:\.\d+)?)\s+excel$/i);
     if (excel) {
       const v = Number(excel[1] || excel[2]);
@@ -94,7 +84,6 @@ const TimeTool = (() => {
     return { ms, unit: 'date', note: hasZone || /^\d{4}-\d{2}-\d{2}$/.test(s) ? '' : 'No time zone in the input, so it was read as your local time.' };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.time';
   const DEFAULT_ZONES = ['UTC', 'America/Los_Angeles', 'America/New_York', 'Europe/London', 'Europe/Berlin', 'Asia/Kolkata', 'Asia/Singapore', 'Asia/Tokyo', 'Australia/Sydney'];
@@ -151,7 +140,6 @@ const TimeTool = (() => {
     save();
   }
 
-  // Time zone converter
   function convertZones() {
     const val = els.tzDate.value;
     if (!val) return;
@@ -178,7 +166,7 @@ const TimeTool = (() => {
   }
 
   function save() {
-    try { localStorage.setItem(STORE, JSON.stringify({ zones, zone: els.zone.value, from: els.tzFrom.value })); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify({ zones, zone: els.zone.value, from: els.tzFrom.value })); } catch (_) {  }
   }
 
   function setNowInConverter() {
@@ -201,7 +189,7 @@ const TimeTool = (() => {
     els.tzAdd.innerHTML = '<option value="">+ Add a time zone…</option>' + opts;
 
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     zones = saved && Array.isArray(saved.zones) && saved.zones.length ? saved.zones.filter(z => list.includes(z) || z === 'UTC') : [LOCAL, ...DEFAULT_ZONES.filter(z => z !== LOCAL)];
     els.zone.value = (saved && saved.zone) || LOCAL;
     els.tzFrom.value = (saved && saved.from) || LOCAL;

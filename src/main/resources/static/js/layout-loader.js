@@ -18,7 +18,6 @@ function toggleMenu() {
     if (btn) btn.setAttribute('aria-expanded', String(open));
 }
 
-// Tool pages that live under the "Formatter" menu item
 const NAV_ALIASES = {
     '/json-parser': '/parser', '/xml-parser': '/parser',
     '/json-xml-converter': '/parser', '/xml-json-converter': '/parser'
@@ -37,7 +36,6 @@ function markActiveNavLink(root) {
         }
     });
 
-    // Tools menu: close on outside click and Escape
     const menu = root.querySelector('.nav-menu');
     if (menu) {
         document.addEventListener('click', e => { if (!menu.contains(e.target)) menu.open = false; });
@@ -58,7 +56,6 @@ loadFragment("footer", "/footer.html?v=11", root => {
     if (year) year.textContent = new Date().getFullYear();
 });
 
-// Command palette (Ctrl+K / Cmd+K) on every page
 function loadScript(src) {
     return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -68,6 +65,24 @@ function loadScript(src) {
         document.head.append(s);
     });
 }
-(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=3'))
+(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=4'))
     .then(() => loadScript('/js/palette.js?v=1'))
     .catch(err => console.error('Failed to load the tool search', err));
+
+(function guardDevTools() {
+    const host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host.endsWith('.localhost')) return;
+    window.addEventListener('keydown', e => {
+        const k = (e.key || '').toLowerCase();
+        const ctrl = e.ctrlKey || e.metaKey;
+        const blocked =
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(k)) ||
+            (e.metaKey && e.altKey && ['i', 'j', 'c', 'u'].includes(k)) ||
+            (ctrl && !e.shiftKey && !e.altKey && k === 'u');
+        if (blocked) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }, true);
+})();

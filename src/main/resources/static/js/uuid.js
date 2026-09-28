@@ -1,8 +1,3 @@
-/* ============================================================
-   uuid.js - UUID v4 / v7, ULID and Nano ID generator, plus an
-   inspector that reads the version and timestamp of an ID.
-   Uses crypto.getRandomValues; runs in the browser.
-   ============================================================ */
 
 'use strict';
 
@@ -18,8 +13,6 @@ const UuidTool = (() => {
     return fmtUuid(hex(b));
   }
 
-  // UUID v7 (RFC 9562): 48-bit Unix ms time, then a 12-bit counter so IDs made
-  // in the same millisecond still sort in creation order
   let v7Ms = -1, v7Seq = 0;
   function uuidV7(now = Date.now()) {
     if (now <= v7Ms) {
@@ -28,7 +21,7 @@ const UuidTool = (() => {
       now = v7Ms;
     } else {
       v7Ms = now;
-      v7Seq = ((rand(2)[0] << 8) | rand(1)[0]) & 0x3ff;   // start low to leave room for the counter
+      v7Seq = ((rand(2)[0] << 8) | rand(1)[0]) & 0x3ff;
     }
     const b = rand(16);
     const ms = BigInt(now);
@@ -39,7 +32,6 @@ const UuidTool = (() => {
     return fmtUuid(hex(b));
   }
 
-  // ULID: 10 characters of time + 16 of randomness, Crockford Base32; monotonic within a millisecond
   const CROCKFORD = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
   let ulidMs = -1, ulidRand = null;
   function ulid(now = Date.now()) {
@@ -52,14 +44,13 @@ const UuidTool = (() => {
     } else {
       ulidMs = now;
       ulidRand = Array.from(rand(16), x => x & 31);
-      ulidRand[0] &= 15;                               // leave headroom so increments don't overflow
+      ulidRand[0] &= 15;
     }
     let t = '', ms = now;
     for (let i = 0; i < 10; i++) { t = CROCKFORD[ms % 32] + t; ms = Math.floor(ms / 32); }
     return t + ulidRand.map(x => CROCKFORD[x]).join('');
   }
 
-  // Nano ID with an unbiased pick from any alphabet
   function nanoid(size = 21, alphabet = 'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict') {
     const mask = (2 << Math.log2(alphabet.length - 1)) - 1;
     const step = Math.ceil((1.6 * mask * size) / alphabet.length);
@@ -73,7 +64,6 @@ const UuidTool = (() => {
     return id;
   }
 
-  // ── Inspector ──────────────────────────────────────────────────────────────
   function inspect(input) {
     const s = input.trim().replace(/^[{("']|[})"']$/g, '').replace(/^urn:uuid:/i, '');
     if (!s) return null;
@@ -109,7 +99,6 @@ const UuidTool = (() => {
     return { type: null, rows: [['Not recognised', 'This is not a UUID (32 hex digits) or a ULID (26 Crockford Base32 characters).']] };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.uuid';
   let els, ids = [];
@@ -132,7 +121,7 @@ const UuidTool = (() => {
 
   function generate() {
     const o = readOpts();
-    try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify(o)); } catch (_) {  }
     els.uuidOpts.hidden = !o.kind.startsWith('v');
     els.nanoOpts.hidden = o.kind !== 'nanoid';
     ids = [];
@@ -184,7 +173,7 @@ const UuidTool = (() => {
     };
     if (!els.kind) return;
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     const hashKind = location.hash.slice(1);
     if (saved) {
       els.kind.value = saved.kind || 'v4'; els.count.value = saved.count || 5; els.upper.checked = !!saved.upper;

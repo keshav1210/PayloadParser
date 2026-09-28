@@ -1,7 +1,3 @@
-/* ============================================================
-   jwt.js - decode and verify JSON Web Tokens in the browser.
-   The token never leaves the page and is never stored.
-   ============================================================ */
 
 'use strict';
 
@@ -10,7 +6,6 @@ const Jwt = (() => {
   let els;
   let timer = null;
 
-  // ── base64url ───────────────────────────────────────────────────────────────
   function b64urlToBytes(s) {
     let b = s.replace(/-/g, '+').replace(/_/g, '/');
     if (/[^A-Za-z0-9+/=]/.test(b)) throw new Error('contains characters that are not valid base64url');
@@ -39,7 +34,6 @@ const Jwt = (() => {
     catch (_) { throw new Error(`The ${name} is not valid JSON after decoding.`); }
   }
 
-  // ── Dates ───────────────────────────────────────────────────────────────────
   function relative(seconds) {
     const diff = seconds - Date.now() / 1000;
     const abs = Math.abs(diff);
@@ -66,7 +60,6 @@ const Jwt = (() => {
     email: 'Email', name: 'Name', roles: 'Roles', tid: 'Tenant ID', oid: 'Object ID', nonce: 'Nonce',
   };
 
-  // ── Rendering ───────────────────────────────────────────────────────────────
   function node(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -140,7 +133,7 @@ const Jwt = (() => {
     els.error.textContent = msg;
   }
 
-  let current = null;   // { header, payload, parts }
+  let current = null;
 
   function decode() {
     let token = els.input.value.trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '').replace(/\s+/g, '');
@@ -186,7 +179,6 @@ const Jwt = (() => {
     verify();
   }
 
-  // ── Signature verification (Web Crypto) ─────────────────────────────────────
   const HASH = { 256: 'SHA-256', 384: 'SHA-384', 512: 'SHA-512' };
   const CURVE = { 256: 'P-256', 384: 'P-384', 512: 'P-521' };
 
@@ -263,7 +255,6 @@ const Jwt = (() => {
     }
   }
 
-  // A valid HS256 sample, signed right now so verification works
   async function sample() {
     const now = Math.floor(Date.now() / 1000);
     const header = { alg: 'HS256', typ: 'JWT' };

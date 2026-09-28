@@ -127,7 +127,6 @@
   <p>Paste JSON or XML into the editor. It is checked as you type, errors point to the exact line, and the right panel shows the result as a tree or as formatted text.</p>
 </section>
 
-<!-- Top Controls -->
 <div class="controls">
   <button title="Check and re-indent the data (Ctrl+Enter)" class="btn btn-primary" onclick="formatCode(false,null,null)">Format</button>
   <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
@@ -146,10 +145,8 @@
     </label>
 </div>
 
-<!-- Main Container -->
 <div class="container" id="mainContainer">
 
-  <!-- Left Panel -->
   <div class="panel" id="leftPanel">
     <div class="panel-header" id="leftPanelHeader">
       <span>Editor (Formatted View)</span>
@@ -182,7 +179,6 @@
     <div class="status" id="inputStatus">Ready — paste or type JSON / XML here</div>
   </div>
 
-  <!-- Middle Controls -->
   <div class="middle-controls" id="middleControls">
     <select id="formatType2">
       <option value="json">JSON</option>
@@ -197,7 +193,6 @@
       <button class="btn" id="convertToSqlBtn">Convert to SQL</button>
   </div>
 
-  <!-- Right Panel -->
   <div class="panel" id="rightPanel">
     <div class="panel-header" id="rightPanelHeader">
       <span>Viewer (Tree / Text View)</span>
@@ -217,11 +212,6 @@
       </button>
     </div>
 
-    <!--
-      Right panel inner structure:
-      - #rightEditorWrapper  →  shown in Text View mode (line numbers + code)
-      - #rightTreeContent    →  shown in Tree View mode
-    -->
     <div class="editor-wrapper" id="rightEditorWrapper" style="display: none;">
       <div class="line-numbers-area" id="rightLineNumbersArea">
         <div class="fold-icons" id="rightFoldIcons"></div>
@@ -338,7 +328,6 @@
 
 <div id="footer"></div>
 
-<!-- Convert to SQL Modal -->
 <div id="sqlModalOverlay" class="sql-modal-overlay" style="display: none;">
     <div class="sql-modal">
         <div class="sql-modal-header">
@@ -347,7 +336,6 @@
         </div>
 
         <div class="sql-modal-body">
-            <!-- Table name -->
             <div class="sql-form-group">
                 <label for="sqlTableName">Table name</label>
                 <input
@@ -359,7 +347,6 @@
                 />
             </div>
 
-            <!-- DB type -->
             <div class="sql-form-group">
                 <label for="sqlDbType">Dialect</label>
                 <select id="sqlDbType" class="sql-select">
@@ -370,7 +357,6 @@
                 </select>
             </div>
 
-            <!-- Include nulls -->
             <div class="sql-form-group sql-checkbox-group">
                 <label class="sql-checkbox-label">
                     <input
@@ -394,24 +380,18 @@
     </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════
-     ★  SHARE MODAL
-     ════════════════════════════════════════════════════════ -->
 <div class="sd-overlay" id="sdOverlay">
     <div class="sd-modal">
 
-        <!-- Initial form (source picker + one-time toggle + share btn) -->
         <div id="sdForm">
             <h3>Share Content</h3>
             <p class="sd-sub">Choose what to share and generate an instant link</p>
 
-            <!-- Source: input or output -->
             <div class="sd-source-row">
                 <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
                 <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
             </div>
 
-            <!-- One-time toggle -->
             <div class="sd-toggle-row">
                 <div class="sd-toggle-label">
                     <strong>🔥 One-time link</strong>
@@ -423,7 +403,6 @@
                 </label>
             </div>
 
-            <!-- Recipient Email (Optional) -->
             <div class="sd-email-box">
                 <label for="sdEmail">Recipient Email (Optional)</label>
                 <div class="sd-email-input-wrapper">
@@ -441,19 +420,16 @@
             </div>
         </div>
 
-        <!-- Loading state -->
         <div class="sd-loader" id="sdLoader">
             <div class="sd-spinner"></div>
             Uploading to server…
         </div>
 
-        <!-- Success state -->
         <div id="sdSuccess" style="display:none">
             <div class="sd-check">✓</div>
             <h3>Share Drop Ready!</h3>
             <p class="sd-sub" id="sdSuccessSub">—</p>
 
-            <!-- Key display -->
             <div class="sd-key-card">
                 <div class="sd-key-label">
                     <span>🔑 Drop Key</span>
@@ -465,7 +441,6 @@
                 </div>
             </div>
 
-            <!-- URL display -->
             <div class="sd-url-row">
                 <span class="sd-url-text" id="sdUrlText">—</span>
                 <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
@@ -481,7 +456,7 @@
 
     </div>
 </div>
-<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/layout-loader.js?v=12"></script>
 <script src="/js/repair.js?v=5"></script>
 <script src="/js/jsonxmlformatter.js?v=7"></script>
 <script src="/js/jsonpath.js?v=1"></script>

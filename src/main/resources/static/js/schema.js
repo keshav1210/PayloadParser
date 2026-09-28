@@ -1,8 +1,3 @@
-/* ============================================================
-   schema.js - generate a JSON Schema from a sample, and validate
-   JSON against a schema. Runs in the browser. Uses parseJsonAst,
-   lineColFromPos and jsonPath from jsonxmlformatter.js.
-   ============================================================ */
 
 'use strict';
 
@@ -10,10 +5,9 @@ const Schema = (() => {
   const $ = id => document.getElementById(id);
   const STORE_KEY = 'jxe.schema';
 
-  // ── Parsing with good error messages ────────────────────────────────────────
   function parseJson(text, label) {
     try {
-      parseJsonAst(text);                 // precise line/column errors
+      parseJsonAst(text);
     } catch (e) {
       if (e && e.isParseError) {
         const { line, col } = lineColFromPos(text, e.pos);
@@ -24,7 +18,6 @@ const Schema = (() => {
     return JSON.parse(text);
   }
 
-  // ── Generator ──────────────────────────────────────────────────────────────
   const FORMATS = [
     ['date-time', /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/],
     ['date', /^\d{4}-\d{2}-\d{2}$/],
@@ -65,7 +58,6 @@ const Schema = (() => {
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const typesOf = s => (Array.isArray(s.type) ? s.type : [s.type]);
 
-  // Combine the schemas of two values seen in the same place (e.g. array items)
   function merge(a, b, opts) {
     if (same(a, b)) return a;
     if (a.anyOf || b.anyOf) {
@@ -99,7 +91,6 @@ const Schema = (() => {
       if (a.format && a.format === b.format) s.format = a.format;
       return s;
     }
-    // e.g. an object in one item and null in another
     if (ta.length === 1 && tb.length === 1 && (ta[0] === 'null' || tb[0] === 'null')) {
       const real = ta[0] === 'null' ? b : a;
       return { anyOf: [real, { type: 'null' }] };
@@ -113,7 +104,6 @@ const Schema = (() => {
     return JSON.stringify(schema, null, 2);
   }
 
-  // ── Validator ──────────────────────────────────────────────────────────────
   function typeOf(v) {
     if (v === null) return 'null';
     if (Array.isArray(v)) return 'array';
@@ -222,7 +212,7 @@ const Schema = (() => {
         schema.prefixItems.forEach((s, i) => { if (i < value.length) validate(s, value[i], path.concat(i), errors, ctx, depth + 1); });
         start = schema.prefixItems.length;
       }
-      if (Array.isArray(schema.items)) {                      // draft 4–7 tuple form
+      if (Array.isArray(schema.items)) {
         schema.items.forEach((s, i) => { if (i < value.length) validate(s, value[i], path.concat(i), errors, ctx, depth + 1); });
         if (schema.additionalItems !== undefined) {
           for (let i = schema.items.length; i < value.length; i++) validate(schema.additionalItems, value[i], path.concat(i), errors, ctx, depth + 1);
@@ -269,7 +259,6 @@ const Schema = (() => {
       }
     }
 
-    // Combinators
     const branch = s => { const e = []; validate(s, value, path, e, ctx, depth + 1); return e; };
     if (Array.isArray(schema.allOf)) schema.allOf.forEach(s => validate(s, value, path, errors, ctx, depth + 1));
     if (Array.isArray(schema.anyOf)) {
@@ -300,7 +289,6 @@ const Schema = (() => {
     return errors;
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   let els, timer = null;
 
   function node(tag, cls, text) {
@@ -365,14 +353,14 @@ const Schema = (() => {
       localStorage.setItem(STORE_KEY, JSON.stringify({
         sample: els.sample.value.slice(0, 500000), schema: els.schema.value.slice(0, 500000), data: els.data.value.slice(0, 500000),
       }));
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   function restore() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
       if (s) { els.sample.value = s.sample || ''; els.schema.value = s.schema || ''; els.data.value = s.data || ''; }
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   const SAMPLE_DATA = `{

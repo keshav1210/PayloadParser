@@ -44,7 +44,6 @@ body {
     display: none !important;
 }
 
-/* Page intro (h1) above the tool */
 .tool-intro {
     padding: 14px 20px 12px;
     background: #111317;
@@ -65,7 +64,6 @@ body {
 
 }
 
-/* Indent selector in the toolbar */
 .indent-control {
     display: inline-flex;
     align-items: center;
@@ -145,9 +143,6 @@ select {
     transition: all 0.3s ease;
 }
 
-/* ================================
-   ARTICLE / SEO CONTENT
-   ================================ */
 .content-section {
     max-width: 880px;
     margin: 48px auto;
@@ -593,28 +588,21 @@ select {
 }
 
 
-/* ================================
-   RIGHT PANEL - TEXT VIEW FIX
-   ================================ */
-
-/* When in text view, treeView becomes a flex container */
 #treeView {
-    padding: 0px;        /* remove the 15px padding — rightCodeEditor handles its own padding */
-    overflow: hidden;  /* parent must not scroll; children scroll individually */
+    padding: 0px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-/* The editor wrapper fills the whole treeView in text view mode */
 #rightEditorWrapper {
-    display: none;      /* hidden by default (tree view is default) */
+    display: none;
     flex: 1;
     overflow: hidden;
     height: 100%;
     background: #1e1e1e;
 }
 
-/* rightEditorWrapper uses same layout as left .editor-wrapper */
 #rightEditorWrapper .line-numbers-area {
     display: flex;
     flex-direction: row;
@@ -623,17 +611,16 @@ select {
 }
 
 #rightEditorWrapper #rightFoldIcons {
-    overflow: hidden;   /* scrolled by JS in sync */
+    overflow: hidden;
 }
 
 #rightEditorWrapper #rightLineNumbers {
-    overflow: hidden;   /* scrolled by JS in sync */
+    overflow: hidden;
 }
 
-/* The code area inside right panel text view */
 #rightCodeEditor {
     flex: 1;
-    overflow: auto;     /* this is the one element that actually scrolls */
+    overflow: auto;
     background: #1e1e1e;
     color: #d4d4d4;
     padding: 15px;
@@ -643,7 +630,6 @@ select {
     white-space: pre;
 }
 
-/* Tree content — fills treeView, scrolls on its own */
 #rightTreeContent {
     flex: 1;
     overflow: auto;
@@ -663,7 +649,6 @@ select {
     }
     .btn-share:hover { opacity: .88; }
 
-    /* ── Share modal overlay ── */
     .sd-overlay {
       position: fixed; inset: 0; z-index: 1000;
       background: rgba(0,0,0,.75); backdrop-filter: blur(10px);
@@ -671,7 +656,6 @@ select {
     }
     .sd-overlay.show { display: flex; }
 
-    /* ── Share modal box ── */
     .sd-modal {
       background: #101014; border: 1px solid #363648;
       border-radius: 20px; padding: 34px 30px;
@@ -720,7 +704,6 @@ select {
     }
     .sd-actions button:hover { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.08); }
 
-    /* ── Share source picker ── */
     .sd-source-row {
       display: flex; gap: 6px; margin-bottom: 16px;
     }
@@ -731,7 +714,6 @@ select {
     }
     .sd-src-btn.active { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.1); }
 
-    /* ── One-time toggle ── */
     .sd-toggle-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 14px; background: #16161c; border: 1px solid #252530;
@@ -752,7 +734,6 @@ select {
     .sd-toggle input:checked + .sd-toggle-slider { background: #00c896; border-color: #00c896; }
     .sd-toggle input:checked + .sd-toggle-slider::before { transform: translateX(17px); background: #fff; }
 
-    /* ── Loading state inside modal ── */
     .sd-loader {
       display: none; text-align: center; padding: 20px 0;
       font-family: 'Consolas', 'Courier New', monospace; font-size: .78rem; color: #9aa3b2;
@@ -769,7 +750,6 @@ select {
     @keyframes sdSpin { to{transform:rotate(360deg);} }
 
 
-/* Full Screen Expansion Styles */
 .container.expanded-left,
 .container.expanded-right {
     position: fixed;
@@ -830,9 +810,6 @@ body.panel-expanded .controls {
     height: calc(100vh - 50px);
 }
 
-/* ================================
-   TABLET RESPONSIVE (768px - 1024px)
-   ================================ */
 @media (max-width: 1024px) and (min-width: 769px) {
     .header {
         padding: 14px 18px;
@@ -862,16 +839,12 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   MOBILE RESPONSIVE (< 768px)
-   ================================ */
 @media (max-width: 768px) {
     body {
         overflow: auto;
         height: auto;
     }
 
-    /* Header */
     .header {
         padding: 12px 14px;
         text-align: center;
@@ -881,7 +854,6 @@ body.panel-expanded .controls {
         font-size: 18px;
     }
 
-    /* Controls - 2 Column Grid */
     .controls {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -902,14 +874,12 @@ body.panel-expanded .controls {
         text-overflow: ellipsis;
     }
 
-    /* Container - Vertical Stack */
     .container {
         flex-direction: column;
         height: auto;
         min-height: calc(100vh - 140px);
     }
 
-    /* Panels - Full Width Stack */
     .panel {
         max-width: 100%;
         width: 100%;
@@ -925,13 +895,11 @@ body.panel-expanded .controls {
         z-index: 10;
     }
 
-    /* Editor Wrapper */
     .editor-wrapper {
         min-height: 300px;
         flex: 1;
     }
 
-    /* Code Editor & Tree View */
     .code-editor,
     .tree-view {
         font-size: 12px;
@@ -939,7 +907,6 @@ body.panel-expanded .controls {
         padding: 12px 8px;
     }
 
-    /* Line Numbers - Smaller on Mobile */
     .line-numbers-area {
         flex-shrink: 0;
     }
@@ -956,7 +923,6 @@ body.panel-expanded .controls {
         font-size: 12px;
     }
 
-    /* Middle Controls - 2 Column Grid */
     .middle-controls {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -972,14 +938,12 @@ body.panel-expanded .controls {
         width: 100%;
     }
 
-    /* Status Bar */
     .status {
         font-size: 11px;
         text-align: center;
         padding: 6px 12px;
     }
 
-    /* Content Section */
     .content-section {
         width: 95%;
         margin: 30px auto;
@@ -991,13 +955,11 @@ body.panel-expanded .controls {
         margin: 15px 0;
     }
 
-    /* Expand Button - Larger Touch Target */
     .expand-btn {
         padding: 8px 12px;
         font-size: 20px;
     }
 
-    /* Full Screen on Mobile */
     .container.expanded-left .panel:first-child,
     .container.expanded-right .panel:last-child {
         height: 100vh;
@@ -1016,9 +978,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   SMALL MOBILE (< 480px)
-   ================================ */
 @media (max-width: 480px) {
     .header h1 {
         font-size: 16px;
@@ -1065,10 +1024,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   FOLDABLE & ULTRA-NARROW (< 360px)
-   Galaxy Z Fold (cover screen)
-   ================================ */
 @media (max-width: 360px) {
     .header {
         padding: 8px 10px;
@@ -1141,10 +1096,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   EXTRA NARROW (< 344px)
-   Galaxy Z Fold 5 cover
-   ================================ */
 @media (max-width: 344px) {
     .header h1 {
         font-size: 13px;
@@ -1211,9 +1162,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   LANDSCAPE MODE (Mobile)
-   ================================ */
 @media (max-width: 768px) and (orientation: landscape) {
     .container {
         flex-direction: row;
@@ -1243,11 +1191,7 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   TOUCH DEVICE OPTIMIZATIONS
-   ================================ */
 @media (hover: none) and (pointer: coarse) {
-    /* Larger touch targets */
     .btn,
     select,
     .expand-btn {
@@ -1255,7 +1199,6 @@ body.panel-expanded .controls {
         min-width: 44px;
     }
 
-    /* Prevent text selection on interactive elements */
     .btn,
     select,
     .expand-btn {
@@ -1263,7 +1206,6 @@ body.panel-expanded .controls {
         touch-action: manipulation;
     }
 
-    /* Better scrolling */
     .code-editor,
     .tree-view,
     .controls {
@@ -1272,9 +1214,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   PRINT STYLES
-   ================================ */
 @media print {
     body {
         background: white;
@@ -1306,9 +1245,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* ================================
-   ACCESSIBILITY IMPROVEMENTS
-   ================================ */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -1319,7 +1255,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
     .btn {
         border: 2px solid currentColor;
@@ -1334,7 +1269,6 @@ body.panel-expanded .controls {
     }
 }
 
-/* Focus visible for keyboard navigation */
 button:focus-visible,
 select:focus-visible,
 .expand-btn:focus-visible,
@@ -1344,7 +1278,6 @@ select:focus-visible,
     outline-offset: 2px;
 }
 
-/* Minified code soft-wraps to fit the view box width cleanly without horizontal scrolling */
 .minified-line {
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
@@ -1354,7 +1287,6 @@ select:focus-visible,
     width: 100%;
 }
 
-/* Ensure right editor wrapper matches left editor layout */
 #rightEditorWrapper {
     flex: 1;
     display: flex;
@@ -1362,9 +1294,6 @@ select:focus-visible,
     background: #1e1e1e;
     height: 100%;
 }
-/* ================================
-   EDITOR ENHANCEMENTS
-   ================================ */
 
 .panel-header {
     gap: 10px;
@@ -1375,7 +1304,6 @@ select:focus-visible,
     margin-right: auto;
 }
 
-/* Keep gutters scrollable as far as the editor (which may show a horizontal scrollbar) */
 .line-numbers,
 .fold-icons {
     padding-bottom: 40px;
@@ -1425,7 +1353,6 @@ select:focus-visible,
 .xml-comment { color: #6a9955; }
 .xml-cdata   { color: #d7ba7d; }
 
-/* Status bar */
 .status {
     white-space: nowrap;
     overflow: hidden;
@@ -1436,7 +1363,6 @@ select:focus-visible,
     color: #ff6b6b;
 }
 
-/* Parse error panel */
 .error-message {
     margin: 8px 0 4px;
     color: #ffb3b3;
@@ -1466,7 +1392,6 @@ select:focus-visible,
     color: #858585;
 }
 
-/* Tree view */
 .tree-row {
     white-space: pre;
     border-radius: 3px;
@@ -1484,7 +1409,6 @@ select:focus-visible,
     color: #858585;
 }
 
-/* Panel action buttons (Upload / Copy / Download) */
 .panel-actions {
     display: flex;
     gap: 6px;
@@ -1518,8 +1442,6 @@ select:focus-visible,
     }
 }
 
-/* Mobile portrait: fixed-height panels that scroll internally
-   (otherwise large payloads make the page thousands of pixels tall) */
 @media (max-width: 768px) and (orientation: portrait) {
     .panel {
         height: 70vh;
@@ -1537,7 +1459,6 @@ select:focus-visible,
     }
 }
 
-/* Code, line numbers and fold arrows must share one line height to stay aligned */
 @media (max-width: 768px) {
     .code-editor,
     #rightCodeEditor,
@@ -1548,7 +1469,6 @@ select:focus-visible,
     }
 }
 
-/* Repair report shown above the tree after a successful repair */
 .repair-report {
     position: relative;
     background: rgba(63, 185, 80, 0.08);
@@ -1587,7 +1507,6 @@ select:focus-visible,
     color: #fff;
 }
 
-/* Bracket / tag matching */
 ::highlight(bracket-match) {
     background-color: rgba(255, 215, 0, 0.28);
     text-decoration: underline;
@@ -1601,7 +1520,6 @@ select:focus-visible,
     text-decoration: underline wavy #ff6b6b;
 }
 
-/* Fallback for browsers without the CSS Highlight API */
 .match-hl {
     background: rgba(255, 215, 0, 0.28);
     border-radius: 2px;
@@ -1628,7 +1546,6 @@ select:focus-visible,
     color: #ff8a8a;
 }
 
-/* Undo / redo buttons */
 .icon-btn.icon-only {
     padding: 5px 9px;
     font-size: 14px;
@@ -1640,7 +1557,6 @@ select:focus-visible,
     cursor: default;
 }
 
-/* Tree: copy JSONPath on hover */
 .tree-copy {
     margin-left: 10px;
     padding: 0 7px;
@@ -1664,7 +1580,6 @@ select:focus-visible,
     border-color: #4a5264;
 }
 
-/* Find bar */
 .find-bar {
     display: flex;
     align-items: center;
@@ -1742,7 +1657,6 @@ select:focus-visible,
     box-shadow: inset 3px 0 0 #f97316;
 }
 
-/* JSONPath query bar */
 .query-bar .query-label {
     font: 600 14px 'Consolas', 'Courier New', monospace;
     color: #e8c790;

@@ -1,7 +1,3 @@
-/* ============================================================
-   classgen.js - generate Go, Kotlin, Rust, Pydantic and Zod types
-   from a JSON sample, in the browser. Used by the Object Mapper.
-   ============================================================ */
 
 'use strict';
 
@@ -14,7 +10,6 @@ const ClassGen = (() => {
     zod: 'TypeScript Zod schemas',
   };
 
-  // ── Naming ──────────────────────────────────────────────────────────────────
   function words(key) {
     return String(key)
       .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
@@ -44,9 +39,6 @@ const ClassGen = (() => {
     return name + 'Item';
   }
 
-  // ── Type model ──────────────────────────────────────────────────────────────
-  // type: {k:'string'|'int'|'float'|'bool'|'null'|'any'} | {k:'array', of} | {k:'object', cls}
-  // cls:  {name, fields: Map(key → {type, optional, nullable})}
   function build(sample) {
     const classes = [];
     const used = new Set();
@@ -75,7 +67,6 @@ const ClassGen = (() => {
       }
     }
 
-    // One class from one or more example objects (fields missing in some → optional)
     function objectClass(examples, nameHint) {
       const cls = { name: uniqueName(pascal(nameHint)), fields: new Map() };
       const keys = [];
@@ -110,10 +101,9 @@ const ClassGen = (() => {
     if (Array.isArray(sample)) root = typeOf(sample, 'Roots');
     else if (sample && typeof sample === 'object') root = { k: 'object', cls: objectClass([sample], 'Root') };
     else root = typeOf(sample, 'Root');
-    return { classes, root };   // classes are listed children-first
+    return { classes, root };
   }
 
-  // ── Emitters ────────────────────────────────────────────────────────────────
   const identRe = /^[A-Za-z_$][\w$]*$/;
 
   function goType(t) {

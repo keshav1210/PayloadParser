@@ -129,7 +129,6 @@
 
 <div class="container" id="mainContainer">
 
-    <!-- Left Panel -->
     <div class="panel" id="leftPanel">
         <div class="panel-header" id="leftPanelHeader">
             <span>Editor (Formatted View)</span>
@@ -147,7 +146,6 @@
         <div class="status" id="inputStatus">Ready — paste or type JSON / XML here</div>
     </div>
 
-    <!-- Middle Controls -->
     <div class="middle-controls" id="middleControls">
         <select id="formatType">
             <option value="json">JSON</option>
@@ -158,7 +156,6 @@
         <button class="btn" onclick="formatData('TOML')">Convert to TOML</button>
     </div>
 
-    <!-- Right Panel -->
     <div class="panel" id="rightPanel">
         <div class="panel-header" id="rightPanelHeader">
             <span>Viewer</span>
@@ -280,24 +277,18 @@ ip = "10.0.0.2"</code></pre>
 </ul>
 </article>
 
-<!-- ════════════════════════════════════════════════════════
-     ★  SHARE MODAL
-     ════════════════════════════════════════════════════════ -->
 <div class="sd-overlay" id="sdOverlay">
     <div class="sd-modal">
 
-        <!-- Initial form (source picker + one-time toggle + share btn) -->
         <div id="sdForm">
             <h3>Share Content</h3>
             <p class="sd-sub">Choose what to share and generate an instant link</p>
 
-            <!-- Source: input or output -->
             <div class="sd-source-row">
                 <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
                 <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
             </div>
 
-            <!-- One-time toggle -->
             <div class="sd-toggle-row">
                 <div class="sd-toggle-label">
                     <strong>🔥 One-time link</strong>
@@ -309,7 +300,6 @@ ip = "10.0.0.2"</code></pre>
                 </label>
             </div>
 
-            <!-- Recipient Email (Optional) -->
             <div class="sd-email-box">
                 <label for="sdEmail">Recipient Email (Optional)</label>
                 <div class="sd-email-input-wrapper">
@@ -327,19 +317,16 @@ ip = "10.0.0.2"</code></pre>
             </div>
         </div>
 
-        <!-- Loading state -->
         <div class="sd-loader" id="sdLoader">
             <div class="sd-spinner"></div>
             Uploading to server…
         </div>
 
-        <!-- Success state -->
         <div id="sdSuccess" style="display:none">
             <div class="sd-check">✓</div>
             <h3>Share Drop Ready!</h3>
             <p class="sd-sub" id="sdSuccessSub">—</p>
 
-            <!-- Key display -->
             <div class="sd-key-card">
                 <div class="sd-key-label">
                     <span>🔑 Drop Key</span>
@@ -351,7 +338,6 @@ ip = "10.0.0.2"</code></pre>
                 </div>
             </div>
 
-            <!-- URL display -->
             <div class="sd-url-row">
                 <span class="sd-url-text" id="sdUrlText">—</span>
                 <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
@@ -371,7 +357,7 @@ ip = "10.0.0.2"</code></pre>
 <br>
 <div id="footer"></div>
 
-<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/layout-loader.js?v=12"></script>
 <script src="/js/repair.js?v=5"></script>
 <script src="/js/jsonxmlformatter.js?v=7"></script>
 <script src="/js/jsonpath.js?v=1"></script>

@@ -1,12 +1,8 @@
-/* ============================================================
-   jsonxmlformatter.js  –  shared logic for JSON, XML, JSON/XML editors
-   ============================================================ */
 
 'use strict';
 
-// ── State ──────────────────────────────────────────────────────────────────────
-let currentAst     = null;   // AST of the last successfully parsed input (for tree view)
-let lastOutput     = null;   // { text, lang } currently represented by the right panel
+let currentAst     = null;
+let lastOutput     = null;
 let expandedPanel  = null;
 const folds = {
   left:  { list: [], atLine: {} },
@@ -15,17 +11,15 @@ const folds = {
 
 const INDENT_KEY       = 'jxe.indent';
 const LINE_HEIGHT      = 21;
-const FOLD_LINE_LIMIT  = 20000;   // skip fold tracking above this many lines
-const TREE_FULL_EXPAND = 3000;    // expand every tree node below this many nodes
+const FOLD_LINE_LIMIT  = 20000;
+const TREE_FULL_EXPAND = 3000;
 
-// ── DOM refs (assigned after DOM ready) ───────────────────────────────────────
 let codeEditor, lineNumbers, foldIconsEl,
     rightCodeEditor, rightLineNumbers, rightFoldIcons,
     rightEditorWrapper, rightTreeContent,
     inputStatus, outputStatus,
     formatTypeEl, formatType2El, viewTypeEl;
 
-// ── Init (called once DOM is ready) ──────────────────────────────────────────
 function initEditor() {
   codeEditor        = document.getElementById('codeEditor');
   lineNumbers       = document.getElementById('lineNumbers');
@@ -58,7 +52,6 @@ function initEditor() {
   if (rightCodeEditor) {
     rightCodeEditor.addEventListener('scroll', syncRightScroll);
     rightCodeEditor.addEventListener('copy', e => handleCopy(e, rightCodeEditor, false));
-    // Make Ctrl+A select only the output, not the whole page
     rightCodeEditor.tabIndex = 0;
     rightCodeEditor.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
@@ -73,7 +66,6 @@ function initEditor() {
   if (foldIconsEl)     foldIconsEl.addEventListener('click', e => onFoldIconClick(e, 'left'));
   if (rightFoldIcons)  rightFoldIcons.addEventListener('click', e => onFoldIconClick(e, 'right'));
 
-  // Keep both format selects in sync (either one may be the visible one)
   if (formatType2El) formatType2El.addEventListener('change', () => setFormatType(formatType2El.value));
   if (formatTypeEl)  formatTypeEl.addEventListener('change',  () => setFormatType(formatTypeEl.value));
   updateFormatButtons();
@@ -83,9 +75,9 @@ function initEditor() {
     try {
       const saved = localStorage.getItem(INDENT_KEY);
       if (saved && hasOption(indentEl, saved)) indentEl.value = saved;
-    } catch (_) { /* storage unavailable */ }
+    } catch (_) {  }
     indentEl.addEventListener('change', () => {
-      try { localStorage.setItem(INDENT_KEY, indentEl.value); } catch (_) { /* ignore */ }
+      try { localStorage.setItem(INDENT_KEY, indentEl.value); } catch (_) {  }
       if (getEditorText().trim()) formatCode(false, null, null);
     });
   }
@@ -111,7 +103,6 @@ function initEditor() {
 
 document.addEventListener('DOMContentLoaded', initEditor);
 
-// ── Panel action buttons (copy / upload / download) ──────────────────────────
 function injectPanelActions() {
   const leftHeader  = document.getElementById('leftPanelHeader');
   const rightHeader = document.getElementById('rightPanelHeader');
@@ -201,7 +192,7 @@ function downloadFile(text, name, type) {
 function handleFileDrop(e) {
   codeEditor.classList.remove('drag-over');
   const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-  if (!file) return;               // plain text drag → let the browser handle it
+  if (!file) return;
   e.preventDefault();
   loadFileIntoEditor(file);
 }
@@ -220,7 +211,6 @@ function loadFileIntoEditor(file) {
   reader.readAsText(file);
 }
 
-// ── Scroll sync ───────────────────────────────────────────────────────────────
 function syncLeftScroll() {
   if (lineNumbers)  lineNumbers.scrollTop  = codeEditor.scrollTop;
   if (foldIconsEl)  foldIconsEl.scrollTop  = codeEditor.scrollTop;
@@ -231,13 +221,11 @@ function syncRightScroll() {
   if (rightFoldIcons)   rightFoldIcons.scrollTop   = rightCodeEditor.scrollTop;
 }
 
-// ── Editor keyboard & paste ───────────────────────────────────────────────────
 function handleEditorKeydown(e) {
   if (e.key === 'Tab' && !e.ctrlKey && !e.altKey && !e.metaKey) {
     e.preventDefault();
     document.execCommand('insertText', false, '  ');
   } else if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'a') {
-    // Native select-all stops at the last *visible* character, dropping folded lines
     e.preventDefault();
     selectAllIn(codeEditor);
   } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'Backslash') {
@@ -259,12 +247,11 @@ function handlePaste(e) {
     (sel.rangeCount && sel.getRangeAt(0).toString().length >= codeEditor.textContent.length);
 
   if (replacesAll) {
-    // Fast path: replacing everything (the usual case) — rebuild instead of editing the DOM
     setEditorText(text);
     placeCaretAtEnd(codeEditor);
     handleEditorInput();
   } else if (text.length < 200000) {
-    document.execCommand('insertText', false, text);   // keeps native undo
+    document.execCommand('insertText', false, text);
   } else {
     const range = sel.getRangeAt(0);
     range.deleteContents();
@@ -278,8 +265,6 @@ function handlePaste(e) {
   }
 }
 
-// The browser skips display:none (folded) lines when copying, so build the
-// clipboard text from the selected DOM, which still contains them.
 function handleCopy(e, container, isCut) {
   const sel = window.getSelection();
   if (!sel.rangeCount || sel.isCollapsed) return;
@@ -293,8 +278,6 @@ function handleCopy(e, container, isCut) {
   if (isCut) document.execCommand('delete');
 }
 
-// Hidden (folded) lines can't show a selection highlight, so highlight the
-// "{ … }" marker of every folded block the selection fully spans.
 function selectAllIn(container) {
   const range = document.createRange();
   range.selectNodeContents(container);
@@ -303,9 +286,6 @@ function selectAllIn(container) {
   sel.addRange(range);
 }
 
-// Right-click → "Select all" can't be intercepted and gets clipped at the last
-// visible character when the document ends in a folded block. Detect a selection
-// running from the very start to the end of that folded head and extend it.
 function fixClippedSelectAll(range) {
   ['left', 'right'].forEach(side => {
     const code = panelEls(side).code;
@@ -315,11 +295,9 @@ function fixClippedSelectAll(range) {
     const fold = folds[side].list.find(f => f.folded && f.end === last && rows[f.start].style.display !== 'none');
     if (!fold) return;
 
-    // No text between the editor start and the selection start …
     const before = document.createRange();
     before.setStart(code, 0);
     before.setEnd(range.startContainer, range.startOffset);
-    // … and none between the selection end and the end of the folded head line
     const after = document.createRange();
     after.setStart(range.endContainer, range.endOffset);
     after.setEnd(rows[fold.start], rows[fold.start].childNodes.length);
@@ -357,17 +335,14 @@ function placeCaretAtEnd(el) {
   sel.addRange(range);
 }
 
-// ── Get / set raw text of the left editor ─────────────────────────────────────
-// Walks the contenteditable DOM the way the browser lays it out (block elements
-// and <br> become line breaks). Unlike innerText it also includes folded lines.
 function getEditorText() {
   return codeEditor ? extractText(codeEditor) : '';
 }
 
 function extractText(root) {
   const lines = [''];
-  let fresh = true;            // current line is empty and was opened by a boundary
-  let endedByBlock = false;    // last line was only added to close a block
+  let fresh = true;
+  let endedByBlock = false;
 
   const isBlock = n => n.nodeName === 'DIV' || n.nodeName === 'P';
 
@@ -382,7 +357,7 @@ function extractText(root) {
         }
       } else if (c.nodeName === 'BR') {
         if (!c.nextSibling && c.parentNode !== root && isBlock(c.parentNode)) {
-          fresh = false;                       // placeholder <br> keeps an empty line alive
+          fresh = false;
         } else {
           lines.push(''); fresh = true;
         }
@@ -413,7 +388,6 @@ function setEditorText(text) {
   folds.left = r.folds;
 }
 
-// ── Line numbers ──────────────────────────────────────────────────────────────
 function updateLineNumbers() {
   if (!codeEditor || !lineNumbers) return;
   const count = Math.max(1, getEditorText().split('\n').length);
@@ -426,7 +400,6 @@ function numberColumn(count) {
   return parts.join('');
 }
 
-// ── Show / hide right panel modes ─────────────────────────────────────────────
 function showTextView() {
   if (rightEditorWrapper) rightEditorWrapper.style.display = 'flex';
   if (rightTreeContent)   rightTreeContent.style.display   = 'none';
@@ -437,7 +410,6 @@ function showTreeView() {
   if (rightTreeContent)   rightTreeContent.style.display   = 'block';
 }
 
-// ── Escaping ──────────────────────────────────────────────────────────────────
 function escapeHtml(text) {
   return String(text == null ? '' : text)
     .replace(/&/g, '&amp;')
@@ -446,10 +418,6 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;');
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  JSON — strict parser with precise error positions and lossless output
-//  (keeps big integers, 1.0, unicode escapes and duplicate keys exactly as typed)
-// ══════════════════════════════════════════════════════════════════════════════
 function parseJsonAst(text) {
   const n = text.length;
   let i = text.charCodeAt(0) === 0xFEFF ? 1 : 0;
@@ -589,7 +557,6 @@ function parseJsonAst(text) {
   return root;
 }
 
-// indent === '' → minified
 function astToText(ast, indent) {
   const out = [];
   const nl  = indent ? '\n' : '';
@@ -622,7 +589,6 @@ function astToText(ast, indent) {
   return out.join('');
 }
 
-// Plain JS value → AST (used for the XML tree view)
 function valueToAst(v) {
   if (Array.isArray(v)) return { type: 'array', items: v.map(valueToAst) };
   if (v !== null && typeof v === 'object') {
@@ -641,18 +607,15 @@ function unquote(raw) {
   try { return JSON.parse(raw); } catch (_) { return raw; }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  XML — DOM based formatter / minifier with clean error reporting
-// ══════════════════════════════════════════════════════════════════════════════
 function parseXmlDocument(xml) {
   const doc = new DOMParser().parseFromString(xml, 'application/xml');
   const err = doc.getElementsByTagName('parsererror')[0];
   if (err) {
     const raw = err.textContent || '';
     let line = null, col = null, message = raw;
-    let m = raw.match(/error on line (\d+) at column (\d+):\s*([^\n]*)/i);          // Chrome / Safari
+    let m = raw.match(/error on line (\d+) at column (\d+):\s*([^\n]*)/i);
     if (m) { line = +m[1]; col = +m[2]; message = m[3]; }
-    else if ((m = raw.match(/Line Number (\d+), Column (\d+)/i))) {                  // Firefox
+    else if ((m = raw.match(/Line Number (\d+), Column (\d+)/i))) {
       line = +m[1]; col = +m[2];
       message = raw.split('\n')[0].replace(/^XML Parsing Error:\s*/i, '');
     }
@@ -665,7 +628,6 @@ function parseXmlDocument(xml) {
 function escXmlText(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function escXmlAttr(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 
-// Returns { text, doc }; throws a parse error for malformed XML.
 function xmlFormat(xml, minify) {
   const doc  = parseXmlDocument(xml);
   const unit = minify ? '' : getIndent();
@@ -717,7 +679,6 @@ function xmlFormat(xml, minify) {
   return { text: out.join(nl), doc };
 }
 
-// Kept for backwards compatibility with inline page scripts
 function formatXML(xml) { return xmlFormat(xml, false).text; }
 
 function validateXML(xml) {
@@ -748,12 +709,8 @@ function xmlDocToObject(doc) {
   return { [root.nodeName]: convert(root) };
 }
 
-// Kept for backwards compatibility
 function parseXMLToObject(xml) { return xmlDocToObject(parseXmlDocument(xml)); }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Syntax highlighting
-// ══════════════════════════════════════════════════════════════════════════════
 const JSON_TOKEN = /("(?:\\.|[^\\"])*")(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\],]/g;
 
 function highlightSyntax(line) {
@@ -834,9 +791,6 @@ function highlightXmlTag(tag) {
   return out;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Line rendering with code folding (shared by both panels)
-// ══════════════════════════════════════════════════════════════════════════════
 function isFoldOpener(trimmed, lang) {
   if (lang === 'json') return /[{\[]$/.test(trimmed);
   if (lang === 'xml') {
@@ -919,7 +873,6 @@ function toggleFold(side, iconEl) {
   const head = codeRows[fold.start];
   if (head) {
     head.classList.toggle('folded', fold.folded);
-    // Show the closing bracket / tag inline ("{ … }") via CSS, so it never becomes editor text
     if (fold.folded) head.dataset.foldTail = codeRows[fold.end] ? codeRows[fold.end].textContent.trim() : '';
     else delete head.dataset.foldTail;
   }
@@ -947,19 +900,12 @@ function hasFoldedLines(side) {
   return folds[side].list.some(f => f.folded);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Bracket / tag matching
-//  Put the cursor on { } [ ] or inside an XML tag: the tag and its partner are
-//  highlighted (plus both line numbers), in the editor and in the Text View.
-//  Ctrl+Shift+\ jumps to the partner.
-// ══════════════════════════════════════════════════════════════════════════════
 const docVersion = { left: 0, right: 0 };
 const matchCache = { left: null, right: null };
 const HAS_HIGHLIGHT_API = typeof CSS !== 'undefined' && CSS.highlights && typeof Highlight !== 'undefined';
 let fallbackMarked = [];
 let markedLineNums = [];
 
-// Lets editor-tools.js (undo, autosave, find) react to editor changes
 function editorHook(type, arg) {
   if (typeof EditorTools !== 'undefined') EditorTools.hook(type, arg);
 }
@@ -974,7 +920,6 @@ function matchLang(side) {
   return formatTypeEl ? formatTypeEl.value : 'json';
 }
 
-// Build (once per document version) the list of matching pairs
 function getMatchIndex(side) {
   const els = panelEls(side);
   const lang = matchLang(side);
@@ -1019,9 +964,9 @@ function getMatchIndex(side) {
       let m;
       TAG.lastIndex = 0;
       while ((m = TAG.exec(line))) {
-        if (!m[2]) continue;                         // comment, CDATA, PI, doctype
+        if (!m[2]) continue;
         const tag = { li, ci: m.index, len: m[0].length, name: m[2], other: null };
-        if (m[3]) { index.tags.push(tag); continue; }   // self-closing: no partner
+        if (m[3]) { index.tags.push(tag); continue; }
         if (!m[1]) { stack.push(tag); index.tags.push(tag); continue; }
         let j = stack.length - 1;
         while (j >= 0 && stack[j].name !== tag.name) j--;
@@ -1040,7 +985,6 @@ function getMatchIndex(side) {
   return index;
 }
 
-// Caret → { side, li, col } when it sits inside one of the code panels
 function caretPosition() {
   const sel = window.getSelection();
   if (!sel.rangeCount || !sel.isCollapsed) return null;
@@ -1063,7 +1007,6 @@ function caretPosition() {
 function findMatch(pos) {
   const index = getMatchIndex(pos.side);
   if (index.lang === 'json') {
-    // bracket just before the caret wins, then the one just after it
     for (const ci of [pos.col - 1, pos.col]) {
       const hit = index.pairs.get(pos.li + ':' + ci);
       if (hit) return { self: hit.self, other: hit.other };
@@ -1079,7 +1022,6 @@ function findMatch(pos) {
   return null;
 }
 
-// (line, column, length) → DOM Range inside the rendered line
 function textRange(code, li, ci, len) {
   const line = code.children[li];
   if (!line) return null;
@@ -1122,7 +1064,6 @@ function updateMatchHighlight() {
   if (HAS_HIGHLIGHT_API) {
     CSS.highlights.set(good ? 'bracket-match' : 'bracket-unmatched', new Highlight(...ranges));
   } else {
-    // Older browsers: colour the syntax-highlight spans that contain the tag
     ranges.forEach(r => {
       const walker = document.createTreeWalker(r.commonAncestorContainer.nodeType === 1 ? r.commonAncestorContainer : r.commonAncestorContainer.parentNode, NodeFilter.SHOW_TEXT);
       let n;
@@ -1140,7 +1081,6 @@ function updateMatchHighlight() {
     if (num) { num.classList.add('match-line'); markedLineNums.push(num); }
   });
 
-  // Tell the user where the partner is (it may be far off screen)
   const statusEl = pos.side === 'left' ? inputStatus : outputStatus;
   if (statusEl) {
     const info = document.createElement('span');
@@ -1157,7 +1097,6 @@ function updateMatchHighlight() {
   }
 }
 
-// Ctrl+Shift+\ : move the caret to the partner and scroll it into view
 function jumpToMatch() {
   const pos = caretPosition();
   if (!pos) return false;
@@ -1165,7 +1104,6 @@ function jumpToMatch() {
   if (!match || !match.other) return false;
   const els = panelEls(pos.side);
   const o = match.other;
-  // JSON: caret right after the bracket; XML: caret just inside the tag
   const r = o.len === 1 ? textRange(els.code, o.li, o.ci, 1) : textRange(els.code, o.li, o.ci + 1, 0);
   if (!r) return false;
   r.collapse(o.len !== 1);
@@ -1200,7 +1138,6 @@ function setLeft(text, lang) {
   syncLeftScroll();
 }
 
-// Right panel Text View
 function showOutputText(text, lang) {
   bumpDoc('right');
   const hl = lang === 'json' || lang === 'xml' ? lang : 'plain';
@@ -1215,7 +1152,6 @@ function showOutputText(text, lang) {
   showTextView();
 }
 
-// Backwards-compatible name
 function populateTextView(formatted) {
   showOutputText(formatted, formatted.trimStart().startsWith('<') ? 'xml' : 'json');
 }
@@ -1224,9 +1160,6 @@ function getOutputText() {
   return lastOutput ? lastOutput.text : '';
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Tree view (lazy – children are only built when a node is expanded)
-// ══════════════════════════════════════════════════════════════════════════════
 function countNodes(ast, limit) {
   let count = 0;
   const stack = [ast];
@@ -1239,11 +1172,9 @@ function countNodes(ast, limit) {
   return count;
 }
 
-// path (array of keys / indexes) → { row, node, setOpen } for every row built so far
 let treeRegistry = new Map();
 const pathKey = path => JSON.stringify(path);
 
-// ['customer', 'address', 0, 'city'] → $.customer.address[0].city
 function jsonPath(path) {
   return '$' + path.map(p => typeof p === 'number' ? `[${p}]`
     : /^[A-Za-z_$][\w$]*$/.test(p) ? '.' + p
@@ -1262,7 +1193,6 @@ function renderTree(ast) {
   editorHook('doc', 'right');
 }
 
-// Open every ancestor of `path` (building rows as needed) and return its entry
 function revealTreePath(path) {
   for (let i = 0; i < path.length; i++) {
     const entry = treeRegistry.get(pathKey(path.slice(0, i)));
@@ -1284,7 +1214,6 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth, path) {
   const entry = { row, node, setOpen: null };
   treeRegistry.set(pathKey(path), entry);
 
-  // Hover button: copy this node's JSONPath
   const copyPath = el('button', 'tree-copy', 'copy path');
   copyPath.type = 'button';
   copyPath.title = jsonPath(path);
@@ -1352,9 +1281,6 @@ function buildTreeNode(node, key, depth, parentEl, expandDepth, path) {
   setOpen(depth < expandDepth);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Format / minify / errors
-// ══════════════════════════════════════════════════════════════════════════════
 function hasOption(select, value) {
   return !!select && Array.from(select.options).some(o => o.value === value);
 }
@@ -1365,7 +1291,6 @@ function setFormatType(value) {
   updateFormatButtons();
 }
 
-// Buttons marked data-for="json|xml" only make sense for one input format
 function updateFormatButtons() {
   const type = formatTypeEl ? formatTypeEl.value : null;
   if (!type) return;
@@ -1385,23 +1310,14 @@ function detectFormat(text) {
   return null;
 }
 
-// Switches the format selector when the content is obviously JSON or XML
 function resolveInputType(text) {
   const current = formatTypeEl ? formatTypeEl.value : 'json';
   let detected = detectFormat(text);
-  // On pages that offer YAML: "key: value" lines or a leading "---" mean YAML
   if (!detected && hasOption(formatTypeEl, 'yaml') && /^\s*(---|[\w"'.-][^\n]*:(\s|$)|- )/.test(text)) detected = 'yaml';
   if (detected && detected !== current && hasOption(formatTypeEl, detected)) setFormatType(detected);
   return formatTypeEl ? formatTypeEl.value : (detected || 'json');
 }
 
-/**
- * formatCode(isConverterReq, data, convertedType, isFromSample, autoformat)
- *  - no args / false       → format the left editor content (left + right updated)
- *  - isConverterReq only   → `data` is a conversion result, shown in the right panel
- *  - with isFromSample     → `data` replaces the editor content (sample, repair, sort)
- *  - autoformat            → live preview while typing: right panel only
- */
 function formatCode(isConverterReq, data, convertedType, isFromSample, autoformat) {
   if (!codeEditor) return;
   const isConversion = !!isConverterReq && !isFromSample;
@@ -1427,8 +1343,8 @@ function formatCode(isConverterReq, data, convertedType, isFromSample, autoforma
     try {
       if (type === 'json') {
         ast = parseJsonAst(input);
-        if (ast.type === 'string') {             // JSON document embedded in a JSON string
-          try { ast = parseJsonAst(JSON.parse(ast.raw)); } catch (_) { /* keep as string */ }
+        if (ast.type === 'string') {
+          try { ast = parseJsonAst(JSON.parse(ast.raw)); } catch (_) {  }
         }
         formatted = astToText(ast, getIndent());
       } else {
@@ -1441,7 +1357,7 @@ function formatCode(isConverterReq, data, convertedType, isFromSample, autoforma
       }
     } catch (err) {
       if (!err || !err.isParseError) throw err;
-      if (isConversion) { showOutputText(input, type); return; }   // show server output as-is
+      if (isConversion) { showOutputText(input, type); return; }
       showParseError(type, input, err, renderLeft);
       return;
     }
@@ -1468,7 +1384,6 @@ function formatCode(isConverterReq, data, convertedType, isFromSample, autoforma
     return;
   }
 
-  // Plain output (YAML, TOML, CSV, SQL, properties …)
   if (renderLeft) setLeft(input, 'plain');
   showOutputText(input, type);
   if (isConversion) setStatus(outputStatus, true, '✓ Converted to ' + String(type).toUpperCase());
@@ -1538,12 +1453,10 @@ function showParseError(lang, input, err, renderLeft) {
   }
 }
 
-// Backwards-compatible name
 function handleParseError(e, input) {
   showParseError('json', input, { message: e.message || String(e) }, false);
 }
 
-// ── Minify ────────────────────────────────────────────────────────────────────
 function minifyCode() {
   const input = getEditorText();
   if (!input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
@@ -1579,7 +1492,6 @@ function minifyCode() {
   setStatus(outputStatus, true, '✓ View updated');
 }
 
-// ── Clear all ─────────────────────────────────────────────────────────────────
 function clearAll() {
   editorHook('replace', '');
   bumpDoc('left');
@@ -1602,7 +1514,6 @@ function clearAll() {
   if (codeEditor) codeEditor.focus();
 }
 
-// ── Load sample ───────────────────────────────────────────────────────────────
 const SAMPLE_JSON = `{
   "customer": {
     "id": "55000",
@@ -1659,20 +1570,17 @@ function loadSample() {
   else                formatCode(true, SAMPLE_JSON, 'json', true);
 }
 
-// ── Change view type (Tree ↔ Text) ────────────────────────────────────────────
 function changeViewType() {
   if (!getEditorText().trim()) return;
   formatCode(false, null, null, null, true);
 }
 
-// ── Debounced input handler for live validation ─────────────────────────────
 let inputDebounceTimer = null;
 function handleEditorInput() {
   bumpDoc('left');
   editorHook('edit');
   clearTimeout(inputDebounceTimer);
 
-  // Line indexes change while editing: drop stale fold markers / error marks
   if (hasFoldedLines('left')) {
     Array.from(codeEditor.children).forEach(c => { c.style.display = ''; c.classList.remove('folded'); });
   }
@@ -1688,7 +1596,6 @@ function handleEditorInput() {
   }, size > 1000000 ? 900 : 300);
 }
 
-// ── Format data (API call) ────────────────────────────────────────────────────
 function formatData(type, filters) {
   const input = getEditorText();
   if (!input.trim()) { setStatus(inputStatus, null, '⚠ Please enter some data first'); return; }
@@ -1727,7 +1634,6 @@ function formatData(type, filters) {
   })
   .then(res => {
     if (!res.success) {
-      // YAML errors come back as "line N, column M: message" → highlight that line
       const pos = /line (\d+), column (\d+): (.*)/.exec(res.message || '');
       if (pos && (apiType === 'YAML_FORMAT' || apiType === 'YAML_TO_JSON')) {
         showParseError('yaml', input, { isParseError: true, line: +pos[1], col: +pos[2], message: pos[3] }, true);
@@ -1746,19 +1652,18 @@ function formatData(type, filters) {
 
     const cleanData = String(res.parsedData == null ? '' : res.parsedData).replace(/\r\n/g, '\n');
     if (['JSON_SORT', 'XML_SORT'].includes(type)) {
-      formatCode(true, cleanData, fmt, true);          // result replaces the editor content
+      formatCode(true, cleanData, fmt, true);
       setStatus(inputStatus, true, `✓ ${fmt.toUpperCase()} sorted`);
     } else if (apiType === 'YAML_FORMAT') {
       formatCode(true, cleanData, 'yaml', true);
       setStatus(inputStatus, true, '✓ Valid YAML, re-indented (comments are not kept)');
     } else {
-      formatCode(true, cleanData, fmt, false);         // conversion → right panel
+      formatCode(true, cleanData, fmt, false);
     }
   })
   .catch(err => showOutputError(err && err.message ? err.message : 'Network error while processing'));
 }
 
-// ── Repair (runs in the browser, see repair.js) ───────────────────────────────
 function repairInput(input, type) {
   const label = type.toUpperCase();
   const repairer = type === 'xml'
@@ -1778,7 +1683,6 @@ function repairInput(input, type) {
     return;
   }
 
-  // Load the repaired text; formatCode reports any error that is still left
   formatCode(true, result.text, type, true);
   if (!currentAst) {
     setStatus(inputStatus, false, `✗ Repair fixed ${result.fixes.length} kind(s) of problem, but the ${label} is still invalid. See the error on the right.`);
@@ -1791,7 +1695,6 @@ function repairInput(input, type) {
   }
   setStatus(inputStatus, true, `✓ ${label} repaired: ${result.fixes.join(' · ')}`);
 
-  // Short report above the tree so the user can see what changed
   if (rightTreeContent && rightTreeContent.style.display !== 'none') {
     const box = el('div', 'repair-report');
     box.appendChild(el('strong', null, `Repaired ${label}`));
@@ -1815,7 +1718,6 @@ function showOutputError(message) {
   lastOutput = null;
 }
 
-// ── Panel expand / collapse ───────────────────────────────────────────────────
 function toggleExpand(side) {
   const container      = document.getElementById('mainContainer');
   const leftPanel      = document.getElementById('leftPanel');
@@ -1853,7 +1755,6 @@ function toggleExpand(side) {
   expandedPanel = side;
 }
 
-// ── Export CSV ────────────────────────────────────────────────────────────────
 function exportCSV() {
   const text = getOutputText().trim();
   if (!text) { alert('Nothing to export yet — convert your data to CSV first.'); return; }
@@ -1866,7 +1767,6 @@ function exportCSV() {
   downloadFile(text, 'data.csv', 'text/csv;charset=utf-8');
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function setStatus(el, success, msg) {
   if (!el) return;
   const span = document.createElement('span');
@@ -1877,7 +1777,6 @@ function setStatus(el, success, msg) {
   el.appendChild(span);
 }
 
-// ── SQL Modal ─────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const convertToSqlBtn       = document.getElementById('convertToSqlBtn');
   const sqlModalOverlay       = document.getElementById('sqlModalOverlay');
@@ -1888,7 +1787,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const sqlDbTypeSelect       = document.getElementById('sqlDbType');
   const sqlIncludeNullsCheck  = document.getElementById('sqlIncludeNulls');
 
-  // Only wire up if modal elements exist on this page
   if (!convertToSqlBtn || !sqlModalOverlay) return;
 
   function openSqlModal() {
@@ -1931,9 +1829,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
-//  Share modal
-// ══════════════════════════════════════════════════════════════════════════════
 const SD_EP = window.location.origin + '/data/share/text';
 let _sdSource = 'input';
 
@@ -2088,7 +1983,6 @@ function sdCopyKey() {
   }
 }
 
-// ── Auto-load shared drop if ?drop=token is present in URL ──────────────────
 async function checkAndLoadSharedDrop() {
   const dropToken = new URLSearchParams(window.location.search).get('drop');
   if (!dropToken) return;
@@ -2142,7 +2036,6 @@ function showDropToast(msg, type) {
   }, 4000);
 }
 
-// Close share modal on backdrop click / Escape
 document.addEventListener('DOMContentLoaded', () => {
   const overlay = document.getElementById('sdOverlay');
   if (!overlay) return;

@@ -1,23 +1,16 @@
-/* ============================================================
-   compare.js - JSON / XML / text compare.
-   Uses the parsers from jsonxmlformatter.js (parseJsonAst, astToText,
-   xmlFormat, xmlDocToObject, valueToAst, unquote, jsonPath).
-   Everything runs in the browser.
-   ============================================================ */
 
 'use strict';
 
 const Compare = (() => {
   const MAX_CHANGES = 2000;
-  const LCS_LIMIT = 1500;          // align arrays by content up to this many items per side
-  const CONTEXT = 3;               // unchanged lines shown around each change
+  const LCS_LIMIT = 1500;
+  const CONTEXT = 3;
   const STORE_KEY = 'jxe.compare';
 
   const $ = id => document.getElementById(id);
   let els;
   let timer = null;
 
-  // ── Parsing / normalising ──────────────────────────────────────────────────
   function detect(a, b) {
     const m = els.mode.value;
     if (m !== 'auto') return m;
@@ -28,8 +21,8 @@ const Compare = (() => {
     if (lang === 'json') {
       try {
         let ast = parseJsonAst(text);
-        if (ast.type === 'string') {                 // JSON stored inside a string
-          try { ast = parseJsonAst(JSON.parse(ast.raw)); } catch (_) { /* keep */ }
+        if (ast.type === 'string') {
+          try { ast = parseJsonAst(JSON.parse(ast.raw)); } catch (_) {  }
         }
         return { ast };
       } catch (e) {
@@ -63,7 +56,6 @@ const Compare = (() => {
 
   const canonical = node => astToText(sortAst(node), '');
 
-  // ── Structural diff (JSON and XML) ─────────────────────────────────────────
   function leafValue(node) {
     if (node.type === 'string') return unquote(node.raw);
     if (node.type === 'number') {
@@ -111,7 +103,6 @@ const Compare = (() => {
       return;
     }
 
-    // Arrays: align items by content so one insertion doesn't mark everything after it as changed
     const A = a.items, B = b.items;
     if (A.length > LCS_LIMIT || B.length > LCS_LIMIT) {
       const n = Math.max(A.length, B.length);
@@ -127,7 +118,6 @@ const Compare = (() => {
     const pairs = lcsPairs(ka, kb);
     let i = 0, j = 0;
     const flushGap = (iEnd, jEnd) => {
-      // unmatched items between two matches: pair them up as changes, the rest are added/removed
       while (i < iEnd && j < jEnd) { diffNodes(A[i], B[j], path.concat(j), out, ignoreOrder); i++; j++; }
       while (i < iEnd) { out.push({ kind: 'removed', path: path.concat(i), old: preview(A[i]) }); i++; }
       while (j < jEnd) { out.push({ kind: 'added', path: path.concat(j), new: preview(B[j]) }); j++; }
@@ -140,7 +130,6 @@ const Compare = (() => {
     flushGap(A.length, B.length);
   }
 
-  // Longest common subsequence of two string arrays → matched index pairs
   function lcsPairs(a, b) {
     const n = a.length, m = b.length;
     if (!n || !m) return [];
@@ -160,7 +149,6 @@ const Compare = (() => {
     return pairs;
   }
 
-  // ── Line diff (Myers O(ND)) ────────────────────────────────────────────────
   function myers(a, b, maxD) {
     const n = a.length, m = b.length, max = n + m;
     const offset = max + 1;
@@ -197,7 +185,6 @@ const Compare = (() => {
     return ops.reverse();
   }
 
-  // Pair deletions and additions of the same block into side-by-side rows
   function toRows(ops) {
     const rows = [];
     let k = 0;
@@ -218,7 +205,6 @@ const Compare = (() => {
     return rows;
   }
 
-  // ── Rendering ───────────────────────────────────────────────────────────────
   function node(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -226,7 +212,6 @@ const Compare = (() => {
     return e;
   }
 
-  // Mark the changed middle part of a modified line
   function markedText(text, other) {
     let p = 0;
     while (p < text.length && p < other.length && text[p] === other[p]) p++;
@@ -257,7 +242,6 @@ const Compare = (() => {
     const colA = node('div', 'diff-col'), colB = node('div', 'diff-col');
     view.append(colA, colB);
 
-    // Show changed rows plus a little context; collapse long unchanged runs
     const keep = new Uint8Array(rows.length);
     rows.forEach((r, i) => {
       if (r.type !== 'eq') for (let k = Math.max(0, i - CONTEXT); k <= Math.min(rows.length - 1, i + CONTEXT); k++) keep[k] = 1;
@@ -361,7 +345,6 @@ const Compare = (() => {
     }
   }
 
-  // ── Main ────────────────────────────────────────────────────────────────────
   function run() {
     save();
     const a = els.left.value, b = els.right.value;
@@ -408,7 +391,6 @@ const Compare = (() => {
     let rows = null;
     if (ops) rows = toRows(ops);
 
-    // Summary
     const parts = [];
     let added = 0, removed = 0, modified = 0;
     if (changes) {
@@ -429,7 +411,6 @@ const Compare = (() => {
       setSummary('warn', parts);
     }
 
-    // Views
     els.tabBar.hidden = false;
     els.changesTab.hidden = !changes;
     els.changesTab.textContent = changes ? `Changes (${changes.length}${changes.length >= MAX_CHANGES ? '+' : ''})` : 'Changes';
@@ -448,14 +429,14 @@ const Compare = (() => {
   function save() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({ left: els.left.value.slice(0, 1000000), right: els.right.value.slice(0, 1000000) }));
-    } catch (_) { /* storage full or disabled */ }
+    } catch (_) {  }
   }
 
   function restore() {
     try {
       const s = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
       if (s) { els.left.value = s.left || ''; els.right.value = s.right || ''; }
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   const SAMPLE_A = `{
@@ -518,7 +499,7 @@ const Compare = (() => {
         try {
           if (lang === 'json') target.value = astToText(parseJsonAst(target.value), '  ');
           else if (lang === 'xml') target.value = xmlFormat(target.value, false).text;
-        } catch (_) { /* leave invalid input as it is; run() reports the error */ }
+        } catch (_) {  }
         run();
       });
     });

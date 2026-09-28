@@ -1,7 +1,3 @@
-/* ==========================================================
-   site.css — shared design system for the content pages
-   (home, contact, privacy, learnings, blogs, error pages)
-   ========================================================== */
 
 :root {
     --bg: #0f1115;
@@ -64,7 +60,6 @@ pre {
     font-family: var(--mono);
 }
 
-/* ── Layout ─────────────────────────────────────────────── */
 .page {
     max-width: 1120px;
     margin: 0 auto;
@@ -135,7 +130,6 @@ pre {
     max-width: 680px;
 }
 
-/* ── Buttons ────────────────────────────────────────────── */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -169,7 +163,6 @@ pre {
     color: #fff;
 }
 
-/* ── Cards ──────────────────────────────────────────────── */
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -190,7 +183,6 @@ pre {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
-/* Clickable tool card */
 .tool-card {
     display: flex;
     flex-direction: column;
@@ -255,7 +247,6 @@ pre {
     color: var(--muted);
 }
 
-/* ── Long-form text ─────────────────────────────────────── */
 .prose {
     font-size: 16.5px;
     line-height: 1.75;
@@ -361,7 +352,6 @@ pre {
     font-size: 14px;
 }
 
-/* ── FAQ ────────────────────────────────────────────────── */
 .faq details {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -385,7 +375,6 @@ pre {
     color: var(--text);
 }
 
-/* ── Contact list ───────────────────────────────────────── */
 .contact-option {
     display: flex;
     align-items: center;
@@ -427,7 +416,6 @@ pre {
     font-size: 14px;
 }
 
-/* ── Simple status pages (429, 404, health) ─────────────── */
 .status-page {
     min-height: calc(100vh - 240px);
     display: flex;

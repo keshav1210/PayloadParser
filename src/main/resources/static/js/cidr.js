@@ -1,13 +1,7 @@
-/* ============================================================
-   cidr.js - IPv4 / IPv6 subnet (CIDR) calculator: network,
-   broadcast, host range, masks, address type, subnet split and
-   "is this IP in the range" check. Runs in the browser.
-   ============================================================ */
 
 'use strict';
 
 const CidrTool = (() => {
-  // ── IPv4 ───────────────────────────────────────────────────────────────────
   function parseV4(s) {
     const m = s.trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
     if (!m) return null;
@@ -57,11 +51,9 @@ const CidrTool = (() => {
     return { version: 4, ip, prefix, mask, wildcard: (~mask) >>> 0, network, broadcast, first, last, total, usable };
   }
 
-  // ── IPv6 (BigInt) ──────────────────────────────────────────────────────────
   function parseV6(s) {
     let str = s.trim().replace(/^\[|\]$/g, '').replace(/%.*$/, '');
     if (!str.includes(':')) return null;
-    // embedded IPv4 in the last 32 bits
     const v4m = str.match(/(\d{1,3}(?:\.\d{1,3}){3})$/);
     if (v4m) {
       const n = parseV4(v4m[1]);
@@ -82,9 +74,8 @@ const CidrTool = (() => {
   const groupsOf = n => Array.from({ length: 8 }, (_, i) => Number((n >> BigInt(16 * (7 - i))) & 0xffffn));
   const v6expanded = n => groupsOf(n).map(g => g.toString(16).padStart(4, '0')).join(':');
 
-  // RFC 5952 compressed form
   function v6compressed(n) {
-    if (n >> 32n === 0xffffn) return '::ffff:' + v4str(Number(n & 0xffffffffn));   // IPv4-mapped keeps dotted form
+    if (n >> 32n === 0xffffn) return '::ffff:' + v4str(Number(n & 0xffffffffn));
     const g = groupsOf(n);
     let bestStart = -1, bestLen = 0;
     for (let i = 0; i < 8;) {
@@ -120,7 +111,6 @@ const CidrTool = (() => {
     return { version: 6, ip, prefix, network, last, total: 1n << BigInt(128 - prefix) };
   }
 
-  // ── Input parsing ──────────────────────────────────────────────────────────
   function parse(input) {
     const s = input.trim();
     if (!s) return null;
@@ -186,7 +176,6 @@ const CidrTool = (() => {
     return { count, list };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   let els, current = null;
   const escapeHtml = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -272,9 +261,9 @@ const CidrTool = (() => {
     if (!els.input) return;
     const fromHash = decodeURIComponent(location.hash.slice(1));
     let saved = null;
-    try { saved = localStorage.getItem('jxe.cidr'); } catch (_) { /* ignore */ }
+    try { saved = localStorage.getItem('jxe.cidr'); } catch (_) {  }
     els.input.value = fromHash || saved || '192.168.1.10/24';
-    els.input.addEventListener('input', () => { try { localStorage.setItem('jxe.cidr', els.input.value); } catch (_) { /* ignore */ } render(); });
+    els.input.addEventListener('input', () => { try { localStorage.setItem('jxe.cidr', els.input.value); } catch (_) {  } render(); });
     els.splitPrefix.addEventListener('change', renderSplit);
     els.check.addEventListener('input', renderCheck);
     document.querySelectorAll('[data-cidr]').forEach(b => b.addEventListener('click', () => { els.input.value = b.dataset.cidr; render(); }));

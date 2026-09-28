@@ -43,7 +43,7 @@ public class KeepAliveScheduler {
         }
     }
 
-    @Scheduled(initialDelayString = "${keepalive.interval:PT15M}", fixedRateString = "${keepalive.interval:PT15M}")
+    @Scheduled(initialDelayString = "${keepalive.interval:PT13M}", fixedRateString = "${keepalive.interval:PT13M}")
     public void ping() {
         if (!enabled) {
             return;

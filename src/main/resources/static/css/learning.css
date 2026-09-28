@@ -1,4 +1,3 @@
-/* Learnings page — builds on site.css */
 
 .container {
     max-width: 980px;
@@ -26,7 +25,6 @@
     margin: 0 auto;
 }
 
-/* Table of contents */
 .toc {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -63,7 +61,6 @@
     text-decoration: underline;
 }
 
-/* Content sections */
 .section {
     background: var(--surface);
     border: 1px solid var(--border);

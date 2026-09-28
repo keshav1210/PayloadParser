@@ -1,7 +1,3 @@
-/* ============================================================
-   palette.js - Ctrl+K / Cmd+K command palette to jump to any tool.
-   Loaded on every page by layout-loader.js. Needs tools-list.js.
-   ============================================================ */
 
 (() => {
   'use strict';
@@ -17,14 +13,12 @@
     try {
       const list = [href, ...readRecent().filter(h => h !== href)].slice(0, 6);
       localStorage.setItem(RECENT_KEY, JSON.stringify(list));
-    } catch (_) { /* storage blocked */ }
+    } catch (_) {  }
   }
 
-  // Remember the tool the visitor is on now
   const here = location.pathname.replace(/\/+$/, '') || '/';
   if (tools().some(t => t.href === here)) remember(here);
 
-  // ── Matching ───────────────────────────────────────────────────────────────
   function score(tool, q) {
     const name = tool.name.toLowerCase();
     const hay = `${name} ${tool.keys || ''} ${tool.desc} ${tool.cat}`.toLowerCase();
@@ -51,7 +45,6 @@
 
   const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   let root, input, list, items = [], active = 0, lastFocus = null;
 
   function build() {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JSON to Java, TypeScript, Go, Kotlin &amp; Rust Class Generator</title>
-    <meta name="description" content="Paste a JSON sample and get Java, TypeScript, Python, C#, Go, Kotlin, Rust, Pydantic or Zod types. Nested objects become their own classes.">
+    <meta name="description" content="Generate Java, TypeScript, Python, C#, Go, Kotlin, Rust, Pydantic or Zod types from JSON, and turn Lombok or record toString() output back into JSON.">
     <link rel="canonical" href="https://jsonxmleditor.com/mapper">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#111317">
@@ -90,6 +90,14 @@
         },
         {
           "@type": "Question",
+          "name": "How do I convert a Lombok toString() to JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Set the input language to Java toString() / DTO, paste the output (for example UserDTO(id=1, name=Amit, skills=[Java])) and click Convert with JSON as the output. Nested DTOs, lists, maps and Java records are supported, and it runs in your browser."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Does it handle nested objects?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -109,12 +117,10 @@
 
 <section class="tool-intro">
     <h1>JSON to Class Generator</h1>
-    <p>Paste a JSON sample, pick a language and get ready-to-use classes. Nested objects become separate classes.</p>
+    <p>Paste a JSON sample, pick a language and get ready-to-use classes. Nested objects become separate classes. You can also paste Java <code>toString()</code> output, such as a Lombok DTO from your logs, and get it back as JSON.</p>
 </section>
 
 <div class="toolbar">
-<!--    <button class="btn btn-primary" onclick="convertCode()">Convert</button>-->
-<!--    <button class="btn" onclick="formatInput()">Format Input</button>-->
     <button class="btn" onclick="copyOutput()">Copy Output</button>
     <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
     <button class="btn" onclick="loadSample()">Load Sample</button>
@@ -122,7 +128,6 @@
 </div>
 
 <div class="main-container">
-    <!-- Left Panel: Input Code -->
     <div class="editor-panel">
         <div class="panel-header">
             <div class="panel-title">Input Code</div>
@@ -130,24 +135,17 @@
                 <label>Language:</label>
                 <select id="inputLang" onchange="updatePlaceholder()">
                     <option value="json">JSON</option>
+                    <option value="tostring">Java toString() / DTO</option>
                     <option value="java">Java</option>
                     <option value="python">Python</option>
                     <option value="javascript">JavaScript</option>
                     <option value="typescript">TypeScript</option>
-            <!--        <option value="csharp">C#</option>
-                    <option value="cpp">C++</option>
-                    <option value="go">Go</option>
-                    <option value="rust">Rust</option>-->
                 </select>
             </div>
             <div class="select-group">
                 <label>Task:</label>
                 <select id="inputTask">
                     <option value="object">Object/Class</option>
-<!--                    <option value="function">Function</option>-->
-<!--                    <option value="interface">Interface</option>-->
-<!--                    <option value="enum">Enum</option>-->
-<!--                    <option value="struct">Struct</option>-->
                 </select>
             </div>
         </div>
@@ -164,7 +162,6 @@
         </div>
     </div>
 
-    <!-- Middle: Convert Button -->
     <div class="middle-gap">
         <button class="convert-btn" onclick="convertCode()">
             <span>Convert</span>
@@ -172,7 +169,6 @@
         </button>
     </div>
 
-    <!-- Right Panel: Output Code -->
     <div class="editor-panel">
         <div class="panel-header">
             <div class="panel-title">Output Code</div>
@@ -190,9 +186,6 @@
                     <option value="rust">Rust (serde)</option>
                     <option value="pydantic">Python (Pydantic)</option>
                     <option value="zod">TypeScript (Zod)</option>
-                  <!--  <option value="cpp">C++</option>
-                    <option value="go">Go</option>
-                    <option value="rust">Rust</option>-->
 
                 </select>
             </div>
@@ -203,11 +196,10 @@
                     <option id="snakecase" value="SnakeCase">Snake Case</option>
                     <option id ="object" value="class" hidden>Class/Object</option>
 
-                  <!--  <option value="function">Function</option>
-                    <option value="interface">Interface</option>
-                    <option value="type">Type Definition</option>
-                    <option value="schema">Schema</option>-->
                 </select>
+            </div>
+            <div class="select-group" id="tostringOptionsGroup" style="display: none;">
+                <label title="Adds each object's class name, e.g. &quot;@type&quot;: &quot;AddressDTO&quot;"><input type="checkbox" id="tostringType"> Add @type</label>
             </div>
             <div class="select-group" id="javaOptionsGroup" style="display: none;">
                 <label>Java Options:</label>
@@ -273,8 +265,23 @@
         <li>Choose Snake Case output for Python if your API uses <code>user_name</code> style keys.</li>
     </ul>
 
+    <h2>Convert Java toString() output to JSON</h2>
+    <p>Logs and debuggers show Java objects the way <code>toString()</code> prints them, which isn't JSON:</p>
+<pre>UserDTO(id=1, name=Amit, address=AddressDTO(city=Gurugram, pincode=122001), skills=[Java, Spring Boot])</pre>
+    <p>Choose <strong>Java toString() / DTO</strong> as the input language, paste the text and click <strong>Convert</strong>. You get proper JSON that you can put into Postman, a test fixture or a mock server:</p>
+<pre>{ "id": 1, "name": "Amit", "address": { "city": "Gurugram", "pincode": 122001 }, "skills": ["Java", "Spring Boot"] }</pre>
+    <ul>
+        <li>Works with Lombok <code>@ToString</code>, <code>@Data</code> and <code>@Value</code>, Kotlin data classes, and Java records (<code>User[id=1, name=Amit]</code>).</li>
+        <li>Nested objects, lists, sets, maps (<code>{key=value}</code>), <code>Optional</code> and <code>null</code> are converted. Numbers and <code>true</code>/<code>false</code> become JSON numbers and booleans; everything else becomes a string. Values with leading zeros, such as <code>007</code>, stay text, and long IDs keep every digit.</li>
+        <li>Text containing commas or brackets, like <code>address=Flat 4, MG Road</code>, is kept together.</li>
+        <li>You can paste a whole log line; the text before the object is skipped. Paste several lines and you get a JSON array.</li>
+        <li>Tick <strong>Add @type</strong> to keep each object's class name, and pick Snake Case to rename <code>roleName</code> to <code>role_name</code>.</li>
+        <li>Pick any other output language to go one step further and generate classes from the same text.</li>
+    </ul>
+    <p>Because <code>toString()</code> doesn't quote strings, a value that happens to look like a number, such as a PIN code, becomes a JSON number. Quote it in the result if your API expects text.</p>
+
     <h2>Is my code sent anywhere?</h2>
-    <p>Yes. The conversion runs on our server: your input is sent, converted in memory and returned. It isn't stored. See the <a href="/privacy">privacy policy</a> for details.</p>
+    <p>Converting <code>toString()</code> output to JSON, and generating Go, Kotlin, Rust, Pydantic and Zod, happen in your browser. The other class generators run on our server: your input is sent, converted in memory and returned. It isn't stored. See the <a href="/privacy">privacy policy</a> for details.</p>
 
     <h2>Frequently asked questions</h2>
     <div class="faq">
@@ -291,29 +298,27 @@
           <p>In Java, C# and TypeScript the types come from the values in your sample: text becomes a string, whole numbers an integer, decimals a double or number, and true/false a boolean. Python and JavaScript classes are generated without type annotations. A field that is null in the sample has no type to go on, so give it a real value before converting.</p>
         </details>
         <details>
+          <summary>How do I convert a Lombok toString() to JSON?</summary>
+          <p>Set the input language to Java toString() / DTO, paste the output (for example UserDTO(id=1, name=Amit, skills=[Java])) and click Convert with JSON as the output. Nested DTOs, lists, maps and Java records are supported, and it runs in your browser.</p>
+        </details>
+        <details>
           <summary>Does it handle nested objects?</summary>
           <p>Yes. Every nested object becomes its own class, named after its key, and the parent class gets a field of that type.</p>
         </details>
     </div>
 </article>
-<!-- ════════════════════════════════════════════════════════
-     ★  SHARE MODAL
-     ════════════════════════════════════════════════════════ -->
 <div class="sd-overlay" id="sdOverlay">
     <div class="sd-modal">
 
-        <!-- Initial form (source picker + one-time toggle + share btn) -->
         <div id="sdForm">
             <h3>Share Content</h3>
             <p class="sd-sub">Choose what to share and generate an instant link</p>
 
-            <!-- Source: input or output -->
             <div class="sd-source-row">
                 <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
                 <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
             </div>
 
-            <!-- One-time toggle -->
             <div class="sd-toggle-row">
                 <div class="sd-toggle-label">
                     <strong>🔥 One-time link</strong>
@@ -325,7 +330,6 @@
                 </label>
             </div>
 
-            <!-- Recipient Email (Optional) -->
             <div class="sd-email-box">
                 <label for="sdEmail">Recipient Email (Optional)</label>
                 <div class="sd-email-input-wrapper">
@@ -343,19 +347,16 @@
             </div>
         </div>
 
-        <!-- Loading state -->
         <div class="sd-loader" id="sdLoader">
             <div class="sd-spinner"></div>
             Uploading to server…
         </div>
 
-        <!-- Success state -->
         <div id="sdSuccess" style="display:none">
             <div class="sd-check">✓</div>
             <h3>Share Drop Ready!</h3>
             <p class="sd-sub" id="sdSuccessSub">—</p>
 
-            <!-- Key display -->
             <div class="sd-key-card">
                 <div class="sd-key-label">
                     <span>🔑 Drop Key</span>
@@ -367,7 +368,6 @@
                 </div>
             </div>
 
-            <!-- URL display -->
             <div class="sd-url-row">
                 <span class="sd-url-text" id="sdUrlText">—</span>
                 <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
@@ -386,8 +386,9 @@
 
 <br>
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/layout-loader.js?v=12"></script>
 <script src="/js/classgen.js?v=1"></script>
-<script src="/js/objectmapper.js?v=2"></script>
+<script src="/js/tostring.js?v=1"></script>
+<script src="/js/objectmapper.js?v=3"></script>
 </body>
 </html>

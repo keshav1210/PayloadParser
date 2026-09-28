@@ -1,15 +1,9 @@
-/* ============================================================
-   numbase.js - Number base converter (binary, octal, decimal,
-   hex and any base 2-36) with BigInt, so there is no size limit,
-   plus two's complement views for signed integers.
-   ============================================================ */
 
 'use strict';
 
 const BaseTool = (() => {
   const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz';
 
-  // Parse text in a base into a BigInt (accepts 0x/0b/0o prefixes, _ and spaces)
   function parseIn(text, base) {
     let s = text.trim().toLowerCase().replace(/[\s_,']/g, '');
     if (!s) return null;
@@ -46,7 +40,6 @@ const BaseTool = (() => {
     return (neg ? '-' : '') + padded.match(new RegExp(`.{${size}}`, 'g')).join(sep);
   };
 
-  // Two's complement bit pattern of n in a given width, or null if it doesn't fit
   function twos(n, bits) {
     const W = BigInt(bits);
     const min = -(1n << (W - 1n)), maxU = (1n << W) - 1n;
@@ -56,7 +49,6 @@ const BaseTool = (() => {
     return { unsigned: u, signed, bin: u.toString(2).padStart(bits, '0'), hex: u.toString(16).padStart(bits / 4, '0').toUpperCase() };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   let els, value = null, lock = false;
   const FIELDS = [['bin', 2], ['oct', 8], ['dec', 10], ['hex', 16]];
@@ -70,7 +62,7 @@ const BaseTool = (() => {
     if (source !== 'custom') els.custom.value = value === null ? '' : toBase(value, +els.customBase.value);
     lock = false;
     renderExtra();
-    try { localStorage.setItem('jxe.base', value === null ? '' : value.toString()); } catch (_) { /* ignore */ }
+    try { localStorage.setItem('jxe.base', value === null ? '' : value.toString()); } catch (_) {  }
   }
 
   function onInput(id, base) {
@@ -97,7 +89,7 @@ const BaseTool = (() => {
     rows.push(['Hex, grouped', group(toBase(value, 16).toUpperCase(), 2)]);
     rows.push(['Decimal, with separators', value.toLocaleString('en-US')]);
     if (abs <= 0x10ffffn && value >= 0n && value >= 32n) {
-      try { rows.push(['Unicode character', `${String.fromCodePoint(Number(value))}  (U+${toBase(value, 16).toUpperCase().padStart(4, '0')})`]); } catch (_) { /* ignore */ }
+      try { rows.push(['Unicode character', `${String.fromCodePoint(Number(value))}  (U+${toBase(value, 16).toUpperCase().padStart(4, '0')})`]); } catch (_) {  }
     }
     for (const bits of [8, 16, 32, 64]) {
       const t = twos(value, bits);
@@ -119,7 +111,7 @@ const BaseTool = (() => {
       navigator.clipboard.writeText($(b.dataset.copyField).value).then(() => { const t = b.textContent; b.textContent = 'Copied'; setTimeout(() => { b.textContent = t; }, 1200); });
     }));
     let saved = '';
-    try { saved = localStorage.getItem('jxe.base') || ''; } catch (_) { /* ignore */ }
+    try { saved = localStorage.getItem('jxe.base') || ''; } catch (_) {  }
     els.dec.value = saved || '255';
     onInput('dec', 10);
   }

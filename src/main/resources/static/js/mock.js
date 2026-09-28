@@ -1,13 +1,7 @@
-/* ============================================================
-   mock.js - Mock data generator. Builds realistic fake records
-   from a sample JSON document or a JSON Schema, with a seed so
-   results can be reproduced. Output: JSON, NDJSON, CSV or SQL.
-   ============================================================ */
 
 'use strict';
 
 const MockTool = (() => {
-  // ── Seeded random (mulberry32) ─────────────────────────────────────────────
   let rnd = Math.random;
   function seed(s) {
     let h = 1779033703 ^ String(s).length;
@@ -26,7 +20,6 @@ const MockTool = (() => {
   const chance = p => rnd() < p;
   const hex = n => Array.from({ length: n }, () => '0123456789abcdef'[int(0, 15)]).join('');
 
-  // ── Word lists ─────────────────────────────────────────────────────────────
   const FIRST = ['Aarav', 'Aisha', 'Alex', 'Amara', 'Ana', 'Ben', 'Carlos', 'Chen', 'Chloe', 'Daniel', 'Diego', 'Elena', 'Emma', 'Fatima', 'Hana', 'Hiro',
     'Isabel', 'Ivan', 'James', 'Jin', 'Kavya', 'Kofi', 'Lara', 'Leo', 'Liam', 'Lucas', 'Maya', 'Mei', 'Mohammed', 'Nadia', 'Noah', 'Olivia', 'Omar',
     'Priya', 'Rahul', 'Rosa', 'Sara', 'Sofia', 'Tariq', 'Tom', 'Wei', 'Yuki', 'Zara', 'Arjun', 'Grace', 'Mateo', 'Nina', 'Ravi', 'Sam', 'Anya'];
@@ -69,12 +62,11 @@ const MockTool = (() => {
   };
   const phone = cc => {
     if (cc === 'IN') return `+91 ${int(6, 9)}${hex(0)}${int(1000, 9999)} ${int(10000, 99999)}`;
-    if (cc === 'US' || cc === 'CA') return `+1 ${int(201, 989)}-555-${String(int(100, 199)).padStart(4, '0')}`;   // 555-01xx is reserved for fiction
-    if (cc === 'GB') return `+44 20 7946 0${int(100, 999)}`;                                                      // Ofcom drama range
+    if (cc === 'US' || cc === 'CA') return `+1 ${int(201, 989)}-555-${String(int(100, 199)).padStart(4, '0')}`;
+    if (cc === 'GB') return `+44 20 7946 0${int(100, 999)}`;
     return `+${int(30, 99)} ${int(100, 999)} ${int(100, 999)} ${int(1000, 9999)}`;
   };
 
-  // A consistent "person" per record, so email matches name, city matches country, etc.
   function newContext() {
     const first = pick(FIRST), last = pick(LAST);
     const [city, country, cc] = pick(CITIES);
@@ -82,8 +74,6 @@ const MockTool = (() => {
     return { first, last, city, country, cc, company, created: isoDate(-3, -1) };
   }
 
-  // ── Field generator by name ────────────────────────────────────────────────
-  // Returns undefined when the name gives no hint
   function byName(rawName, type, ctx) {
     const n = rawName.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase().replace(/[^a-z0-9]+/g, '_');
     const has = (...keys) => keys.some(k => new RegExp(`(^|_)${k}($|_)`).test(n));
@@ -124,7 +114,7 @@ const MockTool = (() => {
       if (has('tag', 'tags', 'keyword', 'label')) return pick(LOREM);
       if (has('password', 'secret', 'token', 'api_key', 'apikey', 'hash')) return hex(32);
       if (has('iban')) return `DE${int(10, 99)}${String(int(0, 99999999)).padStart(8, '0')}${String(int(0, 9999999999)).padStart(10, '0')}`;
-      if (has('card', 'credit_card', 'card_number')) return pick(['4111 1111 1111 1111', '5555 5555 5555 4444', '3782 822463 10005']);   // published test numbers
+      if (has('card', 'credit_card', 'card_number')) return pick(['4111 1111 1111 1111', '5555 5555 5555 4444', '3782 822463 10005']);
       if (has('date_of_birth', 'dob', 'birthday', 'birth_date', 'birthdate')) return isoDate(-60, -18).toISOString().slice(0, 10);
       if (has('created', 'created_at', 'updated', 'updated_at', 'modified', 'timestamp', 'time', 'at', 'last_login', 'deleted_at')) return isoDate(-2, 0).toISOString().replace(/\.\d{3}Z$/, 'Z');
       if (has('date', 'day', 'due', 'start', 'end', 'expires', 'expiry')) return isoDate(-1, 1).toISOString().slice(0, 10);
@@ -154,7 +144,6 @@ const MockTool = (() => {
     return undefined;
   }
 
-  // ── From a sample document ─────────────────────────────────────────────────
   function fromSample(sample, name, ctx, depth = 0) {
     if (depth > 20) return null;
     if (sample === null) return chance(0.7) ? null : null;
@@ -183,7 +172,6 @@ const MockTool = (() => {
       const decimals = Math.min(6, (String(sample).split('.')[1] || '').length || 2);
       return +v.toFixed(decimals);
     }
-    // string: keep the format of the sample value
     const s = String(sample);
     if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s)) return uuid();
     if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(s)) return isoDate(-2, 0).toISOString().replace(/\.\d{3}Z$/, 'Z');
@@ -191,7 +179,6 @@ const MockTool = (() => {
     if (/^[^@\s]+@[^@\s]+\.\w+$/.test(s)) return byName('email', 'string', ctx);
     if (/^https?:\/\//i.test(s)) return byName('url', 'string', ctx);
     if (/^#[0-9a-f]{6}$/i.test(s)) return '#' + hex(6);
-    // codes like ORD-10231 and numeric strings keep the sample's own format
     if (/^[A-Z]{2,5}-\d+$/.test(s)) return s.split('-')[0] + '-' + String(int(1, 10 ** s.split('-')[1].length - 1)).padStart(s.split('-')[1].length, '0');
     if (/^\d+$/.test(s) && !/phone|mobile|tel/i.test(name)) return String(int(10 ** (s.length - 1), 10 ** s.length - 1));
     const named = byName(name, 'string', ctx);
@@ -211,7 +198,6 @@ const MockTool = (() => {
     return arr[int(0, arr.length - 1)];
   }
 
-  // Sibling fields hint at what an object is: price/sku means a product, so "name" is a product name
   function withSiblings(c, keys) {
     const k = keys.join(' ').toLowerCase();
     if (/\b(price|sku|stock|in_?stock|product|brand|rating)\b/.test(k.replace(/([a-z])([A-Z])/g, '$1_$2'))) c.inProduct = true;
@@ -227,7 +213,6 @@ const MockTool = (() => {
     return c;
   }
 
-  // ── From a JSON Schema ─────────────────────────────────────────────────────
   function resolveRef(ref, root) {
     if (!ref.startsWith('#')) throw new Error(`Only references inside the same schema are supported ($ref: ${ref}).`);
     return ref.slice(1).split('/').filter(Boolean).reduce((o, k) => (o ? o[k.replace(/~1/g, '/').replace(/~0/g, '~')] : undefined), root);
@@ -304,7 +289,6 @@ const MockTool = (() => {
     return { ...a, ...b, properties: { ...(a.properties || {}), ...(b.properties || {}) }, required: [...(a.required || []), ...(b.required || [])] };
   }
 
-  // ── Output formats ─────────────────────────────────────────────────────────
   function flatten(obj, prefix = '', out = {}) {
     for (const [k, v] of Object.entries(obj)) {
       const key = prefix ? `${prefix}.${k}` : k;
@@ -333,7 +317,6 @@ const MockTool = (() => {
     return `INSERT INTO ${id(table)} (${cols.map(id).join(', ')}) VALUES\n` + flat.map(r => `  (${cols.map(c => lit(r[c])).join(', ')})`).join(',\n') + ';';
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.mock';
   let els, source = 'sample', timer = null, output = '';
@@ -405,7 +388,7 @@ const MockTool = (() => {
   function save() {
     try {
       localStorage.setItem(STORE, JSON.stringify({ source, text: els.input.value, count: els.count.value, format: els.format.value, seed: els.seed.value, table: els.table.value }));
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   function setSource(s, loadSample) {
@@ -422,7 +405,7 @@ const MockTool = (() => {
     };
     if (!els.input) return;
     let s = null;
-    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     if (s) {
       setSource(s.source || 'sample');
       els.input.value = s.text || (source === 'schema' ? SCHEMA_SAMPLE : SAMPLE);

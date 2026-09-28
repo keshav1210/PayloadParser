@@ -1,35 +1,25 @@
-/* ============================================================
-   codefmt.js - HTML, CSS and JavaScript beautifier and minifier.
-   Beautify: js-beautify (MIT). Minify: CSS and HTML minifiers
-   below; JavaScript uses Terser (BSD), loaded on first use.
-   ============================================================ */
 
 'use strict';
 
 const CodeFmtTool = (() => {
-  // ── CSS minifier ───────────────────────────────────────────────────────────
   function minifyCss(css) {
-    // Pull out strings and url(...) so they are never changed
     const saved = [];
     const keep = s => `\u0000${saved.push(s) - 1}\u0000`;
     let s = css.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')/g, keep)
       .replace(/url\(\s*([^)'"]*?)\s*\)/gi, m => keep(m.replace(/\s+/g, '')));
-    s = s.replace(/\/\*(?!!)[\s\S]*?\*\//g, '');                           // comments (keep /*! licences */)
+    s = s.replace(/\/\*(?!!)[\s\S]*?\*\//g, '');
     s = s.replace(/\s+/g, ' ');
-    // calc(), min(), max(), clamp() need spaces around + and -: protect them
     s = s.replace(/\b(calc|min|max|clamp)\(([^()]*(?:\([^()]*\)[^()]*)*)\)/gi, (m, fn, body) => keep(`${fn}(${body.trim().replace(/\s*([*/,])\s*/g, '$1').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')')})`));
     s = s.replace(/\s*([{};:,>~+])\s*/g, '$1');
     s = s.replace(/;}/g, '}').replace(/\s*!important/g, '!important');
-    s = s.replace(/(^|[^\w.-])0(?:px|em|rem|%|pt|vh|vw)(?=[;}\s!,)])/g, '$10');   // 0px -> 0 (not inside names)
-    s = s.replace(/(:|\s|,)0+\.(\d)/g, '$1.$2');                             // 0.5 -> .5
-    s = s.replace(/#([0-9a-f])\1([0-9a-f])\2([0-9a-f])\3\b/gi, '#$1$2$3');  // #aabbcc -> #abc
-    s = s.replace(/[^{}]+\{\}/g, '');                                        // empty rules
-    // restore protected pieces (may be nested)
+    s = s.replace(/(^|[^\w.-])0(?:px|em|rem|%|pt|vh|vw)(?=[;}\s!,)])/g, '$10');
+    s = s.replace(/(:|\s|,)0+\.(\d)/g, '$1.$2');
+    s = s.replace(/#([0-9a-f])\1([0-9a-f])\2([0-9a-f])\3\b/gi, '#$1$2$3');
+    s = s.replace(/[^{}]+\{\}/g, '');
     for (let i = 0; i < 3 && s.includes('\u0000'); i++) s = s.replace(/\u0000(\d+)\u0000/g, (m, n) => saved[n]);
     return s.trim();
   }
 
-  // ── HTML minifier ──────────────────────────────────────────────────────────
   const BLOCK = new Set(('html head body title meta link style script base div p ul ol li dl dt dd table thead tbody tfoot tr td th caption colgroup col ' +
     'section article aside header footer nav main h1 h2 h3 h4 h5 h6 form fieldset legend hr br pre blockquote figure figcaption address details summary ' +
     'option optgroup select iframe noscript template svg canvas video audio source track picture').split(' '));
@@ -41,19 +31,16 @@ const CodeFmtTool = (() => {
       .replace(/<(pre|textarea)\b[\s\S]*?<\/\1>/gi, keep)
       .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, keep)
       .replace(/(<style\b[^>]*>)([\s\S]*?)(<\/style>)/gi, (m, a, body, b) => keep(a.replace(/\s+/g, ' ') + minifyCss(body) + b))
-      .replace(/<!--(?!\[if|<!|\s*ko\b)[\s\S]*?-->/g, '');                  // comments, except IE conditionals / knockout
+      .replace(/<!--(?!\[if|<!|\s*ko\b)[\s\S]*?-->/g, '');
     s = s.replace(/\s+/g, ' ');
-    // drop whitespace next to block-level tags, keep single spaces between inline content
     s = s.replace(/\s*(<\/?([a-zA-Z][\w-]*)\b[^>]*>)\s*/g, (m, tag, name) => (BLOCK.has(name.toLowerCase()) ? tag : m.replace(/^\s+/, ' ').replace(/\s+$/, ' ')));
     s = s.replace(/\s*(<!DOCTYPE[^>]*>)\s*/i, '$1');
-    // tidy inside tags: collapse spaces between attributes
     s = s.replace(/<([a-zA-Z][^>]*?)\s+(\/?)>/g, '<$1$2>');
     s = s.replace(/ {2,}/g, ' ');
     for (let i = 0; i < 3 && s.includes('\u0000'); i++) s = s.replace(/\u0000(\d+)\u0000/g, (m, n) => saved[n]);
     return s.trim();
   }
 
-  // ── JavaScript minifier (Terser, lazy) ─────────────────────────────────────
   let terserLoading = null;
   function loadTerser() {
     if (window.Terser) return Promise.resolve();
@@ -75,7 +62,6 @@ const CodeFmtTool = (() => {
     return r.code;
   }
 
-  // ── Language detection ─────────────────────────────────────────────────────
   function detect(code) {
     const t = code.trim();
     if (/^</.test(t)) return 'html';
@@ -83,7 +69,6 @@ const CodeFmtTool = (() => {
     return 'js';
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.codefmt';
   let els, lang = 'html', output = '';
@@ -114,7 +99,7 @@ const CodeFmtTool = (() => {
   }
 
   function save() {
-    try { localStorage.setItem(STORE, JSON.stringify({ lang, code: els.input.value.length < 500000 ? els.input.value : '', indent: els.indent.value, wrap: els.wrap.value })); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify({ lang, code: els.input.value.length < 500000 ? els.input.value : '', indent: els.indent.value, wrap: els.wrap.value })); } catch (_) {  }
   }
 
   const kb = n => (n < 1024 ? `${n} B` : `${(n / 1024).toFixed(1)} KB`);
@@ -169,7 +154,7 @@ const CodeFmtTool = (() => {
     };
     if (!els.input) return;
     let s = null;
-    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     const hashLang = location.hash.slice(1);
     if (s) { els.indent.value = s.indent || '2'; els.wrap.value = s.wrap || '0'; }
     const startLang = ['html', 'css', 'js'].includes(hashLang) ? hashLang : (s && s.lang) || 'html';

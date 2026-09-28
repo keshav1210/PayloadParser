@@ -1,0 +1,18 @@
+{
+  "name": "jsonxmleditor-frontend-build",
+  "private": true,
+  "description": "Minifies and obfuscates src/main/resources/static for production builds",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs ../src/main/resources/static ./dist"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "clean-css": "5.3.3",
+    "html-minifier-terser": "7.2.0",
+    "javascript-obfuscator": "4.1.1",
+    "terser": "5.37.0"
+  }
+}

@@ -1,7 +1,3 @@
-/* ============================================================
-   sql.js - SQL formatter / minifier. Formatting is done by the
-   sql-formatter library (MIT, js/vendor/sql-formatter.min.js).
-   ============================================================ */
 
 'use strict';
 
@@ -14,7 +10,6 @@ with recent_orders as (select o.customer_id, date_trunc('month', o.created_at) a
 select c.id, c.name, r.month, r.revenue, case when r.revenue > 1000 then 'gold' when r.revenue > 250 then 'silver' else 'standard' end as tier from customers c left join recent_orders r on r.customer_id = c.id where c.deleted_at is null and (c.country = 'IN' or c.country = 'US') order by r.month desc, r.revenue desc limit 100;
 update customers set tier = 'gold', updated_at = now() where id in (select customer_id from recent_orders where revenue > 1000);`;
 
-  // ── Minify (keeps strings and quoted names intact, drops comments) ─────────
   function minify(sql) {
     let out = '', i = 0, pendingSpace = false;
     const n = sql.length;
@@ -33,7 +28,7 @@ update customers set tier = 'gold', updated_at = now() where id in (select custo
       if (c === '/' && d === '*') {
         const end = sql.indexOf('*/', i + 2);
         const body = sql.slice(i, end < 0 ? n : end + 2);
-        if (body.startsWith('/*!') || body.startsWith('/*+')) out += (out ? ' ' : '') + body;   // MySQL / optimizer hints
+        if (body.startsWith('/*!') || body.startsWith('/*+')) out += (out ? ' ' : '') + body;
         i = end < 0 ? n : end + 2;
         pendingSpace = true;
         continue;
@@ -68,7 +63,6 @@ update customers set tier = 'gold', updated_at = now() where id in (select custo
     return out.trim();
   }
 
-  // ── Highlighting ───────────────────────────────────────────────────────────
   const KEYWORDS = new Set(('select from where and or not in is null like ilike between exists as on join inner left right full outer cross natural using ' +
     'group by order having limit offset fetch first next rows only union all intersect except distinct insert into values update set delete ' +
     'create table view index unique primary key foreign references alter add drop column constraint default check if replace truncate ' +
@@ -93,7 +87,6 @@ update customers set tier = 'gold', updated_at = now() where id in (select custo
     return html;
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   let els, mode = 'format', timer = null, output = '';
 
   function options() {
@@ -117,12 +110,12 @@ update customers set tier = 'gold', updated_at = now() where id in (select custo
         sql: els.input.value, dialect: els.dialect.value, indent: els.indent.value, kwCase: els.kwCase.value,
         style: els.style.value, logical: els.logical.value,
       }));
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   function restore() {
     let s = null;
-    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     if (!s) { els.input.value = SAMPLE; return; }
     els.input.value = s.sql || '';
     ['dialect', 'indent', 'kwCase', 'style', 'logical'].forEach(k => { if (s[k]) els[k].value = s[k]; });

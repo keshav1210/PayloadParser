@@ -6,7 +6,6 @@
     }
     .btn-share:hover { opacity: .88; }
 
-    /* ── Share modal overlay ── */
     .sd-overlay {
       position: fixed; inset: 0; z-index: 1000;
       background: rgba(0,0,0,.75); backdrop-filter: blur(10px);
@@ -14,7 +13,6 @@
     }
     .sd-overlay.show { display: flex; }
 
-    /* ── Share modal box ── */
     .sd-modal {
       background: #101014; border: 1px solid #363648;
       border-radius: 20px; padding: 34px 30px;
@@ -63,7 +61,6 @@
     }
     .sd-actions button:hover { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.08); }
 
-    /* ── Share source picker ── */
     .sd-source-row {
       display: flex; gap: 6px; margin-bottom: 16px;
     }
@@ -74,7 +71,6 @@
     }
     .sd-src-btn.active { border-color: #4f8cff; color: #4f8cff; background: rgba(79,140,255,.1); }
 
-    /* ── One-time toggle ── */
     .sd-toggle-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 14px; background: #16161c; border: 1px solid #252530;
@@ -95,7 +91,6 @@
     .sd-toggle input:checked + .sd-toggle-slider { background: #00c896; border-color: #00c896; }
     .sd-toggle input:checked + .sd-toggle-slider::before { transform: translateX(17px); background: #fff; }
 
-    /* ── Loading state inside modal ── */
     .sd-loader {
       display: none; text-align: center; padding: 20px 0;
       font-family: 'Consolas', 'Courier New', monospace; font-size: .78rem; color: #9aa3b2;
@@ -108,7 +103,6 @@
     }
     .sd-error { color: #ff4f6a; font-size: .78rem; text-align: center; margin-bottom: 12px; display: none; }
 
-    /* ── Recipient Email Box ── */
     .sd-email-box {
       margin-bottom: 14px; text-align: left;
     }
@@ -131,7 +125,6 @@
     }
     .sd-email-input::placeholder { color: #9aa3b2; }
 
-    /* ── Key Display Card ── */
     .sd-key-card {
       background: linear-gradient(135deg, rgba(79,140,255,.08), rgba(0,221,179,.05));
       border: 1px solid rgba(79,140,255,.25); border-radius: 12px;
@@ -159,7 +152,6 @@
     .sd-btn-copy-key:hover { background: #00e5ab; transform: translateY(-1px); }
     .sd-btn-copy-key.copied { background: #4f8cff; color: #fff; }
 
-    /* ── Send on Mail Action Button ── */
     .sd-btn-mail {
       border: 1px solid rgba(0,221,179,.35) !important;
       color: #00ddb3 !important;

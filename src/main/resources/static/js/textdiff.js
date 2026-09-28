@@ -1,9 +1,3 @@
-/* ============================================================
-   textdiff.js - Plain-text / code diff. Line, word or character
-   comparison with side-by-side or unified view, changed words
-   highlighted inside changed lines, and .patch export.
-   Uses jsdiff (BSD, js/vendor/diff.min.js).
-   ============================================================ */
 
 'use strict';
 
@@ -20,7 +14,6 @@ const TextDiffTool = (() => {
     return { ignoreWhitespace: els.ignoreWs.checked, ignoreCase: els.ignoreCase.checked, stripTrailingCr: true, timeout: 5000 };
   }
 
-  // Word-level highlight for a changed line pair
   function inline(a, b) {
     const parts = Diff.diffWordsWithSpace(a, b, { ignoreCase: els.ignoreCase.checked });
     let left = '', right = '';
@@ -33,7 +26,6 @@ const TextDiffTool = (() => {
     return [left, right];
   }
 
-  // Turn jsdiff line changes into aligned rows
   function buildRows(changes) {
     const rows = [];
     let ln = 1, rn = 1;
@@ -63,7 +55,6 @@ const TextDiffTool = (() => {
     return rows;
   }
 
-  // Hide long unchanged runs, keeping CONTEXT lines around changes
   function collapse(rows) {
     if (!els.onlyChanges.checked) return rows;
     const keep = rows.map(r => r.type !== 'eq');
@@ -115,7 +106,7 @@ const TextDiffTool = (() => {
 
   function run() {
     const a = els.left.value, b = els.right.value;
-    try { localStorage.setItem(STORE, JSON.stringify({ a: a.length < 500000 ? a : '', b: b.length < 500000 ? b : '', mode: els.mode.value, view: els.view.value })); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify({ a: a.length < 500000 ? a : '', b: b.length < 500000 ? b : '', mode: els.mode.value, view: els.view.value })); } catch (_) {  }
     els.error.hidden = true;
     if (!a && !b) { els.out.innerHTML = ''; els.summary.textContent = 'Paste two texts to compare.'; els.summary.className = 'summary'; return; }
 
@@ -178,7 +169,7 @@ const TextDiffTool = (() => {
     };
     if (!els.left) return;
     let s = null;
-    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     if (s) { els.left.value = s.a || ''; els.right.value = s.b || ''; els.mode.value = s.mode || 'lines'; els.view.value = s.view || 'split'; }
     else {
       els.left.value = 'server:\n  port: 8080\n  host: localhost\nlogging:\n  level: info\nfeatures:\n  - search\n  - export\n';

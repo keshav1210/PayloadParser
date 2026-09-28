@@ -6,6 +6,7 @@ function updatePlaceholder() {
             java: 'public class Person {\n    private String name;\n    private int age;\n}',
             python: 'class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age',
             javascript: 'class Person {\n    constructor(name, age) {\n        this.name = name;\n        this.age = age;\n    }\n}',
+            tostring: 'UserDTO(id=1, name=Amit, address=AddressDTO(city=Gurugram, pincode=122001), skills=[Java, Spring Boot])\n\nPaste the output of toString() from a Lombok @Data/@ToString class, a Kotlin data class or a Java record, even straight from a log line.',
              json: '{\n    "name": "John",\n    "age": 30,\n    "address": {\n        "city": "New York",\n        "zipCode": "10001"\n    }\n}',
         };
 
@@ -13,7 +14,7 @@ function updatePlaceholder() {
 
         const outputLang = document.getElementById('outputLang').value;
                  const inputLang = document.getElementById('inputLang').value;
-                           if (outputLang !== 'json' && inputLang!=='json') {
+                           if (outputLang !== 'json' && inputLang !== 'json' && inputLang !== 'tostring') {
                                document.getElementById('object').hidden = false;
                                 document.getElementById('camelcase').style.display='none';
                                 document.getElementById('snakecase').style.display='none';
@@ -37,7 +38,7 @@ function updatePlaceholder() {
         outputEditor.placeholder = 'Converted code will appear here...';
          const outputLang = document.getElementById('outputLang').value;
          const inputLang = document.getElementById('inputLang').value;
-                   if (outputLang !== 'json' && inputLang!=='json') {
+                   if (outputLang !== 'json' && inputLang !== 'json' && inputLang !== 'tostring') {
                        document.getElementById('object').hidden = false;
                         document.getElementById('camelcase').style.display='none';
                         document.getElementById('snakecase').style.display='none';
@@ -84,6 +85,7 @@ function updatePlaceholder() {
         const inputEditor = document.getElementById('inputEditor');
 
         const samples = {
+         tostring: `UserDTO(id=1, name=Amit, email=amit@example.com, active=true, address=AddressDTO(city=Gurugram, state=Haryana, pincode=122001), role=RoleDTO(id=1, roleName=ADMIN, permissions=[READ, WRITE, DELETE]), skills=[Java, Spring Boot], scores=[90, 85, 88])`,
          json: `{"id": 1,
     "username": "john_doe",
     "email": "john@example.com",
@@ -213,70 +215,15 @@ public class Address
         updateStatus('Sample code loaded with nested types');
     }
 
-    // Configure your backend URL here
-
-
-   /* async function convertCode() {
-        const inputCode = document.getElementById('inputEditor').value;
-        const inputLang = document.getElementById('inputLang').value;
-        const outputLang = document.getElementById('outputLang').value;
-        const outputFormat = document.getElementById('outputFormat').value;
-        const outputEditor = document.getElementById('outputEditor');
-
-        if (!inputCode.trim()) {
-            updateStatus('Please enter code to convert');
-            return;
-        }
-
-        updateStatus('Converting...');
-        outputEditor.value = '// Converting...';
-
-        try {
-            const response = await fetch(`/data/object-to-json`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    inputCode: inputCode,
-                    inputLang: inputLang,
-                    outputLang: outputLang,
-                    outputFormat: outputFormat
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.convertedCode) {
-                outputEditor.value = data.convertedCode;
-                updateStatus('Conversion complete! All nested types converted.');
-            } else if (data.error) {
-                outputEditor.value = `// Error: ${data.error}`;
-                updateStatus('Conversion failed: ' + data.error);
-            } else {
-                outputEditor.value = '// Conversion failed';
-                updateStatus('Conversion failed');
-            }
-        } catch (error) {
-            outputEditor.value = `// Error: ${error.message}\n// Make sure your backend server is running at ${BACKEND_URL}`;
-            updateStatus('Error: Cannot connect to backend server');
-            console.error('Conversion error:', error);
-        }
-    }*/
 
 
     async function convertCode() {
-        const inputCode = document.getElementById('inputEditor').value;
-        const inputLang = document.getElementById('inputLang').value;
+        let inputCode = document.getElementById('inputEditor').value;
+        let inputLang = document.getElementById('inputLang').value;
         const outputLang = document.getElementById('outputLang').value;
         const outputFormat = document.getElementById('outputFormat').value;
         const outputEditor = document.getElementById('outputEditor');
 
-        // Get Java-specific options
         const javaOptions = document.getElementById('javaOptions') ? document.getElementById('javaOptions').value : 'standard';
         const constructorOptions = document.getElementById('constructorOptions') ? document.getElementById('constructorOptions').value : 'noargs';
 
@@ -285,7 +232,29 @@ public class Address
             return;
         }
 
-        // Go, Kotlin, Rust, Pydantic and Zod are generated in the browser (classgen.js)
+        if (inputLang === 'tostring') {
+            const typeBox = document.getElementById('tostringType');
+            let json;
+            try {
+                json = ToStringParser.convert(inputCode, {
+                    indent: 2,
+                    keyCase: outputLang === 'json' && outputFormat === 'SnakeCase' ? 'snake' : 'as-is',
+                    typeKey: outputLang === 'json' && typeBox && typeBox.checked ? '@type' : null,
+                });
+            } catch (e) {
+                outputEditor.value = '// Could not read this toString() output:\n// ' + e.message;
+                updateStatus('Could not read the toString() output');
+                return;
+            }
+            if (outputLang === 'json') {
+                outputEditor.value = json;
+                updateStatus('Converted toString() output to JSON');
+                return;
+            }
+            inputCode = json;
+            inputLang = 'json';
+        }
+
         if (typeof ClassGen !== 'undefined' && ClassGen.handles(outputLang)) {
             if (inputLang !== 'json') {
                 outputEditor.value = `// ${ClassGen.LANGS[outputLang]} are generated from a JSON sample.\n// Choose JSON as the input language.`;
@@ -355,7 +324,7 @@ public class Address
         const javaOptionsGroup = document.getElementById('javaOptionsGroup');
         const constructorOptionsGroup = document.getElementById('constructorOptionsGroup');
 
-        if (inputLang === 'json' && outputLang === 'java') {
+        if ((inputLang === 'json' || inputLang === 'tostring') && outputLang === 'java') {
             javaOptionsGroup.style.display = 'block';
             updateJavaSubOptions();
         } else {
@@ -375,8 +344,21 @@ public class Address
         }
     }
 
-    // Initialize
+    function updateToStringOptions() {
+        const group = document.getElementById('tostringOptionsGroup');
+        if (!group) return;
+        const show = document.getElementById('inputLang').value === 'tostring' && document.getElementById('outputLang').value === 'json';
+        group.style.display = show ? 'flex' : 'none';
+    }
+    document.getElementById('inputLang').addEventListener('change', updateToStringOptions);
+    document.getElementById('outputLang').addEventListener('change', updateToStringOptions);
+    if (location.hash === '#tostring') {
+        document.getElementById('inputLang').value = 'tostring';
+        document.getElementById('outputLang').value = 'json';
+    }
+
     updatePlaceholder();
+    updateToStringOptions();
 
     const SD_EP = window.location.origin + '/data/share/text';
 
@@ -384,7 +366,6 @@ public class Address
 
      function openShareModal(source) {
         _sdSource = source || 'input';
-        // Reset to form state
         document.getElementById('sdForm').style.display    = 'block';
         document.getElementById('sdLoader').classList.remove('show');
         document.getElementById('sdSuccess').style.display = 'none';
@@ -445,7 +426,6 @@ public class Address
 
         const oneTime = document.getElementById('sdOneTime').checked;
 
-        // Show loader
         document.getElementById('sdForm').style.display    = 'none';
         document.getElementById('sdLoader').classList.add('show');
         document.getElementById('sdError').style.display   = 'none';
@@ -470,7 +450,6 @@ public class Address
 
           if (!res.ok || !json.success) throw new Error(json.message || 'Server error ' + res.status);
 
-          // Show success
           document.getElementById('sdLoader').classList.remove('show');
           document.getElementById('sdSuccess').style.display = 'block';
 
@@ -538,7 +517,6 @@ public class Address
         });
       }
 
-      // ── Auto-load shared drop if ?drop=token is present in URL ──────────────────
       async function checkAndLoadSharedDrop() {
         const urlParams = new URLSearchParams(window.location.search);
         const dropToken = urlParams.get('drop');
@@ -559,7 +537,6 @@ public class Address
               try { convertCode(); } catch (e) { console.warn('Auto-convert skipped:', e); }
             }
             showDropToast('✓ Shared content loaded into editor!', 'success');
-            // Clean URL query parameter without page reload
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } catch (err) {
@@ -604,7 +581,6 @@ public class Address
         checkAndLoadSharedDrop();
       });
 
-      // Close on backdrop click
       const sdOverlayEl = document.getElementById('sdOverlay');
       if (sdOverlayEl) {
         sdOverlayEl.addEventListener('click', e => {

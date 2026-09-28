@@ -1,19 +1,10 @@
-/* ============================================================
-   curl.js - Convert a cURL command into code: JavaScript fetch,
-   Node.js axios, Python requests, Java HttpClient, Spring
-   RestClient, Go, C# and PHP. Parses bash and Windows cmd
-   quoting (as produced by browser "Copy as cURL").
-   ============================================================ */
 
 'use strict';
 
 const CurlTool = (() => {
-  // ── Shell tokenizer ────────────────────────────────────────────────────────
   function tokenize(input) {
     let s = input.trim();
-    // Windows cmd "Copy as cURL (cmd)": ^ escapes and ^ line continuations
     if (/\^"|\^\s*\n/.test(s)) s = s.replace(/\^\s*\r?\n/g, ' ').replace(/\^(.)/g, '$1');
-    // PowerShell backtick and bash backslash line continuations
     s = s.replace(/`\s*\r?\n/g, ' ').replace(/\\\r?\n/g, ' ');
     const out = [];
     let i = 0, cur = null;
@@ -28,7 +19,6 @@ const CurlTool = (() => {
         cur += s.slice(i + 1, end);
         i = end + 1;
       } else if (c === '$' && s[i + 1] === "'") {
-        // ANSI-C quoting: $'...\n...'
         let j = i + 2;
         while (j < s.length && s[j] !== "'") {
           if (s[j] === '\\') {
@@ -60,7 +50,6 @@ const CurlTool = (() => {
     return out;
   }
 
-  // ── cURL option parser ─────────────────────────────────────────────────────
   const WITH_VALUE = new Set(['-X', '--request', '-H', '--header', '-d', '--data', '--data-raw', '--data-binary', '--data-ascii', '--data-urlencode',
     '--json', '-F', '--form', '--form-string', '-u', '--user', '-b', '--cookie', '-A', '--user-agent', '-e', '--referer', '-m', '--max-time',
     '--connect-timeout', '-x', '--proxy', '--url', '-o', '--output', '-w', '--write-out', '-T', '--upload-file', '--cacert', '--cert', '--key',
@@ -79,7 +68,6 @@ const CurlTool = (() => {
       if (tok.startsWith('--') && tok.includes('=') && WITH_VALUE.has(tok.split('=')[0])) { val = tok.slice(tok.indexOf('=') + 1); tok = tok.split('=')[0]; }
       else if (/^-[A-Za-z]./.test(tok) && !tok.startsWith('--') && WITH_VALUE.has(tok.slice(0, 2))) { val = tok.slice(2); tok = tok.slice(0, 2); }
       else if (/^-[A-Za-z#46]{2,}$/.test(tok) && !tok.startsWith('--')) {
-        // combined short flags such as -sSL; the last one may take a value (-sSX POST)
         const letters = tok.slice(1).split('');
         let handled = true;
         for (let k = 0; k < letters.length; k++) {
@@ -164,7 +152,6 @@ const CurlTool = (() => {
     if (!req.url) throw new Error('No URL found in the command.');
     if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(req.url)) req.url = 'http://' + req.url;
 
-    // Build final request
     const body = req.data.length ? req.data.join('&') : null;
     if (req.get && body) { req.url += (req.url.includes('?') ? '&' : '?') + body; }
     else req.body = body;
@@ -195,14 +182,13 @@ const CurlTool = (() => {
       case 'compressed': req.compressed = true; break;
       case 'get': req.get = true; break;
       case 'head': req.head = true; break;
-      default: break;                               // silent, verbose, include, etc. don't change the request
+      default: break;
     }
   }
 
   const hasHeader = (req, name) => req.headers.some(([k]) => k.toLowerCase() === name);
 
-  // ── Code generators ────────────────────────────────────────────────────────
-  const q = s => JSON.stringify(s);                                           // double-quoted string with escapes
+  const q = s => JSON.stringify(s);
   const pyStr = s => (/'/.test(s) && !/"/.test(s) ? JSON.stringify(s) : `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t')}'`);
   const phpStr = s => `'${s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
   const indent = (text, pad) => text.split('\n').map((l, i) => (i ? pad + l : l)).join('\n');
@@ -403,7 +389,6 @@ const CurlTool = (() => {
     },
   };
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.curl';
   let els, lang = 'fetch', timer = null;
@@ -414,7 +399,7 @@ const CurlTool = (() => {
   --max-time 30 -L`;
 
   function render() {
-    try { localStorage.setItem(STORE, JSON.stringify({ cmd: els.input.value, lang })); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify({ cmd: els.input.value, lang })); } catch (_) {  }
     els.error.hidden = true;
     let req;
     try { req = parse(els.input.value); }
@@ -443,7 +428,7 @@ const CurlTool = (() => {
     els = { input: $('curlInput'), output: $('curlOutput'), error: $('curlError'), summary: $('curlSummary'), notes: $('curlNotes') };
     if (!els.input) return;
     let s = null;
-    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { s = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     els.input.value = (s && s.cmd) || SAMPLE;
     if (s && GEN[s.lang]) lang = s.lang;
     els.input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(render, 150); });

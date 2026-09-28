@@ -1,8 +1,3 @@
-/* ============================================================
-   cron.js - Cron expression explainer: parses Unix (5 fields),
-   Spring (6 fields) and Quartz (6-7 fields) expressions, describes
-   them in plain English and lists the next run times.
-   ============================================================ */
 
 'use strict';
 
@@ -23,7 +18,6 @@ const CronTool = (() => {
   const pad = n => String(n).padStart(2, '0');
   const listJoin = arr => arr.length <= 1 ? arr.join('') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
 
-  // ── Parsing ────────────────────────────────────────────────────────────────
   function fieldSpecs(dialect) {
     return {
       second: { label: 'Second', min: 0, max: 59 },
@@ -62,7 +56,6 @@ const CronTool = (() => {
       if (!part) throw new CronError(`${spec.label}: empty value in “${raw}”.`);
       const up = part.toUpperCase();
 
-      // Day-of-month specials
       if (name === 'dom' && dialect !== 'unix') {
         let m;
         if (up === 'L') { field.specials.push({ type: 'L', offset: 0 }); field.parts.push({ kind: 'L', offset: 0 }); continue; }
@@ -70,7 +63,6 @@ const CronTool = (() => {
         if (up === 'LW') { field.specials.push({ type: 'LW' }); field.parts.push({ kind: 'LW' }); continue; }
         if ((m = up.match(/^(\d+)W$/))) { const d = toNumber(m[1], spec); field.specials.push({ type: 'W', day: d }); field.parts.push({ kind: 'W', day: d }); continue; }
       }
-      // Day-of-week specials
       if (name === 'dow' && dialect !== 'unix') {
         let m;
         if ((m = up.match(/^([A-Z]{3}|\d)L$/))) { const d = normDow(toNumber(m[1], spec), dialect); field.specials.push({ type: 'lastDow', dow: d }); field.parts.push({ kind: 'lastDow', dow: d }); continue; }
@@ -102,7 +94,7 @@ const CronTool = (() => {
 
       const values = [];
       if (from <= to) for (let v = from; v <= to; v += step) values.push(v);
-      else if (name === 'dow' || name === 'month') {               // wrap-around range such as FRI-MON or NOV-FEB
+      else if (name === 'dow' || name === 'month') {
         const lo = spec.min, hi = name === 'dow' && dialect !== 'quartz' ? 6 : spec.max;
         const end = name === 'dow' && dialect !== 'quartz' ? to % 7 : to;
         for (let v = from, i = 0; ; i++) {
@@ -118,7 +110,6 @@ const CronTool = (() => {
     return field;
   }
 
-  // Day of week as 0 = Sunday … 6 = Saturday
   function normDow(v, dialect) {
     if (dialect === 'quartz') return (v - 1) % 7;
     return v % 7;
@@ -126,7 +117,6 @@ const CronTool = (() => {
 
   function detectDialect(fields) {
     if (fields.length === 7) return 'quartz';
-    // Quartz requires "?" in one day field; Spring allows it but it's rarely used there
     if (fields.length === 6) return fields.includes('?') ? 'quartz' : 'spring';
     return 'unix';
   }
@@ -159,8 +149,7 @@ const CronTool = (() => {
     return { dialect, fields: f, text, expr: expr.trim(), warnings, macro: !!macro };
   }
 
-  // ── Matching ───────────────────────────────────────────────────────────────
-  function daysInMonth(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }       // m is 1-12
+  function daysInMonth(y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
   function weekday(y, m, d) { return new Date(Date.UTC(y, m - 1, d)).getUTCDay(); }
 
   function domMatches(field, y, m, d) {
@@ -197,7 +186,6 @@ const CronTool = (() => {
   function dayMatches(p, y, m, d) {
     const { dom, dow } = p.fields;
     if (p.dialect === 'unix') {
-      // Vixie cron: if either field starts with *, both must match; otherwise either may match
       if (dom.star || dow.star) return domMatches(dom, y, m, d) && dowMatches(dow, y, m, d);
       return domMatches(dom, y, m, d) || dowMatches(dow, y, m, d);
     }
@@ -232,12 +220,11 @@ const CronTool = (() => {
       else if (!f.minute.set.has(c.mi)) next = make(c.y, c.mo, c.d, c.h, c.mi + 1, 0);
       else if (hasSec && !f.second.set.has(c.s)) next = make(c.y, c.mo, c.d, c.h, c.mi, c.s + 1);
       else { out.push(new Date(t)); next = t + unit; }
-      t = next > t ? next : t + unit;            // always move forward (DST edge cases)
+      t = next > t ? next : t + unit;
     }
     return out;
   }
 
-  // ── Description ────────────────────────────────────────────────────────────
   const onlySingles = field => field.parts.length > 0 && field.parts.every(p => p.kind === 'single');
   const singleValue = field => field.parts.length === 1 && field.parts[0].kind === 'single' ? field.parts[0].v : null;
   const time = (h, m, s) => `${pad(h)}:${pad(m)}${s ? ':' + pad(s) : ''}`;
@@ -260,10 +247,8 @@ const CronTool = (() => {
     const s = singleValue(f.second), m = singleValue(f.minute), h = singleValue(f.hour);
     const secIsZero = f.second.implicit || s === 0;
 
-    // At 09:30 / At 09:30:15
     if (m !== null && h !== null && s !== null) return `At ${time(h, m, s)}`;
 
-    // A few exact times: At 09:00, 12:00 and 18:00
     if (onlySingles(f.minute) && onlySingles(f.hour) && (secIsZero || s !== null) && f.minute.set.size * f.hour.set.size <= 6) {
       const times = [];
       [...f.hour.set].sort((a, b) => a - b).forEach(hh => [...f.minute.set].sort((a, b) => a - b).forEach(mm => times.push(time(hh, mm, s))));
@@ -362,7 +347,6 @@ const CronTool = (() => {
     return cap(unitPhrase(field, name));
   }
 
-  // Equivalent expression in the other common format
   function convert(p) {
     if (p.reboot) return null;
     const f = p.fields;
@@ -375,7 +359,6 @@ const CronTool = (() => {
     return null;
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.cron';
   let els, timer = null;
@@ -397,7 +380,7 @@ const CronTool = (() => {
 
   function render() {
     const expr = els.input.value;
-    try { localStorage.setItem(STORE, JSON.stringify({ expr, dialect: els.dialect.value, tz: els.tz.value })); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify({ expr, dialect: els.dialect.value, tz: els.tz.value })); } catch (_) {  }
     let p;
     try {
       p = parse(expr, els.dialect.value);
@@ -459,7 +442,7 @@ const CronTool = (() => {
     };
     if (!els.input) return;
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     const fromHash = decodeURIComponent(location.hash.slice(1)).replace(/_/g, ' ');
     els.input.value = fromHash || (saved && saved.expr) || '30 9 * * MON-FRI';
     if (saved && !fromHash) { els.dialect.value = saved.dialect || 'auto'; els.tz.value = saved.tz || 'local'; }
@@ -481,7 +464,7 @@ const CronTool = (() => {
       const t = e.target.textContent; e.target.textContent = 'Copied'; setTimeout(() => { e.target.textContent = t; }, 1200);
     }));
     render();
-    setInterval(() => { if (!document.hidden) render(); }, 30000);   // keep "in N minutes" fresh
+    setInterval(() => { if (!document.hidden) render(); }, 30000);
   }
 
   if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', init);

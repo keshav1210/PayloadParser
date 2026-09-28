@@ -1,8 +1,3 @@
-/* ============================================================
-   repair.js - tolerant repair for broken JSON and XML
-   Runs entirely in the browser. Each repairer returns
-   { text, fixes } where fixes is a list of what was changed.
-   ============================================================ */
 
 'use strict';
 
@@ -20,13 +15,11 @@ function stripCodeFence(text, log) {
   return text;
 }
 
-/* ─────────────────────────────── JSON ─────────────────────────────── */
 const JsonRepair = (() => {
-  // opening quote → closing quote
   const QUOTES = {
     '"': '"', "'": "'", '`': '`',
-    '\u201c': '\u201d', '\u201d': '\u201d',   // curly double quotes
-    '\u2018': '\u2019', '\u2019': '\u2019',   // curly single quotes
+    '\u201c': '\u201d', '\u201d': '\u201d',
+    '\u2018': '\u2019', '\u2019': '\u2019',
   };
   const isQuote = c => c !== undefined && Object.prototype.hasOwnProperty.call(QUOTES, c);
   const isWs = c => /[\s\u00a0\u1680\u2000-\u200b\u2028\u2029\u202f\u205f\u3000\ufeff]/.test(c);
@@ -42,11 +35,9 @@ const JsonRepair = (() => {
     let text = String(input).replace(/^\ufeff/, '');
     text = stripCodeFence(text, log);
 
-    // JSONP: callback({...});
     const jsonp = text.match(/^\s*[A-Za-z_$][\w$.]*\s*\(([\s\S]*)\)\s*;?\s*$/);
     if (jsonp && /^\s*[{[]/.test(jsonp[1])) { text = jsonp[1]; log.add('Removed JSONP wrapper'); }
 
-    // Text in front of the JSON, e.g. "Response: {...}" from a log line
     const first = text.search(/\S/);
     if (first >= 0 && !/[{["'`\u201c\u2018\d\-+./#]/.test(text[first]) && !/^\s*(true|false|null)\b/.test(text)) {
       const brace = text.search(/[{[]/);
@@ -61,7 +52,6 @@ const JsonRepair = (() => {
     const n = text.length;
     let i = 0;
 
-    // ── helpers ──
     function skip() {
       for (;;) {
         while (i < n && isWs(text[i])) i++;
@@ -83,7 +73,6 @@ const JsonRepair = (() => {
       }
     }
 
-    // Is there a `key:` at the current position?
     function keyAhead() {
       const save = i;
       let ok = false;
@@ -111,7 +100,6 @@ const JsonRepair = (() => {
       if (c === '{') return parseObject(false);
       if (c === '[') return parseArray();
       if ((isQuote(c) || /[A-Za-z_$]/.test(c)) && keyAhead()) {
-        // A "key": value where a value was expected → the opening brace is missing
         log.add('Added missing {');
         return parseObject(true);
       }
@@ -199,7 +187,6 @@ const JsonRepair = (() => {
       return '[' + items.join(',') + ']';
     }
 
-    // Returns the decoded string content
     function parseString(isKey) {
       const open = text[i];
       const close = QUOTES[open];
@@ -229,18 +216,14 @@ const JsonRepair = (() => {
           continue;
         }
 
-        // Curly-quoted strings are sometimes closed with a straight quote
         if (c === close || (!'"\'`'.includes(open) && c === '"')) {
-          // Is this really the end of the string? Look at what follows.
           let j = i + 1;
           while (j < n && (text[j] === ' ' || text[j] === '\t')) j++;
           const next = text[j];
-          // Keys always end at their closing quote; values end when a delimiter follows
           if (isKey || j >= n || /[,:}\])\r\n+]/.test(next) || text.startsWith('//', j) || text.startsWith('/*', j)) {
             i++;
             break;
           }
-          // `"a": "hello, "b": 2` → the string before "b" was never closed
           i++;
           const save = i;
           i -= 1;
@@ -303,7 +286,7 @@ const JsonRepair = (() => {
       const m = /^[+-]?(?:0[xX][0-9a-fA-F]+|(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)/.exec(chunk);
       if (!m) return parseWord();
       const after = chunk[m[0].length];
-      if (after !== undefined && /[A-Za-z_$\d]/.test(after)) return parseWord();   // 12px, 1st …
+      if (after !== undefined && /[A-Za-z_$\d]/.test(after)) return parseWord();
       const raw = m[0];
       i += raw.length;
 
@@ -329,7 +312,6 @@ const JsonRepair = (() => {
     function parseWord() {
       const chunk = text.slice(i, i + 256);
 
-      // ObjectId("…"), ISODate("…"), new Date(…), NumberLong(…)
       const call = /^(?:new\s+)?[A-Za-z_$][\w$.]*\s*\(/.exec(chunk);
       if (call) {
         i += call[0].length;
@@ -347,7 +329,6 @@ const JsonRepair = (() => {
       }
 
       const start = i;
-      // "//" only starts a comment after whitespace, so unquoted URLs like https://… survive
       const commentAt = k => (text.startsWith('//', k) || text.startsWith('/*', k)) && (k === start || isWs(text[k - 1]));
       while (i < n && !/[,}\]\r\n]/.test(text[i]) && !commentAt(i)) i++;
       const word = text.slice(start, i).trim();
@@ -360,7 +341,6 @@ const JsonRepair = (() => {
       return JSON.stringify(word);
     }
 
-    // ── top level ──
     skip();
     if (i >= n) throw new Error('There is nothing to repair');
     const values = [];
@@ -382,7 +362,6 @@ const JsonRepair = (() => {
       throw e;
     }
 
-    // Plain text with no JSON structure at all: don't pretend it was JSON
     if (values.length === 1 && /^"/.test(values[0]) && !/^\s*["'`“‘]/.test(text)) {
       throw new Error('This doesn\'t look like JSON: no objects, arrays or quoted values were found');
     }
@@ -392,14 +371,13 @@ const JsonRepair = (() => {
       result = '[' + values.join(',') + ']';
       log.add('Wrapped multiple JSON values in an array');
     }
-    JSON.parse(result);   // sanity check \u2013 throws if the repair produced something invalid
+    JSON.parse(result);
     return { text: result, fixes: log.list() };
   }
 
   return { repair };
 })();
 
-/* ─────────────────────────────── XML ─────────────────────────────── */
 const XmlRepair = (() => {
   const VOID = new Set(['br', 'hr', 'img', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr', 'param']);
   const XML_ENTITIES = new Set(['amp', 'lt', 'gt', 'quot', 'apos']);
@@ -420,8 +398,8 @@ const XmlRepair = (() => {
     let i = 0;
     let declaration = '';
     let doctype = '';
-    const top = [];        // top-level nodes: { xml, element, text }
-    const stack = [];      // open elements: { name, attrs, parts }
+    const top = [];
+    const stack = [];
 
     function escapeText(raw, where) {
       let changed = false;
@@ -505,7 +483,6 @@ const XmlRepair = (() => {
         continue;
       }
 
-      // End tag
       if (text[i + 1] === '/') {
         const m = /^<\/\s*([^\s>/<]*)\s*(>)?/.exec(text.slice(i, i + 512));
         const name = m[1];
@@ -526,7 +503,6 @@ const XmlRepair = (() => {
         continue;
       }
 
-      // Start tag
       if (/[A-Za-z_:]/.test(text[i + 1] || '')) {
         const nm = /^<([A-Za-z_:][\w:.\-]*)/.exec(text.slice(i, i + 256));
         const name = nm[1];
@@ -556,7 +532,6 @@ const XmlRepair = (() => {
               const e = text.indexOf(q, i + 1);
               const nextTag = text.indexOf('<', i + 1);
               if (e < 0 || (nextTag >= 0 && nextTag < e)) {
-                // The quote is never closed inside this tag: the value runs to the end of the tag
                 const gt = text.indexOf('>', i + 1);
                 const stop = gt >= 0 && (nextTag < 0 || gt < nextTag) ? gt : (nextTag >= 0 ? nextTag : n);
                 value = text.slice(i + 1, stop).replace(/\/$/, '');
@@ -584,7 +559,6 @@ const XmlRepair = (() => {
         }
 
         if (!selfClose && VOID.has(name.toLowerCase())) {
-          // <br>, <img …> written HTML-style \u2013 close them unless a matching end tag follows
           const endTag = new RegExp('^\\s*</' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*>', 'i');
           if (!endTag.test(text.slice(i, i + 256))) { selfClose = true; log.add('Closed HTML-style empty tags like <br>'); }
         }
@@ -594,7 +568,6 @@ const XmlRepair = (() => {
         continue;
       }
 
-      // A "<" that doesn't start a tag
       add(escapeText('<'), false);
       i++;
     }

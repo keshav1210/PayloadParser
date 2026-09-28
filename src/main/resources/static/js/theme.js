@@ -1,4 +1,3 @@
-/* theme.js - light / dark theme. Loaded in <head> so the saved theme applies before the page paints. */
 (function () {
   var KEY = 'jxe.theme';
 
@@ -10,7 +9,7 @@
   }
 
   var saved = null;
-  try { saved = localStorage.getItem(KEY); } catch (e) { /* storage disabled */ }
+  try { saved = localStorage.getItem(KEY); } catch (e) {  }
   apply(saved);
 
   window.updateThemeButtons = function () {
@@ -26,7 +25,7 @@
   window.toggleTheme = function () {
     var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     apply(next);
-    try { localStorage.setItem(KEY, next); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(KEY, next); } catch (e) {  }
     window.updateThemeButtons();
   };
 })();

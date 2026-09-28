@@ -121,7 +121,6 @@
 
 <div class="container" id="mainContainer">
 
-    <!-- Left Panel -->
     <div class="panel" id="leftPanel">
         <div class="panel-header" id="leftPanelHeader">
             <span>Editor (CSV Input)</span>
@@ -139,10 +138,8 @@
         <div class="status" id="inputStatus">Ready — paste or upload CSV here</div>
     </div>
 
-    <!-- Middle Controls -->
     <div class="middle-controls" id="middleControls">
         <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
-        <!-- hidden select so shared JS doesn't break -->
         <select id="formatType" style="display:none;"><option value="csv">CSV</option></select>
         <select id="formatType2" style="display:none;"><option value="csv">CSV</option></select>
         <button class="btn" onclick="formatData('CSV_TO_JSON')">Convert to JSON</button>
@@ -150,7 +147,6 @@
         <button class="btn" id="convertToSqlBtn">Convert to SQL</button>
     </div>
 
-    <!-- Right Panel -->
     <div class="panel" id="rightPanel">
         <div class="panel-header" id="rightPanelHeader">
             <span>Viewer</span>
@@ -255,24 +251,18 @@ Ann,,7</code></pre>
 </ul>
 </article>
 
-<!-- ════════════════════════════════════════════════════════
-     ★  SHARE MODAL
-     ════════════════════════════════════════════════════════ -->
 <div class="sd-overlay" id="sdOverlay">
     <div class="sd-modal">
 
-        <!-- Initial form (source picker + one-time toggle + share btn) -->
         <div id="sdForm">
             <h3>Share Content</h3>
             <p class="sd-sub">Choose what to share and generate an instant link</p>
 
-            <!-- Source: input or output -->
             <div class="sd-source-row">
                 <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
                 <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
             </div>
 
-            <!-- One-time toggle -->
             <div class="sd-toggle-row">
                 <div class="sd-toggle-label">
                     <strong>🔥 One-time link</strong>
@@ -284,7 +274,6 @@ Ann,,7</code></pre>
                 </label>
             </div>
 
-            <!-- Recipient Email (Optional) -->
             <div class="sd-email-box">
                 <label for="sdEmail">Recipient Email (Optional)</label>
                 <div class="sd-email-input-wrapper">
@@ -302,19 +291,16 @@ Ann,,7</code></pre>
             </div>
         </div>
 
-        <!-- Loading state -->
         <div class="sd-loader" id="sdLoader">
             <div class="sd-spinner"></div>
             Uploading to server…
         </div>
 
-        <!-- Success state -->
         <div id="sdSuccess" style="display:none">
             <div class="sd-check">✓</div>
             <h3>Share Drop Ready!</h3>
             <p class="sd-sub" id="sdSuccessSub">—</p>
 
-            <!-- Key display -->
             <div class="sd-key-card">
                 <div class="sd-key-label">
                     <span>🔑 Drop Key</span>
@@ -326,7 +312,6 @@ Ann,,7</code></pre>
                 </div>
             </div>
 
-            <!-- URL display -->
             <div class="sd-url-row">
                 <span class="sd-url-text" id="sdUrlText">—</span>
                 <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
@@ -346,7 +331,6 @@ Ann,,7</code></pre>
 <br>
 <div id="footer"></div>
 
-<!-- Convert to SQL Modal -->
 <div id="sqlModalOverlay" class="sql-modal-overlay" style="display: none;">
     <div class="sql-modal">
         <div class="sql-modal-header">
@@ -355,7 +339,6 @@ Ann,,7</code></pre>
         </div>
 
         <div class="sql-modal-body">
-            <!-- Table name -->
             <div class="sql-form-group">
                 <label for="sqlTableName">Table name</label>
                 <input
@@ -367,7 +350,6 @@ Ann,,7</code></pre>
                 />
             </div>
 
-            <!-- DB type -->
             <div class="sql-form-group">
                 <label for="sqlDbType">Dialect</label>
                 <select id="sqlDbType" class="sql-select">
@@ -378,7 +360,6 @@ Ann,,7</code></pre>
                 </select>
             </div>
 
-            <!-- Include nulls -->
             <div class="sql-form-group sql-checkbox-group">
                 <label class="sql-checkbox-label">
                     <input
@@ -402,13 +383,12 @@ Ann,,7</code></pre>
     </div>
 </div>
 
-<script src="/js/layout-loader.js?v=10"></script>
+<script src="/js/layout-loader.js?v=12"></script>
 <script src="/js/repair.js?v=5"></script>
 <script src="/js/jsonxmlformatter.js?v=7"></script>
 <script src="/js/jsonpath.js?v=1"></script>
 <script src="/js/editor-tools.js?v=2"></script>
 <script>
-    // File upload → paste into left editor
     document.getElementById('csvUploadInput').addEventListener('change', function(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -419,7 +399,7 @@ Ann,,7</code></pre>
         codeEditor.scrollTop = 0;
       };
       reader.readAsText(file);
-      e.target.value = ''; // reset so same file can be re-uploaded
+      e.target.value = '';
     });
 </script>
 </body>

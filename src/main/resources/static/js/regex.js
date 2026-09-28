@@ -1,8 +1,3 @@
-/* ============================================================
-   regex.js - Regex tester: live matches, replace, explanation
-   and code snippets. Matching runs in a Web Worker with a time
-   limit, so a runaway pattern can't freeze the page.
-   ============================================================ */
 
 'use strict';
 
@@ -14,7 +9,6 @@ const RegexTool = (() => {
 
   const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-  // ── Worker ─────────────────────────────────────────────────────────────────
   const WORKER_SRC = `
     self.onmessage = e => {
       const { id, pattern, flags, text, replacement, max } = e.data;
@@ -56,7 +50,7 @@ const RegexTool = (() => {
         resolve({ id, timeout: true });
       }, TIMEOUT_MS);
       w.onmessage = e => {
-        if (e.data.id !== jobId) return;      // an older job
+        if (e.data.id !== jobId) return;
         clearTimeout(timer);
         resolve(e.data);
       };
@@ -64,7 +58,6 @@ const RegexTool = (() => {
     });
   }
 
-  // ── Explanation ────────────────────────────────────────────────────────────
   const ESCAPES = {
     d: 'a digit (0-9)', D: 'any character that is not a digit',
     w: 'a word character (letter, digit or _)', W: 'any character that is not a word character',
@@ -192,7 +185,6 @@ const RegexTool = (() => {
         i += q.length;
         continue;
       } else {
-        // Run of literal characters; a quantifier applies only to the last one
         let j = i;
         while (j < pattern.length && !'\\[]()|^$.*+?{'.includes(pattern[j])) j++;
         if (pattern[j] === '{' && !quantAt(j)) j++;
@@ -202,7 +194,6 @@ const RegexTool = (() => {
         push(lit, lit.length === 1 ? `The character “${lit}”` : `The text “${lit}”`);
         i = j;
       }
-      // quantifier directly after an item
       const q = quantAt(i);
       if (q) {
         push(q, 'The previous item, ' + quantifierText(q));
@@ -212,7 +203,6 @@ const RegexTool = (() => {
     return rows;
   }
 
-  // ── Code snippets ──────────────────────────────────────────────────────────
   const javaString = s => '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
 
   function snippet(lang, pattern, flags) {
@@ -245,7 +235,6 @@ const RegexTool = (() => {
     return '';
   }
 
-  // ── Samples ────────────────────────────────────────────────────────────────
   const SAMPLES = {
     email:  { p: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}', f: 'g', t: 'Write to support@example.com or sales.team@shop.co.uk.\nNot an email: user@localhost' },
     url:    { p: 'https?:\\/\\/[\\w.-]+(?:\\.[a-z]{2,})(?::\\d+)?(?:\\/[^\\s]*)?', f: 'gi', t: 'Docs: https://example.com/docs?page=2\nLocal: http://api.test.io:8080/v1/users\nNot a link: ftp://files.example.com' },
@@ -260,7 +249,6 @@ const RegexTool = (() => {
     trim:   { p: '^[ \\t]+|[ \\t]+$', f: 'gm', t: '   leading spaces\ntrailing spaces   \n\t tabs and spaces \t', r: '' },
   };
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   let els, debounce = null, lastMatches = [];
 
   function flags() {
@@ -272,7 +260,7 @@ const RegexTool = (() => {
   }
 
   function save() {
-    try { localStorage.setItem(STORE, JSON.stringify(state())); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, JSON.stringify(state())); } catch (_) {  }
   }
 
   function state() {
@@ -302,7 +290,6 @@ const RegexTool = (() => {
     els.backdrop.scrollTop = els.text.scrollTop;
   }
 
-  // Name of each capturing group by position (null when unnamed)
   function groupNames(pattern) {
     const names = [];
     let inClass = false;
@@ -414,8 +401,8 @@ const RegexTool = (() => {
     if (!els.pattern) return;
 
     let initial = null;
-    if (location.hash.length > 1) { try { initial = JSON.parse(fromB64(location.hash.slice(1))); } catch (_) { /* ignore */ } }
-    if (!initial) { try { initial = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ } }
+    if (location.hash.length > 1) { try { initial = JSON.parse(fromB64(location.hash.slice(1))); } catch (_) {  } }
+    if (!initial) { try { initial = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  } }
     load(initial || { ...SAMPLES.date });
 
     [els.pattern, els.text, els.replace].forEach(e => e.addEventListener('input', schedule));

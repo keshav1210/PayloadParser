@@ -1,9 +1,3 @@
-/* ============================================================
-   password.js - Password and passphrase generator with an
-   entropy-based strength estimate. Uses crypto.getRandomValues
-   with rejection sampling, so every character is equally likely.
-   Passphrases use the EFF large wordlist (js/vendor/eff-wordlist.js).
-   ============================================================ */
 
 'use strict';
 
@@ -16,7 +10,6 @@ const PasswordTool = (() => {
   };
   const AMBIGUOUS = 'Il1O0o|`\'"';
 
-  // Uniform random integer in [0, n)
   function randInt(n) {
     if (n <= 0) throw new Error('empty range');
     const limit = Math.floor(0x100000000 / n) * n;
@@ -44,7 +37,6 @@ const PasswordTool = (() => {
     if (!sets.length) throw new Error('Choose at least one kind of character.');
     const all = [...new Set(sets.join(''))].join('');
     if (o.length < sets.length) throw new Error(`Use a length of at least ${sets.length} to include every chosen kind.`);
-    // one from each chosen set, the rest from everything, then shuffle
     const chars = sets.map(s => s[randInt(s.length)]);
     while (chars.length < o.length) chars.push(all[randInt(all.length)]);
     return { value: shuffle(chars).join(''), bits: o.length * Math.log2(all.length), pool: all.length };
@@ -64,9 +56,8 @@ const PasswordTool = (() => {
     return { value: list.join(o.separator), bits, pool: words.length };
   }
 
-  // Rough time to crack for an attacker who knows exactly how the password was made
   function strength(bits) {
-    const guessesPerSec = 1e11;                // a large GPU cluster against a fast hash
+    const guessesPerSec = 1e11;
     const seconds = 2 ** (bits - 1) / guessesPerSec;
     const units = [['second', 60], ['minute', 60], ['hour', 24], ['day', 365], ['year', 1000], ['thousand years', 1000], ['million years', 1000], ['billion years', Infinity]];
     let v = seconds, label = 'second';
@@ -80,7 +71,6 @@ const PasswordTool = (() => {
     return { label: level[0], level: level[1], time };
   }
 
-  // ── UI ─────────────────────────────────────────────────────────────────────
   const $ = id => document.getElementById(id);
   const STORE = 'jxe.password';
   let els, mode = 'password', wordsLoading = null;
@@ -101,7 +91,7 @@ const PasswordTool = (() => {
         noAmbiguous: els.noAmbiguous.checked, exclude: els.exclude.value, words: els.words.value, separator: els.separator.value,
         capitalize: els.capitalize.checked, addNumber: els.addNumber.checked, count: els.count.value,
       }));
-    } catch (_) { /* ignore */ }
+    } catch (_) {  }
   }
 
   function loadWords() {
@@ -187,7 +177,7 @@ const PasswordTool = (() => {
     };
     if (!els.main) return;
     let saved = null;
-    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) { /* ignore */ }
+    try { saved = JSON.parse(localStorage.getItem(STORE)); } catch (_) {  }
     if (saved) {
       ['length', 'exclude', 'words', 'separator', 'count'].forEach(k => { if (saved[k] !== undefined) els[k].value = saved[k]; });
       ['upper', 'lower', 'digits', 'symbols', 'noAmbiguous', 'capitalize'].forEach(k => { if (saved[k] !== undefined) els[k].checked = saved[k]; });

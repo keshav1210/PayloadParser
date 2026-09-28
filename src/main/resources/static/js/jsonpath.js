@@ -1,16 +1,7 @@
-/* ============================================================
-   jsonpath.js - JSONPath queries over the editor's AST
-   (see parseJsonAst in jsonxmlformatter.js). Working on the AST keeps
-   big numbers exact. Supports:
-     $  .key  ['key']  [0]  [-1]  [*]  .*  ..key  ..*  [0,2]  ['a','b']
-     [start:end:step]  [?(@.price < 10 && @.tags)]  [?@.isbn]
-   Filters: == != < <= > >= =~ /regex/i  && || !  ( )  .length
-   ============================================================ */
 
 'use strict';
 
 const JsonPath = (() => {
-  // ── AST helpers ────────────────────────────────────────────────────────────
   const isContainer = n => n && (n.type === 'object' || n.type === 'array');
 
   function children(n) {
@@ -24,7 +15,7 @@ const JsonPath = (() => {
     if (!n) return undefined;
     if (n.type === 'object') {
       let found;
-      n.entries.forEach(e => { if (unquote(e.key.raw) === key) found = e.value; });   // last duplicate wins, like JSON.parse
+      n.entries.forEach(e => { if (unquote(e.key.raw) === key) found = e.value; });
       return found;
     }
     if (n.type === 'array' && typeof key === 'number') {
@@ -34,7 +25,6 @@ const JsonPath = (() => {
     return undefined;
   }
 
-  // AST node → comparable JS value (containers stay as nodes)
   function value(n) {
     if (n === undefined) return undefined;
     switch (n.type) {
@@ -46,7 +36,6 @@ const JsonPath = (() => {
     }
   }
 
-  // ── Path parser ────────────────────────────────────────────────────────────
   function parse(expr) {
     const src = expr.trim();
     let i = 0;
@@ -76,13 +65,12 @@ const JsonPath = (() => {
     }
 
     function readBracket() {
-      i++; // [
+      i++;
       ws();
       if (src[i] === '?') {
         i++;
         ws();
         let depth = 0, start = i, inStr = null;
-        // read up to the matching ]
         for (; i < src.length; i++) {
           const c = src[i];
           if (inStr) { if (c === '\\') i++; else if (c === inStr) inStr = null; continue; }
@@ -153,7 +141,6 @@ const JsonPath = (() => {
     return -1;
   }
 
-  // ── Filter expressions ─────────────────────────────────────────────────────
   function parseFilter(src) {
     let i = 0;
     const err = msg => { throw new Error(`Filter: ${msg} near "${src.slice(i, i + 12)}"`); };
@@ -199,7 +186,6 @@ const JsonPath = (() => {
       if (c === '@' || c === '$') {
         const start = i;
         i++;
-        // relative path: stop at an operator, ) or whitespace outside brackets
         let depth = 0, inStr = null;
         for (; i < src.length; i++) {
           const ch = src[i];
@@ -242,7 +228,6 @@ const JsonPath = (() => {
     }
   }
 
-  // ── Evaluation ─────────────────────────────────────────────────────────────
   const LENGTH = { type: 'length' };
 
   function select(item, sel, root) {

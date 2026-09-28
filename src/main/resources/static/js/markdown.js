@@ -1,9 +1,3 @@
-/* ============================================================
-   markdown.js - Markdown editor with live preview (GitHub-style
-   tables, task lists, fenced code), toolbar, word count and
-   export to HTML or .md. Rendering: marked (MIT); the HTML is
-   cleaned with DOMPurify so pasted content can't run scripts.
-   ============================================================ */
 
 'use strict';
 
@@ -48,7 +42,7 @@ See the [documentation](https://example.com/docs) for more.
 
   function render() {
     const md = els.input.value;
-    try { localStorage.setItem(STORE, md); } catch (_) { /* ignore */ }
+    try { localStorage.setItem(STORE, md); } catch (_) {  }
     const raw = marked.parse(md, { gfm: true, breaks: els.breaks.checked });
     els.preview.innerHTML = DOMPurify.sanitize(raw, { ADD_ATTR: ['target'] });
     els.preview.querySelectorAll('a[href^="http"]').forEach(a => { a.target = '_blank'; a.rel = 'noopener noreferrer'; });
@@ -62,7 +56,6 @@ See the [documentation](https://example.com/docs) for more.
     timer = setTimeout(render, 120);
   }
 
-  // ── Toolbar ────────────────────────────────────────────────────────────────
   function wrap(before, after = before, placeholder = 'text') {
     const ta = els.input;
     const { selectionStart: s, selectionEnd: e, value } = ta;
@@ -108,13 +101,11 @@ See the [documentation](https://example.com/docs) for more.
     hr: () => wrap('\n\n---\n\n', '', ''),
   };
 
-  // ── Export ─────────────────────────────────────────────────────────────────
   const EXPORT_CSS = `body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;max-width:820px;margin:40px auto;padding:0 20px;color:#1f2328}
 h1,h2{border-bottom:1px solid #d0d7de;padding-bottom:.3em}code{background:#f6f8fa;padding:.2em .4em;border-radius:6px;font:85% Consolas,monospace}
 pre{background:#f6f8fa;padding:16px;border-radius:6px;overflow:auto}pre code{background:none;padding:0}blockquote{margin:0;padding:0 1em;color:#59636e;border-left:.25em solid #d0d7de}
 table{border-collapse:collapse}th,td{border:1px solid #d0d7de;padding:6px 13px}img{max-width:100%}a{color:#0969da}`;
 
-  // Print layout for PDF: page size, margins, page numbers, no code blocks or rows split across pages
   const PRINT_CSS = size => `@page{size:${size};margin:18mm 16mm 20mm;@bottom-right{content:counter(page) " / " counter(pages);font:9pt -apple-system,"Segoe UI",Arial,sans-serif;color:#8c959f}}
 html,body{background:#fff}body{max-width:none;margin:0;padding:0;font-size:11pt;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 h1{font-size:22pt}h2{font-size:16pt}h3{font-size:13pt}h1,h2,h3,h4{break-after:avoid;page-break-after:avoid}
@@ -122,7 +113,6 @@ pre{white-space:pre-wrap;word-break:break-word;overflow:visible;font-size:9pt}co
 table{width:auto;max-width:100%}thead{display:table-header-group}p,li{orphans:3;widows:3}a{text-decoration:none}
 input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:none;margin-left:-1.2em}`;
 
-  // Wait for images in the print frame (max 4 s) so they appear in the PDF
   function imagesLoaded(doc) {
     const imgs = [...doc.images].filter(i => !i.complete);
     return Promise.race([
@@ -145,7 +135,6 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
     doc.close();
     await imagesLoaded(doc);
 
-    // Browsers name the saved PDF after the page title
     const oldTitle = document.title;
     document.title = title;
     const cleanup = () => {
@@ -157,7 +146,6 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
     setTimeout(() => { els.pdfHint.hidden = true; }, 12000);
     frame.contentWindow.focus();
     frame.contentWindow.print();
-    // Some browsers don't fire afterprint for iframes; restore anyway
     setTimeout(() => { if (document.title === title) document.title = oldTitle; }, 3000);
     setTimeout(() => frame.isConnected && frame.remove(), 60000);
   }
@@ -189,7 +177,7 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
     els = { input: $('mdInput'), preview: $('mdPreview'), stats: $('mdStats'), breaks: $('mdBreaks'), layout: $('mdLayout'), paper: $('mdPaper'), pdfHint: $('mdPdfHint') };
     if (!els.input) return;
     let saved = null;
-    try { saved = localStorage.getItem(STORE); } catch (_) { /* ignore */ }
+    try { saved = localStorage.getItem(STORE); } catch (_) {  }
     els.input.value = saved !== null && saved !== '' ? saved : SAMPLE;
 
     els.input.addEventListener('input', schedule);
@@ -206,7 +194,6 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
       else if (k === 'i') { e.preventDefault(); ACTIONS.italic(); }
       else if (k === 'k' && e.shiftKey) { e.preventDefault(); ACTIONS.link(); }
     });
-    // keep the preview roughly in step with the editor
     els.input.addEventListener('scroll', () => {
       const ta = els.input, pv = els.preview;
       const ratio = ta.scrollTop / Math.max(1, ta.scrollHeight - ta.clientHeight);
@@ -221,8 +208,8 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
       download('document.html', `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${title}</title>\n<style>${EXPORT_CSS}</style>\n</head>\n<body>\n${els.preview.innerHTML}\n</body>\n</html>\n`, 'text/html');
     });
     $('mdDownloadPdf').addEventListener('click', e => exportPdf(e.currentTarget));
-    try { const p = localStorage.getItem(STORE + '.paper'); if (p) els.paper.value = p; } catch (_) { /* ignore */ }
-    els.paper.addEventListener('change', () => { try { localStorage.setItem(STORE + '.paper', els.paper.value); } catch (_) { /* ignore */ } });
+    try { const p = localStorage.getItem(STORE + '.paper'); if (p) els.paper.value = p; } catch (_) {  }
+    els.paper.addEventListener('change', () => { try { localStorage.setItem(STORE + '.paper', els.paper.value); } catch (_) {  } });
     $('mdOpen').addEventListener('change', e => {
       const f = e.target.files[0];
       if (f) f.text().then(t => { els.input.value = t; render(); });

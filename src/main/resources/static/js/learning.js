@@ -1,4 +1,3 @@
-// Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -12,7 +11,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Highlight current section in TOC while scrolling
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('.section');
     const scrollPos = window.scrollY + 100;

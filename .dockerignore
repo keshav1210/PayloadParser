@@ -2,3 +2,5 @@
 .git
 target
 *.log
+frontend-build/node_modules
+frontend-build/dist
