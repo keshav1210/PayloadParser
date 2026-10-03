@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Date Calculator – Days Between Dates &amp; Business Days</title>
+  <meta name="description" content="Count the days, weeks, months and business days between two dates, add or subtract days from a date, and convert Excel serial numbers to dates and back.">
+  <link rel="canonical" href="https://jsonxmleditor.com/date-calculator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Date Calculator">
+  <meta property="og:description" content="Days between dates, business days, add or subtract days and months, and Excel serial date conversion.">
+  <meta property="og:url" content="https://jsonxmleditor.com/date-calculator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Date Calculator">
+  <meta name="twitter:description" content="Days between dates, business days, add or subtract days and months, and Excel serial date conversion.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Date Calculator",
+      "url": "https://jsonxmleditor.com/date-calculator",
+      "description": "Date difference, business days, date arithmetic and Excel serial date conversion.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Days between two dates",
+        "Years, months and days",
+        "Business days (Monday to Friday)",
+        "Add or subtract days, weeks, months, years or business days",
+        "Excel serial number to date and back (1900 and 1904 systems)",
+        "ISO week number and day of the year"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Date Calculator",
+          "item": "https://jsonxmleditor.com/date-calculator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I calculate the number of days between two dates?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Pick the start and end date. The calculator shows the days between them, plus the same span as weeks, months and years and the number of business days."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I count business days between two dates?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Enter both dates; the business day count (Monday to Friday) is shown under the total. It matches Excel’s NETWORKDAYS without a holiday list, minus one day unless you tick “Include the end date”."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What date is 90 days from today?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use “Add or subtract”: today’s date is filled in already, so type 90 and choose days. You can also add business days, weeks, months or years."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I convert an Excel serial number to a date?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Type the number into the Serial box. For example, 45678 is 21 January 2025. Decimal parts are converted to a time of day."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What week number is a date?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Enter it in the Excel serial date box; the ISO week number and day of the year are shown along with the serial number."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Date Calculator</span></nav>
+  <section class="tool-head">
+    <h1>Date Calculator</h1>
+    <p>How many days until a deadline, how many working days in a project, what date is 90 days from now, and what date Excel means by 45678, all on one page.</p>
+  </section>
+
+<div class="calc-grid">
+    <section class="calc-card">
+      <h2>Days between two dates</h2>
+      <div class="calc-line">From <input id="dtA" class="text-input" type="date" aria-label="Start date"> <button type="button" class="mini-btn" data-dt-today="dtA">Today</button></div>
+      <div class="calc-line" style="margin-top:8px">To <input id="dtB" class="text-input" type="date" aria-label="End date" style="margin-left:17px"> <button type="button" class="mini-btn" data-dt-today="dtB">Today</button></div>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="dtInc"> Include the end date</label>
+      <div class="calc-result" id="dtOut" aria-live="polite"></div>
+    </section>
+    <section class="calc-card">
+      <h2>Add or subtract</h2>
+      <div class="calc-line"><input id="adBase" class="text-input" type="date" aria-label="Start date"> <select id="adOp" aria-label="Add or subtract"><option value="add">plus</option><option value="sub">minus</option></select></div>
+      <div class="calc-line" style="margin-top:8px"><input id="adN" class="text-input" inputmode="numeric" value="90" aria-label="Amount" style="width:90px"> <select id="adUnit" aria-label="Unit"><option value="days">days</option><option value="bdays">business days</option><option value="weeks">weeks</option><option value="months">months</option><option value="years">years</option></select></div>
+      <div class="calc-out" id="adOut" aria-live="polite"></div>
+      <h2 style="margin-top:22px">Excel serial dates</h2>
+      <div class="calc-line">Date <input id="xsDate" class="text-input" type="date" aria-label="Date"></div>
+      <div class="calc-out" id="xsDateOut" style="font-size:14px"></div>
+      <div class="calc-line" style="margin-top:8px">Serial <input id="xsSerial" class="text-input" inputmode="decimal" value="45678" aria-label="Excel serial number"></div>
+      <div class="calc-out" id="xsSerialOut"></div>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="xs1904"> 1904 date system (old Mac Excel)</label>
+    </section>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Counting days between dates</h2>
+    <p>By default the result is the number of days from the start date to the end date, so Monday to Friday of the same week is 4 days. Tick <strong>Include the end date</strong> to count both days (5), which is what you usually want for leave, hotel nights versus days, or project durations “from … to … inclusive”.</p>
+    <p><strong>Business days</strong> counts Monday to Friday only. Public holidays differ by country and aren't subtracted, so take off any that fall in the period. Months are calendar months: 31 January to 28 February is 28 days, or 0 months and 28 days.</p>
+
+    <h2>Adding months to a date</h2>
+    <p>Adding a month keeps the day of the month where possible. When the target month is shorter, the result is its last day: 31 January plus one month is 28 February (29 in a leap year), the same as Excel's <code>EDATE</code>.</p>
+
+    <h2>Excel serial dates</h2>
+    <p>Excel stores dates as numbers: the number of days since 31 December 1899, so 1 January 1900 is 1 and 1 January 2025 is 45658. Times are the fraction of the day, so 45658.5 is noon. When a CSV export or database shows a column of numbers like <code>45678</code> where you expected dates, convert them here, or fix a whole column at once with the <a href="/data-cleaner">data cleaner</a>.</p>
+    <p>Two quirks: Excel treats 1900 as a leap year (serial 60 is the non-existent 29 February 1900), kept for compatibility with Lotus 1-2-3; and old Mac versions of Excel counted from 1904, which shifts every date by 1,462 days. Tick the 1904 option if your dates are four years off. For Unix timestamps, use the <a href="/timestamp-converter">timestamp converter</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I calculate the number of days between two dates?</summary>
+        <p>Pick the start and end date. The calculator shows the days between them, plus the same span as weeks, months and years and the number of business days.</p>
+      </details>
+      <details>
+        <summary>How do I count business days between two dates?</summary>
+        <p>Enter both dates; the business day count (Monday to Friday) is shown under the total. It matches Excel’s NETWORKDAYS without a holiday list, minus one day unless you tick “Include the end date”.</p>
+      </details>
+      <details>
+        <summary>What date is 90 days from today?</summary>
+        <p>Use “Add or subtract”: today’s date is filled in already, so type 90 and choose days. You can also add business days, weeks, months or years.</p>
+      </details>
+      <details>
+        <summary>How do I convert an Excel serial number to a date?</summary>
+        <p>Type the number into the Serial box. For example, 45678 is 21 January 2025. Decimal parts are converted to a time of day.</p>
+      </details>
+      <details>
+        <summary>What week number is a date?</summary>
+        <p>Enter it in the Excel serial date box; the ISO week number and day of the year are shown along with the serial number.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/timestamp-converter">
+        <span class="icon">⌚</span>
+        <h3>Timestamp Converter</h3>
+        <p>Unix timestamps to dates and back, and times across time zones.</p>
+      </a>
+      <a class="tool-card" href="/cron-expression">
+        <span class="icon">⏱</span>
+        <h3>Cron Expression Explainer</h3>
+        <p>Understand cron schedules in plain English and see the next run times.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/statistics-calculator">
+        <span class="icon">σ</span>
+        <h3>Statistics Calculator</h3>
+        <p>Mean, median, mode, standard deviation, quartiles and outliers for a list of numbers.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/quickcalc.js?v=1"></script>
+</body>
+</html>

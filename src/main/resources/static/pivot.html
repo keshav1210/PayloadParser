@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Online Pivot Table – Summarise CSV &amp; Excel Data</title>
+  <meta name="description" content="Make a pivot table from a CSV or Excel file in seconds: group by rows and columns, sum, count or average values, group dates by month and export the result.">
+  <link rel="canonical" href="https://jsonxmleditor.com/pivot-table">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Pivot Table for CSV and Excel Files">
+  <meta property="og:description" content="Group, total and cross-tabulate CSV or Excel data in your browser, then export or chart it.">
+  <meta property="og:url" content="https://jsonxmleditor.com/pivot-table">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Pivot Table for CSV and Excel Files">
+  <meta name="twitter:description" content="Group, total and cross-tabulate CSV or Excel data in your browser, then export or chart it.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Online Pivot Table",
+      "url": "https://jsonxmleditor.com/pivot-table",
+      "description": "Create pivot tables from CSV, Excel and JSON data in the browser.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Rows, columns and values like Excel",
+        "Sum, count, average, min, max and count distinct",
+        "Group dates by year, quarter, month or weekday",
+        "Show as % of total, row or column",
+        "Heat map shading",
+        "Export CSV or Excel, or send to the chart maker"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Pivot Table",
+          "item": "https://jsonxmleditor.com/pivot-table"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I create a pivot table without Excel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open your CSV or Excel file on this page, choose a field for rows, optionally one for columns, and the value to sum, count or average. The pivot table is built instantly in your browser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I count rows instead of summing a column?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Set Values to Count and the value field to “(rows)” to count rows, or pick a field to count its non-empty values. “Count distinct” counts unique values, such as unique customers per region."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I group dates by month in a pivot table?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Put the date column in Rows or Columns and set “Group dates by” to Month. Year, quarter, month of year and weekday are also available."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many rows can it handle?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Files with hundreds of thousands of rows work in most browsers. The column field can have up to 80 different values; put fields with more values in Rows."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The pivot table is calculated in your browser and your file never leaves your computer."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Pivot Table</span></nav>
+  <section class="tool-head">
+    <h1>Pivot Table</h1>
+    <p>Open a CSV or Excel file, pick what goes in the rows, the columns and the values, and get a summary table with totals, just like a pivot table in Excel, without Excel. Your data stays in your browser.</p>
+  </section>
+
+<div id="pvSource"></div>
+
+  <div id="pvWork" hidden style="margin-top:14px">
+    <section class="pane">
+      <div class="pv-fields">
+        <label class="field-inline">Rows <select id="pvRows"></select></label>
+        <label class="field-inline">then <select id="pvRows2"></select></label>
+        <label class="field-inline">Columns <select id="pvCols"></select></label>
+        <button type="button" class="mini-btn" id="pvSwap" title="Swap rows and columns">⇄</button>
+        <label class="field-inline">Values <select id="pvAgg">
+          <option value="sum">Sum</option><option value="count">Count</option><option value="avg">Average</option>
+          <option value="min">Min</option><option value="max">Max</option><option value="distinct">Count distinct</option>
+        </select> of <select id="pvVal"></select></label>
+      </div>
+      <div class="pv-fields" style="border-top:1px solid var(--border)">
+        <label class="field-inline" id="pvDateWrap">Group dates by <select id="pvDate">
+          <option value="none">Day (as is)</option><option value="year">Year</option><option value="quarter">Quarter</option>
+          <option value="month" selected>Month</option><option value="monthname">Month of year</option><option value="weekday">Weekday</option>
+        </select></label>
+        <label class="field-inline">Show as <select id="pvShow">
+          <option value="value">Values</option><option value="total">% of grand total</option><option value="row">% of row total</option><option value="col">% of column total</option>
+        </select></label>
+        <label class="field-inline">Sort <select id="pvSort">
+          <option value="label">By label</option><option value="desc">Largest first</option><option value="asc">Smallest first</option>
+        </select></label>
+        <label class="check"><input type="checkbox" id="pvHeat" checked> Heat map</label>
+      </div>
+    </section>
+    <div id="pvError" class="error-box" hidden style="margin-top:12px"></div>
+    <div class="data-bar" style="margin-top:12px">
+      <div class="data-title"><strong>Result</strong><span id="pvInfo"></span></div>
+      <span class="muted" id="pvNote"></span>
+      <button type="button" class="btn" id="pvChart">Chart this →</button>
+      <button type="button" class="btn" data-pv-export="csv">Download CSV</button>
+      <button type="button" class="btn" data-pv-export="xlsx">Download Excel</button>
+    </div>
+    <div class="pv-wrap" id="pvTable"></div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to make a pivot table online</h2>
+    <ol>
+      <li><strong>Open a file</strong>: CSV, Excel or JSON. Or click “Try sample data” for a small sales dataset.</li>
+      <li><strong>Rows</strong>: the field to group by, such as region or product. Add a second level with “then”.</li>
+      <li><strong>Columns</strong> (optional): a field to spread across the top, such as year or status. Leave it at “(none)” for a simple grouped list.</li>
+      <li><strong>Values</strong>: what to calculate in each cell, such as the sum of revenue or a count of orders.</li>
+    </ol>
+    <p>The table updates as you change any setting, with row, column and grand totals. Fields are pre-selected from your data, so you usually see a useful summary straight away.</p>
+
+    <h2>Grouping dates</h2>
+    <p>When a row or column field contains dates, group them by year, quarter or month to see trends, by “month of year” to compare seasons across years, or by weekday to see which days are busiest. Dates in ISO format (<code>2026-03-14</code>) are recognised; use the <a href="/data-cleaner">data cleaner</a> to convert other formats first.</p>
+
+    <h2>Percentages and heat map</h2>
+    <p>“Show as” turns sums and counts into shares: of the grand total, of each row (what share of a region's sales each product makes) or of each column. The heat map shades cells by size so the biggest numbers stand out.</p>
+
+    <h2>From pivot to chart</h2>
+    <p><strong>Chart this</strong> opens the result in the <a href="/chart-maker">chart maker</a>, already loaded. You can also download the pivot as CSV or Excel. For more complex summaries, such as filtering before grouping or calculating ratios, use <a href="/csv-sql">SQL on CSV</a> with <code>GROUP BY</code> or <code>PIVOT</code>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I create a pivot table without Excel?</summary>
+        <p>Open your CSV or Excel file on this page, choose a field for rows, optionally one for columns, and the value to sum, count or average. The pivot table is built instantly in your browser.</p>
+      </details>
+      <details>
+        <summary>Can I count rows instead of summing a column?</summary>
+        <p>Yes. Set Values to Count and the value field to “(rows)” to count rows, or pick a field to count its non-empty values. “Count distinct” counts unique values, such as unique customers per region.</p>
+      </details>
+      <details>
+        <summary>How do I group dates by month in a pivot table?</summary>
+        <p>Put the date column in Rows or Columns and set “Group dates by” to Month. Year, quarter, month of year and weekday are also available.</p>
+      </details>
+      <details>
+        <summary>How many rows can it handle?</summary>
+        <p>Files with hundreds of thousands of rows work in most browsers. The column field can have up to 80 different values; put fields with more values in Rows.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded?</summary>
+        <p>No. The pivot table is calculated in your browser and your file never leaves your computer.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/chart-maker">
+        <span class="icon">▁▃▅</span>
+        <h3>Chart Maker</h3>
+        <p>Bar, line, pie, scatter and histogram charts from CSV or Excel, as PNG or SVG.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/statistics-calculator">
+        <span class="icon">σ</span>
+        <h3>Statistics Calculator</h3>
+        <p>Mean, median, mode, standard deviation, quartiles and outliers for a list of numbers.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/profile.js?v=2"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/pivot.js?v=1"></script>
+</body>
+</html>

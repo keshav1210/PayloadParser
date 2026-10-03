@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Merge CSV Files Online – Join Two CSVs (VLOOKUP)</title>
+  <meta name="description" content="Join two CSV or Excel files on a common column, like VLOOKUP for every row at once. Left, inner and full joins, with unmatched rows flagged. Free, no upload.">
+  <link rel="canonical" href="https://jsonxmleditor.com/merge-csv">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Merge Two CSV or Excel Files on a Key Column">
+  <meta property="og:description" content="VLOOKUP for whole files: join two CSV or Excel files on an ID, see which rows did not match, and download the result.">
+  <meta property="og:url" content="https://jsonxmleditor.com/merge-csv">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Merge Two CSV or Excel Files on a Key Column">
+  <meta name="twitter:description" content="VLOOKUP for whole files: join two CSV or Excel files on an ID, see which rows did not match, and download the result.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Merge CSV Files",
+      "url": "https://jsonxmleditor.com/merge-csv",
+      "description": "Join two CSV or Excel files on a key column in the browser, with left, inner and full joins.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Join CSV, Excel or JSON files",
+        "Left join (VLOOKUP), inner join and full join",
+        "Ignore case and spaces in keys",
+        "First match only, like VLOOKUP",
+        "Unmatched rows flagged",
+        "Pick which columns to bring across",
+        "Export CSV or Excel"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Merge CSV Files",
+          "item": "https://jsonxmleditor.com/merge-csv"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I do a VLOOKUP between two CSV files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Add the file you want to keep as the main table and the file with the extra details as the lookup table, pick the matching columns and click Merge with “All main rows” selected. Tick “First match only” to copy VLOOKUP’s behaviour exactly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do the key columns need the same name?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. You choose the matching column in each file separately. The tool suggests columns with the same name, or ID-like columns, to start with."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I merge Excel files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Both sides accept .xlsx, .xls and .ods files (pick the sheet), as well as CSV, TSV and JSON, and you can mix formats."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I find rows that did not match?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Leave “Add a _match column” ticked. Unmatched rows are marked “left only” (only in the main file) or “right only” (only in the lookup file, with a full join), tinted in the table, and counted in the summary. Type “left only” in the filter to list them."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Both files are read and joined in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Merge CSV Files</span></nav>
+  <section class="tool-head">
+    <h1>Merge Two CSV Files</h1>
+    <p>Add the details from one file to the rows of another by matching a shared column, such as a customer ID, SKU or email. It does what a VLOOKUP does, for every row at once, and shows you exactly which rows did not match. Both files stay in your browser.</p>
+  </section>
+
+<div class="data-bar" style="justify-content:flex-end"><button type="button" class="btn" id="mgBoth">Try with sample files</button></div>
+  <div class="two-src mg-src">
+    <div><h2>1. Main table <span class="muted" style="font-weight:400">(the rows you keep)</span></h2><div id="mgLeft"></div></div>
+    <div><h2>2. Lookup table <span class="muted" style="font-weight:400">(the details to add)</span></h2><div id="mgRight"></div></div>
+  </div>
+
+  <section class="pane" id="mgOptions" hidden>
+    <div class="pane-head">3. Match and merge</div>
+    <div class="tool-form">
+      <label class="field-inline">Match <select id="mgKeyA"></select></label>
+      <label class="field-inline">with <select id="mgKeyB"></select></label>
+      <label class="field-inline">Keep <select id="mgHow">
+        <option value="left">All main rows (left join, like VLOOKUP)</option>
+        <option value="inner">Only matching rows (inner join)</option>
+        <option value="full">Everything from both (full join)</option>
+      </select></label>
+      <label class="check"><input type="checkbox" id="mgLoose" checked> Ignore case and spaces in keys</label>
+      <label class="check"><input type="checkbox" id="mgFirst"> First match only</label>
+      <label class="check"><input type="checkbox" id="mgFlag" checked> Add a _match column</label>
+    </div>
+    <div class="pane-head" style="border-top:1px solid var(--border)">Columns to bring from the lookup table</div>
+    <div class="mg-bring" id="mgBring" style="padding-top:12px"></div>
+    <div class="cl-apply"><button type="button" class="btn btn-primary" id="mgRun">Merge files</button></div>
+  </section>
+  <div id="mgError" class="error-box" hidden></div>
+
+  <div id="mgResult" hidden>
+    <div class="result-bar">
+      <div class="summary" id="mgSummary"></div>
+      <input id="mgFilter" class="text-input data-filter" type="search" placeholder="Filter rows…" aria-label="Filter rows">
+      <button type="button" class="btn" data-mg-export="csv">Download CSV</button>
+      <button type="button" class="btn" data-mg-export="xlsx">Download Excel</button>
+    </div>
+    <div id="mgNote"></div>
+    <div id="mgGrid"></div>
+    <p class="muted" style="font-size:13px;margin:8px 2px 0">Rows with no match are tinted red (main table only) or green (lookup table only). Filter by <code>left only</code> to list them.</p>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to merge two CSV files</h2>
+    <ol>
+      <li><strong>Add the main file</strong>, for example your orders. Every row in it is kept.</li>
+      <li><strong>Add the lookup file</strong>, for example a list of customers or products.</li>
+      <li><strong>Pick the matching columns.</strong> They are guessed from column names, and they don't need the same name in both files.</li>
+      <li><strong>Choose the columns to bring across</strong> and click Merge. Download the result as CSV or Excel.</li>
+    </ol>
+
+    <h2>Which join do I need?</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:200px">Option</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>All main rows (left join)</td><td>Every row of the main file, with the lookup columns filled in where a match was found and left blank where not. This is what VLOOKUP and XLOOKUP do.</td></tr>
+        <tr><td>Only matching rows (inner join)</td><td>Only rows whose key exists in both files.</td></tr>
+        <tr><td>Everything (full join)</td><td>All rows from both files, matched where possible. Useful for reconciling two lists.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Why VLOOKUP returns #N/A, and how this avoids it</h2>
+    <p>Most failed lookups are caused by keys that look the same but aren't: <code>R03</code> and <code>r03 </code> with a trailing space, or numbers stored as text. With “Ignore case and spaces” switched on, those still match. Rows that still don't match are counted and flagged in the <code>_match</code> column (<code>left only</code> or <code>right only</code>), so you can see them instead of hunting for #N/A.</p>
+    <p>If a key appears more than once in the lookup file, a join repeats the main row once per match, which is correct for SQL but surprising if you expect VLOOKUP. Tick <strong>First match only</strong> to keep one row per main row, exactly like VLOOKUP. The tool warns you when keys are repeated.</p>
+    <p>Need to match on several columns or do more complex joins? Load both files into <a href="/csv-sql">SQL on CSV</a> and write the join yourself. To spot differences between two versions of the same file, use <a href="/csv-compare">CSV Compare</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I do a VLOOKUP between two CSV files?</summary>
+        <p>Add the file you want to keep as the main table and the file with the extra details as the lookup table, pick the matching columns and click Merge with “All main rows” selected. Tick “First match only” to copy VLOOKUP’s behaviour exactly.</p>
+      </details>
+      <details>
+        <summary>Do the key columns need the same name?</summary>
+        <p>No. You choose the matching column in each file separately. The tool suggests columns with the same name, or ID-like columns, to start with.</p>
+      </details>
+      <details>
+        <summary>Can I merge Excel files?</summary>
+        <p>Yes. Both sides accept .xlsx, .xls and .ods files (pick the sheet), as well as CSV, TSV and JSON, and you can mix formats.</p>
+      </details>
+      <details>
+        <summary>How do I find rows that did not match?</summary>
+        <p>Leave “Add a _match column” ticked. Unmatched rows are marked “left only” (only in the main file) or “right only” (only in the lookup file, with a full join), tinted in the table, and counted in the summary. Type “left only” in the filter to list them.</p>
+      </details>
+      <details>
+        <summary>Are my files uploaded?</summary>
+        <p>No. Both files are read and joined in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-compare">
+        <span class="icon">≠</span>
+        <h3>CSV Compare</h3>
+        <p>Compare two CSV or Excel files and see added, removed and changed rows.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/pivot-table">
+        <span class="icon">⊞</span>
+        <h3>Pivot Table</h3>
+        <p>Summarise CSV or Excel data by rows and columns with sum, count or average.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/merge.js?v=1"></script>
+</body>
+</html>

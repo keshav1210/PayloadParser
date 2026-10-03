@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Query CSV with SQL Online – SQL for CSV, Excel &amp; JSON</title>
+  <meta name="description" content="Run SQL on CSV, Excel, JSON and Parquet files in your browser. Join several files, group and filter large data, and export the result. Nothing is uploaded.">
+  <link rel="canonical" href="https://jsonxmleditor.com/csv-sql">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Query CSV, Excel &amp; JSON with SQL">
+  <meta property="og:description" content="A SQL engine in your browser: load CSV, Excel, JSON or Parquet files, join them and export the results.">
+  <meta property="og:url" content="https://jsonxmleditor.com/csv-sql">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Query CSV, Excel &amp; JSON with SQL">
+  <meta name="twitter:description" content="A SQL engine in your browser: load CSV, Excel, JSON or Parquet files, join them and export the results.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "SQL on CSV, Excel and JSON",
+      "url": "https://jsonxmleditor.com/csv-sql",
+      "description": "Query CSV, Excel, JSON and Parquet files with SQL in the browser, powered by DuckDB.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Full SQL powered by DuckDB",
+        "CSV, TSV, Excel, JSON, NDJSON and Parquet",
+        "Join several files",
+        "Large files read from disk",
+        "Export to CSV, JSON or Excel",
+        "Files stay on your computer"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Query CSV with SQL",
+          "item": "https://jsonxmleditor.com/csv-sql"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can I run SQL on a CSV file without a database?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Add the file here and it becomes a table you can query straight away. The database (DuckDB) runs inside your browser, so there is nothing to install and no server involved."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I join two CSV or Excel files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Add both files; each becomes a table. Then use JOIN, for example SELECT * FROM orders o JOIN customers c ON c.id = o.customer_id. It works like VLOOKUP across every row at once."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How large can the files be?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Files are read from disk rather than loaded whole, so files of several hundred megabytes work in most browsers. The limit depends on your computer's memory, especially for joins and sorting."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which SQL dialect is used?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DuckDB SQL, which follows PostgreSQL closely and adds analytics features such as GROUP BY ALL, QUALIFY, PIVOT and SUMMARIZE."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data uploaded anywhere?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Your files are read by your browser. Only the DuckDB program itself is downloaded from a public CDN the first time you use the tool."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Query CSV with SQL</span></nav>
+  <section class="tool-head">
+    <h1>Query CSV with SQL</h1>
+    <p>Add one or more files and query them with SQL as if they were database tables: filter, group, join and aggregate. A full analytical database (DuckDB) runs inside your browser, so your files are never uploaded.</p>
+  </section>
+
+<div id="sqEngine" class="summary sq-engine" hidden></div>
+  <div class="sq-layout">
+    <aside class="sq-side">
+      <label class="data-drop" id="sqDrop" tabindex="0">
+        <input type="file" id="sqFile" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.xls,.ods,.json,.ndjson,.jsonl,.parquet" multiple hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Add files</strong>
+        <small>CSV, Excel, JSON or Parquet · each becomes a table</small>
+      </label>
+      <details class="sq-paste" id="sqPasteBox">
+        <summary>Paste CSV or JSON</summary>
+        <div class="qr-body">
+          <input id="sqPasteName" class="text-input" type="text" placeholder="Table name, e.g. customers" spellcheck="false">
+          <textarea id="sqPaste" class="code-input" spellcheck="false" aria-label="Paste CSV or JSON"></textarea>
+          <button type="button" class="btn" id="sqPasteAdd" style="margin-top:8px">Add as table</button>
+        </div>
+      </details>
+      <section class="pane">
+        <div class="pane-head">Tables <span class="actions"><button type="button" class="mini-btn" id="sqSample">Load sample</button></span></div>
+        <ul class="sq-tables" id="sqTables"></ul>
+      </section>
+    </aside>
+
+    <div>
+      <section class="pane">
+        <div class="pane-head">SQL <span class="muted">Ctrl+Enter runs the query, or just the selected part</span></div>
+        <textarea id="sqEditor" class="code-input sq-editor" spellcheck="false" aria-label="SQL query" placeholder="SELECT region, sum(amount) AS total&#10;FROM sales&#10;GROUP BY region&#10;ORDER BY total DESC;"></textarea>
+        <div class="sq-runbar">
+          <button type="button" class="btn btn-primary" id="sqRun">▶ Run</button>
+          <span id="sqStatus" class="sq-status"></span>
+        </div>
+      </section>
+      <div class="sq-chips" id="sqChips" hidden>
+        <span class="muted">Examples:</span>
+        <button type="button" class="chip" data-example="totals">Totals by group</button>
+        <button type="button" class="chip" data-example="top">Top 10</button>
+        <button type="button" class="chip" data-example="monthly">Per month</button>
+        <button type="button" class="chip" data-example="nulls">Summarize table</button>
+        <button type="button" class="chip" data-example="join">Join two tables</button>
+      </div>
+      <div id="sqError" class="error-box" hidden style="margin-top:12px;white-space:pre-wrap"></div>
+      <div id="sqResultWrap" hidden>
+        <div class="sq-result-bar">
+          <button type="button" class="btn" data-sq-export="csv">Export CSV</button>
+          <button type="button" class="btn" data-sq-export="json">Export JSON</button>
+          <button type="button" class="btn" data-sq-export="xlsx">Export Excel</button>
+        </div>
+        <div id="sqGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How it works</h2>
+    <ol>
+      <li><strong>Add files</strong>: drop CSV, TSV, Excel, JSON, NDJSON or Parquet files, or paste data. Each file becomes a table named after it (<code>sales_2026.csv</code> becomes <code>sales_2026</code>); each sheet of an Excel workbook becomes its own table.</li>
+      <li>Column names and types are detected automatically. Click a table or column name in the sidebar to insert it into your query.</li>
+      <li>Write SQL and press <code>Ctrl</code>+<code>Enter</code>. Select part of the text to run only that part.</li>
+      <li>Sort and filter the result, then export it as CSV, JSON or Excel.</li>
+    </ol>
+    <p>New to it? Click <strong>Load sample</strong> for an <code>orders</code> and a <code>managers</code> table, then try the example buttons.</p>
+
+    <h2>Useful queries</h2>
+    <pre><code>-- Totals per group
+SELECT region, count(*) AS orders, sum(quantity * unit_price) AS revenue
+FROM orders GROUP BY region ORDER BY revenue DESC;
+
+-- Find duplicates
+SELECT email, count(*) FROM customers GROUP BY email HAVING count(*) > 1;
+
+-- Join two files (like VLOOKUP, but for every row at once)
+SELECT o.*, c.country FROM orders o LEFT JOIN customers c ON c.id = o.customer_id;
+
+-- Quick statistics for every column
+SUMMARIZE orders;</code></pre>
+    <p>The engine is <a href="https://duckdb.org/" rel="noopener" target="_blank">DuckDB</a>, which speaks standard SQL plus handy extras: <code>GROUP BY ALL</code>, <code>EXCLUDE</code> and <code>REPLACE</code> in <code>SELECT *</code>, window functions, <code>QUALIFY</code>, <code>PIVOT</code>, regular expressions, date functions such as <code>date_trunc</code>, and <code>CREATE TABLE … AS</code> to save intermediate results.</p>
+
+    <h2>Big files, kept private</h2>
+    <p>Files are read directly from your disk by the database running in your browser; nothing is uploaded, so confidential exports are safe. DuckDB is a columnar engine built for analytics, so grouping and joining millions of rows usually takes seconds. The engine itself (about 7 MB) is downloaded the first time you add a file and kept by your browser afterwards. Results show up to 200,000 rows; export to get them all, or add <code>LIMIT</code> and aggregates to keep results small.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Can I run SQL on a CSV file without a database?</summary>
+        <p>Yes. Add the file here and it becomes a table you can query straight away. The database (DuckDB) runs inside your browser, so there is nothing to install and no server involved.</p>
+      </details>
+      <details>
+        <summary>Can I join two CSV or Excel files?</summary>
+        <p>Yes. Add both files; each becomes a table. Then use JOIN, for example SELECT * FROM orders o JOIN customers c ON c.id = o.customer_id. It works like VLOOKUP across every row at once.</p>
+      </details>
+      <details>
+        <summary>How large can the files be?</summary>
+        <p>Files are read from disk rather than loaded whole, so files of several hundred megabytes work in most browsers. The limit depends on your computer's memory, especially for joins and sorting.</p>
+      </details>
+      <details>
+        <summary>Which SQL dialect is used?</summary>
+        <p>DuckDB SQL, which follows PostgreSQL closely and adds analytics features such as GROUP BY ALL, QUALIFY, PIVOT and SUMMARIZE.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded anywhere?</summary>
+        <p>No. Your files are read by your browser. Only the DuckDB program itself is downloaded from a public CDN the first time you use the tool.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
+        <h3>CSV Converter</h3>
+        <p>Turn CSV into JSON, XML or SQL INSERT statements.</p>
+      </a>
+      <a class="tool-card" href="/json-to-csv">
+        <span class="icon">a,b</span>
+        <h3>JSON to CSV</h3>
+        <p>Turn a JSON array into an Excel-ready CSV file, with nested fields flattened.</p>
+      </a>
+      <a class="tool-card" href="/mock-data-generator">
+        <span class="icon">{…}</span>
+        <h3>Mock Data Generator</h3>
+        <p>Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/csvsql.js?v=4"></script>
+</body>
+</html>

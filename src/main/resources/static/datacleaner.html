@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Data Cleaner – Clean CSV &amp; Excel Data Online, Free</title>
+  <meta name="description" content="Clean messy CSV and Excel data in your browser: trim spaces, remove duplicates, fix dates and numbers, change case, split columns and undo any step.">
+  <link rel="canonical" href="https://jsonxmleditor.com/data-cleaner">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Online Data Cleaner for CSV and Excel">
+  <meta property="og:description" content="Trim spaces, remove duplicates, standardise dates and numbers, and export clean data. Files never leave your browser.">
+  <meta property="og:url" content="https://jsonxmleditor.com/data-cleaner">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Online Data Cleaner for CSV and Excel">
+  <meta name="twitter:description" content="Trim spaces, remove duplicates, standardise dates and numbers, and export clean data. Files never leave your browser.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Data Cleaner",
+      "url": "https://jsonxmleditor.com/data-cleaner",
+      "description": "Clean CSV and Excel data in the browser: trim, dedupe, standardise dates and numbers, split and merge columns.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Finds extra spaces, empty rows and duplicates automatically",
+        "Remove duplicates by all columns or a key",
+        "Standardise dates to one format",
+        "Clean currency and thousands separators from numbers",
+        "Find and replace with regular expressions",
+        "Split and merge columns",
+        "Undo any step",
+        "Export CSV, Excel or JSON"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Data Cleaner",
+          "item": "https://jsonxmleditor.com/data-cleaner"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I remove duplicates from a CSV file?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open the file, then click the “duplicate rows” finding or choose “Remove duplicate rows”. You can compare whole rows or a single column such as an ID or email, and ignore differences in case and spacing. The first occurrence of each row is kept."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I remove extra spaces from Excel or CSV data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use “Trim spaces”. It removes leading and trailing spaces in every column (or one column) and can also collapse double spaces inside text. The cleaner tells you up front how many cells have extra spaces."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it convert dates to one format?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. “Standardise dates” recognises the common date formats, including month names and Excel serial numbers, and writes them all as ISO dates (2024-03-14) or another format you choose. Values it cannot read are left untouched and counted."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I undo a change?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every step is listed with what it changed, and Undo reverts the last one. Reset goes back to the original file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The file is read and cleaned by your browser and never sent anywhere."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Data Cleaner</span></nav>
+  <section class="tool-head">
+    <h1>Data Cleaner</h1>
+    <p>Open a CSV or Excel file and fix it step by step: extra spaces, duplicate and empty rows, dates in five different formats, prices with currency symbols, inconsistent capitalisation. Every change is listed and can be undone, and your file never leaves your browser.</p>
+  </section>
+
+<div id="clSource"></div>
+
+  <div id="clWork" hidden style="margin-top:14px">
+    <div class="cl-issues" id="clIssues"></div>
+    <div class="cl-layout">
+      <section class="pane">
+        <div class="pane-head">Clean <span class="actions"><select id="clOp" class="mini-select" aria-label="Operation"></select></span></div>
+        <div class="tool-form" id="clForm"></div>
+        <div class="cl-apply"><button type="button" class="btn btn-primary" id="clApply">Apply</button></div>
+        <div id="clError" class="error-box" hidden style="margin:0 14px 12px"></div>
+      </section>
+      <section class="pane">
+        <div class="pane-head">Steps <span class="actions"><button type="button" class="mini-btn" id="clUndo">Undo</button><button type="button" class="mini-btn" id="clReset">Reset</button></span></div>
+        <ol class="cl-steps" id="clSteps"></ol>
+      </section>
+    </div>
+    <div class="data-bar">
+      <div class="data-title"><strong>Preview</strong><span id="clMeta"></span></div>
+      <input id="clFilter" class="text-input data-filter" type="search" placeholder="Filter rows…" aria-label="Filter rows">
+      <span class="muted" id="clInfo"></span>
+      <button type="button" class="btn" data-cl-export="csv">Download CSV</button>
+      <button type="button" class="btn" data-cl-export="xlsx">Download Excel</button>
+      <button type="button" class="btn" data-cl-export="json">Download JSON</button>
+    </div>
+    <div id="clGrid"></div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to clean a CSV file</h2>
+    <ol>
+      <li><strong>Open your file</strong>: CSV, TSV, Excel or JSON. The cleaner scans it straight away and lists what it finds, such as cells with extra spaces, empty rows, duplicate rows and empty columns.</li>
+      <li><strong>Click a finding to fix it</strong>, or choose an operation from the list for anything more specific.</li>
+      <li><strong>Check the preview.</strong> Each step is added to the list on the right with what it changed. If something looks wrong, click Undo.</li>
+      <li><strong>Download</strong> the clean data as CSV (UTF-8, opens correctly in Excel), Excel or JSON.</li>
+    </ol>
+
+    <h2>What it can fix</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:190px">Operation</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td>Trim spaces</td><td>Removes spaces at the start and end of cells, and optionally collapses double spaces. Hidden spaces are the most common reason a VLOOKUP or join fails.</td></tr>
+        <tr><td>Remove duplicate rows</td><td>Compares whole rows or just one key column (for example an email address), ignoring case and spacing if you want. The first row of each group is kept.</td></tr>
+        <tr><td>Remove empty rows</td><td>Drops rows where every cell is blank.</td></tr>
+        <tr><td>Change case</td><td>Title Case for names and cities, UPPER or lower case for codes and emails, or Sentence case.</td></tr>
+        <tr><td>Find and replace</td><td>In one column or all of them, with whole-cell matching, case sensitivity and regular expressions (use <code>$1</code> for groups).</td></tr>
+        <tr><td>Fill empty cells</td><td>With a fixed value such as <code>Unknown</code>, or with the value from the row above or below, which is handy for exports where a group name only appears on the first row.</td></tr>
+        <tr><td>Remove rows where…</td><td>Filters out rows where a column is empty, equals or contains a value, or is above or below a number.</td></tr>
+        <tr><td>Standardise dates</td><td>Reads <code>03/14/2024</code>, <code>14.03.2024</code>, <code>2024/3/14</code>, <code>Mar 14, 2024</code>, <code>14 March 2024</code> and Excel serial numbers, and writes them all in one format, ISO <code>2024-03-14</code> by default. Day/month order is detected from the column.</td></tr>
+        <tr><td>Clean numbers</td><td>Turns <code>$1,200.00</code>, <code>1 200 €</code>, <code>45%</code> and accounting negatives such as <code>(25.00)</code> into plain numbers, with support for decimal commas.</td></tr>
+        <tr><td>Split column</td><td>Splits “First Last” into two columns, or any column on a delimiter such as a comma, dash or <code>@</code>.</td></tr>
+        <tr><td>Merge columns</td><td>Joins two columns with a separator, skipping blanks.</td></tr>
+        <tr><td>Delete and rename columns</td><td>Including one click to rename every header to <code>snake_case</code> for databases and code.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Private and fast</h2>
+    <p>All cleaning happens in your browser, so you can safely clean customer lists, payroll exports and other confidential files. Files with hundreds of thousands of rows work fine; the preview only draws the rows on screen. When your data is clean, explore it in the <a href="/csv-viewer">CSV viewer</a>, summarise it with a <a href="/pivot-table">pivot table</a> or <a href="/chart-maker">chart it</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I remove duplicates from a CSV file?</summary>
+        <p>Open the file, then click the “duplicate rows” finding or choose “Remove duplicate rows”. You can compare whole rows or a single column such as an ID or email, and ignore differences in case and spacing. The first occurrence of each row is kept.</p>
+      </details>
+      <details>
+        <summary>How do I remove extra spaces from Excel or CSV data?</summary>
+        <p>Use “Trim spaces”. It removes leading and trailing spaces in every column (or one column) and can also collapse double spaces inside text. The cleaner tells you up front how many cells have extra spaces.</p>
+      </details>
+      <details>
+        <summary>Can it convert dates to one format?</summary>
+        <p>Yes. “Standardise dates” recognises the common date formats, including month names and Excel serial numbers, and writes them all as ISO dates (2024-03-14) or another format you choose. Values it cannot read are left untouched and counted.</p>
+      </details>
+      <details>
+        <summary>Can I undo a change?</summary>
+        <p>Yes. Every step is listed with what it changed, and Undo reverts the last one. Reset goes back to the original file.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded?</summary>
+        <p>No. The file is read and cleaned by your browser and never sent anywhere.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/merge-csv">
+        <span class="icon">⋈</span>
+        <h3>Merge CSV Files</h3>
+        <p>Join two CSV or Excel files on a key column, like VLOOKUP for every row.</p>
+      </a>
+      <a class="tool-card" href="/csv-compare">
+        <span class="icon">≠</span>
+        <h3>CSV Compare</h3>
+        <p>Compare two CSV or Excel files and see added, removed and changed rows.</p>
+      </a>
+      <a class="tool-card" href="/pivot-table">
+        <span class="icon">⊞</span>
+        <h3>Pivot Table</h3>
+        <p>Summarise CSV or Excel data by rows and columns with sum, count or average.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/cleaner.js?v=1"></script>
+</body>
+</html>

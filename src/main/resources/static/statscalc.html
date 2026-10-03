@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Statistics Calculator – Mean, Median, SD &amp; Quartiles</title>
+  <meta name="description" content="Paste a list of numbers to get the mean, median, mode, standard deviation, variance, quartiles, percentiles, confidence interval and outliers, with a histogram.">
+  <link rel="canonical" href="https://jsonxmleditor.com/statistics-calculator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Descriptive Statistics Calculator">
+  <meta property="og:description" content="Mean, median, mode, standard deviation, quartiles, skewness and outliers for any list of numbers.">
+  <meta property="og:url" content="https://jsonxmleditor.com/statistics-calculator">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Descriptive Statistics Calculator">
+  <meta name="twitter:description" content="Mean, median, mode, standard deviation, quartiles, skewness and outliers for any list of numbers.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Statistics Calculator",
+      "url": "https://jsonxmleditor.com/statistics-calculator",
+      "description": "Descriptive statistics for a list of numbers: averages, spread, quartiles, outliers and distribution.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Mean, median, mode, geometric and harmonic mean",
+        "Sample or population standard deviation and variance",
+        "Quartiles, IQR and percentiles",
+        "95% confidence interval of the mean",
+        "Skewness and kurtosis",
+        "Outliers by the 1.5 × IQR rule",
+        "Histogram and box plot"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Statistics Calculator",
+          "item": "https://jsonxmleditor.com/statistics-calculator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I calculate standard deviation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste your numbers above. The calculator gives the sample standard deviation (dividing by n − 1, like STDEV.S in Excel) by default; switch to “Whole population” for STDEV.P."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between mean and median?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The mean is the arithmetic average; the median is the middle value. With skewed data or outliers the two differ, and the median is usually the better “typical” value."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are quartiles calculated?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "With linear interpolation between sorted values, the same method as Excel’s QUARTILE.INC and PERCENTILE.INC."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How are outliers detected?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Values more than 1.5 times the interquartile range below Q1 or above Q3 are flagged as outliers, the same rule box plots use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a limit on how many numbers I can paste?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No fixed limit; hundreds of thousands of values work fine. Everything is calculated in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Statistics Calculator</span></nav>
+  <section class="tool-head">
+    <h1>Statistics Calculator</h1>
+    <p>Paste numbers in any format (a column copied from Excel, a comma-separated list, values with currency symbols) and get every common statistic at once, with a histogram and box plot.</p>
+  </section>
+
+<section class="pane">
+    <div class="pane-head">Numbers <span class="actions"><button type="button" class="mini-btn" id="scSample">Example</button><button type="button" class="mini-btn" id="scClear">Clear</button></span></div>
+    <textarea id="scIn" class="code-input" spellcheck="false" style="min-height:150px" aria-label="Numbers" placeholder="Paste numbers: one per line, or separated by commas, spaces or tabs"></textarea>
+    <div class="tool-form" style="border-top:1px solid var(--border)">
+      <label class="field-inline">Data is a <select id="scPop"><option value="sample">Sample (n − 1)</option><option value="pop">Whole population (n)</option></select></label>
+      <label class="check"><input type="checkbox" id="scComma"> Decimal comma (3,5)</label>
+      <label class="field-inline">Percentile of <input id="scPct" class="text-input" inputmode="decimal" style="width:110px" placeholder="value"></label>
+      <span id="scPctOut" class="muted"></span>
+    </div>
+  </section>
+  <div class="calc-result" id="scOut"></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>What each statistic means</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:200px">Statistic</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Mean</td><td>The average: the sum divided by the count. Pulled up or down by extreme values.</td></tr>
+        <tr><td>Median</td><td>The middle value when sorted. Better than the mean for skewed data such as salaries or house prices.</td></tr>
+        <tr><td>Mode</td><td>The most frequent value or values.</td></tr>
+        <tr><td>Standard deviation</td><td>How far values typically are from the mean, in the same units as the data.</td></tr>
+        <tr><td>Variance</td><td>The standard deviation squared.</td></tr>
+        <tr><td>Standard error</td><td>How precisely the sample mean estimates the true mean. Shrinks as the sample grows.</td></tr>
+        <tr><td>95% confidence interval</td><td>The range that would contain the true mean in 95% of samples, using the t-distribution.</td></tr>
+        <tr><td>Quartiles and IQR</td><td>Q1 and Q3 cut off the lowest and highest quarter; the interquartile range between them holds the middle half of the data.</td></tr>
+        <tr><td>Skewness</td><td>Asymmetry. Positive means a long tail of high values; negative, a long tail of low values.</td></tr>
+        <tr><td>Kurtosis</td><td>Excess kurtosis compares the tails with a normal distribution: above 0 means more extreme values than normal.</td></tr>
+        <tr><td>Outliers</td><td>Values below Q1 − 1.5 × IQR or above Q3 + 1.5 × IQR, the rule used for box plots.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Sample or population?</h2>
+    <p>If your numbers are a sample from a larger group (survey answers, a test batch, last month's orders), keep <strong>Sample</strong>: variance is divided by n − 1, which corrects for the sample being slightly less spread out than the whole group. Choose <strong>Population</strong> only when you have every value, such as the scores of everyone in a class. This matches Excel's <code>STDEV.S</code> and <code>STDEV.P</code>.</p>
+
+    <h2>Pasting data</h2>
+    <p>Copy a column from Excel or Google Sheets and paste it straight in. Numbers can be separated by new lines, commas, spaces, tabs or semicolons, and currency symbols and percent signs are ignored. Anything that isn't a number is skipped and listed so you can check it. Working with a whole file instead? The <a href="/csv-viewer">CSV viewer</a> profiles every column at once, and the <a href="/chart-maker">chart maker</a> draws histograms of any column.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I calculate standard deviation?</summary>
+        <p>Paste your numbers above. The calculator gives the sample standard deviation (dividing by n − 1, like STDEV.S in Excel) by default; switch to “Whole population” for STDEV.P.</p>
+      </details>
+      <details>
+        <summary>What is the difference between mean and median?</summary>
+        <p>The mean is the arithmetic average; the median is the middle value. With skewed data or outliers the two differ, and the median is usually the better “typical” value.</p>
+      </details>
+      <details>
+        <summary>How are quartiles calculated?</summary>
+        <p>With linear interpolation between sorted values, the same method as Excel’s QUARTILE.INC and PERCENTILE.INC.</p>
+      </details>
+      <details>
+        <summary>How are outliers detected?</summary>
+        <p>Values more than 1.5 times the interquartile range below Q1 or above Q3 are flagged as outliers, the same rule box plots use.</p>
+      </details>
+      <details>
+        <summary>Is there a limit on how many numbers I can paste?</summary>
+        <p>No fixed limit; hundreds of thousands of values work fine. Everything is calculated in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/chart-maker">
+        <span class="icon">▁▃▅</span>
+        <h3>Chart Maker</h3>
+        <p>Bar, line, pie, scatter and histogram charts from CSV or Excel, as PNG or SVG.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/pivot-table">
+        <span class="icon">⊞</span>
+        <h3>Pivot Table</h3>
+        <p>Summarise CSV or Excel data by rows and columns with sum, count or average.</p>
+      </a>
+      <a class="tool-card" href="/date-calculator">
+        <span class="icon">D+</span>
+        <h3>Date Calculator</h3>
+        <p>Days between dates, business days, add or subtract days, Excel serial dates.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/statmath.js?v=1"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/statscalc.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>CSV Viewer &amp; Data Profiler – Open CSV and Excel Online</title>
+  <meta name="description" content="Open CSV, Excel or JSON files as a fast, sortable table and get a profile of every column: types, empty values, distinct counts, ranges and top values.">
+  <link rel="canonical" href="https://jsonxmleditor.com/csv-viewer">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="CSV &amp; Excel Viewer with Data Profiling">
+  <meta property="og:description" content="Open big CSV, Excel or JSON files in your browser, sort and filter them, and profile every column.">
+  <meta property="og:url" content="https://jsonxmleditor.com/csv-viewer">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CSV &amp; Excel Viewer with Data Profiling">
+  <meta name="twitter:description" content="Open big CSV, Excel or JSON files in your browser, sort and filter them, and profile every column.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "CSV & Excel Viewer and Data Profiler",
+      "url": "https://jsonxmleditor.com/csv-viewer",
+      "description": "View CSV, Excel and JSON files as a sortable table and profile each column, in the browser.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Opens CSV, TSV, Excel and JSON",
+        "Fast table for 100,000+ rows",
+        "Sort and filter",
+        "Column profiling: types, empties, distinct, ranges, top values",
+        "Export to CSV, JSON or Excel",
+        "Files stay on your computer"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "CSV & Excel Viewer",
+          "item": "https://jsonxmleditor.com/csv-viewer"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I open a large CSV file?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Drop it on this page. The viewer reads the file in your browser and only draws the rows on screen, so files with hundreds of thousands of rows stay fast. Files up to 300 MB can be opened; for larger ones, use the SQL tool, which reads files without loading them fully into memory."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it open Excel files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes: .xlsx, .xlsm, .xls and .ods. If the workbook has several sheets, pick one from the Sheet menu. Dates are shown as ISO dates (2026-10-03) and numbers without Excel formatting."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why do my numbers look different from Excel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Excel applies display formats such as thousands separators, currency symbols and rounding. The viewer shows the underlying value, which is what other systems will receive when you export or import the data."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does data profiling mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Summarising each column to understand its content and quality: its type, how many values are missing or distinct, the range of values and the most frequent ones. It is usually the first step of any data analysis or migration."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Files are read and profiled in your browser and never sent to a server."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">CSV &amp; Excel Viewer</span></nav>
+  <section class="tool-head">
+    <h1>CSV &amp; Excel Viewer</h1>
+    <p>Open a CSV, Excel or JSON file to browse it as a fast, sortable table, then switch to <strong>Profile</strong> to see what each column contains: its type, how many values are empty or distinct, the range of numbers and dates, and the most common values. Files are read by your browser and never uploaded.</p>
+  </section>
+
+<div id="cvEmpty">
+    <div class="data-start">
+      <label class="data-drop" id="cvDrop" tabindex="0">
+        <input type="file" id="cvFile" accept=".csv,.tsv,.txt,.xlsx,.xlsm,.xls,.ods,.json,.ndjson,.jsonl" hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Drop a file here or click to open</strong>
+        <small>CSV, TSV, Excel (.xlsx, .xls, .ods) or JSON · up to 300 MB · read locally</small>
+      </label>
+      <section class="pane">
+        <div class="pane-head">…or paste data</div>
+        <textarea id="cvPaste" class="code-input" spellcheck="false" aria-label="Paste CSV or JSON" placeholder="Paste CSV (with a header row) or a JSON array"></textarea>
+        <div class="data-actions">
+          <button type="button" class="btn btn-primary" id="cvPasteBtn">View data</button>
+          <button type="button" class="btn" id="cvSample">Try sample data</button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <p id="cvLoading" class="data-loading" hidden></p>
+  <div id="cvError" class="error-box" hidden style="margin-top:12px"></div>
+
+  <div id="cvWorkspace" hidden>
+    <div class="data-bar">
+      <div class="data-title"><strong id="cvName"></strong><span id="cvMeta"></span></div>
+      <label class="field-inline" id="cvSheetWrap" hidden>Sheet <select id="cvSheet"></select></label>
+      <input id="cvFilter" class="text-input data-filter" type="search" placeholder="Filter rows…" aria-label="Filter rows">
+      <span class="muted" id="cvInfo"></span>
+    </div>
+    <div class="data-bar">
+      <div class="tabs data-tabs" role="tablist" style="margin:0;border:none">
+        <button type="button" class="tab-btn" role="tab" data-cv-tab="table" aria-selected="true">Table</button>
+        <button type="button" class="tab-btn" role="tab" data-cv-tab="profile" aria-selected="false">Profile</button>
+      </div>
+      <span class="spacer" style="flex:1"></span>
+      <button type="button" class="btn" data-cv-export="csv">Export CSV</button>
+      <button type="button" class="btn" data-cv-export="json">Export JSON</button>
+      <button type="button" class="btn" data-cv-export="xlsx">Export Excel</button>
+      <button type="button" class="btn" id="cvToSql" title="Query this data with SQL">Query with SQL →</button>
+      <button type="button" class="btn" id="cvClose">Open another file</button>
+    </div>
+    <div id="cvTablePane"><div id="cvGrid"></div><p class="muted" style="font-size:13px;margin:8px 2px 0">Click a column header to sort. Exports include only the rows that match the filter, in the current order.</p></div>
+    <div id="cvProfilePane" hidden>
+      <p class="pf-meta" id="cvProfileMeta"></p>
+      <div class="pf-grid" id="cvProfile"></div>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Open large CSV files without Excel</h2>
+    <p>Excel stops at 1,048,576 rows, is slow with big files, and changes data as it opens it: long IDs turn into scientific notation, leading zeros vanish from codes and phone numbers, and some text is read as dates. This viewer shows every value exactly as it is in the file, and its table only draws the rows on screen, so files with hundreds of thousands of rows scroll smoothly.</p>
+    <ul>
+      <li><strong>Formats</strong>: CSV and TSV (the delimiter is detected: comma, semicolon, tab or pipe), Excel <code>.xlsx</code>, <code>.xls</code> and <code>.ods</code> with a sheet picker, and JSON arrays or NDJSON. Nested JSON fields are flattened into columns such as <code>address.city</code>.</li>
+      <li><strong>Sort</strong> by clicking a column header: numbers sort as numbers, text alphabetically, and empty values go last.</li>
+      <li><strong>Filter</strong> to rows that contain all the words you type, across every column.</li>
+      <li><strong>Export</strong> the filtered, sorted rows as CSV, JSON or Excel.</li>
+    </ul>
+
+    <h2>What the column profile tells you</h2>
+    <p>Before you analyse or import a dataset, it pays to check its quality. The <strong>Profile</strong> tab summarises every column:</p>
+    <table class="change-table">
+      <thead><tr><th style="width:170px">Measure</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td>Detected type</td><td>Integer, decimal, date, boolean, email, URL or text. A column you expect to be numeric but which shows as text usually contains a stray value such as <code>N/A</code>.</td></tr>
+        <tr><td>Empty values</td><td>Missing data, flagged when more than a fifth of a column is empty.</td></tr>
+        <tr><td>Distinct values</td><td>Whether a column could be a key (every value unique) or is a category with a few repeated values.</td></tr>
+        <tr><td>Min, max, mean, median, standard deviation, sum</td><td>Spots outliers and impossible values, such as negative quantities or prices of 0.</td></tr>
+        <tr><td>Distribution</td><td>A small histogram of each numeric column.</td></tr>
+        <tr><td>Most common values</td><td>Reveals inconsistent spellings ("NY", "New York", "new york") and placeholder values.</td></tr>
+        <tr><td>Warnings</td><td>Mixed numbers and text, and values with leading or trailing spaces that break joins and lookups.</td></tr>
+      </tbody>
+    </table>
+    <p>Click a profile card to jump back to the table sorted by that column.</p>
+
+    <h2>Private by design</h2>
+    <p>Your file is read by your browser and never uploaded, so it's safe for customer lists, finance exports and other confidential data. Nothing is stored after you close the tab. When you want to go further, <strong>Query with SQL</strong> opens the same data in the <a href="/csv-sql">SQL tool</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I open a large CSV file?</summary>
+        <p>Drop it on this page. The viewer reads the file in your browser and only draws the rows on screen, so files with hundreds of thousands of rows stay fast. Files up to 300 MB can be opened; for larger ones, use the SQL tool, which reads files without loading them fully into memory.</p>
+      </details>
+      <details>
+        <summary>Can it open Excel files?</summary>
+        <p>Yes: .xlsx, .xlsm, .xls and .ods. If the workbook has several sheets, pick one from the Sheet menu. Dates are shown as ISO dates (2026-10-03) and numbers without Excel formatting.</p>
+      </details>
+      <details>
+        <summary>Why do my numbers look different from Excel?</summary>
+        <p>Excel applies display formats such as thousands separators, currency symbols and rounding. The viewer shows the underlying value, which is what other systems will receive when you export or import the data.</p>
+      </details>
+      <details>
+        <summary>What does data profiling mean?</summary>
+        <p>Summarising each column to understand its content and quality: its type, how many values are missing or distinct, the range of values and the most frequent ones. It is usually the first step of any data analysis or migration.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded?</summary>
+        <p>No. Files are read and profiled in your browser and never sent to a server.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
+        <h3>CSV Converter</h3>
+        <p>Turn CSV into JSON, XML or SQL INSERT statements.</p>
+      </a>
+      <a class="tool-card" href="/json-to-csv">
+        <span class="icon">a,b</span>
+        <h3>JSON to CSV</h3>
+        <p>Turn a JSON array into an Excel-ready CSV file, with nested fields flattened.</p>
+      </a>
+      <a class="tool-card" href="/json-viewer">
+        <span class="icon">{ }</span>
+        <h3>JSON Viewer</h3>
+        <p>Explore JSON as a collapsible tree with search, copy path and JSONPath.</p>
+      </a>
+      <a class="tool-card" href="/mock-data-generator">
+        <span class="icon">{…}</span>
+        <h3>Mock Data Generator</h3>
+        <p>Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/profile.js?v=2"></script>
+<script src="/js/csvviewer.js?v=1"></script>
+</body>
+</html>

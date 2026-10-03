@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Chart Maker – Make Charts from CSV &amp; Excel Online</title>
+  <meta name="description" content="Turn CSV or Excel data into bar, line, area, pie, scatter and histogram charts in your browser, then download them as PNG or SVG. Free, no sign-up, no upload.">
+  <link rel="canonical" href="https://jsonxmleditor.com/chart-maker">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Make Charts from CSV and Excel Data">
+  <meta property="og:description" content="Bar, line, pie, scatter and histogram charts from your data, ready to download as PNG or SVG.">
+  <meta property="og:url" content="https://jsonxmleditor.com/chart-maker">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Make Charts from CSV and Excel Data">
+  <meta name="twitter:description" content="Bar, line, pie, scatter and histogram charts from your data, ready to download as PNG or SVG.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Chart Maker",
+      "url": "https://jsonxmleditor.com/chart-maker",
+      "description": "Create bar, line, area, pie, scatter and histogram charts from CSV, Excel and JSON data in the browser.",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Bar, horizontal bar, line, area, pie, donut, scatter and histogram",
+        "Sum, average, count, min or max per category",
+        "Several series, or split by a column",
+        "Stacked bars and areas",
+        "Dates grouped by day, month, quarter or year",
+        "Trend line and correlation for scatter plots",
+        "Download PNG or SVG"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Chart Maker",
+          "item": "https://jsonxmleditor.com/chart-maker"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I make a graph from a CSV file?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open the CSV on this page, choose a chart type, a category column and a value column. The chart appears instantly, and you can download it as PNG or SVG."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I make a chart from Excel data?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Open the .xlsx, .xls or .ods file directly and pick the sheet; there is no need to convert it to CSV first."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I need to summarise my data first?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. If several rows share a category, they are combined with the aggregate you choose (sum, average, count, min or max). A list of orders becomes revenue per region in one step."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I download the chart?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, as a high-resolution PNG for presentations and documents, or as SVG, a vector format that stays sharp at any size and can be edited in design tools."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free and private?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. There is no sign-up and no watermark, and your data never leaves your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Chart Maker</span></nav>
+  <section class="tool-head">
+    <h1>Chart Maker</h1>
+    <p>Open a CSV or Excel file and turn it into a clean chart in a few clicks: bar, line, pie, scatter or histogram. The chart is drawn as you change the settings, and you can download it as a sharp PNG for slides or an SVG for documents. Your data stays in your browser.</p>
+  </section>
+
+<div id="chSource"></div>
+
+  <div id="chWork" hidden style="margin-top:14px">
+    <div class="ch-layout">
+      <section class="pane">
+        <div class="ch-controls">
+          <label class="field-inline">Chart <select id="chType">
+            <option value="bar">Bar</option><option value="hbar">Horizontal bar</option><option value="line">Line</option><option value="area">Area</option>
+            <option value="pie">Pie</option><option value="donut">Donut</option><option value="scatter">Scatter</option><option value="histogram">Histogram</option>
+          </select></label>
+          <label class="field-inline" id="chXLabel">Category / X <select id="chX"></select></label>
+          <label class="field-inline ch-xy" hidden>Y (number) <select id="chYnum"></select></label>
+          <label class="field-inline" id="chDateWrap" hidden>Group dates <select id="chDate">
+            <option value="none">No grouping</option><option value="day">Day</option><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option>
+          </select></label>
+          <div class="ch-cat">
+            <div class="ch-label">Values</div>
+            <div class="ch-y" id="chY"></div>
+          </div>
+          <label class="field-inline ch-cat">Aggregate <select id="chAgg">
+            <option value="sum">Sum</option><option value="avg">Average</option><option value="count">Count</option><option value="min">Min</option><option value="max">Max</option>
+          </select></label>
+          <label class="field-inline ch-cat ch-xy">Split by <select id="chSplit"></select></label>
+          <label class="field-inline ch-cat">Sort <select id="chSort">
+            <option value="x">By category</option><option value="desc">Largest first</option><option value="asc">Smallest first</option>
+          </select></label>
+          <label class="field-inline ch-cat">Show <select id="chLimit">
+            <option value="0">All categories</option><option value="5">Top 5</option><option value="8">Top 8</option><option value="10">Top 10</option><option value="20">Top 20</option><option value="50">Top 50</option>
+          </select></label>
+          <label class="field-inline ch-hist" hidden>Bins <select id="chBins">
+            <option value="0">Automatic</option><option value="5">5</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="50">50</option>
+          </select></label>
+          <div class="ch-label">Style</div>
+          <input id="chTitle" class="text-input" type="text" placeholder="Chart title" aria-label="Chart title" style="width:100%">
+          <label class="field-inline">Colours <select id="chPalette"><option value="bright">Bright</option><option value="soft">Soft</option><option value="blues">Blues</option><option value="warm">Warm</option></select></label>
+          <label class="field-inline">Background <select id="chStyle"><option value="light">White</option><option value="dark">Dark</option><option value="transparent">Transparent</option></select></label>
+          <label class="field-inline">Size <select id="chSize"><option value="960x540">960 × 540 (16:9)</option><option value="800x600">800 × 600 (4:3)</option><option value="1200x630">1200 × 630 (social)</option><option value="700x700">700 × 700 (square)</option><option value="1200x400">1200 × 400 (wide)</option></select></label>
+          <label class="check"><input type="checkbox" id="chLabels"> Value labels</label>
+          <label class="check ch-stack"><input type="checkbox" id="chStacked"> Stacked</label>
+          <label class="check"><input type="checkbox" id="chZero" checked> Start axis at zero</label>
+          <label class="check ch-xy" hidden><input type="checkbox" id="chTrend" checked> Trend line</label>
+        </div>
+      </section>
+      <div>
+        <div class="data-bar" style="justify-content:flex-end;margin-top:0">
+          <button type="button" class="btn btn-primary" id="chPng">Download PNG</button>
+          <button type="button" class="btn" id="chSvg">Download SVG</button>
+          <button type="button" class="btn" id="chCsv">Chart data (CSV)</button>
+        </div>
+        <div class="ch-canvas" id="chCanvas"></div>
+        <p class="ch-note" id="chNote"></p>
+      </div>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to make a chart from a CSV file</h2>
+    <ol>
+      <li><strong>Open your file</strong>: CSV, Excel or JSON, or try the sample sales data.</li>
+      <li><strong>Pick a chart type.</strong> A chart is suggested from your data: a line chart by month if there is a date column, otherwise a bar chart.</li>
+      <li><strong>Choose the category and the values.</strong> Rows with the same category are combined using the aggregate you choose, so you can chart total revenue per region straight from a list of orders without making a summary first.</li>
+      <li><strong>Add a title, pick colours</strong> and download the chart as PNG (at double resolution, sharp on slides) or SVG (scales to any size, editable in Figma, Illustrator or Inkscape).</li>
+    </ol>
+
+    <h2>Which chart should I use?</h2>
+    <table class="change-table">
+      <thead><tr><th style="width:170px">Chart</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>Bar</td><td>Comparing amounts across categories: sales by region, tickets by team. Use horizontal bars when labels are long.</td></tr>
+        <tr><td>Stacked bar</td><td>Totals per category and what they are made of, using “Split by” or several value columns.</td></tr>
+        <tr><td>Line / area</td><td>Change over time. Group dates by month or quarter to smooth out daily noise.</td></tr>
+        <tr><td>Pie / donut</td><td>Shares of a whole, with only a few categories. Use “Top 8” to group the rest as “Other”.</td></tr>
+        <tr><td>Scatter</td><td>The relationship between two numbers, such as price and quantity. The trend line shows the correlation (r) and R².</td></tr>
+        <tr><td>Histogram</td><td>How the values of one numeric column are distributed: typical range, skew and outliers.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Charts from a pivot table</h2>
+    <p>Build a summary in the <a href="/pivot-table">pivot table</a> and click “Chart this” to open it here, ready to plot. Every chart's underlying numbers can be downloaded as CSV, so the figures in your report always match the picture.</p>
+    <p>Everything is drawn in your browser. Nothing is uploaded, and there is no watermark.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I make a graph from a CSV file?</summary>
+        <p>Open the CSV on this page, choose a chart type, a category column and a value column. The chart appears instantly, and you can download it as PNG or SVG.</p>
+      </details>
+      <details>
+        <summary>Can I make a chart from Excel data?</summary>
+        <p>Yes. Open the .xlsx, .xls or .ods file directly and pick the sheet; there is no need to convert it to CSV first.</p>
+      </details>
+      <details>
+        <summary>Do I need to summarise my data first?</summary>
+        <p>No. If several rows share a category, they are combined with the aggregate you choose (sum, average, count, min or max). A list of orders becomes revenue per region in one step.</p>
+      </details>
+      <details>
+        <summary>Can I download the chart?</summary>
+        <p>Yes, as a high-resolution PNG for presentations and documents, or as SVG, a vector format that stays sharp at any size and can be edited in design tools.</p>
+      </details>
+      <details>
+        <summary>Is it free and private?</summary>
+        <p>Yes. There is no sign-up and no watermark, and your data never leaves your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/pivot-table">
+        <span class="icon">⊞</span>
+        <h3>Pivot Table</h3>
+        <p>Summarise CSV or Excel data by rows and columns with sum, count or average.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/statistics-calculator">
+        <span class="icon">σ</span>
+        <h3>Statistics Calculator</h3>
+        <p>Mean, median, mode, standard deviation, quartiles and outliers for a list of numbers.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+      <a class="tool-card" href="/excel-converter">
+        <span class="icon">xls</span>
+        <h3>Excel Converter</h3>
+        <p>Excel to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/profile.js?v=2"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/chartmaker.js?v=1"></script>
+</body>
+</html>

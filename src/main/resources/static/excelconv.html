@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Excel to CSV &amp; JSON Converter – and CSV/JSON to Excel</title>
+  <meta name="description" content="Convert Excel (.xlsx, .xls, .ods) to CSV, JSON, Markdown or HTML, or turn CSV and JSON into an Excel file. Pick sheets, delimiters and JSON shape. No upload.">
+  <link rel="canonical" href="https://jsonxmleditor.com/excel-converter">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Excel ↔ CSV &amp; JSON Converter">
+  <meta property="og:description" content="Convert Excel to CSV or JSON, and CSV or JSON to Excel, in your browser.">
+  <meta property="og:url" content="https://jsonxmleditor.com/excel-converter">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Excel ↔ CSV &amp; JSON Converter">
+  <meta name="twitter:description" content="Convert Excel to CSV or JSON, and CSV or JSON to Excel, in your browser.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Excel to CSV and JSON Converter",
+      "url": "https://jsonxmleditor.com/excel-converter",
+      "description": "Convert Excel workbooks to CSV, JSON, Markdown or HTML, and CSV or JSON to Excel, in the browser.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Excel to CSV, JSON, Markdown and HTML",
+        "CSV and JSON to Excel (.xlsx)",
+        "All sheets or one sheet",
+        "Comma, semicolon, tab or pipe delimiters",
+        "JSON objects, arrays or NDJSON",
+        "Files stay on your computer"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Excel Converter",
+          "item": "https://jsonxmleditor.com/excel-converter"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert Excel to CSV?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Drop the Excel file on this page, choose CSV and the delimiter, then click Download. For a workbook with several sheets, pick the sheet or tick All sheets."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I convert Excel to JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Open the file, choose JSON and a shape. Array of objects uses the first row as keys, which is what most APIs and JavaScript code expect."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I convert CSV to Excel?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Open or paste the CSV and choose Excel (.xlsx). Numbers are stored as real numbers and columns are sized to fit."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does Excel show strange characters in my CSV?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Excel assumes an older encoding unless the file starts with a byte order mark. Files downloaded here include it, so accents and non-Latin text display correctly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Reading and converting happen in your browser; the file never leaves your computer."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Excel Converter</span></nav>
+  <section class="tool-head">
+    <h1>Excel ↔ CSV &amp; JSON Converter</h1>
+    <p>Open an Excel workbook to convert it to CSV, JSON, Markdown or an HTML table, or open a CSV or JSON file to turn it into a proper Excel file. You see a preview of the data, and the conversion happens in your browser.</p>
+  </section>
+
+<div id="xcEmpty">
+    <div class="data-start">
+      <label class="data-drop" id="xcDrop" tabindex="0">
+        <input type="file" id="xcFile" accept=".xlsx,.xlsm,.xls,.ods,.csv,.tsv,.txt,.json,.ndjson,.jsonl" hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Drop an Excel, CSV or JSON file</strong>
+        <small>.xlsx, .xls, .ods, .csv, .tsv or .json · read locally, never uploaded</small>
+      </label>
+      <section class="pane">
+        <div class="pane-head">…or paste CSV or JSON to make an Excel file</div>
+        <textarea id="xcPaste" class="code-input" spellcheck="false" aria-label="Paste CSV or JSON"></textarea>
+        <div class="data-actions"><button type="button" class="btn btn-primary" id="xcPasteBtn">Load data</button></div>
+      </section>
+    </div>
+  </div>
+  <p id="xcLoading" class="data-loading" hidden>Reading file…</p>
+  <div id="xcError" class="error-box" hidden style="margin-top:12px"></div>
+
+  <div id="xcWorkspace" hidden>
+    <div class="data-bar">
+      <div class="data-title"><strong id="xcName"></strong><span id="xcMeta"></span></div>
+      <label class="field-inline" id="xcSheetWrap" hidden>Sheet <select id="xcSheet"></select></label>
+      <label class="check" id="xcAllSheetsWrap" hidden><input type="checkbox" id="xcAllSheets"> All sheets</label>
+      <button type="button" class="btn" id="xcClose">Open another file</button>
+    </div>
+    <div class="xc-out-grid">
+      <section class="pane"><div class="pane-head">Preview</div><div id="xcGrid"></div></section>
+      <section class="pane">
+        <div class="pane-head">Convert to
+          <select id="xcFormat" class="mini-select" aria-label="Output format">
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+            <option value="xlsx">Excel (.xlsx)</option>
+            <option value="markdown">Markdown table</option>
+            <option value="html">HTML table</option>
+          </select>
+          <span class="muted" id="xcOutMeta"></span>
+          <span class="actions">
+            <button type="button" class="mini-btn" id="xcCopy">Copy</button>
+            <button type="button" class="mini-btn" id="xcDownload">Download</button>
+          </span>
+        </div>
+        <div class="xc-opts" id="xcCsvOpts">
+          <label class="field-inline">Delimiter
+            <select id="xcDelim">
+              <option value="comma">Comma ,</option>
+              <option value="semicolon">Semicolon ;</option>
+              <option value="tab">Tab</option>
+              <option value="pipe">Pipe |</option>
+            </select>
+          </label>
+        </div>
+        <div class="xc-opts" id="xcJsonOpts" hidden>
+          <label class="field-inline">Shape
+            <select id="xcShape">
+              <option value="objects">Array of objects</option>
+              <option value="arrays">Array of arrays</option>
+              <option value="ndjson">NDJSON (one per line)</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" id="xcTyped" checked> Numbers and true/false as JSON values</label>
+        </div>
+        <textarea id="xcOutput" class="code-input xc-output" spellcheck="false" readonly aria-label="Converted output"></textarea>
+        <p id="xcXlsxNote" class="xc-note" hidden></p>
+      </section>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Excel to CSV or JSON</h2>
+    <ol>
+      <li>Drop an <code>.xlsx</code>, <code>.xls</code> or <code>.ods</code> file. If it has several sheets, pick one, or tick <strong>All sheets</strong>.</li>
+      <li>Choose <strong>CSV</strong> or <strong>JSON</strong> (or a Markdown or HTML table) and set the options.</li>
+      <li>Copy the result or click <strong>Download</strong>.</li>
+    </ol>
+    <ul>
+      <li><strong>CSV</strong>: choose a comma, semicolon (common in Europe, where the comma is the decimal separator), tab or pipe. The file is saved as UTF-8 with a byte order mark, so Excel opens accented characters and non-Latin scripts correctly.</li>
+      <li><strong>JSON</strong>: an array of objects keyed by the header row (best for APIs and JavaScript), an array of arrays (compact), or NDJSON for log pipelines and BigQuery. With "Numbers and true/false as JSON values" on, a column that holds only numbers becomes JSON numbers and a true/false column becomes booleans. A column of codes such as <code>007</code>, or one mixing numbers and text, stays text, so every value in a column keeps the same type.</li>
+      <li><strong>All sheets</strong> produces one JSON object with a key per sheet, or one CSV section per sheet.</li>
+    </ul>
+
+    <h2>CSV or JSON to Excel</h2>
+    <p>Open a CSV or JSON file (or paste the data) and choose <strong>Excel (.xlsx)</strong>. You get a real workbook, not a renamed CSV: numbers are stored as numbers so formulas and sorting work, column widths fit the content, and nothing is reformatted. JSON arrays of objects become one row per object, with nested fields flattened into columns such as <code>address.city</code>.</p>
+
+    <h2>How values are converted</h2>
+    <ul>
+      <li>Dates become ISO dates such as <code>2026-10-03</code>, which every system understands, instead of Excel's internal day numbers.</li>
+      <li>Numbers are written without Excel's display formatting (currency symbols, thousands separators), so they import cleanly elsewhere.</li>
+      <li>Formulas are converted to the values Excel last calculated.</li>
+      <li>Empty rows are skipped and duplicate or blank column headers get unique names.</li>
+    </ul>
+    <p>Everything happens in your browser: the workbook is never uploaded. For a closer look at the data first, open it in the <a href="/csv-viewer">CSV &amp; Excel Viewer</a>, or query it with <a href="/csv-sql">SQL</a>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I convert Excel to CSV?</summary>
+        <p>Drop the Excel file on this page, choose CSV and the delimiter, then click Download. For a workbook with several sheets, pick the sheet or tick All sheets.</p>
+      </details>
+      <details>
+        <summary>How do I convert Excel to JSON?</summary>
+        <p>Open the file, choose JSON and a shape. Array of objects uses the first row as keys, which is what most APIs and JavaScript code expect.</p>
+      </details>
+      <details>
+        <summary>Can I convert CSV to Excel?</summary>
+        <p>Yes. Open or paste the CSV and choose Excel (.xlsx). Numbers are stored as real numbers and columns are sized to fit.</p>
+      </details>
+      <details>
+        <summary>Why does Excel show strange characters in my CSV?</summary>
+        <p>Excel assumes an older encoding unless the file starts with a byte order mark. Files downloaded here include it, so accents and non-Latin text display correctly.</p>
+      </details>
+      <details>
+        <summary>Are my files uploaded?</summary>
+        <p>No. Reading and converting happen in your browser; the file never leaves your computer.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+      <a class="tool-card" href="/csv-converter">
+        <span class="icon">a,b</span>
+        <h3>CSV Converter</h3>
+        <p>Turn CSV into JSON, XML or SQL INSERT statements.</p>
+      </a>
+      <a class="tool-card" href="/json-to-csv">
+        <span class="icon">a,b</span>
+        <h3>JSON to CSV</h3>
+        <p>Turn a JSON array into an Excel-ready CSV file, with nested fields flattened.</p>
+      </a>
+      <a class="tool-card" href="/markdown-editor">
+        <span class="icon">md</span>
+        <h3>Markdown Editor</h3>
+        <p>Write Markdown with a live preview, then export PDF, HTML or a README.md.</p>
+      </a>
+      <a class="tool-card" href="/json-viewer">
+        <span class="icon">{ }</span>
+        <h3>JSON Viewer</h3>
+        <p>Explore JSON as a collapsible tree with search, copy path and JSONPath.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/excelconv.js?v=2"></script>
+</body>
+</html>

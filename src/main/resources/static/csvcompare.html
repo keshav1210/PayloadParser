@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Compare Two CSV Files Online – CSV &amp; Excel Diff</title>
+  <meta name="description" content="Compare two CSV or Excel files by a key column and see which rows were added, removed or changed, with every changed cell highlighted. Free and private.">
+  <link rel="canonical" href="https://jsonxmleditor.com/csv-compare">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Compare Two CSV or Excel Files">
+  <meta property="og:description" content="Find added, removed and changed rows between two versions of a CSV or Excel file, cell by cell.">
+  <meta property="og:url" content="https://jsonxmleditor.com/csv-compare">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Compare Two CSV or Excel Files">
+  <meta name="twitter:description" content="Find added, removed and changed rows between two versions of a CSV or Excel file, cell by cell.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "CSV Compare",
+      "url": "https://jsonxmleditor.com/csv-compare",
+      "description": "Compare two CSV or Excel files by key and list added, removed and changed rows and cells.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Compare by key column or row by row",
+        "Added, removed and changed rows",
+        "Changed cells shown as old → new",
+        "Ignore case, spaces and number formatting",
+        "Detects added and removed columns",
+        "Export the differences"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "CSV Compare",
+          "item": "https://jsonxmleditor.com/csv-compare"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I compare two CSV files for differences?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Add the old file on the left and the new file on the right, choose the column that identifies each row (such as an ID) and click Compare. You get the added, removed and changed rows, with each changed cell shown as old → new."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I compare two Excel sheets?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Both sides accept .xlsx, .xls and .ods files; pick a sheet in each. You can also compare an Excel sheet with a CSV export."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if my file has no ID column?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Choose “Row by row (no key)” to compare rows by position, or choose two columns that are unique together, such as name and date."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens with duplicate keys?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Rows with the same key are matched in the order they appear, and the tool warns you. Adding a second key column usually makes the match exact."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my files uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The comparison runs entirely in your browser."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">CSV Compare</span></nav>
+  <section class="tool-head">
+    <h1>Compare Two CSV Files</h1>
+    <p>Load an old and a new version of a CSV or Excel file to see what changed: which rows were added or removed, and which cells changed in the rest. Rows are matched by an ID column, so it works even when the files are sorted differently.</p>
+  </section>
+
+<div class="data-bar" style="justify-content:flex-end"><button type="button" class="btn" id="ccBoth">Try with sample files</button></div>
+  <div class="two-src">
+    <div><h2>Old version</h2><div id="ccOld"></div></div>
+    <div><h2>New version</h2><div id="ccNew"></div></div>
+  </div>
+
+  <section class="pane" id="ccOptions" hidden>
+    <div class="tool-form">
+      <label class="field-inline">Match rows by <select id="ccKey"></select></label>
+      <label class="field-inline">and <select id="ccKey2"></select></label>
+      <label class="check"><input type="checkbox" id="ccSpace" checked> Ignore extra spaces</label>
+      <label class="check"><input type="checkbox" id="ccCase"> Ignore case</label>
+      <label class="check"><input type="checkbox" id="ccNum" checked> Treat 229 and 229.00 as equal</label>
+      <button type="button" class="btn btn-primary" id="ccRun">Compare</button>
+    </div>
+  </section>
+
+  <div id="ccResult" hidden>
+    <div class="result-bar">
+      <div class="summary" id="ccSummary"></div>
+      <label class="field-inline">Show <select id="ccView">
+        <option value="diff">All differences</option>
+        <option value="added">Added rows</option>
+        <option value="removed">Removed rows</option>
+        <option value="changed">Changed rows</option>
+        <option value="all">Every row</option>
+      </select></label>
+      <input id="ccFilter" class="text-input data-filter" type="search" placeholder="Filter rows…" aria-label="Filter rows">
+      <button type="button" class="btn" data-cc-export="csv">Download CSV</button>
+      <button type="button" class="btn" data-cc-export="xlsx">Download Excel</button>
+    </div>
+    <ul class="cc-notes" id="ccNotes"></ul>
+    <div id="ccGrid"></div>
+    <p class="muted" style="font-size:13px;margin:8px 2px 0">Green rows were added, red rows were removed, and changed cells are highlighted as <code>old → new</code>.</p>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How it works</h2>
+    <ol>
+      <li><strong>Add both versions</strong> of the file: CSV, TSV, Excel or JSON. They can be different formats.</li>
+      <li><strong>Pick a key column</strong> that identifies each row, such as an ID, SKU or email. Add a second column if one isn't unique on its own (for example order ID plus line number).</li>
+      <li><strong>Click Compare.</strong> The summary counts added, removed and changed rows; the table lists them with each changed cell shown as <code>old → new</code>.</li>
+      <li><strong>Download</strong> the differences as CSV or Excel to share or review.</li>
+    </ol>
+
+    <h2>Why compare by key instead of line by line?</h2>
+    <p>A text diff compares line 1 with line 1 and line 2 with line 2. As soon as a row is inserted or the file is sorted differently, every following line looks changed. Comparing by key matches each row with its counterpart wherever it is in the file, so you only see real changes. If your files have no ID column, choose “Row by row” to compare by position. For plain text or code, use the <a href="/text-diff">text diff</a> instead.</p>
+
+    <h2>Avoiding false differences</h2>
+    <ul>
+      <li><strong>Ignore extra spaces</strong>: <code>"Chicago "</code> and <code>"Chicago"</code> are treated as equal.</li>
+      <li><strong>Ignore case</strong>: <code>PRO</code> and <code>Pro</code> are treated as equal.</li>
+      <li><strong>Number formatting</strong>: <code>229</code>, <code>229.0</code> and <code>229.00</code> are treated as equal, which matters when one file was saved from Excel.</li>
+    </ul>
+    <p>Columns are matched by name, so the column order doesn't matter. Columns that exist in only one file are listed above the table. Your files are compared in your browser and never uploaded.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I compare two CSV files for differences?</summary>
+        <p>Add the old file on the left and the new file on the right, choose the column that identifies each row (such as an ID) and click Compare. You get the added, removed and changed rows, with each changed cell shown as old → new.</p>
+      </details>
+      <details>
+        <summary>Can I compare two Excel sheets?</summary>
+        <p>Yes. Both sides accept .xlsx, .xls and .ods files; pick a sheet in each. You can also compare an Excel sheet with a CSV export.</p>
+      </details>
+      <details>
+        <summary>What if my file has no ID column?</summary>
+        <p>Choose “Row by row (no key)” to compare rows by position, or choose two columns that are unique together, such as name and date.</p>
+      </details>
+      <details>
+        <summary>What happens with duplicate keys?</summary>
+        <p>Rows with the same key are matched in the order they appear, and the tool warns you. Adding a second key column usually makes the match exact.</p>
+      </details>
+      <details>
+        <summary>Are my files uploaded?</summary>
+        <p>No. The comparison runs entirely in your browser.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/merge-csv">
+        <span class="icon">⋈</span>
+        <h3>Merge CSV Files</h3>
+        <p>Join two CSV or Excel files on a key column, like VLOOKUP for every row.</p>
+      </a>
+      <a class="tool-card" href="/compare">
+        <span class="icon">≠</span>
+        <h3>JSON &amp; XML Compare</h3>
+        <p>See every difference between two JSON or XML documents.</p>
+      </a>
+      <a class="tool-card" href="/text-diff">
+        <span class="icon">±</span>
+        <h3>Text Diff</h3>
+        <p>Compare any two texts or code files line by line, word by word or by character.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/csv-viewer">
+        <span class="icon">▦</span>
+        <h3>CSV &amp; Excel Viewer</h3>
+        <p>Open CSV, Excel or JSON as a fast, sortable table and profile every column.</p>
+      </a>
+      <a class="tool-card" href="/csv-sql">
+        <span class="icon">SQL</span>
+        <h3>Query CSV with SQL</h3>
+        <p>Run SQL on CSV, Excel, JSON and Parquet files in your browser, and join them.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/dataload.js?v=2"></script>
+<script src="/js/datagrid.js?v=2"></script>
+<script src="/js/datasource.js?v=1"></script>
+<script src="/js/csvcompare.js?v=1"></script>
+</body>
+</html>

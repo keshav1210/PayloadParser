@@ -109,6 +109,61 @@ public class ViewHandler {
         return "json-to-csv.html";
     }
 
+    @GetMapping("/csv-viewer")
+    public String csvViewer() {
+        return "csvviewer.html";
+    }
+
+    @GetMapping("/csv-sql")
+    public String csvSql() {
+        return "csvsql.html";
+    }
+
+    @GetMapping("/excel-converter")
+    public String excelConverter() {
+        return "excelconv.html";
+    }
+
+    @GetMapping("/data-cleaner")
+    public String dataCleaner() {
+        return "datacleaner.html";
+    }
+
+    @GetMapping("/pivot-table")
+    public String pivotTable() {
+        return "pivot.html";
+    }
+
+    @GetMapping("/chart-maker")
+    public String chartMaker() {
+        return "chartmaker.html";
+    }
+
+    @GetMapping("/merge-csv")
+    public String mergeCsv() {
+        return "mergecsv.html";
+    }
+
+    @GetMapping("/csv-compare")
+    public String csvCompare() {
+        return "csvcompare.html";
+    }
+
+    @GetMapping("/statistics-calculator")
+    public String statisticsCalculator() {
+        return "statscalc.html";
+    }
+
+    @GetMapping("/image-to-text")
+    public String imageToText() {
+        return "imagetotext.html";
+    }
+
+    @GetMapping("/date-calculator")
+    public String dateCalculator() {
+        return "datecalc.html";
+    }
+
     @GetMapping("/toml-converter")
     public String  tomlConverter(){
         return "tomconverter.html";

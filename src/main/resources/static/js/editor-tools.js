@@ -135,6 +135,7 @@ const EditorTools = (() => {
       leftBar.insertBefore(redoBtn, leftBar.firstChild);
       leftBar.insertBefore(undoBtn, leftBar.firstChild);
       leftBar.appendChild(makeActionBtn('⌕ Find', 'Find in the editor (Ctrl+F)', () => Find.open('left')));
+      leftBar.appendChild(makeActionBtn('⇄ Replace', 'Find and replace in the editor (Ctrl+H)', () => Find.open('left', true)));
     }
     const rightBar = document.querySelector('#rightPanelHeader .panel-actions');
     if (rightBar) {
@@ -180,17 +181,55 @@ const Find = (() => {
     const caseBtn = el('button', 'find-btn', 'Aa');
     caseBtn.title = 'Match case';
     caseBtn.setAttribute('aria-pressed', 'false');
+    const regexBtn = el('button', 'find-btn', '.*');
+    regexBtn.title = 'Use a regular expression';
+    regexBtn.setAttribute('aria-pressed', 'false');
     const prev = el('button', 'find-btn', '↑');
     prev.title = 'Previous match (Shift+Enter)';
     const next = el('button', 'find-btn', '↓');
     next.title = 'Next match (Enter)';
     const close = el('button', 'find-btn', '✕');
     close.title = 'Close (Esc)';
-    [caseBtn, prev, next, close].forEach(b => { b.type = 'button'; });
-    bar.append(input, count, caseBtn, prev, next, close);
+    const buttons = [caseBtn, regexBtn, prev, next, close];
+    let replaceToggle = null;
+    if (side === 'left') {
+      replaceToggle = el('button', 'find-btn', '⇄');
+      replaceToggle.title = 'Find and replace (Ctrl+H)';
+      replaceToggle.setAttribute('aria-pressed', 'false');
+      buttons.unshift(replaceToggle);
+    }
+    buttons.forEach(b => { b.type = 'button'; });
+    bar.append(input, count, ...buttons);
     header.after(bar);
 
-    const st = { side, bar, input, count, caseBtn, matches: [], current: -1, caseSensitive: false, timer: null, mode: 'code' };
+    const st = { side, bar, input, count, caseBtn, regexBtn, matches: [], current: -1, caseSensitive: false, regex: false, timer: null, mode: 'code', after: null };
+
+    if (side === 'left') {
+      const rbar = el('div', 'find-bar replace-bar');
+      rbar.hidden = true;
+      const rinput = document.createElement('input');
+      rinput.type = 'text';
+      rinput.placeholder = 'Replace with';
+      rinput.setAttribute('aria-label', 'Replace with');
+      rinput.spellcheck = false;
+      const one = el('button', 'find-btn find-act', 'Replace');
+      one.title = 'Replace this match and go to the next one (Enter)';
+      const all = el('button', 'find-btn find-act', 'Replace all');
+      all.title = 'Replace every match (Ctrl+Alt+Enter)';
+      [one, all].forEach(b => { b.type = 'button'; });
+      rbar.append(rinput, one, all);
+      bar.after(rbar);
+      Object.assign(st, { rbar, rinput, replaceToggle });
+      replaceToggle.addEventListener('click', () => showReplace(st, rbar.hidden));
+      one.addEventListener('click', () => replaceOne(st));
+      all.addEventListener('click', () => replaceAll(st));
+      rinput.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && e.altKey) { e.preventDefault(); replaceAll(st); }
+        else if (e.key === 'Enter') { e.preventDefault(); replaceOne(st); }
+        else if (e.key === 'Escape') { e.preventDefault(); closeBar(side); }
+      });
+    }
+
     input.addEventListener('input', () => { clearTimeout(st.timer); st.timer = setTimeout(() => run(st, true), 120); });
     input.addEventListener('keydown', e => {
       if (e.key === 'Enter') { e.preventDefault(); step(st, e.shiftKey ? -1 : 1); }
@@ -202,16 +241,96 @@ const Find = (() => {
       caseBtn.setAttribute('aria-pressed', String(st.caseSensitive));
       run(st, true);
     });
+    regexBtn.addEventListener('click', () => {
+      st.regex = !st.regex;
+      regexBtn.classList.toggle('on', st.regex);
+      regexBtn.setAttribute('aria-pressed', String(st.regex));
+      run(st, true);
+    });
     prev.addEventListener('click', () => step(st, -1));
     next.addEventListener('click', () => step(st, 1));
     close.addEventListener('click', () => closeBar(side));
     return st;
   }
 
-  function open(side) {
+  function showReplace(st, show) {
+    if (!st.rbar) return;
+    st.rbar.hidden = !show;
+    st.replaceToggle.classList.toggle('on', show);
+    st.replaceToggle.setAttribute('aria-pressed', String(show));
+  }
+
+  function buildRegex(st, flags = 'g') {
+    const q = st.input.value;
+    if (!q) return null;
+    const src = st.regex ? q : q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    try { return new RegExp(src, flags + (st.caseSensitive ? '' : 'i') + 'u'); }
+    catch (_) { return undefined; }
+  }
+
+  function writeEditor(st, text) {
+    const top = codeEditor.scrollTop, left = codeEditor.scrollLeft;
+    let lang = 'plain';
+    const detected = detectFormat(text);
+    if (detected === 'json') { try { parseJsonAst(text); lang = 'json'; } catch (_) { } }
+    if (detected === 'xml') { try { parseXmlDocument(text); lang = 'xml'; } catch (_) { } }
+    setLeft(text, lang);
+    codeEditor.scrollTop = top;
+    codeEditor.scrollLeft = left;
+    syncLeftScroll();
+    if (text.trim()) formatCode(false, null, null, null, true);
+    clearTimeout(st.timer);
+  }
+
+  function replaceOne(st) {
+    if (!st.matches.length) run(st, true);
+    if (!st.matches.length || st.mode !== 'code') return;
+    const m = st.matches[st.current < 0 ? 0 : st.current];
+    const lines = getEditorText().split('\n');
+    const line = lines[m.li];
+    if (line === undefined) return;
+    const repl = st.rinput.value;
+    let updated;
+    if (st.regex) {
+      const re = buildRegex(st, 'y');
+      if (!re) return;
+      re.lastIndex = m.ci;
+      updated = line.replace(re, repl);
+    } else {
+      updated = line.slice(0, m.ci) + repl + line.slice(m.ci + m.len);
+    }
+    if (updated === line) { step(st, 1); return; }
+    const newLen = updated.length - (line.length - m.len);
+    lines[m.li] = updated;
+    writeEditor(st, lines.join('\n'));
+    st.after = { li: m.li, ci: m.ci + Math.max(newLen, 0) + (newLen === 0 && m.len === 0 ? 1 : 0) };
+    run(st, false);
+  }
+
+  function replaceAll(st) {
+    const re = buildRegex(st);
+    if (!re) { if (re === undefined) st.count.textContent = 'Invalid regex'; return; }
+    const repl = st.rinput.value;
+    let total = 0;
+    const lines = getEditorText().split('\n').map(line => {
+      re.lastIndex = 0;
+      const hits = line.match(re);
+      if (!hits) return line;
+      total += hits.length;
+      re.lastIndex = 0;
+      return st.regex ? line.replace(re, repl) : line.replace(re, () => repl);
+    });
+    if (!total) { run(st, true); return; }
+    writeEditor(st, lines.join('\n'));
+    run(st, true);
+    setStatus(inputStatus, true, `⇄ Replaced ${total.toLocaleString('en-US')} match${total === 1 ? '' : 'es'}. Press Ctrl+Z or ↶ to undo.`);
+  }
+
+  function open(side, withReplace) {
     const st = state[side];
     if (!st) return;
     st.bar.hidden = false;
+    if (withReplace) showReplace(st, true);
     const sel = window.getSelection().toString();
     if (sel && sel.length < 100 && !sel.includes('\n')) st.input.value = sel;
     st.input.focus();
@@ -223,6 +342,7 @@ const Find = (() => {
     const st = state[side];
     if (!st || st.bar.hidden) return;
     st.bar.hidden = true;
+    showReplace(st, false);
     clearPaint(side);
     st.matches = [];
     st.current = -1;
@@ -242,20 +362,27 @@ const Find = (() => {
     clearPaint(st.side);
     if (!q) { st.count.textContent = ''; st.current = -1; return; }
 
-    const needle = st.caseSensitive ? q : q.toLowerCase();
+    const re = buildRegex(st);
+    if (!re) {
+      st.current = -1;
+      st.count.textContent = 'Invalid regex';
+      st.bar.classList.add('none');
+      return;
+    }
     if (st.mode === 'code') {
       const code = panelEls(st.side).code;
       const lines = Array.from(code.children, c => c.textContent);
       for (let li = 0; li < lines.length && st.matches.length < MAX_MATCHES; li++) {
-        const hay = st.caseSensitive ? lines[li] : lines[li].toLowerCase();
-        let idx = hay.indexOf(needle);
-        while (idx !== -1 && st.matches.length < MAX_MATCHES) {
-          st.matches.push({ li, ci: idx, len: q.length });
-          idx = hay.indexOf(needle, idx + Math.max(1, needle.length));
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(lines[li])) && st.matches.length < MAX_MATCHES) {
+          if (!m[0].length) { re.lastIndex++; continue; }
+          st.matches.push({ li, ci: m.index, len: m[0].length });
         }
       }
     } else if (currentAst) {
-      const test = s => (st.caseSensitive ? s : s.toLowerCase()).includes(needle);
+      const single = buildRegex(st, '');
+      const test = s => single.test(s);
       (function walk(node, path) {
         if (st.matches.length >= MAX_MATCHES) return;
         if (node.type === 'object') {
@@ -283,8 +410,10 @@ const Find = (() => {
     st.bar.classList.remove('none');
 
     let start = 0;
-    if (!resetCurrent && previous && st.mode === 'code') {
-      const k = st.matches.findIndex(m => m.li > previous.li || (m.li === previous.li && m.ci >= previous.ci));
+    const from = st.after || previous;
+    st.after = null;
+    if (!resetCurrent && from && st.mode === 'code') {
+      const k = st.matches.findIndex(m => m.li > from.li || (m.li === from.li && m.ci >= from.ci));
       start = k < 0 ? 0 : k;
     }
     paintAll(st);
@@ -381,10 +510,18 @@ const Find = (() => {
     state.right = makeBar('right');
 
     document.addEventListener('keydown', e => {
-      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'f' || e.shiftKey || e.altKey) return;
+      if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+      const key = e.key.toLowerCase();
+      if (key !== 'f' && key !== 'h') return;
       const active = document.activeElement;
       const inLeft = active && document.getElementById('leftPanel')?.contains(active);
       const inRight = active && document.getElementById('rightPanel')?.contains(active);
+      if (key === 'h') {
+        if (!inLeft) return;
+        e.preventDefault();
+        open('left', true);
+        return;
+      }
       if (!inLeft && !inRight) return;
       e.preventDefault();
       open(inLeft ? 'left' : 'right');

@@ -250,7 +250,7 @@ html[data-theme="light"] .app-header .nav-menu-panel a.nav-external small {
 
 .app-header .nav-menu-panel.nav-menu-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    grid-template-columns: repeat(5, minmax(150px, 1fr));
     gap: 4px 10px;
     padding: 10px;
     min-width: 0;

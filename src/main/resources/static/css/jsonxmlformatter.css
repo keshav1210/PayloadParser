@@ -1675,3 +1675,20 @@ select:focus-visible,
 html[data-theme="light"] .query-bar .query-label {
     color: #9a3412;
 }
+
+.replace-bar {
+    border-top: none;
+    padding-top: 0;
+}
+
+.find-btn.find-act {
+    border-color: #353b48;
+    padding: 4px 10px;
+    font-size: 12.5px;
+    white-space: nowrap;
+}
+
+html[data-theme="light"] .find-btn.find-act {
+    border-color: #d0d7de;
+    color: #1f2328;
+}

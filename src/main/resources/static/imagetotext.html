@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Image to Text – Extract &amp; Compare Text in Images (OCR)</title>
+  <meta name="description" content="Extract text from images, photos, screenshots and scanned PDFs with free OCR. Compare the text of two images, like two bills, and save the result as PDF.">
+  <link rel="canonical" href="https://jsonxmleditor.com/image-to-text">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Image to Text (OCR) and Image Text Compare">
+  <meta property="og:description" content="Pull the text out of any photo, screenshot, bill or scanned PDF, compare two images line by line, and download as PDF or TXT.">
+  <meta property="og:url" content="https://jsonxmleditor.com/image-to-text">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Image to Text (OCR) and Image Text Compare">
+  <meta name="twitter:description" content="Pull the text out of any photo, screenshot, bill or scanned PDF, compare two images line by line, and download as PDF or TXT.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Image to Text (OCR)",
+      "url": "https://jsonxmleditor.com/image-to-text",
+      "description": "Free browser-based OCR: extract text from images and PDFs, compare the text of two images and export to PDF.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "OCR for JPG, PNG, WebP, screenshots and scanned PDFs",
+        "Text PDFs read exactly, without OCR",
+        "English, Hindi and 15+ other languages",
+        "Compare the text of two images line by line",
+        "Changed numbers and amounts listed separately",
+        "Download as PDF or TXT, or copy",
+        "Paste images with Ctrl+V",
+        "Runs in your browser; images are not uploaded"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Image to Text (OCR)",
+          "item": "https://jsonxmleditor.com/image-to-text"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I convert an image to text?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Drop the image on this page, or paste it with Ctrl+V. The text is recognised in your browser in a few seconds, and you can copy it or download it as a PDF or TXT file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I compare two bills or invoices?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Choose “Compare two images”, drop one bill on each side, and you get the lines that differ side by side, plus a table of the numbers and amounts that changed, such as quantities, rates and totals. Download it as a PDF report."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it read text from a PDF?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Text PDFs are read directly and exactly. Scanned PDFs are rendered and run through OCR, up to 15 pages at a time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it support Hindi and other Indian languages?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Choose English + Hindi, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Punjabi or Urdu. Many other languages are available too, including Spanish, French, German, Arabic, Chinese and Japanese."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I save the extracted text as a PDF?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Click “Download PDF”. A print window opens; choose “Save as PDF” as the destination. The PDF contains the text in a clean, searchable layout."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are my images uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Text recognition runs entirely in your browser. Your images and their text never leave your device."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Image to Text (OCR)</span></nav>
+  <section class="tool-head">
+    <h1>Image to Text (OCR)</h1>
+    <p>Drop a photo, screenshot, bill or scanned PDF to pull out the text, then copy it or save it as a PDF. Have two versions of a document, like two bills or two invoices? Switch to <strong>Compare two images</strong> to see exactly which lines and amounts are different. Everything runs in your browser and your images are not uploaded.</p>
+  </section>
+
+<div class="oc-top">
+    <div class="tabs" role="tablist" style="margin:0;border:none">
+      <button type="button" class="tab-btn" role="tab" data-oc-mode="extract" aria-selected="true">Extract text</button>
+      <button type="button" class="tab-btn" role="tab" data-oc-mode="compare" aria-selected="false">Compare two images</button>
+    </div>
+    <div class="oc-opts">
+      <label class="field-inline">Language <select id="ocLang">
+        <option value="eng">English</option>
+        <option value="eng+hin">English + Hindi</option>
+        <option value="hin">Hindi</option>
+        <option value="eng+mar">English + Marathi</option>
+        <option value="eng+ben">English + Bengali</option>
+        <option value="eng+tam">English + Tamil</option>
+        <option value="eng+tel">English + Telugu</option>
+        <option value="eng+guj">English + Gujarati</option>
+        <option value="eng+kan">English + Kannada</option>
+        <option value="eng+pan">English + Punjabi</option>
+        <option value="eng+urd">English + Urdu</option>
+        <option value="spa">Spanish</option>
+        <option value="fra">French</option>
+        <option value="deu">German</option>
+        <option value="por">Portuguese</option>
+        <option value="ita">Italian</option>
+        <option value="nld">Dutch</option>
+        <option value="rus">Russian</option>
+        <option value="ara">Arabic</option>
+        <option value="chi_sim">Chinese (simplified)</option>
+        <option value="jpn">Japanese</option>
+        <option value="kor">Korean</option>
+      </select></label>
+      <label class="field-inline">Layout <select id="ocLayout">
+        <option value="3">Automatic</option>
+        <option value="4">Bill / receipt (one column)</option>
+        <option value="6">Single block of text</option>
+        <option value="11">Scattered text (labels, signs)</option>
+      </select></label>
+      <label class="check" title="Converts to high-contrast grey, which helps with phone photos, shadows and faded print"><input type="checkbox" id="ocEnhance" checked> Enhance photo</label>
+    </div>
+  </div>
+
+  <div id="ocExtract">
+    <div class="data-drop oc-drop" id="exDrop" role="button" tabindex="0" aria-label="Drop images or a PDF here, or click to choose">
+        <input type="file" id="exFile" accept="image/*,.pdf,application/pdf" multiple hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Drop images or a PDF here, or click to choose</strong>
+        <small>JPG, PNG, WebP, GIF, BMP or PDF · several files at once · or paste with Ctrl+V</small>
+      </div>
+    <div class="oc-progress" id="exProgress" hidden><span></span><b><i></i></b></div>
+    <div id="exError" class="error-box" hidden style="margin-top:12px"></div>
+    <div id="exResult" hidden>
+      <div class="oc-layout">
+        <div class="oc-preview" id="exPreview"></div>
+        <section class="pane">
+          <div class="pane-head">Extracted text <span class="actions">
+            <button type="button" class="mini-btn" id="exCopy">Copy</button>
+            <button type="button" class="mini-btn" id="exTxt">Download TXT</button>
+            <button type="button" class="mini-btn oc-pdf-btn" id="exPdf">Download PDF</button>
+          </span></div>
+          <div class="oc-meta" id="exMeta" style="padding:8px 12px 0"></div>
+          <textarea id="exText" class="code-input oc-text" spellcheck="false" aria-label="Extracted text"></textarea>
+        </section>
+      </div>
+      <p class="muted oc-pdf-hint" hidden>In the print window, choose <strong>Save as PDF</strong> as the destination.</p>
+    </div>
+  </div>
+
+  <div id="ocCompare" hidden>
+    <div class="oc-sides">
+      <section class="pane oc-side">
+      <div class="pane-head"><span>First image: <strong id="cpAName"></strong></span></div>
+      <div style="padding:12px">
+        <div class="data-drop oc-drop" id="cpADrop" role="button" tabindex="0" aria-label="Drop first image here">
+        <input type="file" id="cpAFile" accept="image/*,.pdf,application/pdf" hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Drop first image here</strong>
+        <small>Image or PDF · or click to choose</small>
+      </div>
+        <div class="oc-progress" id="cpAProgress" hidden><span></span><b><i></i></b></div>
+        <div class="oc-thumb" id="cpAPreview"></div>
+        <div class="oc-meta" id="cpAMeta"></div>
+      </div>
+      <textarea id="cpAText" class="code-input oc-text" spellcheck="false" aria-label="Text from first image" placeholder="The extracted text appears here. You can also type or paste text, or correct OCR mistakes."></textarea>
+    </section>
+      <section class="pane oc-side">
+      <div class="pane-head"><span>Second image: <strong id="cpBName"></strong></span></div>
+      <div style="padding:12px">
+        <div class="data-drop oc-drop" id="cpBDrop" role="button" tabindex="0" aria-label="Drop second image here">
+        <input type="file" id="cpBFile" accept="image/*,.pdf,application/pdf" hidden>
+        <span class="data-drop-icon" aria-hidden="true">⬆</span>
+        <strong>Drop second image here</strong>
+        <small>Image or PDF · or click to choose</small>
+      </div>
+        <div class="oc-progress" id="cpBProgress" hidden><span></span><b><i></i></b></div>
+        <div class="oc-thumb" id="cpBPreview"></div>
+        <div class="oc-meta" id="cpBMeta"></div>
+      </div>
+      <textarea id="cpBText" class="code-input oc-text" spellcheck="false" aria-label="Text from second image" placeholder="The extracted text appears here. You can also type or paste text, or correct OCR mistakes."></textarea>
+    </section>
+    </div>
+    <div id="cpError" class="error-box" hidden style="margin-top:12px"></div>
+    <div class="data-bar" style="margin-top:12px">
+      <button type="button" class="btn btn-primary" id="cpRun">Compare text</button>
+      <button type="button" class="btn" id="cpSwap">⇄ Swap</button>
+      <label class="check"><input type="checkbox" id="cpCase" checked> Ignore case</label>
+      <label class="check"><input type="checkbox" id="cpPunct"> Ignore punctuation</label>
+      <label class="check"><input type="checkbox" id="cpOnly"> Show only differences</label>
+    </div>
+    <div id="cpResult" hidden>
+      <div class="result-bar">
+        <div class="summary" id="cpSummary"></div>
+        <button type="button" class="btn" id="cpTxt">Download TXT</button>
+        <button type="button" class="btn btn-primary" id="cpPdf">Download PDF report</button>
+      </div>
+      <p class="muted oc-pdf-hint" hidden>In the print window, choose <strong>Save as PDF</strong> as the destination.</p>
+      <div id="cpAmounts"></div>
+      <div class="oc-diff-wrap" id="cpTable"></div>
+    </div>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to extract text from an image</h2>
+    <ol>
+      <li><strong>Drop the image</strong> on the page, click to choose it, or copy an image or screenshot and press <code>Ctrl</code>+<code>V</code>. You can add several images or a multi-page PDF at once.</li>
+      <li><strong>Pick the language</strong> of the text. For Indian bills and documents, “English + Hindi” (or another regional language) reads both scripts.</li>
+      <li><strong>Wait a few seconds</strong> while the text is read. The first time, the recognition engine and language data (a few MB) are downloaded; after that they come from your browser's cache.</li>
+      <li><strong>Check and correct</strong> the text in the box if needed, then copy it or download it as a <strong>PDF</strong> or <strong>TXT</strong> file.</li>
+    </ol>
+
+    <h2>Compare the text of two images</h2>
+    <p>Comparing two pictures by eye is slow and easy to get wrong, especially with long bills, invoices, price lists, contracts or forms. In <strong>Compare two images</strong> mode, drop one image on each side. The text of both is extracted and compared line by line:</p>
+    <ul>
+      <li><strong>Changed lines</strong> are shown side by side, with the exact words that differ highlighted.</li>
+      <li>Lines that appear in only one image are marked in red or green.</li>
+      <li><strong>Numbers and amounts that changed</strong>, such as quantities, prices, taxes and totals, get their own table, so a different total on two bills stands out immediately.</li>
+      <li>Download the comparison as a <strong>PDF report</strong> to share, including the full text of both images.</li>
+    </ul>
+    <p>OCR is never perfect, so a misread character can show up as a difference. You can correct the extracted text in either box and the comparison updates. To compare text you already have, use the <a href="/text-diff">text diff</a> tool.</p>
+
+    <h2>Tips for better results</h2>
+    <ul>
+      <li><strong>Sharp, straight and well lit</strong>: hold the phone parallel to the page, avoid shadows and glare, and fill the frame with the document.</li>
+      <li>Keep <strong>Enhance photo</strong> on for phone photos; it turns the image into high-contrast grey. For clean screenshots it makes little difference.</li>
+      <li>For bills and receipts, set <strong>Layout</strong> to “Bill / receipt” so lines are read top to bottom as one column.</li>
+      <li>Text PDFs (exported from software, not scanned) are read directly with no OCR at all, so the text is exact.</li>
+      <li>Handwriting is not supported well; printed text works best.</li>
+    </ul>
+
+    <h2>Private by design</h2>
+    <p>The recognition engine (Tesseract) runs inside your browser, so your images and the extracted text are never uploaded to a server. That makes it safe for bills, bank statements, ID cards and other personal documents. Only the engine and language files are downloaded from a public CDN the first time.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I convert an image to text?</summary>
+        <p>Drop the image on this page, or paste it with Ctrl+V. The text is recognised in your browser in a few seconds, and you can copy it or download it as a PDF or TXT file.</p>
+      </details>
+      <details>
+        <summary>Can I compare two bills or invoices?</summary>
+        <p>Yes. Choose “Compare two images”, drop one bill on each side, and you get the lines that differ side by side, plus a table of the numbers and amounts that changed, such as quantities, rates and totals. Download it as a PDF report.</p>
+      </details>
+      <details>
+        <summary>Can it read text from a PDF?</summary>
+        <p>Yes. Text PDFs are read directly and exactly. Scanned PDFs are rendered and run through OCR, up to 15 pages at a time.</p>
+      </details>
+      <details>
+        <summary>Does it support Hindi and other Indian languages?</summary>
+        <p>Yes. Choose English + Hindi, Marathi, Bengali, Tamil, Telugu, Gujarati, Kannada, Punjabi or Urdu. Many other languages are available too, including Spanish, French, German, Arabic, Chinese and Japanese.</p>
+      </details>
+      <details>
+        <summary>How do I save the extracted text as a PDF?</summary>
+        <p>Click “Download PDF”. A print window opens; choose “Save as PDF” as the destination. The PDF contains the text in a clean, searchable layout.</p>
+      </details>
+      <details>
+        <summary>Are my images uploaded?</summary>
+        <p>No. Text recognition runs entirely in your browser. Your images and their text never leave your device.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/text-diff">
+        <span class="icon">±</span>
+        <h3>Text Diff</h3>
+        <p>Compare any two texts or code files line by line, word by word or by character.</p>
+      </a>
+      <a class="tool-card" href="/markdown-editor">
+        <span class="icon">md</span>
+        <h3>Markdown Editor</h3>
+        <p>Write Markdown with a live preview, then export PDF, HTML or a README.md.</p>
+      </a>
+      <a class="tool-card" href="/qr-code-generator">
+        <span class="icon">qr</span>
+        <h3>QR Code Generator</h3>
+        <p>QR codes for links, phone calls, WhatsApp, Wi-Fi and contact cards.</p>
+      </a>
+      <a class="tool-card" href="/csv-compare">
+        <span class="icon">≠</span>
+        <h3>CSV Compare</h3>
+        <p>Compare two CSV or Excel files and see added, removed and changed rows.</p>
+      </a>
+      <a class="tool-card" href="/data-cleaner">
+        <span class="icon">fix</span>
+        <h3>Data Cleaner</h3>
+        <p>Trim spaces, remove duplicates, fix dates and numbers, split and merge columns.</p>
+      </a>
+      <a class="tool-card" href="/compare">
+        <span class="icon">≠</span>
+        <h3>JSON &amp; XML Compare</h3>
+        <p>See every difference between two JSON or XML documents.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/vendor/diff.min.js?v=7.0.0"></script>
+<script src="/js/ocr.js?v=1"></script>
+</body>
+</html>
