@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Claude Code SDLC Kit Guide – Every File Explained</title>
+  <meta name="description" content="What every file in the Claude Code SDLC kit does: CLAUDE.md, rules, settings, slash commands, subagents and SDLC docs, with official docs and how to customise.">
+  <link rel="canonical" href="https://jsonxmleditor.com/guides/claude-code-sdlc-kit">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Claude Code SDLC kit: every file explained">
+  <meta property="og:description" content="What every file in the Claude Code SDLC kit does: CLAUDE.md, rules, settings, slash commands, subagents and SDLC docs, with official docs and how to customise.">
+  <meta property="og:url" content="https://jsonxmleditor.com/guides/claude-code-sdlc-kit">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/guides-claude-code-sdlc-kit.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Claude Code SDLC kit: every file explained – JSON XML Editor">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/guides-claude-code-sdlc-kit.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Claude Code SDLC kit: every file explained">
+  <meta name="twitter:description" content="What every file in the Claude Code SDLC kit does: CLAUDE.md, rules, settings, slash commands, subagents and SDLC docs, with official docs and how to customise.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=16">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "headline": "Claude Code SDLC kit: every file explained",
+      "description": "What every file in the Claude Code SDLC kit does: CLAUDE.md, rules, settings, slash commands, subagents and SDLC docs, with official docs and how to customise.",
+      "url": "https://jsonxmleditor.com/guides/claude-code-sdlc-kit",
+      "datePublished": "2026-10-04",
+      "dateModified": "2026-10-04",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com"
+      },
+      "about": [
+        "Claude Code",
+        "CLAUDE.md",
+        "Claude Code skills",
+        "Claude Code subagents",
+        "SDLC"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Claude Code SDLC Generator",
+          "item": "https://jsonxmleditor.com/claude-code-sdlc-generator"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Guide",
+          "item": "https://jsonxmleditor.com/guides/claude-code-sdlc-kit"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Can I use one kit for several microservices?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Choose the workspace edition, clone all your services into one folder, unzip the kit at the root of that folder and always open Claude Code there. Each service stays its own git repository; the workspace can be shared as a separate small repository with a clone script."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I have to fill in every document?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. The kit works unedited. Empty sections are marked with FILL comments; Claude works them out from your code when it needs them and asks you only about things the code can't tell it, such as who your users are. Filling in the project overview and the build commands gives the biggest improvement."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which files are loaded in every Claude Code session?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "CLAUDE.md, the two docs it imports (project overview and folder structure), the rules without a paths header (using the docs, research and sources, security), and the names and descriptions of the commands and agents Claude can use on its own. Everything else loads only when it's needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between a command and an agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A command (skill) is a set of instructions you start with a slash, such as /implement, and it runs in your conversation. An agent (subagent) is a specialist with its own instructions and tools that Claude hands a task to, and it works in its own context and reports back."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why can some commands only be run by me?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Commands that change code, commit, create pull requests or write many files have disable-model-invocation set, so Claude never starts them on its own. Read-only commands such as /explain and /review-changes can also be used by Claude when they fit your request."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use the kit with other AI coding tools?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The docs in docs/sdlc are plain Markdown and useful to any tool or person. CLAUDE.md, rules, skills, agents and settings use Claude Code's formats. Claude Code can also read an AGENTS.md file if your other tools use one."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I update the kit later?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Generate a new kit with the same choices and compare it with your files, or update the plugin edition and run its setup command again. Your own edits stay in your files; nothing overwrites them automatically."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page gd-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/claude-code-sdlc-generator">Claude Code SDLC Generator</a> <span aria-hidden="true">›</span> <span aria-current="page">Guide</span></nav>
+  <section class="tool-head">
+    <h1>Claude Code SDLC kit: every file explained</h1>
+  </section>
+
+  <div class="gd-hero">
+    <p>What every file in the Claude Code SDLC kit does: CLAUDE.md, rules, settings, slash commands, subagents and SDLC docs, with official docs and how to customise. Each file below has the same four parts: <strong>what it does</strong>, <strong>how it works</strong>, <strong>what you can change</strong>, and a link to the <strong>official documentation</strong>.</p>
+    <div class="gd-cta"><a class="btn btn-primary" href="/claude-code-sdlc-generator">Open the generator</a><a class="btn" href="#commands">Jump to the commands</a></div>
+  </div>
+
+  <div class="gd-layout">
+    <nav class="gd-toc" aria-label="On this page">
+      <strong>On this page</strong>
+      <ol>
+        <li><a href="#overview">How the kit works</a></li>
+        <li><a href="#quick-start">Quick start</a></li>
+        <li><a href="#markers">Filling in the docs</a></li>
+        <li><a href="#instructions">CLAUDE.md, quick start and settings</a></li>
+        <li><a href="#rules">Rules</a></li>
+        <li><a href="#commands">Slash commands</a></li>
+        <li><a href="#agents">Subagents</a></li>
+        <li><a href="#docs">SDLC documents</a></li>
+        <li><a href="#workspace">Workspace edition</a></li>
+        <li><a href="#plugin">Plugin edition</a></li>
+        <li><a href="#customise">Customise the kit</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#sources">Official documentation</a></li>
+      </ol>
+    </nav>
+
+    <article class="gd-article prose">
+      <h2 id="overview">How the kit works</h2>
+      <p>Claude Code reads a few kinds of files from your project. The kit uses each for what it's best at: <strong>instructions</strong> that always apply, <strong>rules</strong> that apply to certain files, <strong>commands</strong> you start with a slash, <strong>agents</strong> Claude hands work to, <strong>settings</strong> that enforce safety, and plain <strong>documents</strong> that hold your project knowledge.</p>
+      <table class="change-table gd-table">
+        <thead><tr><th>Part</th><th>Where</th><th>When Claude Code loads it</th></tr></thead>
+        <tbody>
+          <tr><td>Instructions</td><td><code>CLAUDE.md</code> and the files it imports with <code>@</code></td><td>At the start of every session</td></tr>
+          <tr><td>Rules without <code>paths:</code></td><td><code>.claude/rules/*.md</code></td><td>Every session</td></tr>
+          <tr><td>Rules with <code>paths:</code></td><td><code>.claude/rules/**/*.md</code></td><td>When Claude reads or edits a matching file</td></tr>
+          <tr><td>Commands (skills)</td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td><td>Name and description always (unless only you can run it); full text when it runs</td></tr>
+          <tr><td>Agents</td><td><code>.claude/agents/&lt;name&gt;.md</code></td><td>Name and description always; full text when Claude delegates to it</td></tr>
+          <tr><td>Settings</td><td><code>.claude/settings.json</code></td><td>Applied by Claude Code itself; enforced, not just advice</td></tr>
+          <tr><td>Documents</td><td><code>docs/sdlc/</code></td><td>Only when a task needs them (except the two imported by <code>CLAUDE.md</code>)</td></tr>
+        </tbody>
+      </table>
+      <p>This keeps every conversation light: only about 250-300 lines are always loaded, and everything else arrives when it's relevant. One important difference: instructions and rules are <em>guidance</em> that Claude follows; settings (permissions and hooks) are <em>enforced</em> by Claude Code. That's why the kit blocks secrets with permission rules rather than a sentence in <code>CLAUDE.md</code>.</p>
+
+      <h2 id="quick-start">Quick start</h2>
+      <ol>
+        <li><strong>Generate</strong> your kit with the <a href="/claude-code-sdlc-generator">Claude Code SDLC Generator</a>.</li>
+        <li><strong>Project ZIP</strong>: unzip it into your project's root folder, on a new git branch. <strong>Plugin</strong>: unzip it into <code>~/.claude/skills/sdlc-kit/</code>, then run <code>/sdlc-kit:setup</code> in each project.</li>
+        <li>Open Claude Code in the project and run <code>/sdlc-init</code> (plugin: <code>/sdlc-kit:sdlc-init</code>). Answer its questions.</li>
+        <li>Check the sections it marked as inferred, then commit the kit so your team shares it.</li>
+      </ol>
+
+      <h2 id="markers">Filling in the docs</h2>
+      <p>Every document section starts with a hint in an HTML comment, which you replace with your own words:</p>
+<pre><code>## Who uses it
+&lt;!-- FILL: the main users and what they need. Example (fictional): &quot;Shop owners creating invoices on their phone.&quot; --&gt;</code></pre>
+      <table class="change-table gd-table">
+        <thead><tr><th>You see</th><th>It means</th><th>What Claude does</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;!-- FILL: … --&gt;</code></td><td>Not filled in</td><td>Works it out from the code and labels it, asks you if it matters, never invents it</td></tr>
+          <tr><td><code>&lt;!-- INFERRED: … --&gt;</code></td><td>Written by Claude, not confirmed</td><td>Uses it but says it's inferred. Check it, then delete the marker</td></tr>
+          <tr><td>Plain text</td><td>Written or confirmed by a person</td><td>Treats it as your intent and never overwrites it without asking</td></tr>
+          <tr><td>"A good default" in a hint</td><td>A recommended practice</td><td>Follows it until you write your own</td></tr>
+        </tbody>
+      </table>
+      <p>Examples inside hints are always fictional (an invoicing app), and a rule tells Claude never to treat them as facts about your project. In the generator's preview, files with sections to fill are marked ✎.</p>
+
+      <h2 id="instructions">CLAUDE.md, quick start and settings</h2>
+
+      <section class="gd-file" id="claude-md">
+        <div class="gd-file-head"><code class="gd-path">CLAUDE.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Project instructions</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>The instructions Claude reads at the start of <strong>every</strong> session in your project: how to work here, the build and test commands, project-specific rules, the list of docs and the list of commands.</dd>
+          <dt>How it works</dt><dd>Claude Code loads <code>CLAUDE.md</code> from the project root automatically. Lines starting with <code>@</code> (such as <code>@docs/sdlc/00-project-overview.md</code>) import another file, which is loaded at the same time. The kit keeps this file short (well under the 200 lines the docs recommend), because everything in it uses context on every turn; detailed knowledge lives in <code>docs/sdlc/</code> and is read only when a task needs it.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill in <strong>Build, run and test</strong> with your exact commands. This is the single most useful edit.</li><li>Add your own always/never rules under <strong>Project-specific rules</strong>, one per line.</li><li>Remove rows for docs or commands you deleted.</li><li>If you already had a <code>CLAUDE.md</code>, the kit is generated as <code>CLAUDE.sdlc.md</code>; add the line <code>@CLAUDE.sdlc.md</code> to your file to load it.</li><li>Personal notes that shouldn't be shared go in <code>CLAUDE.local.md</code> (add it to <code>.gitignore</code>).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="quickstart">
+        <div class="gd-file-head"><code class="gd-path">SDLC-QUICKSTART.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Quick start for people</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A one-page guide for your team: the first 10 minutes, every command in your kit, how the fill-in markers work, what each folder contains and how to customise it.</dd>
+          <dt>How it works</dt><dd>Claude doesn't load it automatically; it's for humans. It is generated to match your choices, so it lists exactly the commands and agents in your kit.</dd>
+          <dt>What you can change</dt><dd><ul><li>Share it with new team members, or link it from your README.</li><li>Delete it once everyone knows the kit; nothing depends on it.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="settings">
+        <div class="gd-file-head"><code class="gd-path">.claude/settings.json</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Safety settings</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Permission rules shared by everyone on the project. Claude can't read or edit <code>.env</code> files (except <code>.env.example</code>, <code>.env.sample</code> and <code>.env.template</code>), keys and certificates (<code>*.pem</code>, <code>*.key</code>, <code>*.p12</code>, <code>*.pfx</code>, <code>*.jks</code>, SSH keys) or anything in a <code>secrets/</code> folder, and it asks before <code>git push</code>, <code>git reset --hard</code> and <code>git clean</code>. If you entered a format or lint command, it also contains a <strong>Stop hook</strong> that runs it each time Claude finishes a reply.</dd>
+          <dt>How it works</dt><dd><code>Read(…)</code> and <code>Edit(…)</code> <em>deny</em> rules block Claude's file tools and also common shell commands that name the file, such as <code>cat .env</code>. A rule starting with <code>!</code> carves an exception out of the rules before it. <em>Ask</em> rules make Claude Code ask you before running a matching command. Settings in this file are shared through git; your personal overrides go in <code>.claude/settings.local.json</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add paths to <code>deny</code>, e.g. <code>"Read(config/credentials.yml)"</code>.</li><li>Allow commands you approve often, e.g. <code>"allow": ["Bash(npm run test *)"]</code>, so Claude stops asking.</li><li>Change or remove the lint hook under <code>hooks.Stop</code>; on Windows without Git Bash add <code>"shell": "powershell"</code> to the hook.</li><li>For OS-level protection that also stops scripts reading secrets, enable Claude Code's sandbox (see the permissions docs).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener">Claude Code docs: permissions ↗</a><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener">Claude Code docs: settings ↗</a><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Claude Code docs: hooks ↗</a></dd>
+        </dl>
+      </section>
+
+      <h2 id="rules">Rules</h2>
+      <p>Rules are Markdown files in <code>.claude/rules/</code>. Without a header they load in every session; with a <code>paths:</code> header they load only when Claude reads or edits a matching file:</p>
+<pre><code>---
+paths:
+  - &quot;src/**&quot;
+  - &quot;app/**&quot;
+---
+
+# Coding standards
+…</code></pre>
+
+      <section class="gd-file" id="rule-how-to-use-sdlc-docs">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/how-to-use-sdlc-docs.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Using the SDLC docs</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Teaches Claude the fill-in markers: an empty <code>&lt;!-- FILL --&gt;</code> section means "unknown", <code>&lt;!-- INFERRED --&gt;</code> means "written by Claude, not yet confirmed", plain text means "confirmed by a person". It tells Claude to look in the code first, ask when it matters, never invent facts, never overwrite text a person wrote, and treat the examples in FILL comments as fictional.</dd>
+          <dt>How it works</dt><dd>Rules in <code>.claude/rules/</code> without a <code>paths:</code> header load in every session, like an extension of <code>CLAUDE.md</code>. This one is short on purpose.</dd>
+          <dt>What you can change</dt><dd><ul><li>Usually nothing. Change it only if your team wants a different marker convention.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-research-and-sources">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/research-and-sources.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Research and sources</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Makes Claude back technical claims with sources: your own code first (cited as <code>path:line</code>), then official documentation for the versions you actually use, then standards bodies, then well-known references. It must only cite pages it opened in the session, give a confidence level, and show disagreements between sources.</dd>
+          <dt>How it works</dt><dd>Loaded in every session. The <code>/research</code> command and the <code>researcher</code> agent follow it in detail.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your company's internal documentation as the first trusted source.</li><li>Tighten or relax the citation format.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-security">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/security.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Security basics</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Ten short security rules based on the OWASP Top 10 and ASVS: no secrets in code or logs, validate input at the boundary, parameterised queries, output encoding, server-side access checks, safe file paths, careful errors and logs, justified dependencies, no disabled TLS checks.</dd>
+          <dt>How it works</dt><dd>Loaded in every session, so every change Claude makes is held to these basics. Deeper reviews are done by the <code>security-reviewer</code> agent.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your own rules, e.g. "all endpoints require the @Secured annotation".</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener">OWASP Top 10 ↗</a><a href="https://owasp.org/www-project-application-security-verification-standard/" target="_blank" rel="noopener">OWASP ASVS ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-coding-standards">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/coding-standards.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>Coding standards</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>General coding standards: put code where similar code lives, small focused functions, no duplicated logic, deliberate error handling, validation at the boundary, no unrequested dependencies, focused changes, tests for new behaviour, and updating the API and architecture docs when they change.</dd>
+          <dt>How it works</dt><dd>It has a <code>paths:</code> header (<code>src/**</code>, <code>app/**</code>, <code>lib/**</code>, <code>packages/**</code>, <code>cmd/**</code>, <code>internal/**</code>, <code>pkg/**</code>), so Claude Code loads it only when Claude reads or edits a matching file, which saves context in other tasks.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the <code>paths:</code> globs to match your source folders, e.g. <code>"backend/**"</code>.</li><li>Add your team's conventions (naming, patterns, forbidden libraries).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-testing-standards">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/testing-standards.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Testing standards</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>How good tests look: one behaviour per test, independent, deterministic (no fixed sleeps), meaningful assertions, stable UI locators, test case IDs in test names. What never to do (weaken tests to pass, use real personal data, load-test production without permission) and how to classify a failure.</dd>
+          <dt>How it works</dt><dd>Path-scoped to test folders and test files (<code>src/test/**</code>, <code>tests/**</code>, <code>e2e/**</code>, <code>**/*.spec.*</code>, …) and to <code>docs/sdlc/testing/**</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your test folders to <code>paths:</code> if they're named differently.</li><li>Add team rules, e.g. "every API test checks the error format".</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a><a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">The Practical Test Pyramid (Martin Fowler) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-finding-the-test-setup">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/testing/finding-the-test-setup.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Finding the test setup</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>The fallback for any language or framework the kit has no specific rule for: read the build files, test configs and CI to find how tests really run, read a few existing tests, and never introduce a new framework without asking.</dd>
+          <dt>How it works</dt><dd>Path-scoped to test files. Always included with the Tester pack.</dd>
+          <dt>What you can change</dt><dd><ul><li>Usually nothing.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+
+      <section class="gd-file" id="framework-rules">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/testing/&lt;framework&gt;.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test framework rules</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One short rule per test framework you picked: how to run one test, file naming, structure, assertions, waiting, mocking and common mistakes for that tool.</dd>
+          <dt>How it works</dt><dd>Each file is path-scoped to that framework's test files, so it costs nothing until Claude works on those files. Picking more frameworks doesn't add to every conversation.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your team's conventions for the framework (base classes, tags, report locations).</li><li>Add a file for a framework that isn't listed, with a <code>paths:</code> header for its test files.</li></ul></dd>
+          <dt>Official docs</dt><dd>
+            <table class="change-table gd-table"><thead><tr><th>Framework</th><th>Rule file</th><th>Official documentation</th></tr></thead><tbody>
+              <tr><td>JUnit 5</td><td><code>junit5.md</code></td><td><a href="https://junit.org/junit5/docs/current/user-guide/" target="_blank" rel="noopener">junit.org/junit5/docs/current/user-guide ↗</a></td></tr>
+              <tr><td>TestNG</td><td><code>testng.md</code></td><td><a href="https://testng.org/" target="_blank" rel="noopener">testng.org ↗</a></td></tr>
+              <tr><td>Selenium (Java)</td><td><code>selenium-java.md</code></td><td><a href="https://www.selenium.dev/documentation/" target="_blank" rel="noopener">www.selenium.dev/documentation ↗</a></td></tr>
+              <tr><td>REST Assured</td><td><code>rest-assured.md</code></td><td><a href="https://rest-assured.io/" target="_blank" rel="noopener">rest-assured.io ↗</a></td></tr>
+              <tr><td>Espresso (Android)</td><td><code>espresso.md</code></td><td><a href="https://developer.android.com/training/testing/espresso" target="_blank" rel="noopener">developer.android.com/training/testing/espresso ↗</a></td></tr>
+              <tr><td>Jest</td><td><code>jest.md</code></td><td><a href="https://jestjs.io/docs/getting-started" target="_blank" rel="noopener">jestjs.io/docs/getting-started ↗</a></td></tr>
+              <tr><td>Vitest</td><td><code>vitest.md</code></td><td><a href="https://vitest.dev/guide/" target="_blank" rel="noopener">vitest.dev/guide ↗</a></td></tr>
+              <tr><td>Playwright</td><td><code>playwright.md</code></td><td><a href="https://playwright.dev/docs/intro" target="_blank" rel="noopener">playwright.dev/docs/intro ↗</a></td></tr>
+              <tr><td>Cypress</td><td><code>cypress.md</code></td><td><a href="https://docs.cypress.io/" target="_blank" rel="noopener">docs.cypress.io ↗</a></td></tr>
+              <tr><td>pytest</td><td><code>pytest.md</code></td><td><a href="https://docs.pytest.org/" target="_blank" rel="noopener">docs.pytest.org ↗</a></td></tr>
+              <tr><td>xUnit</td><td><code>xunit.md</code></td><td><a href="https://xunit.net/" target="_blank" rel="noopener">xunit.net ↗</a></td></tr>
+              <tr><td>NUnit</td><td><code>nunit.md</code></td><td><a href="https://docs.nunit.org/" target="_blank" rel="noopener">docs.nunit.org ↗</a></td></tr>
+              <tr><td>Go testing</td><td><code>go-test.md</code></td><td><a href="https://pkg.go.dev/testing" target="_blank" rel="noopener">pkg.go.dev/testing ↗</a></td></tr>
+              <tr><td>RSpec</td><td><code>rspec.md</code></td><td><a href="https://rspec.info/" target="_blank" rel="noopener">rspec.info ↗</a></td></tr>
+              <tr><td>PHPUnit</td><td><code>phpunit.md</code></td><td><a href="https://docs.phpunit.de/" target="_blank" rel="noopener">docs.phpunit.de ↗</a></td></tr>
+              <tr><td>XCTest / Swift Testing</td><td><code>xctest.md</code></td><td><a href="https://developer.apple.com/documentation/xctest" target="_blank" rel="noopener">developer.apple.com/documentation/xctest ↗</a></td></tr>
+              <tr><td>Postman / Newman</td><td><code>postman.md</code></td><td><a href="https://learning.postman.com/docs/collections/using-newman-cli/command-line-integration-with-newman/" target="_blank" rel="noopener">learning.postman.com/docs/collections/using-newman-cli/command-line-integration-with-newman ↗</a></td></tr>
+              <tr><td>k6</td><td><code>k6.md</code></td><td><a href="https://grafana.com/docs/k6/latest/" target="_blank" rel="noopener">grafana.com/docs/k6/latest ↗</a></td></tr>
+            </tbody></table>
+          </dd>
+        </dl>
+      </section>
+      <h3>Stack profiles</h3>
+
+      <section class="gd-file" id="rule-spring-boot">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/spring-boot.md</code><span class="gd-tag gd-profile">Stack profile</span></div>
+        <h4>Spring Boot profile</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Spring Boot practices: thin controllers, constructor injection, DTOs instead of entities in APIs, <code>@ConfigurationProperties</code>, Bean Validation, one <code>@RestControllerAdvice</code> (or <code>ProblemDetail</code>), N+1 query prevention, transactions on service methods, migrations instead of <code>ddl-auto</code>, paging, and slice tests (<code>@WebMvcTest</code>, <code>@DataJpaTest</code>).</dd>
+          <dt>How it works</dt><dd>Path-scoped to Java and Kotlin files, <code>application*.properties/yml</code> and build files. Existing project patterns win over the rule.</dd>
+          <dt>What you can change</dt><dd><ul><li>Delete points your project deliberately does differently, so Claude doesn't "fix" them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://docs.spring.io/spring-boot/" target="_blank" rel="noopener">Spring Boot reference documentation ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-react">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/react.md</code><span class="gd-tag gd-profile">Stack profile</span></div>
+        <h4>React profile</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>React practices: small function components, the Rules of Hooks, typed props, stable keys, state close to where it's used, effects only for syncing with outside systems, the project's data-fetching library, accessible elements, loading/empty/error states, no unsanitised HTML, and Testing Library by role.</dd>
+          <dt>How it works</dt><dd>Path-scoped to <code>.jsx</code>/<code>.tsx</code> files and component and hook folders.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your state-management and styling conventions.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://react.dev/learn" target="_blank" rel="noopener">React documentation ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-node-api">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/node-api.md</code><span class="gd-tag gd-profile">Stack profile</span></div>
+        <h4>Node.js API profile</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Node API practices: thin handlers, validation at the edge, central error handling, no floating promises, no blocking work on the event loop, timeouts, parameterised queries, per-resource authorisation, security middleware and HTTP-level tests.</dd>
+          <dt>How it works</dt><dd>Path-scoped to routes, controllers, services, middleware, NestJS modules and <code>app</code>/<code>server</code> entry files.</dd>
+          <dt>What you can change</dt><dd><ul><li>Name your framework and validator so Claude doesn't have to infer them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://nodejs.org/en/learn" target="_blank" rel="noopener">Node.js learning guides ↗</a></dd>
+        </dl>
+      </section>
+
+      <h2 id="commands">Slash commands</h2>
+      <p>Each command is a folder in <code>.claude/skills/</code> with a <code>SKILL.md</code> file: a short YAML header (name, description, optional settings) and the instructions Claude follows. Typing <code>/name</code> runs it; text after the name is passed in as <code>$ARGUMENTS</code>. Commands that change code, commit or write many files have <code>disable-model-invocation: true</code>, so only you can start them. Some run in a separate context (<code>context: fork</code>) and return only a summary.</p>
+<pre><code>---
+name: test-cases
+description: Design test cases for a user story from its acceptance criteria…
+argument-hint: &quot;&lt;story ID or story text&gt;&quot;
+context: fork
+agent: test-designer
+---
+
+# Test cases
+
+Story: $ARGUMENTS
+…</code></pre>
+
+      <table class="change-table gd-table">
+        <thead><tr><th>Command</th><th>Pack</th><th>Who runs it</th><th>What it does</th></tr></thead>
+        <tbody>
+          <tr><td><a href="#cmd-sdlc-init"><code>/sdlc-init [area]</code></a></td><td>Every kit</td><td>You</td><td>The first command to run.</td></tr>
+          <tr><td><a href="#cmd-sdlc-status"><code>/sdlc-status</code></a></td><td>Every kit</td><td>You or Claude</td><td>Shows how complete your docs are: a table of filled, inferred and empty sections per file, research reports (flagging old ones), requirement and test-plan statuses, and the next 1-3 things to do.</td></tr>
+          <tr><td><a href="#cmd-analyze-structure"><code>/analyze-structure [folder]</code></a></td><td>Every kit</td><td>You or Claude</td><td>Maps your folders, entry points, architecture style and, most usefully, &quot;where new code goes&quot; (where a new endpoint, service, page or test belongs), and writes it to docs/sdlc/01-folder-structure.md.</td></tr>
+          <tr><td><a href="#cmd-research"><code>/research &lt;question&gt;</code></a></td><td>Every kit</td><td>You or Claude</td><td>Researches a technical question in your code and on the web, then writes a report with sources, a confidence level and a recommendation to docs/sdlc/research/ and adds it to the index.</td></tr>
+          <tr><td><a href="#cmd-explain"><code>/explain &lt;area&gt;</code></a></td><td>Every kit</td><td>You or Claude</td><td>Explains how a feature, flow or file works: a short summary, the flow step by step with path:line, key pieces, data, gotchas and where to change it.</td></tr>
+          <tr><td><a href="#cmd-sync-docs"><code>/sync-docs [since]</code></a></td><td>Every kit</td><td>You</td><td>Brings the docs up to date with the code after changes: finds what changed (from git history or by comparison), refreshes inferred sections and lists suggested edits to sections people wrote.</td></tr>
+          <tr><td><a href="#cmd-requirements"><code>/requirements &lt;feature&gt;</code></a></td><td>Developer</td><td>You</td><td>Turns a feature idea into a requirement file (REQ-001-….md) with small user stories and testable Given / When / Then acceptance criteria, after asking you up to 5 clarifying questions.</td></tr>
+          <tr><td><a href="#cmd-design"><code>/design &lt;REQ or change&gt;</code></a></td><td>Developer</td><td>You or Claude</td><td>Designs a change before coding: summary, changes per module, API and data changes, flow, security, testing and risks.</td></tr>
+          <tr><td><a href="#cmd-implement"><code>/implement &lt;story&gt;</code></a></td><td>Developer</td><td>You</td><td>Builds a story with tests and proves it: a short plan first (waiting for approval on big changes), code following your standards, tests for each acceptance criterion, a real test run, and a report mapping every criterion to code, test and result.</td></tr>
+          <tr><td><a href="#cmd-write-tests"><code>/write-tests &lt;target&gt;</code></a></td><td>Developer</td><td>You or Claude</td><td>Adds missing tests to existing code in your project's test style: lists the cases first (normal, boundaries, errors, permissions), writes them, runs them.</td></tr>
+          <tr><td><a href="#cmd-refactor"><code>/refactor &lt;target&gt;</code></a></td><td>Developer</td><td>You</td><td>Restructures code without changing behaviour.</td></tr>
+          <tr><td><a href="#cmd-fix-bug"><code>/fix-bug &lt;bug&gt;</code></a></td><td>Developer</td><td>You</td><td>Fixes a bug properly: reproduces it with a failing test, finds the root cause (calling the debugger agent when it isn't obvious), makes the smallest fix, proves it with the test, and checks for the same mistake elsewhere.</td></tr>
+          <tr><td><a href="#cmd-review-changes"><code>/review-changes [target]</code></a></td><td>Developer</td><td>You or Claude</td><td>Reviews uncommitted changes, a branch, a commit or a PR (gh pr diff) and reports a verdict and findings ranked Blocker → Nit with file:line and a fix.</td></tr>
+          <tr><td><a href="#cmd-commit"><code>/commit</code></a></td><td>Developer</td><td>You</td><td>Checks your changes for secrets, debug code, skipped tests, build output and unrelated edits, writes a commit message in your project's style (Conventional Commits by default) and commits after you confirm.</td></tr>
+          <tr><td><a href="#cmd-open-pr"><code>/open-pr</code></a></td><td>Developer</td><td>You</td><td>Writes a pull request description (summary, linked IDs, changes, how it was tested with the commands actually run, risks, checklist) and creates the PR with the GitHub CLI after you confirm.</td></tr>
+          <tr><td><a href="#cmd-check-dependencies"><code>/check-dependencies [library]</code></a></td><td>Developer</td><td>You or Claude</td><td>Finds outdated and vulnerable libraries with your ecosystem's tools (Maven, Gradle, npm, pip, dotnet, Go), rates each upgrade by risk and effort, and upgrades one at a time with tests only when you ask.</td></tr>
+          <tr><td><a href="#cmd-prepare-release"><code>/prepare-release [version]</code></a></td><td>Developer</td><td>You</td><td>Writes a changelog entry (Keep a Changelog format) for developers and plain-language release notes for users, from the commits since the last tag, and suggests a version number.</td></tr>
+          <tr><td><a href="#cmd-test-plan"><code>/test-plan &lt;REQ&gt;</code></a></td><td>Tester</td><td>You</td><td>Writes a risk-based test plan: scope, risks rated by likelihood and impact, approach per test level, environment and data, entry and exit criteria, and the test cases needed.</td></tr>
+          <tr><td><a href="#cmd-test-cases"><code>/test-cases &lt;story&gt;</code></a></td><td>Tester</td><td>You or Claude</td><td>Designs test cases from the acceptance criteria with standard techniques (equivalence partitions, boundary values, decision tables, state transitions, permissions, errors), with exact data and expected results, and links them in the traceability matrix.</td></tr>
+          <tr><td><a href="#cmd-automate-tests"><code>/automate-tests &lt;cases&gt;</code></a></td><td>Tester</td><td>You</td><td>Turns written test cases into automated tests with your framework, reusing your page objects, fixtures and helpers, names each test after its case ID, runs them and records where each lives.</td></tr>
+          <tr><td><a href="#cmd-run-tests"><code>/run-tests [suite]</code></a></td><td>Tester</td><td>You</td><td>Runs a suite, tag, path, test case IDs or the tests related to changed files, classifies every failure (product bug, test problem, environment, flaky) and records a run report and the latest results in the traceability matrix.</td></tr>
+          <tr><td><a href="#cmd-bug-report"><code>/bug-report &lt;problem&gt;</code></a></td><td>Tester</td><td>You</td><td>Writes a reproducible bug report: shortest steps, expected vs actual (citing the requirement), evidence with secrets and personal data removed, severity from your strategy, duplicate check, and text ready to paste into your tracker.</td></tr>
+          <tr><td><a href="#cmd-regression"><code>/regression [changes]</code></a></td><td>Tester</td><td>You</td><td>Works out what a change could break (including shared code, database and config changes), picks must-run / should-run / skip tests, runs the automated part and writes a manual regression checklist.</td></tr>
+          <tr><td><a href="#cmd-db-migration"><code>/db-migration &lt;change&gt;</code></a></td><td>Extra</td><td>You</td><td>Writes a safe, reversible migration with your tool (Flyway, Liquibase, Alembic, Prisma, Rails, EF Core and others), planned to avoid data loss and long locks (expand and contract, batched backfills, online index creation), with a rollback plan and deploy order.</td></tr>
+          <tr><td><a href="#cmd-performance-check"><code>/performance-check &lt;target&gt;</code></a></td><td>Extra</td><td>You or Claude</td><td>Finds what makes an endpoint, job or page slow, measured where possible, ranked by impact with evidence, the fix and how to verify it.</td></tr>
+          <tr><td><a href="#cmd-accessibility-check"><code>/accessibility-check &lt;target&gt;</code></a></td><td>Extra</td><td>You or Claude</td><td>Reviews pages or components against WCAG 2.2 AA (text alternatives, structure, contrast, reflow, keyboard, focus, target size, labels and errors, ARIA) and runs axe, pa11y or Lighthouse if your project has them.</td></tr>
+          <tr><td><a href="#cmd-document-api"><code>/document-api [scope]</code></a></td><td>Extra</td><td>You</td><td>Writes or updates your OpenAPI documentation from the actual code: parameters, request and response schemas, real error responses, authentication and examples.</td></tr>
+          <tr><td><a href="#cmd-onboarding-guide"><code>/onboarding-guide [role]</code></a></td><td>Extra</td><td>You</td><td>Writes docs/sdlc/onboarding.md for a new team member: the product, verified setup steps, a code tour, five files to read first, how you work, gotchas and good first tasks.</td></tr>
+          <tr><td><a href="#cmd-postmortem"><code>/postmortem &lt;incident&gt;</code></a></td><td>Extra</td><td>You</td><td>Writes a blameless incident report: summary, impact, timeline, root cause and contributing factors, what went well and badly, and owned action items.</td></tr>
+          <tr><td><a href="#cmd-tech-debt-scan"><code>/tech-debt-scan [area]</code></a></td><td>Extra</td><td>You</td><td>Ranks your riskiest technical debt by combining how often code changes (git history), how complex it is and whether it's tested, plus TODOs, duplication and outdated patterns, in docs/sdlc/tech-debt.md.</td></tr>
+          <tr><td><a href="#cmd-setup"><code>/sdlc-kit:setup</code></a></td><td>Plugin edition</td><td>You</td><td>Plugin edition only.</td></tr>
+        </tbody>
+      </table>
+      <h3>Every kit</h3>
+
+      <section class="gd-file" id="cmd-sdlc-init">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/sdlc-init/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/sdlc-init [area]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>The first command to run. Reads your project (build files, README, CI, Docker, config, tests, a few central source files), fills empty doc sections it can prove from the code (marked inferred), fills the build commands in <code>CLAUDE.md</code>, then asks you up to 5 questions about what it can't work out, and writes your answers back.</dd>
+          <dt>How it works</dt><dd>It edits only <code>CLAUDE.md</code> and <code>docs/sdlc/</code>, never code. It never overwrites text you wrote; conflicts between docs and code are listed in its report. Run it again any time.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add files it should always read for your stack (e.g. <code>nx.json</code>).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-sdlc-status">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/sdlc-status/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/sdlc-status</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Shows how complete your docs are: a table of filled, inferred and empty sections per file, research reports (flagging old ones), requirement and test-plan statuses, and the next 1-3 things to do.</dd>
+          <dt>How it works</dt><dd>Read-only: it's limited to the Read, Grep and Glob tools (<code>allowed-tools</code>).</dd>
+          <dt>What you can change</dt><dd><ul><li>Change which sections it considers most important.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-analyze-structure">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/analyze-structure/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-auto">You or Claude can run it</span><span class="gd-tag gd-fork">separate context</span></div>
+        <h4>/analyze-structure [folder]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Maps your folders, entry points, architecture style and, most usefully, "where new code goes" (where a new endpoint, service, page or test belongs), and writes it to <code>docs/sdlc/01-folder-structure.md</code>.</dd>
+          <dt>How it works</dt><dd>It runs with <code>context: fork</code>: the exploring happens in a separate sub-session and only a short summary comes back, so your conversation stays clean.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add folders to its skip list (e.g. <code>generated/</code>).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-research">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/research/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-auto">You or Claude can run it</span><span class="gd-tag gd-fork">runs as researcher</span></div>
+        <h4>/research &lt;question&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Researches a technical question in your code and on the web, then writes a report with sources, a confidence level and a recommendation to <code>docs/sdlc/research/</code> and adds it to the index.</dd>
+          <dt>How it works</dt><dd>Runs in a separate context as the <code>researcher</code> agent (<code>context: fork</code> + <code>agent: researcher</code>). It first checks whether the question was already researched.</dd>
+          <dt>What you can change</dt><dd><ul><li>Ask for a specific format, e.g. "compare in a table with licence and maintenance status".</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-explain">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/explain/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-auto">You or Claude can run it</span><span class="gd-tag gd-fork">runs as Explore</span></div>
+        <h4>/explain &lt;area&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Explains how a feature, flow or file works: a short summary, the flow step by step with <code>path:line</code>, key pieces, data, gotchas and where to change it.</dd>
+          <dt>How it works</dt><dd>Runs in a separate context using Claude Code's built-in read-only <code>Explore</code> agent.</dd>
+          <dt>What you can change</dt><dd><ul><li>Ask for more depth or a diagram in Mermaid.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-sync-docs">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/sync-docs/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/sync-docs [since]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Brings the docs up to date with the code after changes: finds what changed (from git history or by comparison), refreshes inferred sections and lists suggested edits to sections people wrote.</dd>
+          <dt>How it works</dt><dd>Edits only <code>CLAUDE.md</code> and <code>docs/sdlc/</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Run it after every merge to main, or before a release.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Developer pack</h3>
+
+      <section class="gd-file" id="cmd-requirements">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/requirements/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/requirements &lt;feature&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Turns a feature idea into a requirement file (<code>REQ-001-….md</code>) with small user stories and testable Given / When / Then acceptance criteria, after asking you up to 5 clarifying questions.</dd>
+          <dt>How it works</dt><dd>Uses <code>docs/sdlc/02-requirements/_template-feature.md</code>, the next free IDs and the conventions in your project overview. Gaps go under "Assumptions and open questions".</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the template to match your tracker (e.g. add story points or Jira links).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://cucumber.io/docs/gherkin/reference/" target="_blank" rel="noopener">Gherkin (Given / When / Then) reference ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-design">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/design/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/design &lt;REQ or change&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Designs a change before coding: summary, changes per module, API and data changes, flow, security, testing and risks. Significant choices are saved as ADRs. Asks you to approve the design before implementation.</dd>
+          <dt>How it works</dt><dd>Reads the requirement, architecture, ADRs and the real code. For larger changes it delegates option analysis to the <code>architect</code> agent and fact-checking to the <code>researcher</code>. Changes no code.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your architecture review checklist to the "Write the design" list.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://adr.github.io" target="_blank" rel="noopener">Architecture Decision Records ↗</a><a href="https://arc42.org" target="_blank" rel="noopener">arc42 architecture template ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-implement">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/implement/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/implement &lt;story&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Builds a story with tests and proves it: a short plan first (waiting for approval on big changes), code following your standards, tests for each acceptance criterion, a real test run, and a report mapping every criterion to code, test and result.</dd>
+          <dt>How it works</dt><dd>Tests run through the <code>test-runner</code> agent so long logs don't fill the conversation. It may never weaken or delete tests to pass, and never commits unless you ask.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the "more than about 8 files" threshold for asking first.</li><li>Add your definition of done to the checklist.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-write-tests">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/write-tests/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/write-tests &lt;target&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Adds missing tests to existing code in your project's test style: lists the cases first (normal, boundaries, errors, permissions), writes them, runs them.</dd>
+          <dt>How it works</dt><dd>Changes only test files. If a test reveals a bug, it reports it instead of changing production code.</dd>
+          <dt>What you can change</dt><dd><ul><li>Name a coverage goal or a test type to focus on.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">The Practical Test Pyramid (Martin Fowler) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-refactor">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/refactor/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/refactor &lt;target&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Restructures code without changing behaviour. Runs the tests first, adds characterisation tests if coverage is thin, changes in small steps and runs the tests after every step, undoing a step that breaks them.</dd>
+          <dt>How it works</dt><dd>Behaviour, public APIs, schemas and config stay the same unless you say otherwise.</dd>
+          <dt>What you can change</dt><dd><ul><li>Describe the goal precisely ("split OrderService by responsibility").</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-fix-bug">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/fix-bug/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/fix-bug &lt;bug&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Fixes a bug properly: reproduces it with a failing test, finds the root cause (calling the <code>debugger</code> agent when it isn't obvious), makes the smallest fix, proves it with the test, and checks for the same mistake elsewhere.</dd>
+          <dt>How it works</dt><dd>Updates the bug report in <code>docs/sdlc/testing/bugs/</code> if your kit has the Tester pack.</dd>
+          <dt>What you can change</dt><dd><ul><li>Paste stack traces and logs with the command for faster results.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-review-changes">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/review-changes/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/review-changes [target]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reviews uncommitted changes, a branch, a commit or a PR (<code>gh pr diff</code>) and reports a verdict and findings ranked Blocker → Nit with <code>file:line</code> and a fix.</dd>
+          <dt>How it works</dt><dd>Hands the diff to the <code>code-reviewer</code> agent, and also to the <code>security-reviewer</code> when sensitive code is touched (auth, input, queries, files, secrets, personal data), then checks each finding itself.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your review checklist to the code-reviewer agent.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-commit">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/commit/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/commit</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Checks your changes for secrets, debug code, skipped tests, build output and unrelated edits, writes a commit message in your project's style (Conventional Commits by default) and commits after you confirm.</dd>
+          <dt>How it works</dt><dd>Never pushes and never amends existing commits unless you ask.</dd>
+          <dt>What you can change</dt><dd><ul><li>Set your commit convention in <code>docs/sdlc/00-project-overview.md</code> under Conventions.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank" rel="noopener">Conventional Commits ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-open-pr">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/open-pr/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/open-pr</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a pull request description (summary, linked IDs, changes, how it was tested with the commands actually run, risks, checklist) and creates the PR with the GitHub CLI after you confirm.</dd>
+          <dt>How it works</dt><dd>Without the GitHub CLI, or on GitLab, Bitbucket or Azure DevOps, it gives you the text to paste.</dd>
+          <dt>What you can change</dt><dd><ul><li>Put your PR checklist in <code>docs/sdlc/07-release-process.md</code>; the command uses it.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://cli.github.com/manual/gh_pr_create" target="_blank" rel="noopener">GitHub CLI: gh pr create ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-check-dependencies">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/check-dependencies/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/check-dependencies [library]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Finds outdated and vulnerable libraries with your ecosystem's tools (Maven, Gradle, npm, pip, dotnet, Go), rates each upgrade by risk and effort, and upgrades one at a time with tests only when you ask.</dd>
+          <dt>How it works</dt><dd>When no tool is available it asks the <code>researcher</code> agent to check release notes and advisory databases, with sources.</dd>
+          <dt>What you can change</dt><dd><ul><li>Name a library to focus on, or "upgrade &lt;library&gt;".</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-prepare-release">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/prepare-release/SKILL.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/prepare-release [version]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a changelog entry (Keep a Changelog format) for developers and plain-language release notes for users, from the commits since the last tag, and suggests a version number.</dd>
+          <dt>How it works</dt><dd>Never creates tags, commits or pushes on its own.</dd>
+          <dt>What you can change</dt><dd><ul><li>Say who reads your release notes in <code>docs/sdlc/07-release-process.md</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://keepachangelog.com/en/1.1.0/" target="_blank" rel="noopener">Keep a Changelog ↗</a><a href="https://semver.org" target="_blank" rel="noopener">Semantic Versioning ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Tester pack</h3>
+
+      <section class="gd-file" id="cmd-test-plan">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/test-plan/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/test-plan &lt;REQ&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a risk-based test plan: scope, risks rated by likelihood and impact, approach per test level, environment and data, entry and exit criteria, and the test cases needed. Flags acceptance criteria that can't be tested as written.</dd>
+          <dt>How it works</dt><dd>Uses <code>docs/sdlc/testing/test-plans/_template-test-plan.md</code> (sections based on ISO/IEC/IEEE 29119-3) and your test strategy.</dd>
+          <dt>What you can change</dt><dd><ul><li>Adapt the template to your QA process.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://www.iso.org/standard/79429.html" target="_blank" rel="noopener">ISO/IEC/IEEE 29119-3 (test documentation) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-test-cases">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/test-cases/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-auto">You or Claude can run it</span><span class="gd-tag gd-fork">runs as test-designer</span></div>
+        <h4>/test-cases &lt;story&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Designs test cases from the acceptance criteria with standard techniques (equivalence partitions, boundary values, decision tables, state transitions, permissions, errors), with exact data and expected results, and links them in the traceability matrix.</dd>
+          <dt>How it works</dt><dd>Runs in a separate context as the <code>test-designer</code> agent, which remembers your domain rules between sessions.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your own case format or priority scale to the template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-automate-tests">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/automate-tests/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-user">Only you run it</span><span class="gd-tag gd-fork">runs as test-automation</span></div>
+        <h4>/automate-tests &lt;cases&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Turns written test cases into automated tests with your framework, reusing your page objects, fixtures and helpers, names each test after its case ID, runs them and records where each lives.</dd>
+          <dt>How it works</dt><dd>Runs as the <code>test-automation</code> agent, which may only change test code. A test that fails because the product is wrong stays failing as evidence.</dd>
+          <dt>What you can change</dt><dd><ul><li>Point it at your page-object folder if it's unusual.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-run-tests">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/run-tests/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/run-tests [suite]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Runs a suite, tag, path, test case IDs or the tests related to changed files, classifies every failure (product bug, test problem, environment, flaky) and records a run report and the latest results in the traceability matrix.</dd>
+          <dt>How it works</dt><dd>Uses the <code>test-runner</code> agent to run and the <code>bug-triager</code> agent to classify. Asks before long runs or runs that need a deployed environment.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your suite names and tags to <code>CLAUDE.md</code> so it picks the right command.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-bug-report">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/bug-report/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/bug-report &lt;problem&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a reproducible bug report: shortest steps, expected vs actual (citing the requirement), evidence with secrets and personal data removed, severity from your strategy, duplicate check, and text ready to paste into your tracker.</dd>
+          <dt>How it works</dt><dd>Saves <code>docs/sdlc/testing/bugs/BUG-nnn-….md</code> and updates the index and the traceability matrix.</dd>
+          <dt>What you can change</dt><dd><ul><li>Match the template fields to your tracker.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-regression">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/regression/SKILL.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/regression [changes]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Works out what a change could break (including shared code, database and config changes), picks must-run / should-run / skip tests, runs the automated part and writes a manual regression checklist.</dd>
+          <dt>How it works</dt><dd>Uses git to find changed files and maps them to features through your folder doc, requirement IDs and tests.</dd>
+          <dt>What you can change</dt><dd><ul><li>Define your smoke set in the test strategy so it's always included.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Extras (optional)</h3>
+
+      <section class="gd-file" id="cmd-db-migration">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/db-migration/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/db-migration &lt;change&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a safe, reversible migration with your tool (Flyway, Liquibase, Alembic, Prisma, Rails, EF Core and others), planned to avoid data loss and long locks (expand and contract, batched backfills, online index creation), with a rollback plan and deploy order.</dd>
+          <dt>How it works</dt><dd>Asks you to approve plans that drop, rename or rewrite data, runs the migration and tests where possible, and has the <code>db-reviewer</code> agent check it.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your database's specific rules (e.g. maximum lock time).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-performance-check">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/performance-check/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/performance-check &lt;target&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Finds what makes an endpoint, job or page slow, measured where possible, ranked by impact with evidence, the fix and how to verify it.</dd>
+          <dt>How it works</dt><dd>Hands the code paths to the <code>performance-analyst</code> agent. Report only, unless you ask for fixes.</dd>
+          <dt>What you can change</dt><dd><ul><li>Put your performance targets in the project overview's quality requirements.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-accessibility-check">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/accessibility-check/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-auto">You or Claude can run it</span></div>
+        <h4>/accessibility-check &lt;target&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reviews pages or components against WCAG 2.2 AA (text alternatives, structure, contrast, reflow, keyboard, focus, target size, labels and errors, ARIA) and runs axe, pa11y or Lighthouse if your project has them.</dd>
+          <dt>How it works</dt><dd>Reports each issue by success criterion with who it affects and a code fix, plus what to test manually.</dd>
+          <dt>What you can change</dt><dd><ul><li>Raise the bar to AAA criteria if you need them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://www.w3.org/TR/WCAG22/" target="_blank" rel="noopener">WCAG 2.2 (W3C) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-document-api">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/document-api/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/document-api [scope]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes or updates your OpenAPI documentation from the actual code: parameters, request and response schemas, real error responses, authentication and examples. Improves code annotations when your framework generates the spec.</dd>
+          <dt>How it works</dt><dd>Never documents behaviour it can't find in the code; lists inconsistencies instead. Lints the spec if a linter is available.</dd>
+          <dt>What you can change</dt><dd><ul><li>Say which spec file or generator you use.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener">OpenAPI Specification ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-onboarding-guide">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/onboarding-guide/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/onboarding-guide [role]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes <code>docs/sdlc/onboarding.md</code> for a new team member: the product, verified setup steps, a code tour, five files to read first, how you work, gotchas and good first tasks.</dd>
+          <dt>How it works</dt><dd>Runs the safe setup steps (build, unit tests) to confirm they work and says which steps it verified.</dd>
+          <dt>What you can change</dt><dd><ul><li>Run it per role: <code>/onboarding-guide tester</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-postmortem">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/postmortem/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/postmortem &lt;incident&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a blameless incident report: summary, impact, timeline, root cause and contributing factors, what went well and badly, and owned action items.</dd>
+          <dt>How it works</dt><dd>Gathers deploys and code changes from git around the incident time; uses <code>docs/sdlc/incidents/_template-postmortem.md</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Adapt the severity scale in the template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google SRE book: postmortem culture ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-tech-debt-scan">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/tech-debt-scan/SKILL.md</code><span class="gd-tag gd-extra">Extra</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/tech-debt-scan [area]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Ranks your riskiest technical debt by combining how often code changes (git history), how complex it is and whether it's tested, plus TODOs, duplication and outdated patterns, in <code>docs/sdlc/tech-debt.md</code>.</dd>
+          <dt>How it works</dt><dd>Report only. Keeps entries people added and marks resolved items as done.</dd>
+          <dt>What you can change</dt><dd><ul><li>Focus it on one area: <code>/tech-debt-scan src/billing</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Plugin edition</h3>
+
+      <section class="gd-file" id="cmd-setup">
+        <div class="gd-file-head"><code class="gd-path">skills/setup/SKILL.md</code><span class="gd-tag gd-plugin">Plugin edition</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/sdlc-kit:setup</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Plugin edition only. Copies the project files (instructions, rules, safety settings and the <code>docs/sdlc/</code> templates) from the plugin's <code>templates/</code> folder into the current project.</dd>
+          <dt>How it works</dt><dd>Creates missing files, skips identical ones and never overwrites different files without asking. If the project already has a <code>CLAUDE.md</code>, it writes <code>CLAUDE.sdlc.md</code> and offers to add <code>@CLAUDE.sdlc.md</code>; it merges missing permission rules into an existing <code>settings.json</code> after you agree.</dd>
+          <dt>What you can change</dt><dd><ul><li>Run it again after updating the plugin to pick up new templates.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener">Claude Code docs: plugins ↗</a></dd>
+        </dl>
+      </section>
+
+      <h2 id="agents">Subagents</h2>
+      <p>An agent is a Markdown file in <code>.claude/agents/</code>: a YAML header (name, description, tools, optional model, memory and permission mode) and a system prompt. Claude hands a task to an agent when the task matches the agent's description, or when you ask: "use the code-reviewer agent", or type <code>@</code> and pick it. Agents work in their own context and report back, which keeps your conversation focused. Tool lists keep reviewers read-only.</p>
+<pre><code>---
+name: code-reviewer
+description: Reviews code changes for bugs, missing tests… Use proactively after code is written or changed.
+tools: Read, Grep, Glob, Bash
+disallowedTools: Write, Edit
+memory: project
+---
+
+You are a senior code reviewer…</code></pre>
+
+      <section class="gd-file" id="agent-researcher">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/researcher.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>researcher</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A careful technical researcher: learns your versions and code first, searches official docs, opens every page it cites, cross-checks important claims, separates facts from recommendations and writes reports to <code>docs/sdlc/research/</code>.</dd>
+          <dt>How it works</dt><dd>Claude delegates to it when its description matches the task ("use proactively before choosing a library…"), or when <code>/research</code> runs. It can write only inside the research folder.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, WebSearch, WebFetch, Write</code></dd>
+          <dt>Used by</dt><dd>/research, /design, /check-dependencies, /performance-check</dd>
+          <dt>What you can change</dt><dd><ul><li>Add internal wikis or docs sites it should check first.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-test-runner">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/test-runner.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-fork">model: haiku</span></div>
+        <h4>test-runner</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Runs builds and tests and returns only a short summary: the command, pass/fail counts and each failure with the assertion and <code>path:line</code>. Re-runs a failing test once to spot flakiness.</dd>
+          <dt>How it works</dt><dd>Runs on the faster, cheaper Haiku model, because summarising output doesn't need a large model. Keeping long logs in its own context keeps your main conversation focused.</dd>
+          <dt>Tools</dt><dd><code>Bash, Read, Grep, Glob (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/implement, /fix-bug, /write-tests, /refactor, /run-tests, /regression</dd>
+          <dt>What you can change</dt><dd><ul><li>Remove <code>model: haiku</code> to use your session's model.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-architect">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/architect.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-fork">permissionMode: plan</span></div>
+        <h4>architect</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Compares at least two real options (including "the smallest change") against your architecture, requirements and quality goals and recommends one, with a draft ADR for significant choices.</dd>
+          <dt>How it works</dt><dd>Read-only by design (plan mode). Note: plugins ignore <code>permissionMode</code>, so in the plugin edition its tool list keeps it read-only.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, WebSearch, WebFetch</code></dd>
+          <dt>Used by</dt><dd>/design</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your architecture principles to its method.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-debugger">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/debugger.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>debugger</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Finds root causes methodically: collects facts, reproduces, reads the trace from your code outward, tests ranked hypotheses (including git history for what changed) and proposes the smallest fix with a test.</dd>
+          <dt>How it works</dt><dd>Investigates and runs tests but can't edit files.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/fix-bug</dd>
+          <dt>What you can change</dt><dd><ul><li>Add where your logs and dashboards live.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-code-reviewer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/code-reviewer.md</code><span class="gd-tag gd-dev">Developer</span><span class="gd-tag gd-fork">memory: project</span></div>
+        <h4>code-reviewer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reviews changes for correctness, unmet acceptance criteria, missing tests, fit with your patterns, robustness and performance, readability and hygiene, with severity, <code>file:line</code> and a fix.</dd>
+          <dt>How it works</dt><dd>Has <strong>project memory</strong>: it keeps notes about your conventions and recurring problems in <code>.claude/agent-memory/code-reviewer/</code>, so reviews get more consistent over time. Commit that folder so the whole team's reviewer learns together.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/review-changes</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your review checklist.</li><li>Review or prune its memory folder occasionally.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-security-reviewer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/security-reviewer.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>security-reviewer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reviews changes for exploitable vulnerabilities: access control, injection, XSS, authentication and sessions, sensitive data, files and network (path traversal, SSRF, open redirects), configuration and dependencies, with CWE IDs when certain.</dd>
+          <dt>How it works</dt><dd>Called by <code>/review-changes</code> when sensitive code changes, or used proactively by Claude.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/review-changes</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your security requirements (e.g. PCI or HIPAA rules).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-test-designer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/test-designer.md</code><span class="gd-tag gd-tester">Tester</span><span class="gd-tag gd-fork">memory: project</span></div>
+        <h4>test-designer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Designs precise test cases with standard techniques and writes them to <code>docs/sdlc/testing/test-cases/</code>.</dd>
+          <dt>How it works</dt><dd>Writes only inside <code>docs/sdlc/testing/</code>. Remembers domain rules, limits and weak spots in <code>.claude/agent-memory/test-designer/</code>.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Write, Edit</code></dd>
+          <dt>Used by</dt><dd>/test-cases</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your company's test design conventions.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-test-automation">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/test-automation.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>test-automation</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes reliable automated tests from test cases in your framework and existing structure, and runs them.</dd>
+          <dt>How it works</dt><dd>Changes only test code, test data and test configuration. Never weakens an assertion to get a green run.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Write, Edit, Bash</code></dd>
+          <dt>Used by</dt><dd>/automate-tests</dd>
+          <dt>What you can change</dt><dd><ul><li>Point it at your base classes and helpers.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-bug-triager">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/bug-triager.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>bug-triager</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Classifies each failure as product bug, test problem, environment/data issue or flaky test, with evidence, likely component, severity and possible duplicates.</dd>
+          <dt>How it works</dt><dd>Read-only; may re-run a single test or read git history.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/run-tests, /bug-report, /regression</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your component owners so it can suggest who should fix what.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-db-reviewer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/db-reviewer.md</code><span class="gd-tag gd-extra">Extra</span></div>
+        <h4>db-reviewer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reviews migrations and data-access changes for data loss, long locks, missing indexes, unsafe constraints, irreversibility, deploy compatibility and sensitive data.</dd>
+          <dt>How it works</dt><dd>Part of the Database extra.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/db-migration</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your database engine and size so lock warnings are realistic.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-performance-analyst">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/performance-analyst.md</code><span class="gd-tag gd-extra">Extra</span></div>
+        <h4>performance-analyst</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Analyses back-end and front-end code paths for N+1 queries, chatty I/O, accidental O(n²) work, memory growth, blocking calls, large bundles, images and Core Web Vitals problems.</dd>
+          <dt>How it works</dt><dd>Part of the Performance extra.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash (no Write/Edit)</code></dd>
+          <dt>Used by</dt><dd>/performance-check</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your performance budget and monitoring tools.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <p><strong>Agent memory.</strong> Agents with <code>memory: project</code> (code-reviewer, test-designer) keep notes in <code>.claude/agent-memory/&lt;agent&gt;/</code>. The folder is created when they first save something. Commit it so everyone's agent learns the same conventions.</p>
+
+      <h2 id="docs">SDLC documents</h2>
+      <p>Plain Markdown in <code>docs/sdlc/</code>, useful to people as much as to Claude. Templates (files starting with <code>_template</code>) are copied by the commands when they create new documents.</p>
+
+      <section class="gd-file" id="doc-00-project-overview">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/00-project-overview.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Project overview</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>What the product is, who uses it, main features, what's out of scope, tech stack, quality requirements, conventions (ID formats, branches, commits), glossary and contacts.</dd>
+          <dt>How it works</dt><dd>Imported by <code>CLAUDE.md</code>, so it loads in every session. Keep sections short. "Out of scope" stops Claude building things you don't want; "Quality requirements" gives it measurable targets.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill <strong>What it is</strong>, <strong>Who uses it</strong> and <strong>Out of scope</strong> first; Claude can't learn them from code.</li><li>Set ID formats under Conventions if yours differ (e.g. Jira keys).</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-01-folder-structure">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/01-folder-structure.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Folder structure</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Architecture in one paragraph, a folder tree, what lives where, entry points, <strong>where new code goes</strong>, and folders not to edit by hand.</dd>
+          <dt>How it works</dt><dd>Imported by <code>CLAUDE.md</code>. Generated from your folder names if you gave them; <code>/analyze-structure</code> fills and refreshes it.</dd>
+          <dt>What you can change</dt><dd><ul><li>Check "Where new code goes" carefully: it decides where Claude creates files.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-02-requirements">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/02-requirements/</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Requirements</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One file per feature (<code>REQ-001-….md</code>) with user stories and Given / When / Then acceptance criteria, an index, and the template.</dd>
+          <dt>How it works</dt><dd>Shared by developers and testers: <code>/implement</code> builds to the criteria and <code>/test-cases</code> tests them. You can also paste stories from your tracker into the template.</dd>
+          <dt>What you can change</dt><dd><ul><li>Adapt <code>_template-feature.md</code> to your tracker's fields.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://cucumber.io/docs/gherkin/reference/" target="_blank" rel="noopener">Gherkin (Given / When / Then) reference ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-03-architecture">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/03-architecture.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>Architecture</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A short architecture description based on arc42: context, building blocks, key flows, data, deployment, cross-cutting concepts, risks and technical debt.</dd>
+          <dt>How it works</dt><dd>Read by <code>/design</code> and the <code>architect</code> agent before changes that span modules.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill "Cross-cutting concepts" (errors, logging, auth, config): it prevents inconsistent new code.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://arc42.org" target="_blank" rel="noopener">arc42 architecture template ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-04-decisions">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/04-decisions/</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>Architecture decisions (ADRs)</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One short record per important decision: context, options considered, decision, consequences and sources, plus an index.</dd>
+          <dt>How it works</dt><dd><code>/design</code> writes ADRs for significant choices; Claude checks existing ADRs before changing something they decided.</dd>
+          <dt>What you can change</dt><dd><ul><li>Record past decisions people keep asking about.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://adr.github.io" target="_blank" rel="noopener">Architecture Decision Records ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-05-environments-and-setup">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/05-environments-and-setup.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>Environments and setup</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Prerequisites, how to run locally, environments with URLs and deployment, where configuration and secrets live (never the values), common setup problems.</dd>
+          <dt>How it works</dt><dd>Used when Claude helps with setup or environment questions, and by <code>/onboarding-guide</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Never write secret values here; describe where they come from.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-06-api-and-data">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/06-api-and-data.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>API and data</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>API style, authentication, error format, main endpoints, data model and migrations, integrations.</dd>
+          <dt>How it works</dt><dd>Read before API or data changes; the coding standards rule tells Claude to update it when they change.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill the error format: it makes generated endpoints consistent.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener">OpenAPI Specification ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-07-release-process">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/07-release-process.md</code><span class="gd-tag gd-dev">Developer</span></div>
+        <h4>Release process</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Branches and reviews, PR checklist, versioning and changelog, deploy and rollback steps, release-notes audience.</dd>
+          <dt>How it works</dt><dd>Used by <code>/commit</code>, <code>/open-pr</code> and <code>/prepare-release</code>. Sections marked "A good default" apply until you write your own.</dd>
+          <dt>What you can change</dt><dd><ul><li>Replace the defaults with your real process.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://semver.org" target="_blank" rel="noopener">Semantic Versioning ↗</a><a href="https://keepachangelog.com/en/1.1.0/" target="_blank" rel="noopener">Keep a Changelog ↗</a><a href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank" rel="noopener">Conventional Commits ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-research">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/research/</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Research reports</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Reports written by <code>/research</code> and the <code>researcher</code> agent, an index, and the report template (short answer, context, findings, options, recommendation, confidence, sources).</dd>
+          <dt>How it works</dt><dd>Claude checks this folder before researching again, so answers accumulate instead of being repeated.</dd>
+          <dt>What you can change</dt><dd><ul><li>Delete or update reports that are out of date; <code>/sdlc-status</code> flags ones older than 6 months.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-readme">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/README.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Testing docs overview</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Map of the testing folder, ID conventions (<code>TC-US-012-03</code>, <code>BUG-001</code>) and the tester flow.</dd>
+          <dt>How it works</dt><dd>A reference for people and Claude.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change ID formats here and in the project overview together.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-test-strategy">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/test-strategy.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test strategy</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Scope and goals, test levels (the test pyramid), test types, tools, entry and exit criteria, severity and priority definitions, automation rules and risks.</dd>
+          <dt>How it works</dt><dd>Every testing command follows it. Its "A good default" sections apply until you replace them, so it works unedited.</dd>
+          <dt>What you can change</dt><dd><ul><li>Set your severity scale and done criteria; they drive bug reports and release decisions.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">The Practical Test Pyramid (Martin Fowler) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-test-plans">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/test-plans/</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test plans</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Test plans per feature or release (<code>TP-REQ-001.md</code>) and the template.</dd>
+          <dt>How it works</dt><dd>Written by <code>/test-plan</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Adapt the template sections to your QA process.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://www.iso.org/standard/79429.html" target="_blank" rel="noopener">ISO/IEC/IEEE 29119-3 (test documentation) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-test-cases">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/test-cases/</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test cases</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One file per story (<code>TC-US-012.md</code>) with a coverage table and numbered cases (type, priority, preconditions, data, steps, expected results, automation status).</dd>
+          <dt>How it works</dt><dd>Written by <code>/test-cases</code>; <code>/automate-tests</code> records where each case is automated.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add fields your test management tool needs.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-bugs">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/bugs/</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Bug reports</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Bug reports (<code>BUG-001-….md</code>), an index and the template with steps, expected and actual results, evidence and a resolution section.</dd>
+          <dt>How it works</dt><dd>Written by <code>/bug-report</code>; <code>/fix-bug</code> fills the resolution. If you use a tracker, the file holds the draft and the link.</dd>
+          <dt>What you can change</dt><dd><ul><li>Match the template to your tracker.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-test-runs">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/test-runs/</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test runs</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Results of <code>/run-tests</code> and <code>/regression</code>: command or checklist, environment and version, totals, classified failures and linked bugs.</dd>
+          <dt>How it works</dt><dd>Each run adds a file and an index row.</dd>
+          <dt>What you can change</dt><dd><ul><li>Archive old runs if the folder grows large.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-test-data-and-environments">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/test-data-and-environments.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Test data and environments</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Test environments, test accounts and roles (where credentials are kept, never the passwords), test data rules, external service sandboxes, browsers and devices.</dd>
+          <dt>How it works</dt><dd>Read by the testing commands and agents so tests use the right environment and data.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill browsers/devices and test accounts; they make UI tests and plans concrete.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-testing-traceability-matrix">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/testing/traceability-matrix.md</code><span class="gd-tag gd-tester">Tester</span></div>
+        <h4>Traceability matrix</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One table linking requirement → story → criterion → test case → automated test → last result → bug, plus a gaps section.</dd>
+          <dt>How it works</dt><dd>Updated by every testing command, so you can see at a glance which criteria aren't tested or are failing.</dd>
+          <dt>What you can change</dt><dd><ul><li>Export it for audits or release sign-off.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-incidents">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/incidents/</code><span class="gd-tag gd-extra">Extra</span></div>
+        <h4>Incident postmortems</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Postmortems written by <code>/postmortem</code> and the template (Postmortem extra).</dd>
+          <dt>How it works</dt><dd>One file per incident.</dd>
+          <dt>What you can change</dt><dd><ul><li>Adapt the severity scale.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google SRE book: postmortem culture ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-tech-debt">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/tech-debt.md</code><span class="gd-tag gd-extra">Extra</span></div>
+        <h4>Technical debt list</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A ranked list of risky code (Tech debt extra), written by <code>/tech-debt-scan</code> and open to manual additions.</dd>
+          <dt>How it works</dt><dd>Resolved items are marked done, not deleted.</dd>
+          <dt>What you can change</dt><dd><ul><li>Review it when planning refactoring time.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-onboarding">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/onboarding.md</code><span class="gd-tag gd-extra">Extra</span></div>
+        <h4>Onboarding guide</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A getting-started guide for new team members (Onboarding extra). Starts as a placeholder until you run <code>/onboarding-guide</code>.</dd>
+          <dt>How it works</dt><dd>Setup steps are checked against your build files.</dd>
+          <dt>What you can change</dt><dd><ul><li>Regenerate it when setup changes.</li></ul></dd>
+          
+        </dl>
+      </section>
+
+      <h2 id="workspace">Workspace edition (several services)</h2>
+      <p>For microservices and other multi-repository setups. Instead of installing the kit in every service, clone all your services into one folder and put the kit at its root. Open Claude Code in that folder and it sees every service, so one setup covers them all and Claude can follow a change from one service to the next.</p>
+<pre><code>my-platform/                 ← open Claude Code here
+├── CLAUDE.md, .claude/, docs/sdlc/   (the kit, shared by all services)
+├── services.txt, clone-services.sh/.ps1, .gitignore
+├── order-service/           ← its own git repository
+├── payment-service/         ← its own git repository
+└── web-app/                 ← its own git repository</code></pre>
+      <p>Claude Code loads <code>CLAUDE.md</code> from the folder you start in and its parent folders, and finds settings, commands and agents in the start folder only. That's why you always start at the workspace root. A service's own <code>CLAUDE.md</code>, if it has one, still loads when Claude works on files in that service. To share the workspace, run <code>git init</code> at the root and push it as its own repository; the <code>.gitignore</code> keeps the services out, and teammates clone it and run the clone script.</p>
+
+      <section class="gd-file" id="workspace-readme">
+        <div class="gd-file-head"><code class="gd-path">WORKSPACE-README.md</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Workspace guide for people</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Explains the layout (the kit at the root, one folder per service next to it), the setup steps, and how to share the workspace with your team through its own git repository.</dd>
+          <dt>How it works</dt><dd>For people only; Claude doesn't load it. The important rule it repeats: always open Claude Code at the workspace root, not inside a service, because settings, commands and agents are only found from the folder you start in.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your team's own setup steps, such as VPN access or local databases shared by all services.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener">Claude Code docs: settings ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="services-txt">
+        <div class="gd-file-head"><code class="gd-path">services.txt</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Service list</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One line per service: the folder name and its git URL. Lines starting with <code>#</code> are ignored, so services without a URL are listed as comments until you add one.</dd>
+          <dt>How it works</dt><dd>The clone scripts read it to fetch missing services, and <code>/add-service</code> appends to it. It's the single list your team edits when a service is added or retired.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add the git URL for any service marked <code>&lt;add the git URL&gt;</code>.</li><li>Remove a line when a service is retired (and delete its doc in <code>docs/sdlc/services/</code>).</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="clone-services">
+        <div class="gd-file-head"><code class="gd-path">clone-services.sh · clone-services.ps1</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Clone scripts</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Clones every service in <code>services.txt</code> that isn't in the workspace yet. Use <code>./clone-services.sh</code> on macOS, Linux or Git Bash and <code>.\clone-services.ps1</code> in PowerShell.</dd>
+          <dt>How it works</dt><dd>Skips folders that already exist and never pulls or changes existing clones, so it's safe to run any time. Each service stays its own git repository with its own branches and history.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add <code>--depth 1</code> to the clone command for faster clones of large repositories.</li><li>Check out a default branch after cloning if your services don't use <code>main</code>.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="workspace-gitignore">
+        <div class="gd-file-head"><code class="gd-path">.gitignore</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Workspace .gitignore</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Keeps the service folders out of the workspace repository, plus personal files (<code>CLAUDE.local.md</code>, <code>.claude/settings.local.json</code>).</dd>
+          <dt>How it works</dt><dd>The workspace repository holds only the kit and the shared docs; each service is committed to its own repository. Without these lines, <code>git add .</code> at the root would try to add every service.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add any new service folder (the <code>/add-service</code> command does this for you).</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="rule-workspace">
+        <div class="gd-file-head"><code class="gd-path">.claude/rules/workspace.md</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Working across services</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Tells Claude it's in a workspace of separate repositories: always say which service a change is in, run build and test commands inside that service, use <code>git -C &lt;service&gt;</code> for git, never commit service code to the workspace repository, and for changes across services, change the provider side first, keep it backwards compatible and open one linked pull request per service.</dd>
+          <dt>How it works</dt><dd>No <code>paths:</code> header, so it loads in every session. In the workspace edition the <code>paths:</code> globs of the other rules start with <code>**/</code>, so a rule such as the React profile applies to matching files in any service.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add rules that apply to all services, such as a shared error format or event naming.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-add-service">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/add-service/SKILL.md</code><span class="gd-tag gd-workspace">Workspace edition</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/add-service &lt;git URL or folder&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Adds a service to the workspace: clones it (or registers a folder that's already there), adds it to <code>services.txt</code> and <code>.gitignore</code>, creates its doc from the template, fills what it can prove from the code and updates the services table.</dd>
+          <dt>How it works</dt><dd>Only you can run it, because it clones and writes files. It shows the clone command and runs it only after you confirm.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your own steps, such as registering the service in a shared gateway config.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-services">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/services/</code><span class="gd-tag gd-workspace">Workspace edition</span></div>
+        <h4>Service docs</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One file per service with its folder, repository, purpose and stack, then sections for build and test commands, structure and where new code goes, the APIs it provides, what it depends on and the data it owns. <code>_template-service.md</code> is used for new services.</dd>
+          <dt>How it works</dt><dd>Read when a task touches that service; the services table in <code>docs/sdlc/01-folder-structure.md</code> (loaded in every session) points Claude to the right file. <code>/sdlc-init</code> fills the sections it can prove from each service's code.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill in "What it depends on" for each service: it's what Claude needs most for changes across services.</li><li>Keep build commands per service here instead of in <code>CLAUDE.md</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></dd>
+        </dl>
+      </section>
+
+      <h2 id="plugin">Plugin edition</h2>
+      <p>The plugin edition packs the same commands and agents as a Claude Code plugin named <code>sdlc-kit</code>, installed once for all your projects. Plugins can ship commands (<code>skills/</code>), agents (<code>agents/</code>) and hooks (<code>hooks/hooks.json</code>), but not <code>CLAUDE.md</code>, rules or permission settings, so those are in <code>templates/</code> and <code>/sdlc-kit:setup</code> copies them into each project. Commands are used as <code>/sdlc-kit:&lt;name&gt;</code> and agents as <code>sdlc-kit:&lt;name&gt;</code>.</p>
+
+      <section class="gd-file" id="plugin-readme">
+        <div class="gd-file-head"><code class="gd-path">README.md</code><span class="gd-tag gd-plugin">Plugin edition</span></div>
+        <h4>Plugin install instructions</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>How to install the plugin (unzip into <code>~/.claude/skills/sdlc-kit/</code>, or try it with <code>claude --plugin-dir</code>) and how to use it in a project.</dd>
+          <dt>How it works</dt><dd>For people only.</dd>
+          
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/plugins/create" target="_blank" rel="noopener">Claude Code docs: create a plugin ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="plugin-json">
+        <div class="gd-file-head"><code class="gd-path">.claude-plugin/plugin.json</code><span class="gd-tag gd-plugin">Plugin edition</span></div>
+        <h4>Plugin manifest</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Names the plugin <code>sdlc-kit</code>, with a description, version and author.</dd>
+          <dt>How it works</dt><dd>The <code>name</code> becomes the prefix of every command and agent: <code>/sdlc-kit:research</code>, <code>sdlc-kit:researcher</code>. Only this file belongs inside <code>.claude-plugin/</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Rename the plugin by changing <code>name</code> (commands change prefix accordingly).</li><li>Bump <code>version</code> when you change the plugin for your team.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/plugins/create" target="_blank" rel="noopener">Claude Code docs: create a plugin ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="hooks-json">
+        <div class="gd-file-head"><code class="gd-path">hooks/hooks.json</code><span class="gd-tag gd-plugin">Plugin edition</span></div>
+        <h4>Plugin hooks</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Only present if you entered a format or lint command: the Stop hook that runs it after each reply.</dd>
+          <dt>How it works</dt><dd>Same format as <code>hooks</code> in a settings file, under a top-level <code>"hooks"</code> key. Plugins can't ship permission rules, which is why those are in <code>templates/.claude/settings.json</code> instead.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the command, or add other hooks.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Claude Code docs: hooks ↗</a><a href="https://code.claude.com/docs/en/plugins/components" target="_blank" rel="noopener">Claude Code docs: plugin components ↗</a></dd>
+        </dl>
+      </section>
+
+      <h2 id="customise">Customise the kit</h2>
+      <h3>Add your own command</h3>
+      <p>Create <code>.claude/skills/deploy-check/SKILL.md</code>. The folder name becomes the command; keep the description specific, because Claude uses it to decide when the command fits.</p>
+<pre><code>---
+name: deploy-check
+description: Check that a branch is ready to deploy: tests pass, migrations are reversible, no TODOs in changed files.
+argument-hint: &quot;[branch]&quot;
+disable-model-invocation: true
+---
+
+Check branch $ARGUMENTS:
+1. …</code></pre>
+      <h3>Add or narrow a rule</h3>
+      <p>Add a file to <code>.claude/rules/</code>. Give it a <code>paths:</code> header so it loads only for the files it's about, which keeps every other conversation lighter.</p>
+      <h3>Add an agent</h3>
+      <p>Create <code>.claude/agents/&lt;name&gt;.md</code> with <code>name</code>, a <code>description</code> that says when to use it ("use proactively when…"), a <code>tools</code> list (as small as possible) and its instructions.</p>
+      <h3>Allow commands you trust, block files you don't</h3>
+<pre><code>{
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [&quot;Bash(npm run test *)&quot;, &quot;Bash(./mvnw test *)&quot;],
+    &quot;deny&quot;: [&quot;Read(.env)&quot;, &quot;Read(config/credentials.yml)&quot;]
+  }
+}</code></pre>
+      <h3>Run a formatter automatically</h3>
+<pre><code>{
+  &quot;hooks&quot;: {
+    &quot;Stop&quot;: [
+      { &quot;hooks&quot;: [ { &quot;type&quot;: &quot;command&quot;, &quot;command&quot;: &quot;npm run lint -- --fix&quot;, &quot;shell&quot;: &quot;bash&quot; } ] }
+    ]
+  }
+}</code></pre>
+      <p>Use <code>"shell": "powershell"</code> on Windows without Git Bash. A <code>PostToolUse</code> hook with <code>"matcher": "Write|Edit"</code> runs after every file edit instead.</p>
+      <h3>Remove what you don't need</h3>
+      <p>Delete a command's folder or an agent's file and remove its row from <code>CLAUDE.md</code>. Fewer commands and agents that Claude can start on its own means a lighter context on every turn and fewer wrong picks.</p>
+      <h3>Check your setup</h3>
+      <p>Run <code>/doctor prompt-audit</code> in Claude Code to find conflicting or outdated instructions across <code>CLAUDE.md</code>, rules, commands and agents.</p>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+      <table class="change-table gd-table">
+        <thead><tr><th style="width:32%">Problem</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>A command doesn't appear</td><td>Check the path is <code>.claude/skills/&lt;name&gt;/SKILL.md</code>, that <code>name</code> matches the folder, and that the YAML header is valid: a description containing <code>": "</code> must be quoted. Start a new session after adding files.</td></tr>
+          <tr><td>Claude ignores an instruction</td><td>Keep <code>CLAUDE.md</code> short and free of contradictions; run <code>/doctor prompt-audit</code>. For things that must never happen, use permission rules or hooks, which are enforced.</td></tr>
+          <tr><td>An agent is never used</td><td>Make its description say when to use it ("use proactively when…"), or ask for it by name, or type <code>@</code> and pick it.</td></tr>
+          <tr><td>A hook doesn't run on Windows</td><td>Add <code>"shell": "powershell"</code> to the hook, or install Git Bash.</td></tr>
+          <tr><td>Scripts can still read secrets</td><td>Deny rules cover Claude's file tools and shell commands that name the file, not programs that open files themselves. Enable Claude Code's sandbox for OS-level protection.</td></tr>
+          <tr><td>Plugin commands are missing</td><td>Check <code>.claude-plugin/plugin.json</code> exists in the plugin root, look at the Errors tab in <code>/plugin</code>, and run <code>/reload-plugins</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="faq">Frequently asked questions</h2>
+      <div class="faq">
+        <details>
+          <summary>Can I use one kit for several microservices?</summary>
+          <p>Yes. Choose the workspace edition, clone all your services into one folder, unzip the kit at the root of that folder and always open Claude Code there. Each service stays its own git repository; the workspace can be shared as a separate small repository with a clone script.</p>
+        </details>
+        <details>
+          <summary>Do I have to fill in every document?</summary>
+          <p>No. The kit works unedited. Empty sections are marked with FILL comments; Claude works them out from your code when it needs them and asks you only about things the code can't tell it, such as who your users are. Filling in the project overview and the build commands gives the biggest improvement.</p>
+        </details>
+        <details>
+          <summary>Which files are loaded in every Claude Code session?</summary>
+          <p>CLAUDE.md, the two docs it imports (project overview and folder structure), the rules without a paths header (using the docs, research and sources, security), and the names and descriptions of the commands and agents Claude can use on its own. Everything else loads only when it's needed.</p>
+        </details>
+        <details>
+          <summary>What is the difference between a command and an agent?</summary>
+          <p>A command (skill) is a set of instructions you start with a slash, such as /implement, and it runs in your conversation. An agent (subagent) is a specialist with its own instructions and tools that Claude hands a task to, and it works in its own context and reports back.</p>
+        </details>
+        <details>
+          <summary>Why can some commands only be run by me?</summary>
+          <p>Commands that change code, commit, create pull requests or write many files have disable-model-invocation set, so Claude never starts them on its own. Read-only commands such as /explain and /review-changes can also be used by Claude when they fit your request.</p>
+        </details>
+        <details>
+          <summary>Can I use the kit with other AI coding tools?</summary>
+          <p>The docs in docs/sdlc are plain Markdown and useful to any tool or person. CLAUDE.md, rules, skills, agents and settings use Claude Code's formats. Claude Code can also read an AGENTS.md file if your other tools use one.</p>
+        </details>
+        <details>
+          <summary>How do I update the kit later?</summary>
+          <p>Generate a new kit with the same choices and compare it with your files, or update the plugin edition and run its setup command again. Your own edits stay in your files; nothing overwrites them automatically.</p>
+        </details>
+      </div>
+
+      <h2 id="sources">Official documentation</h2>
+      <ul class="gd-sources">
+        <li><a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">Claude Code docs: memory and CLAUDE.md ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Claude Code docs: hooks ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener">Claude Code docs: settings ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener">Claude Code docs: permissions ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/plugins" target="_blank" rel="noopener">Claude Code docs: plugins ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/plugins/create" target="_blank" rel="noopener">Claude Code docs: create a plugin ↗</a></li>
+        <li><a href="https://code.claude.com/docs/en/plugins/components" target="_blank" rel="noopener">Claude Code docs: plugin components ↗</a></li>
+        <li><a href="https://arc42.org" target="_blank" rel="noopener">arc42 architecture template ↗</a></li>
+        <li><a href="https://adr.github.io" target="_blank" rel="noopener">Architecture Decision Records ↗</a></li>
+        <li><a href="https://cucumber.io/docs/gherkin/reference/" target="_blank" rel="noopener">Gherkin (Given / When / Then) reference ↗</a></li>
+        <li><a href="https://keepachangelog.com/en/1.1.0/" target="_blank" rel="noopener">Keep a Changelog ↗</a></li>
+        <li><a href="https://semver.org" target="_blank" rel="noopener">Semantic Versioning ↗</a></li>
+        <li><a href="https://www.conventionalcommits.org/en/v1.0.0/" target="_blank" rel="noopener">Conventional Commits ↗</a></li>
+        <li><a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener">OWASP Top 10 ↗</a></li>
+        <li><a href="https://owasp.org/www-project-application-security-verification-standard/" target="_blank" rel="noopener">OWASP ASVS ↗</a></li>
+        <li><a href="https://www.w3.org/TR/WCAG22/" target="_blank" rel="noopener">WCAG 2.2 (W3C) ↗</a></li>
+        <li><a href="https://www.iso.org/standard/79429.html" target="_blank" rel="noopener">ISO/IEC/IEEE 29119-3 (test documentation) ↗</a></li>
+        <li><a href="https://spec.openapis.org/oas/latest.html" target="_blank" rel="noopener">OpenAPI Specification ↗</a></li>
+        <li><a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">The Practical Test Pyramid (Martin Fowler) ↗</a></li>
+        <li><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google SRE book: postmortem culture ↗</a></li>
+        <li><a href="https://cli.github.com/manual/gh_pr_create" target="_blank" rel="noopener">GitHub CLI: gh pr create ↗</a></li>
+      </ul>
+      <p class="muted">Claude Code changes often. If something here differs from the official documentation, the documentation is right; the kit's version and generation date are at the top of every generated file.</p>
+    </article>
+  </div>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+</body>
+</html>

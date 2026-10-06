@@ -1,0 +1,8 @@
+# Services have their own repositories; keep them out of the workspace repository.
+{{#if serviceIgnores}}
+{{serviceIgnores}}
+{{/if}}
+
+# Personal Claude Code files
+CLAUDE.local.md
+.claude/settings.local.json

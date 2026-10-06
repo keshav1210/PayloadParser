@@ -1,0 +1,45 @@
+---
+name: design
+description: Design how to build a feature or technical change before coding, covering the modules affected, API and data changes, flows, error handling, security, testing and risks, and record important choices as ADRs. Use when asked to design, plan the architecture of, or work out the approach for a feature or change.
+argument-hint: "<REQ ID, story ID or description of the change>"
+---
+
+# Design a change
+
+Change to design: $ARGUMENTS
+
+If nothing was given, ask what to design, and stop. Don't change any code in this command.
+
+## 1. Gather context
+
+- If an ID was given, read the requirement file in `docs/sdlc/02-requirements/`. If it's still Draft with open
+  questions that affect the design, list them and ask whether to continue.
+- Read `docs/sdlc/03-architecture.md`, `docs/sdlc/06-api-and-data.md`, the quality requirements in
+  `docs/sdlc/00-project-overview.md`, and existing ADRs in `docs/sdlc/04-decisions/`.
+- Read the code the change will touch, following calls far enough to understand how it works today.
+- For a change that spans several modules or introduces new technology, delegate the option analysis to the
+  `architect` agent. If a fact needs checking (library behaviour, limits, versions), use the `researcher`
+  agent or point the user to `/research`.
+
+## 2. Write the design
+
+Present it to the user in this order, short and concrete, with file paths:
+
+1. **Summary**: the approach in 3-5 sentences.
+2. **Changes by module**: what changes where; new files and where they go.
+3. **API and data**: new or changed endpoints, request/response shapes, schema changes and migrations.
+4. **Flow**: the main path step by step, plus what happens on errors.
+5. **Security and privacy**: authentication, authorisation, input validation, sensitive data.
+6. **Testing**: which tests prove each acceptance criterion (unit, integration, end-to-end).
+7. **Risks and rollout**: what could go wrong, backwards compatibility, feature flags, data migration order.
+8. **Open questions**.
+
+## 3. Record decisions
+
+- For each significant, hard-to-reverse choice (a new dependency, a new pattern, a data model change, choosing
+  between real alternatives), write an ADR in `docs/sdlc/04-decisions/` from `_template-adr.md` with the next
+  number, status Proposed, the options you compared and the sources you used. Add it to the index.
+- Add a "Design" link to the requirement file pointing to the ADRs, or a short design summary if no ADR was
+  needed.
+
+Ask the user to approve the design before anyone runs `/implement`.

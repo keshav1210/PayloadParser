@@ -65,6 +65,20 @@ public class CaffeineRateLimiterFilter implements Filter {
             return;
         }
 
+        if (apiPath.startsWith("/api/sdlc/")) {
+            int limit = apiPath.equals("/api/sdlc/generate") ? 10 : 60;
+            AtomicInteger perIp = cache.get("ip:" + clientIp(req) + ":" + apiPath, k -> new AtomicInteger(0));
+            if (currentCount > limit || perIp.incrementAndGet() > limit) {
+                res.setStatus(429);
+                res.setHeader("Retry-After", "60");
+                res.setContentType("application/json");
+                res.getWriter().write("{\"message\":\"Too many requests. Please wait a minute and try again.\"}");
+                return;
+            }
+            chain.doFilter(request, response);
+            return;
+        }
+
         if (currentCount > MAX_REQUESTS) {
             res.setHeader("Retry-After", "60");
             res.sendRedirect("/429");
@@ -72,6 +86,16 @@ public class CaffeineRateLimiterFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    // Behind Render's proxy the last X-Forwarded-For entry is the address the proxy saw; earlier entries can be faked by the client
+    private String clientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            String[] parts = forwarded.split(",");
+            return parts[parts.length - 1].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     private String getUserId(HttpServletRequest request) {

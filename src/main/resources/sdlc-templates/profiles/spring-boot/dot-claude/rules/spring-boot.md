@@ -1,0 +1,49 @@
+---
+paths:
+  - "**/*.java"
+  - "**/*.kt"
+  - "**/application*.properties"
+  - "**/application*.yml"
+  - "**/application*.yaml"
+  - "**/pom.xml"
+  - "**/build.gradle*"
+---
+
+# Spring Boot practices
+
+Follow these unless the project already does it differently; existing patterns win.
+
+## Structure
+
+- Controllers handle HTTP only: map the request, validate it, call a service, map the response. Business logic
+  lives in services; data access in repositories.
+- Use constructor injection (final fields). Avoid field injection with `@Autowired`.
+- Don't return JPA entities from controllers; use DTOs (records work well) so the API doesn't change when the
+  database does.
+- Configuration: bind groups of settings with `@ConfigurationProperties` instead of many `@Value` fields.
+  Never put secrets in `application.properties`; read them from environment variables.
+
+## Web layer
+
+- Validate request bodies with Bean Validation (`@Valid`, `@NotBlank`, `@Size` …).
+- Handle errors in one `@RestControllerAdvice` that returns the project's error format. Spring Boot 3 supports
+  `ProblemDetail` (RFC 9457) if the project has no format yet.
+- Use the right status codes: 201 for created, 204 for no content, 400 for validation errors, 404 when not
+  found, 409 for conflicts.
+
+## Data
+
+- Watch for N+1 queries: use fetch joins or `@EntityGraph` when loading associations you'll read.
+- Put `@Transactional` on service methods that write, not on controllers. Mark read-only methods
+  `@Transactional(readOnly = true)` when the project uses JPA.
+- Change the schema through the project's migration tool (Flyway or Liquibase) if it has one; never rely on
+  `ddl-auto=update` outside local development.
+- Page large result sets (`Pageable`) instead of loading everything.
+
+## Tests
+
+- Unit-test services with JUnit 5 and Mockito, without starting Spring.
+- Use slice tests for one layer: `@WebMvcTest` for controllers, `@DataJpaTest` for repositories.
+- Use `@SpringBootTest` only for full integration tests; use Testcontainers for real databases when the
+  project does.
+- Run a single test with `./mvnw test -Dtest=ClassName` (Maven) or `./gradlew test --tests ClassName` (Gradle).

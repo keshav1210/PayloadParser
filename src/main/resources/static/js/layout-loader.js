@@ -48,7 +48,7 @@ function markActiveNavLink(root) {
     }
 }
 
-loadFragment("header", "/header.html?v=14", root => {
+loadFragment("header", "/header.html?v=15", root => {
     markActiveNavLink(root);
     if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
         root.querySelectorAll('.cmdk-trigger-kbd').forEach(k => { k.textContent = '⌘ K'; });
@@ -56,7 +56,7 @@ loadFragment("header", "/header.html?v=14", root => {
     }
     if (window.updateThemeButtons) window.updateThemeButtons();
 });
-loadFragment("footer", "/footer.html?v=15", root => {
+loadFragment("footer", "/footer.html?v=17", root => {
     const year = root.querySelector('.footer-year');
     if (year) year.textContent = new Date().getFullYear();
 });
@@ -70,7 +70,7 @@ function loadScript(src) {
         document.head.append(s);
     });
 }
-(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=8'))
+(window.SITE_TOOLS ? Promise.resolve() : loadScript('/js/tools-list.js?v=9'))
     .then(() => loadScript('/js/palette.js?v=1'))
     .catch(err => console.error('Failed to load the tool search', err));
 

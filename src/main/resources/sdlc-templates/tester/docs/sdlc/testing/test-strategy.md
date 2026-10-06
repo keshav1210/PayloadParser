@@ -1,0 +1,75 @@
+# Test strategy
+
+How this project tests, in one place. Test plans and test cases follow it. Sections marked "A good default"
+apply until the team writes its own.
+
+## Scope and goals
+
+<!-- FILL: what testing must protect most (e.g. money calculations, data privacy, the checkout flow) and what
+is out of scope (e.g. third-party payment pages). -->
+
+## Test levels
+
+<!-- FILL: who writes which tests and where they live. A good default (the test pyramid):
+| Level | What it checks | Share | Who | Where |
+|---|---|---|---|---|
+| Unit | One function or class, no I/O | Most | Developers | next to the code / src/test |
+| Integration / API | Modules together, real database or API | Some | Developers and testers | src/test or tests/api |
+| End-to-end (UI) | Main user journeys in a real browser or device | Few | Testers | e2e/ |
+| Manual / exploratory | New features, usability, edge cases hard to automate | As needed | Testers | test-cases/ |
+-->
+
+## Test types in use
+
+<!-- FILL: tick what applies and name the tools.
+- Functional: …
+- API / contract: …
+- UI / end-to-end: …
+- Performance / load: …
+- Security: …
+- Accessibility: …
+- Compatibility (browsers, devices): …
+-->
+
+## Tools and frameworks
+
+{{#if testFrameworks}}
+Frameworks: {{testFrameworks}}.
+
+<!-- FILL: runners and where results appear (CI job, report URL). -->
+{{/if}}
+{{#unless testFrameworks}}
+<!-- FILL: test frameworks, runners and where results appear (CI job, report URL). /sdlc-init can fill this
+from the build files. -->
+{{/unless}}
+
+## Entry and exit criteria
+
+<!-- FILL: when testing of a feature can start and when it is done. A good default:
+- Start: acceptance criteria written and reviewed; build deployed to the test environment; test data ready.
+- Done: every acceptance criterion has a passing test case; no open Critical or High bugs; regression suite
+  passes; results recorded in test-runs/.
+-->
+
+## Severity and priority
+
+<!-- FILL: how bugs are rated. A good default:
+| Severity | Meaning |
+|---|---|
+| Critical | Data loss, security breach, or the main flow is unusable with no workaround |
+| High | A main feature is broken or wrong; a workaround is hard |
+| Medium | A feature misbehaves; an easy workaround exists |
+| Low | Cosmetic or minor inconvenience |
+Priority (P1 fix now · P2 this release · P3 later) is set by the product owner from severity and business impact.
+-->
+
+## Automation rules
+
+<!-- FILL: what to automate and how. A good default: automate stable, repeated and high-risk checks (regression,
+API, smoke); keep new or fast-changing UI manual until it settles; every automated test is tagged with its
+test case ID; flaky tests are fixed or quarantined within a week, never ignored. -->
+
+## Risks
+
+<!-- FILL: areas most likely to break or hardest to test (integrations, time zones, concurrency, data
+migrations) and how testing covers them. -->

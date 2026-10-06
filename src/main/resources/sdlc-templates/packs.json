@@ -1,0 +1,290 @@
+{
+  "version": "0.1",
+  "packs": [
+    {
+      "id": "dev",
+      "group": "role",
+      "label": "Developer",
+      "description": "Requirements, design, implement, tests, refactor, debug, review, commit, pull requests, dependencies, releases"
+    },
+    {
+      "id": "tester",
+      "group": "role",
+      "label": "Tester",
+      "description": "Test plans, test cases, automation, test runs, bug reports, regression, traceability"
+    },
+    {
+      "id": "spring-boot",
+      "group": "profile",
+      "label": "Spring Boot",
+      "description": "Layering, DTOs, validation, transactions, N+1 queries, slice tests",
+      "detect": [
+        "spring-boot"
+      ]
+    },
+    {
+      "id": "react",
+      "group": "profile",
+      "label": "React",
+      "description": "Components, hooks, state and effects, accessibility, Testing Library",
+      "detect": [
+        "\"react\""
+      ]
+    },
+    {
+      "id": "node-api",
+      "group": "profile",
+      "label": "Node.js API",
+      "description": "Thin handlers, validation, async errors, event loop, security, HTTP tests",
+      "detect": [
+        "\"express\"",
+        "\"fastify\"",
+        "@nestjs/core",
+        "\"koa\""
+      ]
+    },
+    {
+      "id": "junit5",
+      "group": "framework",
+      "label": "JUnit 5",
+      "language": "Java / Kotlin",
+      "requires": "tester",
+      "detect": [
+        "junit-jupiter",
+        "spring-boot-starter-test"
+      ]
+    },
+    {
+      "id": "testng",
+      "group": "framework",
+      "label": "TestNG",
+      "language": "Java",
+      "requires": "tester",
+      "detect": [
+        "testng"
+      ]
+    },
+    {
+      "id": "selenium-java",
+      "group": "framework",
+      "label": "Selenium (Java)",
+      "language": "Java",
+      "requires": "tester",
+      "detect": [
+        "selenium-java"
+      ]
+    },
+    {
+      "id": "rest-assured",
+      "group": "framework",
+      "label": "REST Assured",
+      "language": "Java",
+      "requires": "tester",
+      "detect": [
+        "rest-assured"
+      ]
+    },
+    {
+      "id": "espresso",
+      "group": "framework",
+      "label": "Espresso (Android)",
+      "language": "Kotlin / Java",
+      "requires": "tester",
+      "detect": [
+        "espresso-core"
+      ]
+    },
+    {
+      "id": "jest",
+      "group": "framework",
+      "label": "Jest",
+      "language": "JavaScript / TypeScript",
+      "requires": "tester",
+      "detect": [
+        "\"jest\""
+      ]
+    },
+    {
+      "id": "vitest",
+      "group": "framework",
+      "label": "Vitest",
+      "language": "JavaScript / TypeScript",
+      "requires": "tester",
+      "detect": [
+        "\"vitest\""
+      ]
+    },
+    {
+      "id": "playwright",
+      "group": "framework",
+      "label": "Playwright",
+      "language": "JS / TS, Python, Java, .NET",
+      "requires": "tester",
+      "detect": [
+        "@playwright/test",
+        "playwright"
+      ]
+    },
+    {
+      "id": "cypress",
+      "group": "framework",
+      "label": "Cypress",
+      "language": "JavaScript / TypeScript",
+      "requires": "tester",
+      "detect": [
+        "\"cypress\""
+      ]
+    },
+    {
+      "id": "pytest",
+      "group": "framework",
+      "label": "pytest",
+      "language": "Python",
+      "requires": "tester",
+      "detect": [
+        "pytest"
+      ]
+    },
+    {
+      "id": "xunit",
+      "group": "framework",
+      "label": "xUnit",
+      "language": "C# / .NET",
+      "requires": "tester",
+      "detect": [
+        "xunit"
+      ]
+    },
+    {
+      "id": "nunit",
+      "group": "framework",
+      "label": "NUnit",
+      "language": "C# / .NET",
+      "requires": "tester",
+      "detect": [
+        "nunit"
+      ]
+    },
+    {
+      "id": "go-test",
+      "group": "framework",
+      "label": "Go testing",
+      "language": "Go",
+      "requires": "tester",
+      "detect": [
+        "go.mod"
+      ]
+    },
+    {
+      "id": "rspec",
+      "group": "framework",
+      "label": "RSpec",
+      "language": "Ruby",
+      "requires": "tester",
+      "detect": [
+        "rspec"
+      ]
+    },
+    {
+      "id": "phpunit",
+      "group": "framework",
+      "label": "PHPUnit",
+      "language": "PHP",
+      "requires": "tester",
+      "detect": [
+        "phpunit/phpunit"
+      ]
+    },
+    {
+      "id": "xctest",
+      "group": "framework",
+      "label": "XCTest / Swift Testing",
+      "language": "Swift",
+      "requires": "tester",
+      "detect": [
+        "XCTest",
+        "swift-testing"
+      ]
+    },
+    {
+      "id": "postman",
+      "group": "framework",
+      "label": "Postman / Newman",
+      "language": "API",
+      "requires": "tester",
+      "detect": [
+        ".postman_collection.json",
+        "newman"
+      ]
+    },
+    {
+      "id": "k6",
+      "group": "framework",
+      "label": "k6 (load tests)",
+      "language": "Performance",
+      "requires": "tester",
+      "detect": [
+        "k6"
+      ]
+    },
+    {
+      "id": "database",
+      "group": "extra",
+      "label": "Database migrations",
+      "description": "/db-migration (safe, reversible migrations) and the db-reviewer agent",
+      "requires": "dev"
+    },
+    {
+      "id": "performance",
+      "group": "extra",
+      "label": "Performance",
+      "description": "/performance-check and the performance-analyst agent, back end and front end"
+    },
+    {
+      "id": "accessibility",
+      "group": "extra",
+      "label": "Accessibility",
+      "description": "/accessibility-check against WCAG 2.2 AA"
+    },
+    {
+      "id": "api-docs",
+      "group": "extra",
+      "label": "API documentation",
+      "description": "/document-api: OpenAPI from the actual code",
+      "requires": "dev"
+    },
+    {
+      "id": "onboarding",
+      "group": "extra",
+      "label": "Onboarding guide",
+      "description": "/onboarding-guide for new team members, with verified setup steps"
+    },
+    {
+      "id": "postmortem",
+      "group": "extra",
+      "label": "Incident postmortems",
+      "description": "/postmortem: blameless report with timeline, causes and action items"
+    },
+    {
+      "id": "tech-debt",
+      "group": "extra",
+      "label": "Technical debt",
+      "description": "/tech-debt-scan: riskiest code by change frequency, complexity and tests",
+      "requires": "dev"
+    },
+    {
+      "id": "plugin",
+      "group": "plugin",
+      "label": "Plugin edition",
+      "description": "Added automatically for the plugin download",
+      "hidden": true
+    },
+    {
+      "id": "workspace",
+      "group": "workspace",
+      "label": "Workspace edition",
+      "description": "Added automatically for the workspace download",
+      "hidden": true
+    }
+  ]
+}

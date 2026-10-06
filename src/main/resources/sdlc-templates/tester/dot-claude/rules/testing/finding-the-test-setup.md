@@ -1,0 +1,26 @@
+---
+paths:
+  - "src/test/**"
+  - "test/**"
+  - "tests/**"
+  - "spec/**"
+  - "e2e/**"
+  - "**/*.test.*"
+  - "**/*.spec.*"
+---
+
+# Finding the test setup
+
+Use this when no rule in `.claude/rules/testing/` covers the project's test tools, or to confirm what's used.
+
+1. Read the build files for test dependencies and scripts: `pom.xml`, `build.gradle*`, `package.json`
+   (`scripts.test`, devDependencies), `pyproject.toml`, `requirements*-dev.txt`, `go.mod`, `*.csproj`,
+   `Gemfile`, `composer.json`, `Package.swift`.
+2. Find the test config files: `jest.config.*`, `vitest.config.*`, `playwright.config.*`, `cypress.config.*`,
+   `pytest.ini`, `conftest.py`, `testng.xml`, `phpunit.xml`, `.rspec`, `karma.conf.*`.
+3. Check how CI runs the tests (`.github/workflows/`, `.gitlab-ci.yml`, `Jenkinsfile`); that's the command
+   that counts.
+4. Read two or three existing tests to learn the naming, structure, helpers, fixtures and assertion style.
+
+Then follow what you found. Don't introduce a new test framework or library without asking; if the project has
+no tests yet, propose the most common choice for its stack and wait for approval.

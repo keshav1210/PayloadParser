@@ -1,0 +1,8 @@
+# Services in this workspace: one per line, "<folder> <git URL>".
+# clone-services.ps1 (Windows) and clone-services.sh (macOS, Linux, Git Bash) clone any that are missing.
+{{#if servicesTxt}}
+{{servicesTxt}}
+{{/if}}
+{{#unless servicesTxt}}
+# order-service https://github.com/your-org/order-service.git
+{{/unless}}

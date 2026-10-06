@@ -1,0 +1,49 @@
+---
+name: check-dependencies
+description: Check the project's libraries for outdated versions and known vulnerabilities, rate the risk and effort of each upgrade, and upgrade one at a time with tests only when the user asks. Use when asked about outdated or vulnerable dependencies, security advisories or upgrades.
+argument-hint: "[optional: a library to focus on, or 'upgrade <library>']"
+---
+
+# Check dependencies
+
+{{#if workspace}}
+> Workspace: first decide which service this is about (ask if unclear), then run every git, build and
+> test command inside that service's folder (`git -C <service> …`, `cd <service> && …`), as described in
+> `.claude/rules/workspace.md`.
+
+{{/if}}Focus: $ARGUMENTS
+
+Report only, unless the user asked to upgrade.
+
+## 1. Find the dependencies
+
+Read the build files (`pom.xml`, `build.gradle*`, `package.json` with its lock file, `requirements*.txt`,
+`pyproject.toml`, `go.mod`, `*.csproj`, `Gemfile`, `composer.json`) and list the direct dependencies with
+their versions.
+
+## 2. Check them
+
+Use the project's own tools if they're installed:
+
+| Ecosystem | Outdated | Vulnerabilities |
+|---|---|---|
+| Maven | `./mvnw versions:display-dependency-updates` | OWASP dependency-check, if configured |
+| Gradle | `./gradlew dependencyUpdates`, if the plugin is set up | |
+| npm | `npm outdated` | `npm audit` |
+| Python | `pip list --outdated` | `pip-audit`, if installed |
+| .NET | `dotnet list package --outdated` | `dotnet list package --vulnerable` |
+| Go | `go list -u -m all` | `govulncheck ./...`, if installed |
+
+If no tool is available, ask the `researcher` agent to check the most important libraries against the official
+release notes and advisory databases such as GitHub Advisories and OSV.dev, with sources.
+
+## 3. Report
+
+A table, most urgent first: library · current · latest · known vulnerabilities (ID and severity) · upgrade type
+(patch / minor / major) · effort and risk (breaking changes from the release notes) · recommendation. Then
+the 1-3 upgrades worth doing now.
+
+## 4. Upgrading (only when asked)
+
+Upgrade one library at a time. Read its migration notes, change the version, fix what breaks, and run the
+build and tests with the `test-runner` agent before moving to the next. Report each result.

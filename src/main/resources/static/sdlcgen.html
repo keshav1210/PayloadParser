@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Claude Code SDLC Generator – CLAUDE.md, Skills &amp; Agents</title>
+  <meta name="description" content="Generate a ready-to-use Claude Code setup for your project: CLAUDE.md, rules, slash commands, subagents and SDLC docs for developers and testers. Free.">
+  <link rel="canonical" href="https://jsonxmleditor.com/claude-code-sdlc-generator">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Claude Code SDLC Generator">
+  <meta property="og:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for developers and testers, generated for your project.">
+  <meta property="og:url" content="https://jsonxmleditor.com/claude-code-sdlc-generator">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/claude-code-sdlc-generator.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Claude Code SDLC Generator – JSON XML Editor">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/claude-code-sdlc-generator.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Claude Code SDLC Generator">
+  <meta name="twitter:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for developers and testers, generated for your project.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=16">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Claude Code SDLC Generator",
+      "url": "https://jsonxmleditor.com/claude-code-sdlc-generator",
+      "description": "Generates a Claude Code setup (CLAUDE.md, rules, skills, subagents, SDLC docs) for developers and testers, as a project ZIP, a multi-service workspace or a plugin.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "CLAUDE.md, rules and safety settings",
+        "Slash commands for requirements, design, implementation, review, commits and releases",
+        "Tester commands for test plans, test cases, automation, test runs, bug reports and regression",
+        "Subagents: researcher, architect, code and security reviewers, debugger, test designer and more",
+        "Rules for 18 test frameworks and Spring Boot, React and Node.js",
+        "Fill-in SDLC docs that also work unedited",
+        "Project ZIP, microservices workspace or Claude Code plugin",
+        "Live preview with editing"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Tools",
+          "item": "https://jsonxmleditor.com/tools"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Claude Code SDLC Generator",
+          "item": "https://jsonxmleditor.com/claude-code-sdlc-generator"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is CLAUDE.md?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A Markdown file Claude Code loads at the start of every session in your project. It holds the instructions Claude should always follow: build commands, conventions and how the project is organised. Keep it short; detailed knowledge belongs in docs that Claude reads when needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What are Claude Code skills and subagents?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Skills are instructions saved as SKILL.md files that become slash commands, such as /test-cases. Subagents are specialists with their own instructions and tools that Claude can hand a task to, such as a code reviewer. This generator creates both, plus the rules and docs they rely on."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work for any language or framework?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The commands are language-neutral and work out your build and test setup from the project. Optional rules add specific guidance for Spring Boot, React, Node.js APIs and 18 test frameworks including JUnit, TestNG, Selenium, Playwright, Cypress, Jest, Vitest, pytest, xUnit, NUnit, Go, RSpec, PHPUnit and k6."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will it overwrite my existing CLAUDE.md?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Tick the option and the kit’s instructions go into CLAUDE.sdlc.md, with one line to add to your own file. The plugin’s setup command never overwrites existing files without asking."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use it for microservices?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Choose the workspace format, or tick “This folder holds several services” and pick the folder that holds them. The kit goes in that parent folder instead of in every service, lists your services with their stack and git URL, writes a doc per service and adds a script that clones any missing services. Always open Claude Code at that parent folder."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I change the generated files?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Edit any file in the preview before downloading, or edit them later in your project. They are plain Markdown and JSON."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. No sign-up is needed."
+          }
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="tool-page">
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Claude Code SDLC Generator</span></nav>
+  <section class="tool-head">
+    <h1>Claude Code SDLC Generator</h1>
+    <p>Answer a few questions and download a complete Claude Code setup for your project: a <code>CLAUDE.md</code>, rules, safety settings, slash commands, specialist subagents and ready-to-fill SDLC documents for <strong>developers</strong> and <strong>testers</strong>. Preview every file and edit it before you download. New to Claude Code? <a href="/guides/claude-code-sdlc-kit">See what every file does</a>.</p>
+  </section>
+
+<div class="sg-layout">
+    <div class="sg-form">
+      <nav class="sg-stepper" aria-label="Steps">
+        <ol id="sgStepper"></ol>
+      </nav>
+
+      <section class="sg-step" data-label="Role">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">1</span>
+          <div><h2>Who will use it?</h2><p>Pick one or both. This decides which commands, agents and docs are in your kit.</p></div>
+        </header>
+        <div class="sg-body sg-roles">
+          <label class="sg-role"><input type="checkbox" id="sgDev"><span class="sg-role-icon" aria-hidden="true">&lt;/&gt;</span><span><strong>Developer</strong><small data-role-desc="dev"></small></span></label>
+          <label class="sg-role"><input type="checkbox" id="sgTester"><span class="sg-role-icon" aria-hidden="true">✓</span><span><strong>Tester</strong><small data-role-desc="tester"></small></span></label>
+        </div>
+      </section>
+
+      <section class="sg-step" data-label="Folder">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">2</span>
+          <div><h2>Where's your project?</h2><p>Optional, but it saves typing: we detect your stack and fill in the next steps. Only folder names are sent; your files never leave your computer.</p></div>
+        </header>
+        <div class="sg-body">
+          <div class="sg-pick">
+            <button type="button" class="btn btn-primary" id="sgPickBtn">📁 Pick project folder</button>
+            <input type="file" id="sgPick" webkitdirectory multiple hidden>
+            <button type="button" class="mini-btn" id="sgClearFolders">Clear</button>
+          </div>
+          <details class="sg-paste">
+            <summary>No folder handy? Paste a folder listing instead</summary>
+            <p class="sg-help">Run <code>tree</code> (macOS/Linux), <code>tree /f</code> or <code>dir /s /b</code> (Windows) in your project and paste the output, or type one folder path per line.</p>
+            <textarea id="sgPaste" class="code-input" rows="6" spellcheck="false" aria-label="Folder listing"></textarea>
+            <button type="button" class="btn" id="sgParse">Use this listing</button>
+          </details>
+          <label class="sg-ws-toggle"><input type="checkbox" id="sgWorkspace"><span><strong>This folder holds several services</strong><small>For microservices: clone all your services into one folder, put the kit at its root, and Claude works across all of them. No need to install the kit in each service.</small></span></label>
+          <p class="sg-info" id="sgFolderInfo" aria-live="polite"></p>
+          <p class="sg-info sg-detected" id="sgDetected" aria-live="polite"></p>
+          <div id="sgServicesWrap" hidden>
+            <div class="sg-label">Your services</div>
+            <p class="sg-help">One row per service folder. Purpose and stack are optional. Add the git URL so your team can clone everything with one script.</p>
+            <div class="sg-services-scroll">
+              <table class="sg-folders sg-services">
+                <thead><tr><th>Folder</th><th>What it does</th><th>Stack</th><th>Git URL</th><th><span class="sr-only">Remove</span></th></tr></thead>
+                <tbody id="sgServiceRows"></tbody>
+              </table>
+            </div>
+            <button type="button" class="mini-btn" id="sgAddService">+ Add service</button>
+          </div>
+          <div id="sgFolderTable" hidden>
+            <p class="sg-help">Add a few words about what lives in each folder (optional). Claude uses this to put new code in the right place.</p>
+            <table class="sg-folders">
+              <thead><tr><th>Folder</th><th>What lives here</th></tr></thead>
+              <tbody id="sgFolderRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-step" data-label="About">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">3</span>
+          <div><h2>Tell Claude about your project</h2><p>All optional. Anything you skip, Claude works out from your code later with <code>/sdlc-init</code>.</p></div>
+        </header>
+        <div class="sg-body sg-fields">
+          <label>Project name<input id="sgName" class="text-input" type="text" maxlength="80" placeholder="e.g. Invoice App"><small class="sg-help">Shown as the title of your instructions.</small></label>
+          <label>What does it do?<textarea id="sgDesc" class="text-input" rows="3" maxlength="600" placeholder="e.g. A web app where small shops create and send GST invoices from their phone."></textarea><small class="sg-help">2-3 plain sentences: what it does and who uses it.</small></label>
+          <label>Tech stack<input id="sgStack" class="text-input" type="text" maxlength="200" placeholder="e.g. Java 17, Spring Boot 3.5, PostgreSQL 16, React 18"><small class="sg-help">Languages, frameworks and versions. Filled in for you if you picked your folder.</small></label>
+        </div>
+      </section>
+
+      <section class="sg-step" data-label="Stack">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">4</span>
+          <div><h2>Which tools do you use?</h2><p>Tick what applies. Each adds short, specific guidance for Claude. Detected tools are already ticked.</p></div>
+        </header>
+        <div class="sg-body">
+          <div class="sg-label">Stack</div>
+          <div class="sg-chips" id="sgProfiles"></div>
+          <div id="sgFrameworksWrap">
+            <div class="sg-label">Test frameworks</div>
+            <div id="sgFrameworks"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sg-step" data-label="Extras">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">5</span>
+          <div><h2>Want any extras?</h2><p>Optional add-ons for specific jobs. Not sure? Skip this step; you can add them later.</p></div>
+        </header>
+        <div class="sg-body sg-extras" id="sgExtras"></div>
+      </section>
+
+      <section class="sg-step" data-label="Download">
+        <header class="sg-step-head">
+          <span class="sg-step-num" aria-hidden="true">6</span>
+          <div><h2>How do you want it?</h2><p>Choose a format, check the preview, and download.</p></div>
+        </header>
+        <div class="sg-body sg-fields">
+          <div class="sg-choices" role="radiogroup" aria-label="Download format">
+            <label class="sg-choice"><input type="radio" name="sgFormat" value="project"><span><strong>Project ZIP</strong><small>Unzip into one project and commit it, so your whole team shares the setup. Recommended.</small></span></label>
+            <label class="sg-choice"><input type="radio" name="sgFormat" value="workspace"><span><strong>Workspace ZIP</strong><small>For several services in one folder. Unzip at the folder root (next to your services), open Claude Code there, and it works across all of them.</small></span></label>
+            <label class="sg-choice"><input type="radio" name="sgFormat" value="plugin"><span><strong>Claude Code plugin</strong><small>Install once and use the commands in every project. A setup command copies the docs into each project.</small></span></label>
+          </div>
+          <label class="check" id="sgExistingWrap"><input type="checkbox" id="sgExisting"> My project already has a <code>CLAUDE.md</code>: don't overwrite it</label>
+          <details class="sg-advanced">
+            <summary>Advanced options</summary>
+            <div class="sg-fields">
+              <label id="sgPrefixWrap">Command prefix<input id="sgPrefix" class="text-input" type="text" maxlength="12" placeholder="e.g. team"><small class="sg-help">Only if your project already has commands with the same names: <code>/research</code> becomes <code>/team-research</code>.</small></label>
+              <label>Format or lint command<input id="sgLint" class="text-input" type="text" maxlength="300" placeholder="e.g. npm run lint -- --fix"><small class="sg-help">Runs automatically each time Claude finishes a reply.</small></label>
+              <label>Shell for that command<select id="sgShell"><option value="bash">bash (macOS, Linux, Git Bash)</option><option value="powershell">PowerShell (Windows)</option></select></label>
+              <button type="button" class="mini-btn sg-reset-all" id="sgResetAll">Start over (clear all answers)</button>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <div class="sg-nav">
+        <button type="button" class="btn" id="sgBack">← Back</button>
+        <span class="sg-count" id="sgStepCount" aria-live="polite"></span>
+        <button type="button" class="btn btn-primary" id="sgNext">Next →</button>
+      </div>
+    </div>
+
+    <aside class="sg-preview" aria-label="Preview">
+      <div class="sg-preview-head">
+        <div class="sg-preview-title"><strong>Your kit</strong><span class="muted" id="sgStatus" aria-live="polite">Loading…</span></div>
+        <button type="button" class="btn" id="sgFull" aria-pressed="false" title="Edit in full screen (Esc to exit)">⤢ Full screen</button>
+        <button type="button" class="btn btn-primary" id="sgDownload" disabled>Download kit (.zip)</button>
+      </div>
+      <p class="sg-preview-tip">Files marked <span class="sg-fill-badge">✎</span> have sections for you to fill in; everything else works as it is. You can download at any time.</p>
+      <ul class="sg-issues" id="sgIssues" hidden></ul>
+      <div class="sg-preview-body">
+        <div class="sg-files-wrap">
+          <div class="sg-filter" role="group" aria-label="Show files">
+            <button type="button" class="sg-filter-btn on" data-filter="all" aria-pressed="true">All files</button>
+            <button type="button" class="sg-filter-btn" data-filter="fill" aria-pressed="false" id="sgFilterFill">To fill in</button>
+          </div>
+          <ul class="sg-files" id="sgFiles" aria-label="Generated files"></ul>
+        </div>
+        <div class="sg-viewer">
+          <div class="sg-viewer-head"><code id="sgPath"></code><a class="sg-whatis" id="sgWhatIs" href="/guides/claude-code-sdlc-kit" target="_blank" rel="noopener">What is this file? ↗</a><span class="sg-editable">editable</span><span class="actions"><button type="button" class="mini-btn" id="sgReset" hidden>Reset to template</button><button type="button" class="mini-btn" id="sgCopy">Copy</button></span></div>
+          <div class="sg-fillbar" id="sgFillBar" hidden>
+            <p><strong>Sections to fill in</strong> · click one to jump to it, then replace the <code>&lt;!-- FILL … --&gt;</code> hint with your own words. Leave any you don't know; Claude fills them later.</p>
+            <div class="sg-fill-links" id="sgFillLinks"></div>
+          </div>
+          <textarea id="sgEditor" class="code-input" spellcheck="false" aria-label="File content (editable)"></textarea>
+        </div>
+      </div>
+      <div class="summary ok sg-after" id="sgAfter" hidden>
+        <div id="sgAfterProject"><strong>Next:</strong> unzip into your project's root folder (on a new branch), open Claude Code there and run <code>/sdlc-init</code>.</div>
+        <div id="sgAfterWorkspace"><strong>Next:</strong> unzip into the folder that holds your services (not inside a service), run <code>./clone-services.sh</code> or <code>.clone-services.ps1</code> to fetch any missing services, open Claude Code at that folder and run <code>/sdlc-init</code>. See <code>WORKSPACE-README.md</code> to share it with your team.</div>
+        <div id="sgAfterPlugin"><strong>Next:</strong> unzip into <code>~/.claude/skills/sdlc-kit/</code>, open Claude Code in a project and run <code>/sdlc-kit:setup</code>, then <code>/sdlc-kit:sdlc-init</code>.</div>
+      </div>
+    </aside>
+  </div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>What you get</h2>
+    <p>The generator builds a Claude Code setup that follows the official file formats, so it works as soon as it's in your project. Pick the parts you need. For a file-by-file explanation with links to the official documentation, read the <a href="/guides/claude-code-sdlc-kit">Claude Code SDLC kit guide</a>.</p>
+    <table class="change-table">
+      <thead><tr><th style="width:190px">Part</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><code>CLAUDE.md</code></td><td>Loaded in every session: how to work in your project, build and test commands, where new code goes, and the list of commands. Kept short, because every line costs context.</td></tr>
+        <tr><td>Rules</td><td>Standards Claude follows automatically: using the project docs, research with sources, security basics, coding and testing standards, and rules for your stack and test frameworks. Most load only when Claude works on matching files.</td></tr>
+        <tr><td>Safety settings</td><td><code>.claude/settings.json</code> stops Claude reading or editing <code>.env</code> files, keys and secrets, and asks before <code>git push</code> or destructive git commands.</td></tr>
+        <tr><td>Slash commands</td><td>For developers: <code>/requirements</code>, <code>/design</code>, <code>/implement</code>, <code>/write-tests</code>, <code>/refactor</code>, <code>/fix-bug</code>, <code>/review-changes</code>, <code>/commit</code>, <code>/open-pr</code>, <code>/check-dependencies</code>, <code>/prepare-release</code>. For testers: <code>/test-plan</code>, <code>/test-cases</code>, <code>/automate-tests</code>, <code>/run-tests</code>, <code>/bug-report</code>, <code>/regression</code>. For everyone: <code>/sdlc-init</code>, <code>/research</code>, <code>/explain</code> and more.</td></tr>
+        <tr><td>Subagents</td><td>Specialists Claude hands work to: a researcher that cites its sources, a test runner that keeps long logs out of the conversation, an architect, a debugger, code and security reviewers, a test designer, a test automation engineer and a bug triager.</td></tr>
+        <tr><td>SDLC docs</td><td><code>docs/sdlc/</code>: project overview, folder structure, requirements with Given/When/Then acceptance criteria, architecture, decision records, environments, API, release process, test strategy, test plans, test cases, bug reports and a traceability matrix.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Works even if you don't fill anything in</h2>
+    <p>Every document section has a short hint and a fictional example in a <code>&lt;!-- FILL --&gt;</code> comment. Fill in what you know, or nothing at all: the first command, <code>/sdlc-init</code>, reads your code, fills in what it can work out (marked as inferred, so you can check it) and asks you only about what it can't, such as the product's purpose or who uses it. Claude never treats the examples as facts.</p>
+
+    <h2>Accurate by design</h2>
+    <ul>
+      <li><strong>Evidence, not claims</strong>: <code>/implement</code> and <code>/fix-bug</code> must run the tests and show the results; reviews point to file and line.</li>
+      <li><strong>Sources for research</strong>: the researcher ranks sources (official docs for your versions first), only cites pages it actually opened, and gives a confidence level.</li>
+      <li><strong>Testable requirements</strong>: acceptance criteria written as Given / When / Then turn directly into test cases, linked in a traceability matrix.</li>
+      <li><strong>Checked before download</strong>: every generated file is validated against Claude Code's formats and limits.</li>
+    </ul>
+
+    <h2>Project ZIP, workspace or plugin?</h2>
+    <p>The <strong>project ZIP</strong> goes into one repository and is committed, so the whole team shares the same setup. The <strong>workspace ZIP</strong> is for microservices: clone all your services into one folder, unzip the kit at its root and open Claude Code there. One setup covers every service, each service gets its own doc, and a clone script lets teammates fetch all the services at once. The <strong>plugin</strong> is installed once and gives you the commands in every project, used as <code>/sdlc-kit:research</code>; its <code>/sdlc-kit:setup</code> command copies the project files (instructions, rules, settings and docs) into each project without overwriting yours.</p>
+
+    <h2>Privacy</h2>
+    <p>When you pick a folder, your browser reads the folder names and your build files (to detect the stack) locally. Only your answers and the folder names are sent to generate the kit. File contents never leave your computer, and nothing is stored.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>What is CLAUDE.md?</summary>
+        <p>A Markdown file Claude Code loads at the start of every session in your project. It holds the instructions Claude should always follow: build commands, conventions and how the project is organised. Keep it short; detailed knowledge belongs in docs that Claude reads when needed.</p>
+      </details>
+      <details>
+        <summary>What are Claude Code skills and subagents?</summary>
+        <p>Skills are instructions saved as SKILL.md files that become slash commands, such as /test-cases. Subagents are specialists with their own instructions and tools that Claude can hand a task to, such as a code reviewer. This generator creates both, plus the rules and docs they rely on.</p>
+      </details>
+      <details>
+        <summary>Does it work for any language or framework?</summary>
+        <p>Yes. The commands are language-neutral and work out your build and test setup from the project. Optional rules add specific guidance for Spring Boot, React, Node.js APIs and 18 test frameworks including JUnit, TestNG, Selenium, Playwright, Cypress, Jest, Vitest, pytest, xUnit, NUnit, Go, RSpec, PHPUnit and k6.</p>
+      </details>
+      <details>
+        <summary>Will it overwrite my existing CLAUDE.md?</summary>
+        <p>No. Tick the option and the kit’s instructions go into CLAUDE.sdlc.md, with one line to add to your own file. The plugin’s setup command never overwrites existing files without asking.</p>
+      </details>
+      <details>
+        <summary>Can I use it for microservices?</summary>
+        <p>Yes. Choose the workspace format, or tick “This folder holds several services” and pick the folder that holds them. The kit goes in that parent folder instead of in every service, lists your services with their stack and git URL, writes a doc per service and adds a script that clones any missing services. Always open Claude Code at that parent folder.</p>
+      </details>
+      <details>
+        <summary>Can I change the generated files?</summary>
+        <p>Yes. Edit any file in the preview before downloading, or edit them later in your project. They are plain Markdown and JSON.</p>
+      </details>
+      <details>
+        <summary>Is it free?</summary>
+        <p>Yes. No sign-up is needed.</p>
+      </details>
+    </div>
+  </article>
+
+  <section class="related-tools" aria-labelledby="related-title">
+    <h2 id="related-title">Related tools</h2>
+    <div class="grid grid-3">
+      <a class="tool-card" href="/markdown-editor">
+        <span class="icon">md</span>
+        <h3>Markdown Editor</h3>
+        <p>Write Markdown with a live preview, then export PDF, HTML or a README.md.</p>
+      </a>
+      <a class="tool-card" href="/json-schema">
+        <span class="icon">✓</span>
+        <h3>JSON Schema</h3>
+        <p>Generate a schema from a sample, or validate JSON against a schema.</p>
+      </a>
+      <a class="tool-card" href="/regex-tester">
+        <span class="icon">.*</span>
+        <h3>Regex Tester</h3>
+        <p>Test regular expressions live, with groups, replace and a plain-English explanation.</p>
+      </a>
+      <a class="tool-card" href="/sql-formatter">
+        <span class="icon">SQL</span>
+        <h3>SQL Formatter</h3>
+        <p>Beautify SQL queries for MySQL, PostgreSQL, SQL Server, Oracle and more.</p>
+      </a>
+      <a class="tool-card" href="/text-diff">
+        <span class="icon">±</span>
+        <h3>Text Diff</h3>
+        <p>Compare any two texts or code files line by line, word by word or by character.</p>
+      </a>
+      <a class="tool-card" href="/mock-data-generator">
+        <span class="icon">{…}</span>
+        <h3>Mock Data Generator</h3>
+        <p>Realistic fake JSON, CSV or SQL from a sample document or a JSON Schema.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=15"></script>
+<script src="/js/sdlcgen.js?v=5"></script>
+</body>
+</html>

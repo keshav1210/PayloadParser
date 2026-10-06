@@ -1,0 +1,44 @@
+---
+name: requirements
+description: Turn a feature idea into a requirement document with user stories and testable Given/When/Then acceptance criteria, saved in docs/sdlc/02-requirements/. Use when asked to write requirements, user stories or acceptance criteria, or to spec out a feature.
+argument-hint: "<feature idea, or an existing REQ ID to refine>"
+disable-model-invocation: true
+---
+
+# Write requirements
+
+Feature: $ARGUMENTS
+
+If no feature was given, ask what to write requirements for, and stop.
+
+## 1. Understand before writing
+
+- Read `docs/sdlc/00-project-overview.md` (users, scope, quality requirements, ID conventions) and the index in
+  `docs/sdlc/02-requirements/README.md`.
+- If the argument is an existing ID, open that file and refine it instead of creating a new one.
+- Check whether a similar feature already exists in the requirements or the code. If it does, say so and ask
+  whether to extend it.
+- Look at the code areas the feature would touch so the stories fit what exists.
+
+## 2. Ask, don't assume
+
+Ask the user up to 5 questions about whatever would change the stories: who the users are, the main rules,
+limits, edge cases, permissions, what's out of scope. Suggest likely answers so they can confirm quickly. If
+they'd rather not answer, continue and record each gap as an assumption.
+
+## 3. Write the document
+
+- Create `docs/sdlc/02-requirements/REQ-<next number>-<short-name>.md` from `_template-feature.md`. Use the
+  next free IDs for the requirement and its stories (check existing files; follow the ID format in the project
+  overview if one is set).
+- Split the feature into small user stories that can each be built and tested on their own.
+- Write every acceptance criterion as Given / When / Then. Each must be testable: a tester should be able to
+  say pass or fail without asking anyone. Cover the main path, invalid input, failure of a dependency, and
+  permissions where relevant. Use concrete values ("more than 500 characters"), not vague words ("too long").
+- Put anything you weren't told under "Assumptions and open questions".
+- Set the status to Draft and add a row to the index in `docs/sdlc/02-requirements/README.md`.
+
+## 4. Report
+
+Reply with the file path, the list of stories with their number of acceptance criteria, the assumptions made,
+and the open questions. Suggest `/design <REQ ID>` as the next step.

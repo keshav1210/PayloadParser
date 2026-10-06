@@ -1,0 +1,38 @@
+# Using the SDLC docs
+
+The project docs live in `docs/sdlc/`. Read the ones a task needs; don't load them all.
+
+## Markers
+
+| Marker | Meaning | What to do |
+|---|---|---|
+| `<!-- FILL: hint -->` | Not filled in | Treat the information as unknown (see below) |
+| `<!-- INFERRED: source -->` | Written by Claude, not confirmed | Use it, but say it's inferred when it affects your answer |
+| Plain text | Written or confirmed by a person | Treat as the project's intent |
+
+Examples inside FILL comments are fictional placeholders. Never treat them as facts about this project.
+Text marked "A good default" inside a FILL comment is a recommended practice: follow it unless the project's
+code or a person says otherwise, and mention that you're using the default.
+
+## When a section you need is empty
+
+1. Look for the answer in the project: build files, config, README, CI files, existing code and tests.
+2. If you find it, use it and say where it came from, e.g. "inferred from `pom.xml`".
+3. If you can't find it and it changes what you'd do, ask the user. Offer a likely answer they can confirm.
+4. If it doesn't change the outcome, continue and state the assumption in one line.
+
+Never invent facts to fill a gap: requirements, numbers, names, URLs, versions or business rules.
+
+## Writing to the docs
+
+- Fill an empty section by replacing its `<!-- FILL … -->` comment with the content, followed by
+  `<!-- INFERRED: <files you used> -->` on its own line.
+- Never change text a person wrote. If the code contradicts it, tell the user and suggest the change.
+- When the user answers a question, write the answer as plain text, without an INFERRED marker.
+- Keep docs short and factual. Prefer tables and lists over paragraphs.
+- Only edit docs as part of a task that calls for it (`/sdlc-init`, `/analyze-structure`, or when the user asks).
+
+## When docs and code disagree
+
+The code shows what the system does today; the docs show what the team intends. Point out the difference
+instead of silently following either one.

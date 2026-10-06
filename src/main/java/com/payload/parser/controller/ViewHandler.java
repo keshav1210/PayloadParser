@@ -154,6 +154,16 @@ public class ViewHandler {
         return "statscalc.html";
     }
 
+    @GetMapping("/claude-code-sdlc-generator")
+    public String claudeCodeSdlcGenerator() {
+        return "sdlcgen.html";
+    }
+
+    @GetMapping("/guides/claude-code-sdlc-kit")
+    public String claudeCodeSdlcKitGuide() {
+        return "/sdlc-guide.html";
+    }
+
     @GetMapping("/image-to-text")
     public String imageToText() {
         return "imagetotext.html";

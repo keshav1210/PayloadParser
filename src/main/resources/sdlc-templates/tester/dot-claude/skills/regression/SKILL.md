@@ -1,0 +1,47 @@
+---
+name: regression
+description: Work out which areas a change or release could break, select the automated tests to run and the manual test cases to execute based on the changed code and risk, run the automated part, and produce a regression checklist.
+argument-hint: "[branch, commit range, release tag or 'since <tag>'; default: current branch vs main]"
+disable-model-invocation: true
+---
+
+# Regression testing
+
+{{#if workspace}}
+> Workspace: first decide which service this is about (ask if unclear), then run every git, build and
+> test command inside that service's folder (`git -C <service> …`, `cd <service> && …`), as described in
+> `.claude/rules/workspace.md`.
+
+{{/if}}Changes to cover: $ARGUMENTS (if empty: the current branch compared with the main branch).
+
+## 1. Find what changed
+
+- `git diff --name-only <base>...<target>` and `git log --oneline <base>..<target>`. If this isn't a git
+  repository, ask the user what changed.
+- Map changed files to features: use `docs/sdlc/01-folder-structure.md`, the requirement and bug IDs in commit
+  messages, and which tests exercise the changed code (search the tests for the changed classes, endpoints and
+  pages).
+- Include indirect impact: shared code, database changes, configuration and dependency upgrades affect every
+  feature that uses them.
+
+## 2. Select tests by risk
+
+- **Must run**: tests and test cases for changed features; tests linked to bugs fixed in this change; the
+  smoke set of main user journeys.
+- **Should run**: features that share changed code or data.
+- **Can skip**: unrelated areas, stating why.
+
+## 3. Run the automated part
+
+Run the selected automated tests with the `test-runner` agent (confirm first if it's a long run or needs a
+deployed environment). Classify failures with the `bug-triager` agent.
+
+## 4. Write the checklist
+
+Create `docs/sdlc/testing/test-runs/YYYY-MM-DD-regression-<target>.md` with: the changes covered · the
+impact map (change → affected features) · automated results · the manual test cases to execute, as a
+checklist with priority · skipped areas and why. Add it to the test-runs index.
+
+## 5. Report
+
+Impact summary · automated results · the manual checklist · the risk of releasing now, in one line.
