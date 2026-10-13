@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/js/theme.js?v=1"></script>
   <title>Claude Code SDLC Generator – CLAUDE.md, Skills &amp; Agents</title>
-  <meta name="description" content="Generate a ready-to-use Claude Code setup for your project: CLAUDE.md, rules, slash commands, subagents and SDLC docs for developers and testers. Free.">
+  <meta name="description" content="Generate a ready-to-use Claude Code setup for your project: CLAUDE.md, rules, slash commands, subagents and SDLC docs for every role on your team. Free.">
   <link rel="canonical" href="https://jsonxmleditor.com/claude-code-sdlc-generator">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#111317">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JSON XML Editor">
   <meta property="og:title" content="Claude Code SDLC Generator">
-  <meta property="og:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for developers and testers, generated for your project.">
+  <meta property="og:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for every role on your team, generated for your project.">
   <meta property="og:url" content="https://jsonxmleditor.com/claude-code-sdlc-generator">
   <meta property="og:image" content="https://jsonxmleditor.com/og/claude-code-sdlc-generator.png">
   <meta property="og:image:width" content="1200">
@@ -21,11 +21,11 @@
   <meta name="twitter:image" content="https://jsonxmleditor.com/og/claude-code-sdlc-generator.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Claude Code SDLC Generator">
-  <meta name="twitter:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for developers and testers, generated for your project.">
+  <meta name="twitter:description" content="CLAUDE.md, rules, slash commands, subagents and fill-in SDLC docs for every role on your team, generated for your project.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=16">
+  <link rel="stylesheet" href="/css/tools.css?v=17">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -35,7 +35,7 @@
       "@type": "WebApplication",
       "name": "Claude Code SDLC Generator",
       "url": "https://jsonxmleditor.com/claude-code-sdlc-generator",
-      "description": "Generates a Claude Code setup (CLAUDE.md, rules, skills, subagents, SDLC docs) for developers and testers, as a project ZIP, a multi-service workspace or a plugin.",
+      "description": "Generates a Claude Code setup (CLAUDE.md, rules, skills, subagents, SDLC docs) for developers, testers, product owners, UX designers, security and DevOps, as a project ZIP, a multi-service workspace or a plugin.",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires JavaScript",
@@ -53,6 +53,8 @@
         "Rules for 18 test frameworks and Spring Boot, React and Node.js",
         "Fill-in SDLC docs that also work unedited",
         "Project ZIP, microservices workspace or Claude Code plugin",
+        "Roles for product owners, UX designers, security and privacy, DevOps and SRE",
+        "A lifecycle tracker that names the next role and command for each feature",
         "Live preview with editing"
       ]
     },
@@ -124,6 +126,14 @@
         },
         {
           "@type": "Question",
+          "name": "Which roles does it support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Developers and testers, plus product owners or managers, UX designers, security and privacy, and DevOps and SRE. Tick the roles your team has; each adds the commands, agents and docs for its phase, and the commands mention each other only when both are in your kit."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Can I change the generated files?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -160,7 +170,7 @@
   <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">›</span> <a href="/tools">Tools</a> <span aria-hidden="true">›</span> <span aria-current="page">Claude Code SDLC Generator</span></nav>
   <section class="tool-head">
     <h1>Claude Code SDLC Generator</h1>
-    <p>Answer a few questions and download a complete Claude Code setup for your project: a <code>CLAUDE.md</code>, rules, safety settings, slash commands, specialist subagents and ready-to-fill SDLC documents for <strong>developers</strong> and <strong>testers</strong>. Preview every file and edit it before you download. New to Claude Code? <a href="/guides/claude-code-sdlc-kit">See what every file does</a>.</p>
+    <p>Answer a few questions and download a complete Claude Code setup for your project: a <code>CLAUDE.md</code>, rules, safety settings, slash commands, specialist subagents and ready-to-fill SDLC documents for <strong>every role on your team</strong>: developers, testers, product owners, UX designers, security and DevOps. Preview every file and edit it before you download. New to Claude Code? <a href="/guides/claude-code-sdlc-kit">See what every file does</a>.</p>
   </section>
 
 <div class="sg-layout">
@@ -172,7 +182,7 @@
       <section class="sg-step" data-label="Role">
         <header class="sg-step-head">
           <span class="sg-step-num" aria-hidden="true">1</span>
-          <div><h2>Who will use it?</h2><p>Pick one or both. This decides which commands, agents and docs are in your kit.</p></div>
+          <div><h2>Who will use it?</h2><p>Tick every role on your team. Each one adds the commands, agents and docs that role needs in its phase of the work.</p></div>
         </header>
         <div class="sg-body sg-roles">
           <label class="sg-role"><input type="checkbox" id="sgDev"><span class="sg-role-icon" aria-hidden="true">&lt;/&gt;</span><span><strong>Developer</strong><small data-role-desc="dev"></small></span></label>
@@ -329,11 +339,27 @@
         <tr><td><code>CLAUDE.md</code></td><td>Loaded in every session: how to work in your project, build and test commands, where new code goes, and the list of commands. Kept short, because every line costs context.</td></tr>
         <tr><td>Rules</td><td>Standards Claude follows automatically: using the project docs, research with sources, security basics, coding and testing standards, and rules for your stack and test frameworks. Most load only when Claude works on matching files.</td></tr>
         <tr><td>Safety settings</td><td><code>.claude/settings.json</code> stops Claude reading or editing <code>.env</code> files, keys and secrets, and asks before <code>git push</code> or destructive git commands.</td></tr>
-        <tr><td>Slash commands</td><td>For developers: <code>/requirements</code>, <code>/design</code>, <code>/implement</code>, <code>/write-tests</code>, <code>/refactor</code>, <code>/fix-bug</code>, <code>/review-changes</code>, <code>/commit</code>, <code>/open-pr</code>, <code>/check-dependencies</code>, <code>/prepare-release</code>. For testers: <code>/test-plan</code>, <code>/test-cases</code>, <code>/automate-tests</code>, <code>/run-tests</code>, <code>/bug-report</code>, <code>/regression</code>. For everyone: <code>/sdlc-init</code>, <code>/research</code>, <code>/explain</code> and more.</td></tr>
-        <tr><td>Subagents</td><td>Specialists Claude hands work to: a researcher that cites its sources, a test runner that keeps long logs out of the conversation, an architect, a debugger, code and security reviewers, a test designer, a test automation engineer and a bug triager.</td></tr>
+        <tr><td>Slash commands</td><td>For developers: <code>/requirements</code>, <code>/design</code>, <code>/implement</code>, <code>/write-tests</code>, <code>/refactor</code>, <code>/fix-bug</code>, <code>/review-changes</code>, <code>/commit</code>, <code>/open-pr</code>, <code>/check-dependencies</code>, <code>/prepare-release</code>. For testers: <code>/test-plan</code>, <code>/test-cases</code>, <code>/automate-tests</code>, <code>/run-tests</code>, <code>/bug-report</code>, <code>/regression</code>. For product owners: <code>/product-brief</code>, <code>/prioritize</code>, <code>/plan-iteration</code>. For UX designers: <code>/user-flow</code>, <code>/ux-review</code>. For security: <code>/threat-model</code>, <code>/privacy-review</code>. For DevOps and SRE: <code>/ci-pipeline</code>, <code>/deploy-plan</code>, <code>/define-slos</code>, <code>/runbook</code>, <code>/incident</code>. For everyone: <code>/sdlc-init</code>, <code>/lifecycle</code>, <code>/research</code>, <code>/explain</code> and more.</td></tr>
+        <tr><td>Subagents</td><td>Specialists Claude hands work to: a researcher that cites its sources, a test runner that keeps long logs out of the conversation, an architect, a debugger, code and security reviewers, a test designer, a test automation engineer, a bug triager, a product manager, a UX reviewer, a threat modeler, a DevOps engineer and a site reliability engineer.</td></tr>
         <tr><td>SDLC docs</td><td><code>docs/sdlc/</code>: project overview, folder structure, requirements with Given/When/Then acceptance criteria, architecture, decision records, environments, API, release process, test strategy, test plans, test cases, bug reports and a traceability matrix.</td></tr>
       </tbody>
     </table>
+
+    <h2>A role for every phase</h2>
+    <p>Software gets built in phases, and each phase has someone accountable for it. The kit gives each of them commands and a specialist agent, and <code>docs/sdlc/08-team-and-roles.md</code> records who owns which phase and when it counts as done.</p>
+    <table class="change-table">
+      <thead><tr><th>Phase</th><th>Accountable</th><th>Commands</th></tr></thead>
+      <tbody>
+        <tr><td>Discover and plan</td><td>Product owner</td><td><code>/product-brief</code>, <code>/prioritize</code>, <code>/plan-iteration</code></td></tr>
+        <tr><td>Define</td><td>Product owner with developers and testers</td><td><code>/requirements</code>, <code>/privacy-review</code></td></tr>
+        <tr><td>Design</td><td>Tech lead, UX designer, security</td><td><code>/design</code>, <code>/user-flow</code>, <code>/threat-model</code></td></tr>
+        <tr><td>Build</td><td>Developers</td><td><code>/implement</code>, <code>/review-changes</code>, <code>/ci-pipeline</code></td></tr>
+        <tr><td>Test</td><td>Testers</td><td><code>/test-cases</code>, <code>/run-tests</code>, <code>/ux-review</code></td></tr>
+        <tr><td>Release</td><td>DevOps with the product owner</td><td><code>/regression</code>, <code>/prepare-release</code>, <code>/deploy-plan</code></td></tr>
+        <tr><td>Operate and learn</td><td>DevOps / SRE</td><td><code>/define-slos</code>, <code>/runbook</code>, <code>/incident</code>, <code>/postmortem</code></td></tr>
+      </tbody>
+    </table>
+    <p><code>/lifecycle &lt;feature&gt;</code> follows one feature through these phases. It finds the evidence for each phase in your docs, git history and test results, flags skipped steps, and tells you which role should do what next.</p>
 
     <h2>Works even if you don't fill anything in</h2>
     <p>Every document section has a short hint and a fictional example in a <code>&lt;!-- FILL --&gt;</code> comment. Fill in what you know, or nothing at all: the first command, <code>/sdlc-init</code>, reads your code, fills in what it can work out (marked as inferred, so you can check it) and asks you only about what it can't, such as the product's purpose or who uses it. Claude never treats the examples as facts.</p>
@@ -373,6 +399,10 @@
       <details>
         <summary>Can I use it for microservices?</summary>
         <p>Yes. Choose the workspace format, or tick “This folder holds several services” and pick the folder that holds them. The kit goes in that parent folder instead of in every service, lists your services with their stack and git URL, writes a doc per service and adds a script that clones any missing services. Always open Claude Code at that parent folder.</p>
+      </details>
+      <details>
+        <summary>Which roles does it support?</summary>
+        <p>Developers and testers, plus product owners or managers, UX designers, security and privacy, and DevOps and SRE. Tick the roles your team has; each adds the commands, agents and docs for its phase, and the commands mention each other only when both are in your kit.</p>
       </details>
       <details>
         <summary>Can I change the generated files?</summary>
@@ -424,6 +454,6 @@
 
 <div id="footer"></div>
 <script src="/js/layout-loader.js?v=15"></script>
-<script src="/js/sdlcgen.js?v=5"></script>
+<script src="/js/sdlcgen.js?v=6"></script>
 </body>
 </html>

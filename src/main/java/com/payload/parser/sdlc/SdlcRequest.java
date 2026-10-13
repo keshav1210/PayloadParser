@@ -18,7 +18,8 @@ public record SdlcRequest(
         String lintCommand,
         String hookShell,
         Map<String, String> edits,
-        List<Service> services) {
+        List<Service> services,
+        List<String> roles) {
 
     public record FolderNote(String path, String note) {
     }
@@ -32,7 +33,20 @@ public record SdlcRequest(
                        List<FolderNote> folders, String commandPrefix, boolean existingClaudeMd, String lintCommand,
                        String hookShell, Map<String, String> edits) {
         this(projectName, projectDescription, projectStack, developer, tester, profiles, testFrameworks, extras,
-                folders, commandPrefix, existingClaudeMd, lintCommand, hookShell, edits, null);
+                folders, commandPrefix, existingClaudeMd, lintCommand, hookShell, edits, null, null);
+    }
+
+    public SdlcRequest(String projectName, String projectDescription, String projectStack, boolean developer,
+                       boolean tester, List<String> profiles, List<String> testFrameworks, List<String> extras,
+                       List<FolderNote> folders, String commandPrefix, boolean existingClaudeMd, String lintCommand,
+                       String hookShell, Map<String, String> edits, List<Service> services) {
+        this(projectName, projectDescription, projectStack, developer, tester, profiles, testFrameworks, extras,
+                folders, commandPrefix, existingClaudeMd, lintCommand, hookShell, edits, services, null);
+    }
+
+    /** Roles beyond developer and tester, such as "product" or "ops". */
+    public List<String> rolesOrEmpty() {
+        return roles == null ? List.of() : roles;
     }
 
     public List<String> profilesOrEmpty() {

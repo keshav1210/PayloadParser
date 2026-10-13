@@ -187,6 +187,8 @@ public class SdlcGeneratorService {
         ids.add("core");
         if (r.developer()) ids.add("dev");
         if (r.tester()) ids.add("tester");
+        List<String> roles = r.rolesOrEmpty().stream().filter(id -> !ids.contains(id)).toList();
+        addGroup(ids, roles, "role", 8);
         addGroup(ids, r.profilesOrEmpty(), "profile", 10);
         addGroup(ids, r.testFrameworksOrEmpty(), "framework", 30);
         addGroup(ids, r.extrasOrEmpty(), "extra", 20);

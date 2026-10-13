@@ -14,6 +14,30 @@
       "description": "Test plans, test cases, automation, test runs, bug reports, regression, traceability"
     },
     {
+      "id": "product",
+      "group": "role",
+      "label": "Product owner",
+      "description": "Product briefs with success metrics, RICE backlog ranking, iteration planning, Definition of Done"
+    },
+    {
+      "id": "ux",
+      "group": "role",
+      "label": "UX designer",
+      "description": "User flows with every screen state and copy, heuristic usability reviews, design guidelines"
+    },
+    {
+      "id": "security",
+      "group": "role",
+      "label": "Security & privacy",
+      "description": "Threat models (STRIDE, LINDDUN), security requirements, personal data inventory and privacy reviews"
+    },
+    {
+      "id": "ops",
+      "group": "role",
+      "label": "DevOps & SRE",
+      "description": "CI/CD pipelines, deployment plans with rollback, SLOs and error budgets, runbooks, incident response"
+    },
+    {
       "id": "spring-boot",
       "group": "profile",
       "label": "Spring Boot",

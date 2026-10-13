@@ -1,6 +1,6 @@
 # Claude Code SDLC Kit: quick start
 
-Kit version 0.1 · Packs: Core{{#if dev}}, Developer{{/if}}{{#if tester}}, Tester{{/if}}{{#if spring-boot}}, Spring Boot{{/if}}{{#if react}}, React{{/if}}{{#if node-api}}, Node API{{/if}}{{#if plugin}} · plugin edition{{/if}}{{#if workspace}} · workspace edition{{/if}}
+Kit version 0.1 · Packs: Core{{#if dev}}, Developer{{/if}}{{#if tester}}, Tester{{/if}}{{#if product}}, Product owner{{/if}}{{#if ux}}, UX designer{{/if}}{{#if security}}, Security & privacy{{/if}}{{#if ops}}, DevOps & SRE{{/if}}{{#if spring-boot}}, Spring Boot{{/if}}{{#if react}}, React{{/if}}{{#if node-api}}, Node API{{/if}}{{#if plugin}} · plugin edition{{/if}}{{#if workspace}} · workspace edition{{/if}}
 
 This kit gives Claude Code project knowledge, working rules, commands and a research specialist. It works as
 soon as it's unzipped; filling in the docs makes Claude's answers more accurate.
@@ -39,6 +39,7 @@ soon as it's unzipped; filling in the docs makes Claude's answers more accurate.
 |---|---|
 | `/sdlc-init [area]` | Fill empty doc sections from the code and ask about the rest. Run again any time |
 | `/sdlc-status` | See which docs are filled, inferred or empty, and the next things to do |
+| `/lifecycle <feature>` | See where a feature stands across the phases, and who should do what next |
 | `/analyze-structure` | Map your folders and record where new code should go |
 | `/research <question>` | Get an answer researched in your code and on the web, with sources, saved to `docs/sdlc/research/` |
 {{#if workspace}}
@@ -82,6 +83,26 @@ soon as it's unzipped; filling in the docs makes Claude's answers more accurate.
 {{#if onboarding}}
 | `/onboarding-guide [role]` | A getting-started guide for new team members, with verified setup steps |
 {{/if}}
+{{#if product}}
+| `/product-brief <idea>` | A one-page brief: problem, evidence, success metrics, scope and risks |
+| `/prioritize [items]` | The backlog ranked with RICE scores, inputs shown, overrides explained |
+| `/plan-iteration [goal]` | An iteration plan with one goal, items that fit your capacity, tasks and risks |
+{{/if}}
+{{#if ux}}
+| `/user-flow <feature>` | The flow, every screen state, copy and edge cases, designed before building |
+| `/ux-review <screen or flow>` | A usability review against Nielsen's 10 heuristics, ranked by severity |
+{{/if}}
+{{#if security}}
+| `/threat-model <feature>` | A STRIDE/LINDDUN threat model ending in testable security requirements |
+| `/privacy-review <feature>` | Where personal data goes, privacy problems, and the data inventory updated |
+{{/if}}
+{{#if ops}}
+| `/ci-pipeline [create\|review]` | Create or review the CI/CD pipeline in the CI tool you already use |
+| `/deploy-plan <release>` | Go/no-go checklist, rollout steps, what to watch and how to roll back |
+| `/define-slos [journey]` | Reliability targets (SLOs), error budgets and the alerts that protect them |
+| `/runbook <alert>` | A step-by-step runbook someone can follow at 3 a.m. |
+| `/incident <symptom>` | Help during an outage: stabilise first, then find the cause |
+{{/if}}
 {{#if postmortem}}
 | `/postmortem <incident>` | A blameless incident report with timeline, causes and owned action items |
 {{/if}}
@@ -122,7 +143,7 @@ work them out from the code or ask you when they matter.
 {{#unless plugin}}
 | `.claude/skills/` | The commands above |
 {{/unless}}
-| {{#if plugin}}Plugin agents{{/if}}{{#unless plugin}}`.claude/agents/`{{/unless}} | Specialists Claude hands work to: `researcher`, `test-runner`{{#if dev}}, `architect`, `debugger`, `code-reviewer` (remembers your project's conventions in `.claude/agent-memory/`; commit it), `security-reviewer`{{/if}}{{#if tester}}, `test-designer` (remembers domain rules), `test-automation`, `bug-triager`{{/if}}{{#if database}}, `db-reviewer`{{/if}}{{#if performance}}, `performance-analyst`{{/if}} |
+| {{#if plugin}}Plugin agents{{/if}}{{#unless plugin}}`.claude/agents/`{{/unless}} | Specialists Claude hands work to: `researcher`, `test-runner`{{#if dev}}, `architect`, `debugger`, `code-reviewer` (remembers your project's conventions in `.claude/agent-memory/`; commit it), `security-reviewer`{{/if}}{{#if tester}}, `test-designer` (remembers domain rules), `test-automation`, `bug-triager`{{/if}}{{#if database}}, `db-reviewer`{{/if}}{{#if performance}}, `performance-analyst`{{/if}}{{#if product}}, `product-manager`{{/if}}{{#if ux}}, `ux-reviewer`{{/if}}{{#if security}}, `threat-modeler`{{/if}}{{#if ops}}, `devops-engineer`, `sre`{{/if}} |
 | `docs/sdlc/` | Your project docs |
 
 ## Customising

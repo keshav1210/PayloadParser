@@ -37,7 +37,7 @@
     return {
       developer: true, tester: true, projectName: '', projectDescription: '', projectStack: '',
       profiles: [], testFrameworks: [], extras: [], folders: [], commandPrefix: '', existingClaudeMd: false,
-      lintCommand: '', hookShell: 'bash', format: 'project', services: [], edits: {}, step: 0, visited: [0],
+      lintCommand: '', hookShell: 'bash', format: 'project', services: [], roles: [], edits: {}, step: 0, visited: [0],
     };
   }
 
@@ -47,7 +47,7 @@
 
   function hasData(i) {
     switch (i) {
-      case 0: return state.developer || state.tester;
+      case 0: return state.developer || state.tester || state.roles.length > 0;
       case 1: return state.folders.length > 0 || (isWorkspace() && state.services.length > 0);
       case 2: return !!(state.projectName || state.projectDescription || state.projectStack);
       case 3: return state.profiles.length > 0 || state.testFrameworks.length > 0;
@@ -135,6 +135,30 @@
 
   function packs(group) {
     return catalog.filter(p => p.group === group && !p.hidden);
+  }
+
+  const ROLE_ICONS = { product: '◎', ux: '◧', security: '⛨', ops: '⚙' };
+
+  function renderRoles() {
+    const wrap = document.querySelector('.sg-roles');
+    wrap.querySelectorAll('.sg-role-extra').forEach(e => e.remove());
+    for (const p of catalog.filter(x => x.group === 'role' && x.id !== 'dev' && x.id !== 'tester' && !x.hidden)) {
+      const card = el('label', 'sg-role sg-role-extra');
+      const box = el('input');
+      box.type = 'checkbox';
+      box.value = p.id;
+      box.checked = state.roles.includes(p.id);
+      box.addEventListener('change', () => {
+        state.roles = box.checked ? [...new Set([...state.roles, p.id])] : state.roles.filter(x => x !== p.id);
+        changed();
+      });
+      const text = el('span');
+      text.append(el('strong', '', p.label), el('small', '', p.description));
+      const icon = el('span', 'sg-role-icon', ROLE_ICONS[p.id] || '•');
+      icon.setAttribute('aria-hidden', 'true');
+      card.append(box, icon, text);
+      wrap.append(card);
+    }
   }
 
   function roleOk(p) {
@@ -540,6 +564,7 @@
       projectStack: state.projectStack.slice(0, 200),
       developer: state.developer,
       tester: state.tester,
+      roles: state.roles,
       profiles: state.profiles,
       testFrameworks: state.tester ? state.testFrameworks : [],
       extras: state.extras.filter(id => { const p = catalog.find(x => x.id === id); return p && roleOk(p); }),
@@ -887,11 +912,14 @@
     const known = new Set(catalog.map(p => p.id));
     for (const key of ['profiles', 'testFrameworks', 'extras']) state[key] = state[key].filter(id => known.has(id));
     if (!Array.isArray(state.services)) state.services = [];
+    if (!Array.isArray(state.roles)) state.roles = [];
+    state.roles = state.roles.filter(id => known.has(id));
     if (!['project', 'workspace', 'plugin'].includes(state.format)) state.format = 'project';
     for (const p of catalog) {
       const card = document.querySelector(`[data-role-desc="${p.id}"]`);
       if (card) card.textContent = p.description;
     }
+    renderRoles();
     bindInputs();
     renderPacks();
     renderFolderTable();

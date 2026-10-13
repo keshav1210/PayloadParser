@@ -15,7 +15,9 @@ If no feature was given, ask what to write requirements for, and stop.
 
 - Read `docs/sdlc/00-project-overview.md` (users, scope, quality requirements, ID conventions) and the index in
   `docs/sdlc/02-requirements/README.md`.
-- If the argument is an existing ID, open that file and refine it instead of creating a new one.
+- If the argument is an existing ID, open that file and refine it instead of creating a new one.{{#if product}}
+- If the argument is a brief ID (BRIEF-…), read it in `docs/sdlc/product/briefs/`: its problem, success metrics
+  and scope bound the stories, and its out-of-scope list stays out. Link the brief in the requirement.{{/if}}
 - Check whether a similar feature already exists in the requirements or the code. If it does, say so and ask
   whether to extend it.
 - Look at the code areas the feature would touch so the stories fit what exists.

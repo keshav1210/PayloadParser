@@ -7,6 +7,12 @@
       "runtimeArgs": ["/c", "C:/PayloadParser/PayloadParser/mvnw.cmd", "-q", "spring-boot:run"],
       "port": 8085,
       "cwd": "C:/PayloadParser/PayloadParser"
+    },
+    {
+      "name": "company-site",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "npm", "--prefix", "C:/PayloadParser/company-site", "run", "dev"],
+      "port": 3000
     }
   ]
 }

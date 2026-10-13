@@ -64,6 +64,19 @@ person hasn't confirmed it. How to treat them: `.claude/rules/how-to-use-sdlc-do
 | `docs/sdlc/testing/test-strategy.md` | Before planning, designing or automating tests; for severity definitions |
 | `docs/sdlc/testing/` | Test plans, test cases, bugs, run results and the traceability matrix |
 {{/if}}
+{{#if product}}
+| `docs/sdlc/product/` | Before deciding what to build: briefs, the ranked backlog, iterations, Definition of Done |
+{{/if}}
+{{#if ux}}
+| `docs/sdlc/design/` | Before building or changing UI: design guidelines and user flows |
+{{/if}}
+{{#if security}}
+| `docs/sdlc/security/` | Before handling personal data or changing security-relevant code: threat models, data inventory |
+{{/if}}
+{{#if ops}}
+| `docs/sdlc/operations/` | For CI/CD, deployments, SLOs, observability and runbooks |
+{{/if}}
+| `docs/sdlc/08-team-and-roles.md` | Who owns each delivery phase, its commands and its exit criteria |
 | `docs/sdlc/research/` | Before researching a topic, check whether it was researched already |
 
 ## Commands
@@ -72,6 +85,7 @@ person hasn't confirmed it. How to treat them: `.claude/rules/how-to-use-sdlc-do
 |---|---|
 | `/sdlc-init` | Reads the project, fills empty doc sections it can work out, asks about the rest |
 | `/sdlc-status` | Shows which docs are filled, inferred or still empty, and what to do next |
+| `/lifecycle <feature>` | Tracks a feature through the delivery phases and says who does what next |
 | `/analyze-structure` | Maps the folders and updates `docs/sdlc/01-folder-structure.md` |
 | `/research <question>` | Researches a question in the code and on the web; writes a report with sources |
 {{#if workspace}}
@@ -99,6 +113,26 @@ person hasn't confirmed it. How to treat them: `.claude/rules/how-to-use-sdlc-do
 | `/run-tests [suite]` | Runs tests, classifies every failure, records the results |
 | `/bug-report <problem>` | Reproducible bug report with evidence, severity and duplicate check |
 | `/regression [changes]` | Picks the tests a change could break, runs them, writes a checklist |
+{{/if}}
+{{#if product}}
+| `/product-brief <idea>` | One-page brief: problem, evidence, success metrics, scope, risks |
+| `/prioritize [items]` | Ranks the backlog with RICE scores and shows the inputs |
+| `/plan-iteration [goal]` | Iteration plan: one goal, items that fit capacity, tasks, risks |
+{{/if}}
+{{#if ux}}
+| `/user-flow <feature>` | Designs the flow, every screen state, copy and edge cases before building |
+| `/ux-review <screen or flow>` | Heuristic usability review with issues ranked by severity |
+{{/if}}
+{{#if security}}
+| `/threat-model <feature>` | STRIDE/LINDDUN threat model that ends in testable security requirements |
+| `/privacy-review <feature>` | Maps personal data, finds privacy problems, updates the data inventory |
+{{/if}}
+{{#if ops}}
+| `/ci-pipeline [create\|review]` | Creates or reviews the CI/CD pipeline |
+| `/deploy-plan <release>` | Go/no-go checklist, rollout steps, verification and rollback |
+| `/define-slos [journey]` | SLIs, SLOs, error budgets and the alerts that protect them |
+| `/runbook <alert>` | Step-by-step runbook grounded in the code and config |
+| `/incident <symptom>` | Live incident help: stabilise first, then find the cause |
 {{/if}}
 {{#if database}}
 | `/db-migration <change>` | Safe, reversible schema or data migration, reviewed for data loss and locks |
@@ -131,10 +165,24 @@ Developer flow: `/requirements` → `/design` → `/implement` → `/review-chan
 Tester flow: `/test-plan` → `/test-cases` → `/automate-tests` → `/run-tests` → `/bug-report` → `/regression`.
 Testing docs: `docs/sdlc/testing/` (strategy, plans, cases, bugs, runs, traceability matrix).
 {{/if}}
+{{#if product}}
+
+Product flow: `/product-brief` → `/prioritize` → `/plan-iteration`; after release, record the measured outcome
+in the brief.
+{{/if}}
+{{#if ops}}
+
+Operations flow: `/ci-pipeline` → `/deploy-plan` → `/define-slos` → `/runbook`; `/incident` when production
+breaks.
+{{/if}}
+
+Across roles: `/lifecycle <feature>` tracks each feature through discover, define, design, plan, build, test,
+release and operate, and names the role and command for the next step (`docs/sdlc/08-team-and-roles.md`).
 
 Agents Claude hands work to: `researcher`, `test-runner`{{#if dev}}, `architect`, `debugger`, `code-reviewer`,
 `security-reviewer`{{/if}}{{#if tester}}, `test-designer`, `test-automation`, `bug-triager`{{/if}}{{#if database}},
-`db-reviewer`{{/if}}{{#if performance}}, `performance-analyst`{{/if}}. Use
+`db-reviewer`{{/if}}{{#if performance}}, `performance-analyst`{{/if}}{{#if product}}, `product-manager`{{/if}}{{#if ux}},
+`ux-reviewer`{{/if}}{{#if security}}, `threat-modeler`{{/if}}{{#if ops}}, `devops-engineer`, `sre`{{/if}}. Use
 `test-runner` for builds and test runs to keep long output out of the conversation.
 
 ## Project-specific rules

@@ -1668,6 +1668,10 @@ html[data-theme="light"] .sg-file.fillable { box-shadow: inset 3px 0 0 #bf8700; 
 .gd-dev { background: rgba(163, 113, 247, 0.16); color: #c297ff; }
 .gd-tester { background: rgba(63, 185, 80, 0.15); color: #3fb950; }
 .gd-extra { background: rgba(240, 165, 64, 0.16); color: #e3a13b; }
+.gd-product { background: rgba(219, 97, 162, 0.16); color: #f07ab8; }
+.gd-ux { background: rgba(255, 123, 114, 0.15); color: #ff8f86; }
+.gd-security { background: rgba(214, 69, 69, 0.15); color: #ff7b72; }
+.gd-ops { background: rgba(110, 118, 129, 0.2); color: #b1bac4; }
 .gd-plugin, .gd-profile, .gd-workspace { background: rgba(23, 190, 207, 0.15); color: #39c5d6; }
 .gd-user { background: rgba(255, 107, 107, 0.12); color: #ff8b85; }
 .gd-auto { background: rgba(63, 185, 80, 0.12); color: #3fb950; }
@@ -1686,6 +1690,10 @@ html[data-theme="light"] .sg-file.fillable { box-shadow: inset 3px 0 0 #bf8700; 
 html[data-theme="light"] .gd-dev { color: #8250df; }
 html[data-theme="light"] .gd-tester, html[data-theme="light"] .gd-auto { color: #1a7f37; }
 html[data-theme="light"] .gd-extra { color: #9a6700; }
+html[data-theme="light"] .gd-product { color: #bf3989; }
+html[data-theme="light"] .gd-ux { color: #bc4c00; }
+html[data-theme="light"] .gd-security { color: #cf222e; }
+html[data-theme="light"] .gd-ops { color: #57606a; }
 html[data-theme="light"] .gd-plugin, html[data-theme="light"] .gd-profile, html[data-theme="light"] .gd-workspace { color: #0a7a85; }
 html[data-theme="light"] .gd-user { color: #cf222e; }
 @media (max-width: 960px) {

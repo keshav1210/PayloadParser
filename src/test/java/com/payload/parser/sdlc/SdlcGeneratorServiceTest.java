@@ -56,7 +56,75 @@ class SdlcGeneratorServiceTest {
                         null, false, null, null, Map.of()),
                 new SdlcRequest(null, null, null, false, true, List.of(), List.of(),
                         List.of("performance", "accessibility", "onboarding", "postmortem"), List.of(),
-                        null, false, null, null, Map.of()));
+                        null, false, null, null, Map.of()),
+                withRoles(true, true, ALL_ROLES, ALL_EXTRAS),
+                withRoles(false, false, ALL_ROLES, List.of("postmortem", "accessibility")),
+                withRoles(false, true, List.of("security"), List.of()),
+                withRoles(true, false, List.of("product", "ops"), List.of()),
+                withRoles(false, false, List.of("ux"), List.of()));
+    }
+
+    static final List<String> ALL_ROLES = List.of("product", "ux", "security", "ops");
+
+    static SdlcRequest withRoles(boolean dev, boolean tester, List<String> roles, List<String> extras) {
+        return new SdlcRequest(null, null, null, dev, tester, List.of(), List.of(), extras, List.of(),
+                null, false, null, null, Map.of(), null, roles);
+    }
+
+    @Test
+    void rolesAddTheirAgentsSkillsAndDocs() {
+        SdlcKit kit = service.generate(withRoles(true, true, ALL_ROLES, List.of("postmortem")));
+        assertFalse(kit.hasErrors(), () -> kit.issues().toString());
+        Map<String, String> f = kit.files();
+        for (String agent : List.of("product-manager", "ux-reviewer", "threat-modeler", "devops-engineer", "sre")) {
+            assertTrue(f.containsKey(".claude/agents/" + agent + ".md"), agent);
+        }
+        for (String skill : List.of("product-brief", "prioritize", "plan-iteration", "user-flow", "ux-review",
+                "threat-model", "privacy-review", "ci-pipeline", "deploy-plan", "define-slos", "runbook", "incident",
+                "lifecycle")) {
+            assertTrue(f.containsKey(".claude/skills/" + skill + "/SKILL.md"), skill);
+        }
+        assertTrue(f.containsKey("docs/sdlc/product/backlog.md"));
+        assertTrue(f.containsKey("docs/sdlc/design/flows/_template-flow.md"));
+        assertTrue(f.containsKey("docs/sdlc/security/data-inventory.md"));
+        assertTrue(f.containsKey("docs/sdlc/operations/slos.md"));
+
+        String claude = service.generate(withRoles(true, true, ALL_ROLES, ALL_EXTRAS)).files().get("CLAUDE.md");
+        assertTrue(claude.split("\n").length < 200, () -> "CLAUDE.md has " + claude.split("\n").length + " lines");
+        assertTrue(claude.contains("`/threat-model <feature>`"));
+        assertTrue(claude.contains("`devops-engineer`, `sre`"));
+        assertTrue(claude.contains("Product flow:"));
+        String roles = f.get("docs/sdlc/08-team-and-roles.md");
+        assertTrue(roles.contains("`/product-brief`, `/prioritize`, `/research`"));
+        assertTrue(roles.contains("`/design`, `/user-flow`, `/threat-model`"));
+        assertTrue(roles.contains("`/define-slos`, `/runbook`, `/incident`, `/postmortem`, `/sync-docs`"));
+        assertTrue(f.get(".claude/skills/incident/SKILL.md").contains("`/postmortem`"));
+        assertTrue(f.get(".claude/skills/requirements/SKILL.md").contains("BRIEF-"));
+        assertTrue(f.get("SDLC-QUICKSTART.md").contains("Product owner, UX designer, Security & privacy, DevOps & SRE"));
+    }
+
+    @Test
+    void withoutRolesTheCoreOnlyMentionsWhatIsInstalled() {
+        SdlcKit kit = service.generate(withRoles(false, false, List.of(), List.of()));
+        assertFalse(kit.hasErrors(), () -> kit.issues().toString());
+        Map<String, String> f = kit.files();
+        String all = String.join("\n", f.values());
+        for (String absent : List.of("/product-brief", "/threat-model", "/deploy-plan", "/user-flow", "/requirements",
+                "/test-cases", "devops-engineer", "product-manager")) {
+            assertFalse(all.contains(absent), absent);
+        }
+        String roles = f.get("docs/sdlc/08-team-and-roles.md");
+        assertTrue(roles.contains("| 4. Plan | Product owner and the team | `/sdlc-status` | — |"));
+        assertTrue(f.containsKey(".claude/skills/lifecycle/SKILL.md"));
+        assertFalse(f.containsKey(".claude/agents/sre.md"));
+    }
+
+    @Test
+    void unknownOrDuplicateRoles() {
+        assertThrows(SdlcRequestException.class, () -> service.generate(withRoles(true, false, List.of("manager"), List.of())));
+        SdlcKit kit = service.generate(withRoles(true, false, List.of("dev", "ops", "ops"), List.of()));
+        assertFalse(kit.hasErrors(), () -> kit.issues().toString());
+        assertTrue(kit.files().containsKey(".claude/agents/sre.md"));
     }
 
     static final List<String> ALL_EXTRAS = List.of("database", "performance", "accessibility", "api-docs",

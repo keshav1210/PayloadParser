@@ -200,6 +200,35 @@ instead of in each service. Claude Code is always opened at that parent folder.
   mode, top-level folders become services.
 - Guide: a "Workspace edition" section with 7 cards and an FAQ entry. Tests: 71 pass.
 
+## 6h. Roles for every phase (done 2026-10-10)
+
+Research question: who is accountable in each phase of delivering a product, and what do they need?
+
+| Phase | Accountable role | Source |
+|---|---|---|
+| Discover, plan | Product owner: value of the product and the backlog | [Scrum Guide](https://scrumguides.org/scrum-guide.html) |
+| Define, design | Product owner with developers; architect; UX designer; security | Scrum Guide; [OWASP threat modeling](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html) |
+| Build | Developers: quality through the Definition of Done | Scrum Guide |
+| Test | Testers / QA | (already in the kit) |
+| Release, operate | DevOps and SRE: delivery, SLOs, incidents | [Google SRE book: SLOs](https://sre.google/sre-book/service-level-objectives/), [DORA metrics](https://dora.dev/guides/dora-metrics/) |
+
+Methods used in the new templates: RICE ([Intercom](https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/)),
+Nielsen's 10 heuristics ([NN/g](https://www.nngroup.com/articles/ten-usability-heuristics/)), the four-question
+threat model with STRIDE, [LINDDUN](https://linddun.org/) for privacy, SLI/SLO/error budget, DORA's five
+delivery metrics. Agent and skill frontmatter checked against code.claude.com sub-agents and skills docs.
+
+Built:
+- Four optional role packs (`group: role`, request field `roles`): **product** (product-manager agent;
+  /product-brief, /prioritize, /plan-iteration; docs/sdlc/product/), **ux** (ux-reviewer; /user-flow,
+  /ux-review; docs/sdlc/design/), **security** (threat-modeler; /threat-model, /privacy-review;
+  docs/sdlc/security/), **ops** (devops-engineer, sre; /ci-pipeline, /deploy-plan, /define-slos, /runbook,
+  /incident; docs/sdlc/operations/).
+- Core: `docs/sdlc/08-team-and-roles.md` (phases, accountable role, commands, agents, exit criteria, rendered
+  for the selected packs) and `/lifecycle <feature>` with trackers in `docs/sdlc/lifecycle/`.
+- Cross-links only when both packs are present (e.g. /incident → /postmortem, /requirements reads briefs).
+- Wizard role cards, page copy, guide section "Roles and phases" with 25 new cards. Tests: 89 pass; CLAUDE.md
+  stays under 200 lines with every pack on.
+
 ## 7. Decisions
 
 Decided (2026-10-03):

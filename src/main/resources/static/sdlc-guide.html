@@ -25,7 +25,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=16">
+  <link rel="stylesheet" href="/css/tools.css?v=17">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -82,6 +82,14 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Which roles does the kit cover?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Developers and testers, plus four optional roles: product owner, UX designer, security and privacy, and DevOps and SRE. Each adds commands, a specialist agent and docs for its phase. The /lifecycle command and docs/sdlc/08-team-and-roles.md tie the phases together and say who should act next."
+          }
+        },
         {
           "@type": "Question",
           "name": "Can I use one kit for several microservices?",
@@ -176,6 +184,7 @@
         <li><a href="#markers">Filling in the docs</a></li>
         <li><a href="#instructions">CLAUDE.md, quick start and settings</a></li>
         <li><a href="#rules">Rules</a></li>
+        <li><a href="#roles">Roles and phases</a></li>
         <li><a href="#commands">Slash commands</a></li>
         <li><a href="#agents">Subagents</a></li>
         <li><a href="#docs">SDLC documents</a></li>
@@ -397,6 +406,23 @@ paths:
         </dl>
       </section>
 
+      <h2 id="roles">Roles and phases</h2>
+      <p>Every feature passes through the same phases, and each phase has someone accountable for it. In the Scrum Guide's terms, the product owner is accountable for the value of the product and the backlog, and the developers for quality through the Definition of Done. The kit gives each role its own commands and a specialist agent. Tick the roles your team has in the generator; commands mention each other only when both are in your kit. <code>docs/sdlc/08-team-and-roles.md</code> records the phases, owners and exit criteria, and <code>/lifecycle &lt;feature&gt;</code> tracks a feature through them.</p>
+      <table class="change-table gd-table">
+        <thead><tr><th>Phase</th><th>Accountable</th><th>Commands</th><th>Agents</th></tr></thead>
+        <tbody>
+          <tr><td>1. Discover</td><td>Product owner</td><td><code>/product-brief</code>, <code>/prioritize</code>, <code>/research</code></td><td><code>product-manager</code>, <code>researcher</code></td></tr>
+          <tr><td>2. Define</td><td>Product owner with developers and testers</td><td><code>/requirements</code>, <code>/privacy-review</code></td><td><code>product-manager</code></td></tr>
+          <tr><td>3. Design</td><td>Tech lead / architect, UX designer, security</td><td><code>/design</code>, <code>/user-flow</code>, <code>/threat-model</code></td><td><code>architect</code>, <code>ux-reviewer</code>, <code>threat-modeler</code></td></tr>
+          <tr><td>4. Plan</td><td>Product owner and the team</td><td><code>/plan-iteration</code></td><td><code>product-manager</code></td></tr>
+          <tr><td>5. Build</td><td>Developers</td><td><code>/implement</code>, <code>/write-tests</code>, <code>/review-changes</code>, <code>/commit</code>, <code>/open-pr</code>, <code>/ci-pipeline</code></td><td><code>code-reviewer</code>, <code>security-reviewer</code>, <code>debugger</code>, <code>devops-engineer</code></td></tr>
+          <tr><td>6. Test</td><td>Testers / QA</td><td><code>/test-plan</code>, <code>/test-cases</code>, <code>/automate-tests</code>, <code>/run-tests</code>, <code>/bug-report</code>, <code>/ux-review</code></td><td><code>test-designer</code>, <code>test-automation</code>, <code>bug-triager</code>, <code>ux-reviewer</code></td></tr>
+          <tr><td>7. Release</td><td>DevOps with the product owner</td><td><code>/regression</code>, <code>/prepare-release</code>, <code>/deploy-plan</code></td><td><code>devops-engineer</code>, <code>test-runner</code></td></tr>
+          <tr><td>8. Operate and learn</td><td>DevOps / SRE, product owner for the outcome</td><td><code>/define-slos</code>, <code>/runbook</code>, <code>/incident</code>, <code>/postmortem</code>, <code>/sync-docs</code></td><td><code>sre</code></td></tr>
+        </tbody>
+      </table>
+      <p>Small teams often combine roles: one person can be developer and DevOps, or product owner and tester. Tick every hat someone wears.</p>
+
       <h2 id="commands">Slash commands</h2>
       <p>Each command is a folder in <code>.claude/skills/</code> with a <code>SKILL.md</code> file: a short YAML header (name, description, optional settings) and the instructions Claude follows. Typing <code>/name</code> runs it; text after the name is passed in as <code>$ARGUMENTS</code>. Commands that change code, commit or write many files have <code>disable-model-invocation: true</code>, so only you can start them. Some run in a separate context (<code>context: fork</code>) and return only a summary.</p>
 <pre><code>---
@@ -446,6 +472,19 @@ Story: $ARGUMENTS
           <tr><td><a href="#cmd-postmortem"><code>/postmortem &lt;incident&gt;</code></a></td><td>Extra</td><td>You</td><td>Writes a blameless incident report: summary, impact, timeline, root cause and contributing factors, what went well and badly, and owned action items.</td></tr>
           <tr><td><a href="#cmd-tech-debt-scan"><code>/tech-debt-scan [area]</code></a></td><td>Extra</td><td>You</td><td>Ranks your riskiest technical debt by combining how often code changes (git history), how complex it is and whether it's tested, plus TODOs, duplication and outdated patterns, in docs/sdlc/tech-debt.md.</td></tr>
           <tr><td><a href="#cmd-setup"><code>/sdlc-kit:setup</code></a></td><td>Plugin edition</td><td>You</td><td>Plugin edition only.</td></tr>
+          <tr><td><a href="#cmd-lifecycle"><code>/lifecycle &lt;feature&gt;</code></a></td><td>Every kit</td><td>You</td><td>Tracks one feature through the eight delivery phases (discover, define, design, plan, build, test, release, operate).</td></tr>
+          <tr><td><a href="#cmd-product-brief"><code>/product-brief &lt;idea&gt;</code></a></td><td>Product owner</td><td>You</td><td>Turns an idea into a one-page brief in docs/sdlc/product/briefs/: the problem and who has it, evidence, success metrics with a baseline, target and guardrail, the first slice, what's out of scope, risks and open questions.</td></tr>
+          <tr><td><a href="#cmd-prioritize"><code>/prioritize [items]</code></a></td><td>Product owner</td><td>You</td><td>Ranks the backlog in docs/sdlc/product/backlog.md with RICE: reach × impact × confidence ÷ effort, using a fixed impact scale (3 massive to 0.25 minimal) and confidence levels (100%, 80%, 50%).</td></tr>
+          <tr><td><a href="#cmd-plan-iteration"><code>/plan-iteration [goal]</code></a></td><td>Product owner</td><td>You</td><td>Plans a sprint or iteration: one goal, items from the top of the backlog that fit the capacity you actually achieved last time, tasks of a day or two, dependencies and risks, saved in docs/sdlc/product/iterations/.</td></tr>
+          <tr><td><a href="#cmd-user-flow"><code>/user-flow &lt;feature&gt;</code></a></td><td>UX designer</td><td>You</td><td>Designs the flow before it's built: entry points, steps and decisions, every screen state (empty, loading, partial, error, success, no permission), copy and error messages, validation and edge cases, drawn as a Mermaid flowchart in docs/sdlc/design/flows/.</td></tr>
+          <tr><td><a href="#cmd-ux-review"><code>/ux-review &lt;screen or flow&gt;</code></a></td><td>UX designer</td><td>You or Claude</td><td>A heuristic evaluation of a page, screen or flow against Nielsen's 10 usability heuristics, with missing states, unclear copy and inconsistencies ranked by severity (4 blocks users to 1 cosmetic) and a concrete fix for each.</td></tr>
+          <tr><td><a href="#cmd-threat-model"><code>/threat-model &lt;feature&gt;</code></a></td><td>Security & privacy</td><td>You</td><td>A threat model using the four questions from the OWASP threat modeling project: what are we working on (data-flow diagram with trust boundaries), what can go wrong (STRIDE, plus LINDDUN for personal data), what are we going to do about it (mitigate, eliminate, transfer or accept), and did we do a good job.</td></tr>
+          <tr><td><a href="#cmd-privacy-review"><code>/privacy-review &lt;feature&gt;</code></a></td><td>Security & privacy</td><td>You</td><td>Finds every place personal data is collected, stored, logged or sent, maps purpose, access, recipients and retention, and flags problems: data without a purpose, personal data in logs or URLs, missing deletion, privacy threats (LINDDUN).</td></tr>
+          <tr><td><a href="#cmd-ci-pipeline"><code>/ci-pipeline [create|review|fix]</code></a></td><td>DevOps & SRE</td><td>You</td><td>Creates, reviews or fixes the CI/CD pipeline in the CI tool you already use: build, tests, static checks, dependency and secret scanning, package once, deploy the same artifact to each environment, approval before production.</td></tr>
+          <tr><td><a href="#cmd-deploy-plan"><code>/deploy-plan &lt;release&gt;</code></a></td><td>DevOps & SRE</td><td>You</td><td>Prepares a production release: what changes (code, config, migrations, infrastructure), a go/no-go checklist with evidence, the rollout strategy, verification after each step, the rollback trigger and steps, and who to tell.</td></tr>
+          <tr><td><a href="#cmd-define-slos"><code>/define-slos [journey]</code></a></td><td>DevOps & SRE</td><td>You</td><td>Sets reliability targets for the user journeys that matter most: SLIs as good events ÷ valid events, SLOs with a window, the error budget in plain numbers, burn-rate alerts and an error budget policy, in docs/sdlc/operations/slos.md.</td></tr>
+          <tr><td><a href="#cmd-runbook"><code>/runbook &lt;alert or failure&gt;</code></a></td><td>DevOps & SRE</td><td>You</td><td>Writes a runbook someone can follow at 3 a.m.: what the alert means, how to confirm it, mitigation steps with exact commands, diagnosis, how to verify recovery and when to escalate, in docs/sdlc/operations/runbooks/.</td></tr>
+          <tr><td><a href="#cmd-incident"><code>/incident &lt;symptom&gt;</code></a></td><td>DevOps & SRE</td><td>You</td><td>Helps during a live incident: sets a severity, stabilises first (rollback, feature flag, scaling) with steps for a person to run, then narrows down the cause with the sre agent, keeping a timeline throughout.</td></tr>
         </tbody>
       </table>
       <h3>Every kit</h3>
@@ -508,6 +547,16 @@ Story: $ARGUMENTS
           <dt>How it works</dt><dd>Edits only <code>CLAUDE.md</code> and <code>docs/sdlc/</code>.</dd>
           <dt>What you can change</dt><dd><ul><li>Run it after every merge to main, or before a release.</li></ul></dd>
           <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-lifecycle">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/lifecycle/SKILL.md</code><span class="gd-tag gd-core">Every kit</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/lifecycle &lt;feature&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Tracks one feature through the eight delivery phases (discover, define, design, plan, build, test, release, operate). It finds the evidence for each phase in your docs, git history and test results, checks each phase's "done when" criteria, records progress in <code>docs/sdlc/lifecycle/&lt;feature&gt;.md</code>, and tells you which role should act next and with which command.</dd>
+          <dt>How it works</dt><dd>Reads the phases and owners in <code>docs/sdlc/08-team-and-roles.md</code>. Never marks a phase done without evidence and never signs off for a person. Flags skipped gates, such as building before acceptance criteria existed, or shipping personal-data features without a threat model when the Security role is installed. Run it without an argument to list every tracked feature and its phase.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the phases and gates in <code>docs/sdlc/08-team-and-roles.md</code>; the command follows them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://scrumguides.org/scrum-guide.html" target="_blank" rel="noopener">The Scrum Guide ↗</a></dd>
         </dl>
       </section>
       <h3>Developer pack</h3>
@@ -681,6 +730,134 @@ Story: $ARGUMENTS
           <dt>What it does</dt><dd>Works out what a change could break (including shared code, database and config changes), picks must-run / should-run / skip tests, runs the automated part and writes a manual regression checklist.</dd>
           <dt>How it works</dt><dd>Uses git to find changed files and maps them to features through your folder doc, requirement IDs and tests.</dd>
           <dt>What you can change</dt><dd><ul><li>Define your smoke set in the test strategy so it's always included.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Product owner role</h3>
+
+      <section class="gd-file" id="cmd-product-brief">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/product-brief/SKILL.md</code><span class="gd-tag gd-product">Product owner</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/product-brief &lt;idea&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Turns an idea into a one-page brief in <code>docs/sdlc/product/briefs/</code>: the problem and who has it, evidence, success metrics with a baseline, target and guardrail, the first slice, what's out of scope, risks and open questions.</dd>
+          <dt>How it works</dt><dd>Uses the <code>product-manager</code> agent, asks up to 5 product questions, and never invents data: unknowns become assumptions. Adds the brief to the index in <code>docs/sdlc/product/README.md</code>. <code>/requirements BRIEF-001</code> then turns it into user stories.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add sections your company uses, such as pricing or launch plan, to <code>_template-brief.md</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-prioritize">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/prioritize/SKILL.md</code><span class="gd-tag gd-product">Product owner</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/prioritize [items]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Ranks the backlog in <code>docs/sdlc/product/backlog.md</code> with RICE: reach × impact × confidence ÷ effort, using a fixed impact scale (3 massive to 0.25 minimal) and confidence levels (100%, 80%, 50%).</dd>
+          <dt>How it works</dt><dd>Shows every input so people can challenge the inputs rather than the score, and lowers confidence where a number is a guess. Deadlines, legal requirements and dependencies can override the score, but overrides are always listed with a reason. Updates the backlog only after you agree.</dd>
+          <dt>What you can change</dt><dd><ul><li>Use your own scoring model (for example WSJF) by rewriting step 2.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/" target="_blank" rel="noopener">RICE prioritization (Intercom) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-plan-iteration">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/plan-iteration/SKILL.md</code><span class="gd-tag gd-product">Product owner</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/plan-iteration [goal]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Plans a sprint or iteration: one goal, items from the top of the backlog that fit the capacity you actually achieved last time, tasks of a day or two, dependencies and risks, saved in <code>docs/sdlc/product/iterations/</code>.</dd>
+          <dt>How it works</dt><dd>Keeps about 20% of capacity for bugs and unplanned work, lists items that aren't ready (no testable acceptance criteria), and checks the plan against <code>docs/sdlc/product/definition-of-done.md</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the buffer or the task size in step 3.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://scrumguides.org/scrum-guide.html" target="_blank" rel="noopener">The Scrum Guide ↗</a></dd>
+        </dl>
+      </section>
+      <h3>UX designer role</h3>
+
+      <section class="gd-file" id="cmd-user-flow">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/user-flow/SKILL.md</code><span class="gd-tag gd-ux">UX designer</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/user-flow &lt;feature&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Designs the flow before it's built: entry points, steps and decisions, every screen state (empty, loading, partial, error, success, no permission), copy and error messages, validation and edge cases, drawn as a Mermaid flowchart in <code>docs/sdlc/design/flows/</code>.</dd>
+          <dt>How it works</dt><dd>Reuses the project's existing components and follows <code>docs/sdlc/design/design-guidelines.md</code>. Maps each acceptance criterion to the step that satisfies it, so gaps show up before coding.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your design tool links (for example Figma frames) to the flow template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://mermaid.js.org/syntax/flowchart.html" target="_blank" rel="noopener">Mermaid flowcharts ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-ux-review">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/ux-review/SKILL.md</code><span class="gd-tag gd-ux">UX designer</span><span class="gd-tag gd-auto">You or Claude can run it</span><span class="gd-tag gd-fork">Runs in the ux-reviewer agent</span></div>
+        <h4>/ux-review &lt;screen or flow&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A heuristic evaluation of a page, screen or flow against Nielsen's 10 usability heuristics, with missing states, unclear copy and inconsistencies ranked by severity (4 blocks users to 1 cosmetic) and a concrete fix for each.</dd>
+          <dt>How it works</dt><dd>Runs in the read-only <code>ux-reviewer</code> agent and changes no files. Copy fixes come as "before → after". Points to <code>/accessibility-check</code> for a full WCAG check when the Accessibility extra is installed.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your own design rules to <code>docs/sdlc/design/design-guidelines.md</code>; the review checks against them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener">10 usability heuristics (Nielsen Norman Group) ↗</a></dd>
+        </dl>
+      </section>
+      <h3>Security &amp; privacy role</h3>
+
+      <section class="gd-file" id="cmd-threat-model">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/threat-model/SKILL.md</code><span class="gd-tag gd-security">Security & privacy</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/threat-model &lt;feature&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A threat model using the four questions from the OWASP threat modeling project: what are we working on (data-flow diagram with trust boundaries), what can go wrong (STRIDE, plus LINDDUN for personal data), what are we going to do about it (mitigate, eliminate, transfer or accept), and did we do a good job.</dd>
+          <dt>How it works</dt><dd>Uses the <code>threat-modeler</code> agent and saves to <code>docs/sdlc/security/threat-models/</code>. You decide which risks to accept, each with a reason and an owner. Agreed mitigations become Given/When/Then acceptance criteria in the requirement, so they're built and tested like any other criterion.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your company's risk rating scale to the template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Threat Modeling Cheat Sheet ↗</a><a href="https://linddun.org/" target="_blank" rel="noopener">LINDDUN privacy threat modeling ↗</a><a href="https://owasp.org/www-project-application-security-verification-standard/" target="_blank" rel="noopener">OWASP ASVS ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-privacy-review">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/privacy-review/SKILL.md</code><span class="gd-tag gd-security">Security & privacy</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/privacy-review &lt;feature&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Finds every place personal data is collected, stored, logged or sent, maps purpose, access, recipients and retention, and flags problems: data without a purpose, personal data in logs or URLs, missing deletion, privacy threats (LINDDUN).</dd>
+          <dt>How it works</dt><dd>Keeps <code>docs/sdlc/security/data-inventory.md</code> up to date. It doesn't give legal advice: questions about legal basis and regulations go to your privacy or legal team.</dd>
+          <dt>What you can change</dt><dd><ul><li>List the regulations that apply in the data inventory, so reviews check against them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://linddun.org/" target="_blank" rel="noopener">LINDDUN privacy threat modeling ↗</a></dd>
+        </dl>
+      </section>
+      <h3>DevOps &amp; SRE role</h3>
+
+      <section class="gd-file" id="cmd-ci-pipeline">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/ci-pipeline/SKILL.md</code><span class="gd-tag gd-ops">DevOps & SRE</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/ci-pipeline [create|review|fix]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Creates, reviews or fixes the CI/CD pipeline in the CI tool you already use: build, tests, static checks, dependency and secret scanning, package once, deploy the same artifact to each environment, approval before production.</dd>
+          <dt>How it works</dt><dd>Uses the <code>devops-engineer</code> agent. Checks pinned versions, caching, secrets handling and permissions; never fixes a red build by skipping tests. Records the result in <code>docs/sdlc/operations/ci-cd.md</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Name your CI provider and environments in <code>docs/sdlc/operations/ci-cd.md</code>.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://dora.dev/guides/dora-metrics/" target="_blank" rel="noopener">DORA software delivery metrics ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-deploy-plan">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/deploy-plan/SKILL.md</code><span class="gd-tag gd-ops">DevOps & SRE</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/deploy-plan &lt;release&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Prepares a production release: what changes (code, config, migrations, infrastructure), a go/no-go checklist with evidence, the rollout strategy, verification after each step, the rollback trigger and steps, and who to tell.</dd>
+          <dt>How it works</dt><dd>Saved in <code>docs/sdlc/operations/deployments/</code>. It never deploys or runs production commands itself.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your change-approval steps to the go/no-go checklist in the template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-define-slos">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/define-slos/SKILL.md</code><span class="gd-tag gd-ops">DevOps & SRE</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/define-slos [journey]</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Sets reliability targets for the user journeys that matter most: SLIs as good events ÷ valid events, SLOs with a window, the error budget in plain numbers, burn-rate alerts and an error budget policy, in <code>docs/sdlc/operations/slos.md</code>.</dd>
+          <dt>How it works</dt><dd>Uses the <code>sre</code> agent and follows the Google SRE approach: measure what users notice, start with loose targets, never aim for 100%.</dd>
+          <dt>What you can change</dt><dd><ul><li>Change the window (for example 30 days) or the policy for a spent budget.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a><a href="https://sre.google/sre-book/service-level-objectives/" target="_blank" rel="noopener">Google SRE book: service level objectives ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-runbook">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/runbook/SKILL.md</code><span class="gd-tag gd-ops">DevOps & SRE</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/runbook &lt;alert or failure&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Writes a runbook someone can follow at 3 a.m.: what the alert means, how to confirm it, mitigation steps with exact commands, diagnosis, how to verify recovery and when to escalate, in <code>docs/sdlc/operations/runbooks/</code>.</dd>
+          <dt>How it works</dt><dd>Grounded in the code and config it finds; commands it couldn't verify are marked. Reads <code>docs/sdlc/operations/observability.md</code> for where logs and dashboards are.</dd>
+          <dt>What you can change</dt><dd><ul><li>Keep the "Last checked" date current by walking through runbooks regularly.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="cmd-incident">
+        <div class="gd-file-head"><code class="gd-path">.claude/skills/incident/SKILL.md</code><span class="gd-tag gd-ops">DevOps & SRE</span><span class="gd-tag gd-user">Only you run it</span></div>
+        <h4>/incident &lt;symptom&gt;</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Helps during a live incident: sets a severity, stabilises first (rollback, feature flag, scaling) with steps for a person to run, then narrows down the cause with the <code>sre</code> agent, keeping a timeline throughout.</dd>
+          <dt>How it works</dt><dd>Short replies, because people in an incident are busy. Never runs commands that change production. At the end it suggests a runbook, <code>/postmortem</code> (when that extra is installed) and <code>/fix-bug</code> for the permanent fix.</dd>
+          <dt>What you can change</dt><dd><ul><li>Replace the severity levels with your own in step 1.</li></ul></dd>
           <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Claude Code docs: skills (slash commands) ↗</a></dd>
         </dl>
       </section>
@@ -913,6 +1090,66 @@ You are a senior code reviewer…</code></pre>
           <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
         </dl>
       </section>
+      <section class="gd-file" id="agent-product-manager">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/product-manager.md</code><span class="gd-tag gd-product">Product owner</span><span class="gd-tag gd-fork">permissionMode: plan</span></div>
+        <h4>product-manager</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Product thinking: starts from the problem and the evidence, defines success as a measurable outcome with a baseline, target and guardrail, cuts scope to the smallest valuable slice and scores options with RICE.</dd>
+          <dt>How it works</dt><dd>Read-only. Separates data from opinion and never invents numbers; open questions go back to people.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, WebSearch, WebFetch</code></dd>
+          <dt>Used by</dt><dd>/product-brief, /prioritize, /plan-iteration, /lifecycle</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your company's strategy or OKRs to its method so recommendations line up with them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-ux-reviewer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/ux-reviewer.md</code><span class="gd-tag gd-ux">UX designer</span></div>
+        <h4>ux-reviewer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A heuristic evaluation by a senior UX designer: walks the flow in the code, checks every screen state and the copy, and rates problems on Nielsen's 0-4 severity scale with a fix for each.</dd>
+          <dt>How it works</dt><dd>Read-only. Points out obvious accessibility problems and recommends a full WCAG 2.2 AA check for the rest.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, WebFetch</code></dd>
+          <dt>Used by</dt><dd>/ux-review (runs in it)</dd>
+          <dt>What you can change</dt><dd><ul><li>Add product-specific rules (brand voice, components) to its method.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-threat-modeler">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/threat-modeler.md</code><span class="gd-tag gd-security">Security & privacy</span><span class="gd-tag gd-fork">permissionMode: plan</span></div>
+        <h4>threat-modeler</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>A security architect who threat-models before code is written: diagram, STRIDE and LINDDUN threats as concrete scenarios, risk ratings, responses and testable security requirements.</dd>
+          <dt>How it works</dt><dd>Read-only; checks what the code already does before proposing controls. Claude also uses it on its own for designs that touch authentication, payments, personal data or uploads.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, WebSearch, WebFetch</code></dd>
+          <dt>Used by</dt><dd>/threat-model</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your company's security standards to its method.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-devops-engineer">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/devops-engineer.md</code><span class="gd-tag gd-ops">DevOps & SRE</span></div>
+        <h4>devops-engineer</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Builds and reviews pipelines, Dockerfiles, deployment scripts and infrastructure code: one artifact for every environment, pinned versions, secrets from a store, least privilege, a tested rollback.</dd>
+          <dt>How it works</dt><dd>Can edit files, but never runs commands that change shared or production infrastructure (<code>terraform apply</code>, <code>kubectl apply</code>, deploy scripts); it shows the plan or a dry run for a person to run.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash, Edit, Write</code></dd>
+          <dt>Used by</dt><dd>/ci-pipeline, /deploy-plan</dd>
+          <dt>What you can change</dt><dd><ul><li>Name your CI provider and cloud in its principles.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="agent-sre">
+        <div class="gd-file-head"><code class="gd-path">.claude/agents/sre.md</code><span class="gd-tag gd-ops">DevOps & SRE</span></div>
+        <h4>sre</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Site reliability: SLIs, SLOs and error budgets, alerts on symptoms (the four golden signals: latency, traffic, errors, saturation), structured logs, and incident diagnosis that stabilises first.</dd>
+          <dt>How it works</dt><dd>Its commands are read-only (logs, status, git history); anything that changes a running system is proposed, not run.</dd>
+          <dt>Tools</dt><dd><code>Read, Grep, Glob, Bash</code></dd>
+          <dt>Used by</dt><dd>/define-slos, /runbook, /incident</dd>
+          <dt>What you can change</dt><dd><ul><li>Add your monitoring tools and query syntax.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code docs: subagents ↗</a></dd>
+        </dl>
+      </section>
       <p><strong>Agent memory.</strong> Agents with <code>memory: project</code> (code-reviewer, test-designer) keep notes in <code>.claude/agent-memory/&lt;agent&gt;/</code>. The folder is created when they first save something. Commit it so everyone's agent learns the same conventions.</p>
 
       <h2 id="docs">SDLC documents</h2>
@@ -1118,6 +1355,66 @@ You are a senior code reviewer…</code></pre>
           
         </dl>
       </section>
+      <section class="gd-file" id="doc-08-team-and-roles">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/08-team-and-roles.md</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Team and roles</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Who is accountable in each of the eight delivery phases, the commands and agents that help them, and what must be true before the next phase starts ("done when"). Also a table for the names of the people in each role.</dd>
+          <dt>How it works</dt><dd>Generated to match your kit: each phase lists only the commands and agents you installed. <code>/lifecycle</code> reads it to check a feature's progress. Following the Scrum Guide, the product owner is accountable for the value of the product and the backlog, and developers for the quality bar (the Definition of Done).</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill in the people for each role.</li><li>Adapt phases and gates to your process; small teams often combine roles.</li><li>Write how hand-offs and sign-offs work in your team.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://scrumguides.org/scrum-guide.html" target="_blank" rel="noopener">The Scrum Guide ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-lifecycle">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/lifecycle/</code><span class="gd-tag gd-core">Every kit</span></div>
+        <h4>Feature lifecycle trackers</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>One file per feature with its current phase and owner, the status of each phase with evidence and sign-off, the next step and a log.</dd>
+          <dt>How it works</dt><dd>Created and updated by <code>/lifecycle</code> from <code>_template-feature.md</code>.</dd>
+          <dt>What you can change</dt><dd><ul><li>Add columns your process needs, such as ticket links.</li></ul></dd>
+          
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-product">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/product/</code><span class="gd-tag gd-product">Product owner</span></div>
+        <h4>Product docs</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>The briefs index (<code>README.md</code>), the ranked backlog with RICE scores (<code>backlog.md</code>), the Definition of Done and of Ready (<code>definition-of-done.md</code>), and templates for briefs and iteration plans.</dd>
+          <dt>How it works</dt><dd>Written by <code>/product-brief</code>, <code>/prioritize</code> and <code>/plan-iteration</code>. The Definition of Done starts with a good default list that applies until you replace it.</dd>
+          <dt>What you can change</dt><dd><ul><li>Replace the Definition of Done with your team's.</li><li>Set the reach period for RICE once, so scores stay comparable.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://scrumguides.org/scrum-guide.html" target="_blank" rel="noopener">The Scrum Guide ↗</a><a href="https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/" target="_blank" rel="noopener">RICE prioritization (Intercom) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-design">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/design/</code><span class="gd-tag gd-ux">UX designer</span></div>
+        <h4>Design guidelines and flows</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd><code>design-guidelines.md</code> (design system, layout and devices, voice and copy, screen states, forms and validation, accessibility target) and user flows in <code>flows/</code>.</dd>
+          <dt>How it works</dt><dd><code>/user-flow</code> and <code>/ux-review</code> follow the guidelines; its "good default" sections apply until you replace them.</dd>
+          <dt>What you can change</dt><dd><ul><li>Link your design system and Figma files.</li><li>Write your tone of voice and the words to avoid.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener">10 usability heuristics (Nielsen Norman Group) ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-security">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/security/</code><span class="gd-tag gd-security">Security & privacy</span></div>
+        <h4>Threat models and data inventory</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd>Threat models in <code>threat-models/</code> (one per feature or system, following the four questions) and <code>data-inventory.md</code>, which lists every kind of personal data with purpose, storage, access, recipients, retention and legal basis.</dd>
+          <dt>How it works</dt><dd>Written by <code>/threat-model</code> and <code>/privacy-review</code>. Your privacy or legal team confirms purposes, legal bases and retention.</dd>
+          <dt>What you can change</dt><dd><ul><li>List the regulations that apply to you.</li><li>Add your risk rating scale to the threat model template.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Threat Modeling Cheat Sheet ↗</a><a href="https://linddun.org/" target="_blank" rel="noopener">LINDDUN privacy threat modeling ↗</a></dd>
+        </dl>
+      </section>
+      <section class="gd-file" id="doc-operations">
+        <div class="gd-file-head"><code class="gd-path">docs/sdlc/operations/</code><span class="gd-tag gd-ops">DevOps & SRE</span></div>
+        <h4>Operations docs</h4>
+        <dl class="gd-dl">
+          <dt>What it does</dt><dd><code>ci-cd.md</code> (pipeline, environments, deploy and rollback), <code>slos.md</code> (SLIs, SLOs, error budgets and policy), <code>observability.md</code> (logs, metrics, tracing, alerts, on-call), runbooks in <code>runbooks/</code> and deployment plans in <code>deployments/</code>.</dd>
+          <dt>How it works</dt><dd>Read and updated by <code>/ci-pipeline</code>, <code>/deploy-plan</code>, <code>/define-slos</code>, <code>/runbook</code> and <code>/incident</code>. Keep credentials out of these files.</dd>
+          <dt>What you can change</dt><dd><ul><li>Fill in where logs and dashboards live first: every operations command uses it.</li><li>Track the DORA delivery metrics in <code>ci-cd.md</code> if you measure them.</li></ul></dd>
+          <dt>Official docs</dt><dd class="gd-links"><a href="https://sre.google/sre-book/service-level-objectives/" target="_blank" rel="noopener">Google SRE book: service level objectives ↗</a><a href="https://dora.dev/guides/dora-metrics/" target="_blank" rel="noopener">DORA software delivery metrics ↗</a></dd>
+        </dl>
+      </section>
 
       <h2 id="workspace">Workspace edition (several services)</h2>
       <p>For microservices and other multi-repository setups. Instead of installing the kit in every service, clone all your services into one folder and put the kit at its root. Open Claude Code in that folder and it sees every service, so one setup covers them all and Claude can follow a change from one service to the next.</p>
@@ -1287,6 +1584,10 @@ Check branch $ARGUMENTS:
       <h2 id="faq">Frequently asked questions</h2>
       <div class="faq">
         <details>
+          <summary>Which roles does the kit cover?</summary>
+          <p>Developers and testers, plus four optional roles: product owner, UX designer, security and privacy, and DevOps and SRE. Each adds commands, a specialist agent and docs for its phase. The /lifecycle command and docs/sdlc/08-team-and-roles.md tie the phases together and say who should act next.</p>
+        </details>
+        <details>
           <summary>Can I use one kit for several microservices?</summary>
           <p>Yes. Choose the workspace edition, clone all your services into one folder, unzip the kit at the root of that folder and always open Claude Code there. Each service stays its own git repository; the workspace can be shared as a separate small repository with a clone script.</p>
         </details>
@@ -1341,6 +1642,14 @@ Check branch $ARGUMENTS:
         <li><a href="https://martinfowler.com/articles/practical-test-pyramid.html" target="_blank" rel="noopener">The Practical Test Pyramid (Martin Fowler) ↗</a></li>
         <li><a href="https://sre.google/sre-book/postmortem-culture/" target="_blank" rel="noopener">Google SRE book: postmortem culture ↗</a></li>
         <li><a href="https://cli.github.com/manual/gh_pr_create" target="_blank" rel="noopener">GitHub CLI: gh pr create ↗</a></li>
+        <li><a href="https://scrumguides.org/scrum-guide.html" target="_blank" rel="noopener">The Scrum Guide ↗</a></li>
+        <li><a href="https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/" target="_blank" rel="noopener">RICE prioritization (Intercom) ↗</a></li>
+        <li><a href="https://www.nngroup.com/articles/ten-usability-heuristics/" target="_blank" rel="noopener">10 usability heuristics (Nielsen Norman Group) ↗</a></li>
+        <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Threat Modeling Cheat Sheet ↗</a></li>
+        <li><a href="https://linddun.org/" target="_blank" rel="noopener">LINDDUN privacy threat modeling ↗</a></li>
+        <li><a href="https://sre.google/sre-book/service-level-objectives/" target="_blank" rel="noopener">Google SRE book: service level objectives ↗</a></li>
+        <li><a href="https://dora.dev/guides/dora-metrics/" target="_blank" rel="noopener">DORA software delivery metrics ↗</a></li>
+        <li><a href="https://mermaid.js.org/syntax/flowchart.html" target="_blank" rel="noopener">Mermaid flowcharts ↗</a></li>
       </ul>
       <p class="muted">Claude Code changes often. If something here differs from the official documentation, the documentation is right; the kit's version and generation date are at the top of every generated file.</p>
     </article>
