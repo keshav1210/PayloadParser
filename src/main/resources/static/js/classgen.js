@@ -98,7 +98,10 @@ const ClassGen = (() => {
     }
 
     let root;
-    if (Array.isArray(sample)) root = typeOf(sample, 'Roots');
+    if (Array.isArray(sample)) {
+      used.add('Root');
+      root = typeOf(sample, 'RootItems');
+    }
     else if (sample && typeof sample === 'object') root = { k: 'object', cls: objectClass([sample], 'Root') };
     else root = typeOf(sample, 'Root');
     return { classes, root };

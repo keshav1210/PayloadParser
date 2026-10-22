@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Schema Validation: A Practical Guide (2020-12)</title>
+  <meta name="description" content="How to validate JSON with JSON Schema draft 2020-12: types, required fields, strings, numbers, arrays, conditional rules, $defs and $ref, with examples.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/json-schema-validation">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-15">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON Schema validation: a practical guide">
+  <meta property="og:description" content="How to validate JSON with JSON Schema draft 2020-12: types, required fields, strings, numbers, arrays, conditional rules, $defs and $ref, with examples.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/json-schema-validation">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="JSON Schema validation: a practical guide">
+  <meta name="twitter:description" content="How to validate JSON with JSON Schema draft 2020-12: types, required fields, strings, numbers, arrays, conditional rules, $defs and $ref, with examples.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "JSON Schema validation: a practical guide",
+      "description": "How to validate JSON with JSON Schema draft 2020-12: types, required fields, strings, numbers, arrays, conditional rules, $defs and $ref, with examples.",
+      "url": "https://jsonxmleditor.com/blog/json-schema-validation",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/json-schema-validation",
+      "datePublished": "2026-01-15",
+      "dateModified": "2026-10-22",
+      "articleSection": "JSON",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "JSON Schema validation: a practical guide",
+          "item": "https://jsonxmleditor.com/blog/json-schema-validation"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › JSON</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>JSON Schema validation: a practical guide</h1>
+    <p class="meta" style="margin:0;">Updated 22 October 2026 · first published 15 January 2026 · 8 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p>JSON Schema describes what valid JSON looks like: which fields exist, their types, which are required and what values are allowed. Validators then check data against it, so bad requests are rejected with a clear message instead of failing somewhere deep in your code. The same schema documents your API and can generate types and forms.</p>
+<p>This guide uses the current version, <a href="https://json-schema.org/draft/2020-12" target="_blank" rel="noopener">draft 2020-12</a>, which OpenAPI 3.1 also uses.</p>
+
+<h2>A first schema</h2>
+<pre><code>{
+  &quot;$schema&quot;: &quot;https://json-schema.org/draft/2020-12/schema&quot;,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;properties&quot;: {
+    &quot;name&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;minLength&quot;: 1 },
+    &quot;age&quot;: { &quot;type&quot;: &quot;integer&quot;, &quot;minimum&quot;: 0 }
+  },
+  &quot;required&quot;: [&quot;name&quot;],
+  &quot;additionalProperties&quot;: false
+}</code></pre>
+<p><code>{"name": "Ada", "age": 36}</code> is valid. <code>{"age": -1}</code> fails twice (no name, negative age), and <code>{"name": "Ada", "nickname": "A"}</code> fails because <code>additionalProperties: false</code> forbids unknown fields.</p>
+<p>Generate a starting schema from a sample with the <a href="/json-schema">JSON Schema generator</a>, then tighten it by hand.</p>
+
+<h2>Strings</h2>
+<pre><code>{
+  &quot;username&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;minLength&quot;: 3, &quot;maxLength&quot;: 20, &quot;pattern&quot;: &quot;^[a-zA-Z0-9_]+$&quot; },
+  &quot;email&quot;: { &quot;type&quot;: &quot;string&quot;, &quot;format&quot;: &quot;email&quot; },
+  &quot;status&quot;: { &quot;enum&quot;: [&quot;draft&quot;, &quot;active&quot;, &quot;archived&quot;] }
+}</code></pre>
+<p>One surprise: in 2020-12, <code>format</code> is an annotation by default. Many validators only enforce it when you switch format checking on (for example the <code>ajv-formats</code> plugin in Ajv). Use <code>pattern</code> when the check must always run.</p>
+
+<h2>Numbers</h2>
+<pre><code>{
+  &quot;price&quot;: { &quot;type&quot;: &quot;number&quot;, &quot;exclusiveMinimum&quot;: 0, &quot;multipleOf&quot;: 0.01 },
+  &quot;quantity&quot;: { &quot;type&quot;: &quot;integer&quot;, &quot;minimum&quot;: 1, &quot;maximum&quot;: 100 }
+}</code></pre>
+<p><code>integer</code> rejects <code>1.5</code>; <code>number</code> accepts both. Note that <code>multipleOf: 0.01</code> can misjudge some decimals in validators that use floating point, so prices are often sent as integer cents instead.</p>
+
+<h2>Arrays</h2>
+<pre><code>{
+  &quot;tags&quot;: { &quot;type&quot;: &quot;array&quot;, &quot;items&quot;: { &quot;type&quot;: &quot;string&quot; }, &quot;minItems&quot;: 1, &quot;maxItems&quot;: 5, &quot;uniqueItems&quot;: true },
+  &quot;point&quot;: { &quot;type&quot;: &quot;array&quot;, &quot;prefixItems&quot;: [{ &quot;type&quot;: &quot;number&quot; }, { &quot;type&quot;: &quot;number&quot; }], &quot;items&quot;: false }
+}</code></pre>
+<p><code>items</code> applies to every element. For tuples (fixed positions), 2020-12 uses <code>prefixItems</code>; <code>"items": false</code> then forbids extra elements.</p>
+
+<h2>Conditional rules</h2>
+<pre><code>{
+  &quot;if&quot;: { &quot;properties&quot;: { &quot;country&quot;: { &quot;const&quot;: &quot;US&quot; } }, &quot;required&quot;: [&quot;country&quot;] },
+  &quot;then&quot;: { &quot;properties&quot;: { &quot;postcode&quot;: { &quot;pattern&quot;: &quot;^[0-9]{5}$&quot; } } },
+  &quot;else&quot;: { &quot;properties&quot;: { &quot;postcode&quot;: { &quot;type&quot;: &quot;string&quot; } } }
+}</code></pre>
+<p>Put <code>required</code> inside <code>if</code>; otherwise the condition is true whenever <code>country</code> is missing, which is rarely what you want.</p>
+
+<h2>Reusing definitions with $defs and $ref</h2>
+<pre><code>{
+  &quot;$defs&quot;: {
+    &quot;address&quot;: {
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;properties&quot;: { &quot;city&quot;: { &quot;type&quot;: &quot;string&quot; } },
+      &quot;required&quot;: [&quot;city&quot;]
+    }
+  },
+  &quot;properties&quot;: {
+    &quot;billing&quot;: { &quot;$ref&quot;: &quot;#/$defs/address&quot; },
+    &quot;shipping&quot;: { &quot;$ref&quot;: &quot;#/$defs/address&quot; }
+  }
+}</code></pre>
+<p>Combine schemas with <code>allOf</code> (must match all), <code>anyOf</code> (at least one) and <code>oneOf</code> (exactly one). <code>oneOf</code> errors are hard to read, so prefer <code>anyOf</code> unless exclusivity matters.</p>
+
+<h2>Practical tips</h2>
+<ul>
+<li>Add <code>title</code> and <code>description</code> to fields: they become documentation and better error messages.</li>
+<li>Decide deliberately about <code>additionalProperties</code>: <code>false</code> catches typos, but breaks older clients when you add fields.</li>
+<li>Give each schema an <code>$id</code> and version it like code.</li>
+<li>Test the schema with valid and invalid examples; the <a href="/json-schema">validator</a> shows the path of every error.</li>
+</ul>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/json-schema">JSON Schema Generator &amp; Validator</a> · <a href="/json-validator">JSON Validator</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/what-is-json">What is JSON? Full form, syntax rules and examples</a></li>
+      <li><a href="/blog/open-json-in-excel">How to open a JSON file in Excel</a></li>
+      <li><a href="/blog/what-is-jwt">What is a JWT? JSON Web Tokens explained</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>

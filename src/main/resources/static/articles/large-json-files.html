@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working with Large JSON Files: Parse, Stream and View</title>
+  <meta name="description" content="Practical ways to handle large JSON: when JSON.parse is fine, streaming in Node.js and Python, Web Workers in the browser, NDJSON and compression.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/large-json-files">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-05">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Working with large JSON files">
+  <meta property="og:description" content="Practical ways to handle large JSON: when JSON.parse is fine, streaming in Node.js and Python, Web Workers in the browser, NDJSON and compression.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/large-json-files">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Working with large JSON files">
+  <meta name="twitter:description" content="Practical ways to handle large JSON: when JSON.parse is fine, streaming in Node.js and Python, Web Workers in the browser, NDJSON and compression.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "Working with large JSON files",
+      "description": "Practical ways to handle large JSON: when JSON.parse is fine, streaming in Node.js and Python, Web Workers in the browser, NDJSON and compression.",
+      "url": "https://jsonxmleditor.com/blog/large-json-files",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/large-json-files",
+      "datePublished": "2026-01-05",
+      "dateModified": "2026-10-22",
+      "articleSection": "Performance",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Working with large JSON files",
+          "item": "https://jsonxmleditor.com/blog/large-json-files"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › Performance</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>Working with large JSON files</h1>
+    <p class="meta" style="margin:0;">Updated 22 October 2026 · first published 5 January 2026 · 6 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p>A JSON file of a few megabytes is nothing for a modern computer. Problems start in the hundreds of megabytes, or when a large response blocks a web page while it's parsed. Here's what to do at each size.</p>
+
+<h2>Up to tens of megabytes: just parse it</h2>
+<p><code>JSON.parse</code> in browsers and Node.js, and <code>json.loads</code> in Python, are fast native code. Parsing a 20 MB file typically takes a fraction of a second. The cost is memory: the parsed objects take several times the file size. Measure before optimising:</p>
+<pre><code>const t0 = performance.now();
+const data = JSON.parse(text);
+console.log(`parsed in ${Math.round(performance.now() - t0)} ms`);</code></pre>
+
+<h2>In the browser: keep the page responsive</h2>
+<p>Parsing blocks the main thread, so a big response can freeze the page. Move the parsing into a Web Worker:</p>
+<pre><code>// worker.js
+self.onmessage = e =&gt; self.postMessage(JSON.parse(e.data));
+
+// main.js
+const worker = new Worker('worker.js');
+worker.onmessage = e =&gt; render(e.data);
+worker.postMessage(await response.text());</code></pre>
+<p>Passing the result back copies it, which also costs time, so send back only what the page needs (for example the first 1,000 rows or a summary), not the whole object.</p>
+
+<h2>Hundreds of megabytes: stream it</h2>
+<p>Streaming parsers read the file piece by piece and hand you one item at a time, so memory stays flat:</p>
+<pre><code>// Node.js, with the stream-json package
+const { parser } = require('stream-json');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+
+fs.createReadStream('orders.json')
+  .pipe(parser())
+  .pipe(streamArray())
+  .on('data', ({ value }) =&gt; handle(value));</code></pre>
+<pre><code># Python, with the ijson package
+import ijson
+with open(&quot;orders.json&quot;, &quot;rb&quot;) as f:
+    for order in ijson.items(f, &quot;item&quot;):
+        handle(order)</code></pre>
+<p>A reviver function passed to <code>JSON.parse</code> doesn't save memory: the whole text is still parsed first.</p>
+
+<h2>Better: don't produce one giant document</h2>
+<ul>
+<li><strong>Paginate APIs</strong> so clients ask for 100 or 1,000 records at a time.</li>
+<li><strong>Use NDJSON</strong> (one JSON object per line) for exports and logs. Every line parses on its own, files can be split and appended, and tools like <code>jq</code> handle them line by line.</li>
+<li><strong>Compress on the wire.</strong> JSON compresses very well with gzip or Brotli. Enable it on the server; browsers request compressed responses automatically.</li>
+<li><strong>Minify</strong> stored JSON; indentation can add a large share of the size. The <a href="/json-minifier">JSON minifier</a> shows the saving.</li>
+</ul>
+
+<h2>Just need to look inside?</h2>
+<p>To inspect a big file without writing code, open it in the <a href="/json-viewer">JSON viewer</a>, which shows a collapsible tree and lets you search keys and values, or query it with SQL in <a href="/csv-sql">SQL on CSV &amp; JSON</a>. Both run in your browser, so the file isn't uploaded.</p>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/json-viewer">JSON Viewer</a> · <a href="/json-minifier">JSON Minifier</a> · <a href="/csv-sql">SQL on JSON &amp; CSV</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/what-is-json">What is JSON? Full form, syntax rules and examples</a></li>
+      <li><a href="/blog/open-json-in-excel">How to open a JSON file in Excel</a></li>
+      <li><a href="/blog/what-is-jwt">What is a JWT? JSON Web Tokens explained</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>

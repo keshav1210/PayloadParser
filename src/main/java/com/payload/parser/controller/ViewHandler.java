@@ -2,6 +2,7 @@ package com.payload.parser.controller;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.payload.parser.model.ShareMeta;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
@@ -42,6 +43,18 @@ public class ViewHandler {
     @GetMapping("/blogs")
     public String  blogs(){
         return "blogs.html";
+    }
+
+    // Only known articles match; any other /blog/... URL falls through to the 404 page.
+    // The files live in /articles/ so the forward doesn't match this mapping again.
+    @GetMapping("/blog/{slug:what-is-json|open-json-in-excel|what-is-jwt|json-schema-validation|xml-to-json-conversion|large-json-files}")
+    public String article(@PathVariable String slug) {
+        return "/articles/" + slug + ".html";
+    }
+
+    @GetMapping("/about")
+    public String about() {
+        return "about.html";
     }
 
 
@@ -292,6 +305,13 @@ public class ViewHandler {
     @GetMapping("/mapper")
     public String  objectMapper(){
         return "objectconverter.html";
+    }
+
+    // One page per target language, so each can rank for its own search ("json to java pojo" and so on)
+    @GetMapping({"/json-to-java", "/json-to-typescript", "/json-to-go", "/json-to-python", "/json-to-csharp",
+            "/json-to-kotlin"})
+    public String jsonToLanguage(HttpServletRequest request) {
+        return request.getRequestURI().substring(1) + ".html";
     }
     @GetMapping("/429")
     public String tooManyRequests() {

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is JSON? Full Form, Syntax Rules and Examples</title>
+  <meta name="description" content="JSON stands for JavaScript Object Notation. Learn its six data types, the syntax rules that cause most errors, and how to read JSON in JavaScript, Python, Java.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/what-is-json">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-10-22">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="What is JSON? Full form, syntax rules and examples">
+  <meta property="og:description" content="JSON stands for JavaScript Object Notation. Learn its six data types, the syntax rules that cause most errors, and how to read JSON in JavaScript, Python, Java.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/what-is-json">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is JSON? Full form, syntax rules and examples">
+  <meta name="twitter:description" content="JSON stands for JavaScript Object Notation. Learn its six data types, the syntax rules that cause most errors, and how to read JSON in JavaScript, Python, Java.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "What is JSON? Full form, syntax rules and examples",
+      "description": "JSON stands for JavaScript Object Notation. Learn its six data types, the syntax rules that cause most errors, and how to read JSON in JavaScript, Python, Java.",
+      "url": "https://jsonxmleditor.com/blog/what-is-json",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/what-is-json",
+      "datePublished": "2026-10-22",
+      "dateModified": "2026-10-22",
+      "articleSection": "JSON",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What is JSON? Full form, syntax rules and examples",
+          "item": "https://jsonxmleditor.com/blog/what-is-json"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › JSON</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>What is JSON? Full form, syntax rules and examples</h1>
+    <p class="meta" style="margin:0;">Published 22 October 2026 · 6 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p><strong>JSON stands for JavaScript Object Notation.</strong> It's a plain-text format for structured data: objects with named fields, lists, text, numbers and true/false values. Almost every web API sends and receives JSON, and many tools use it for configuration. It started in JavaScript but every mainstream language can read and write it.</p>
+<p>The format is defined by two matching standards, <a href="https://www.rfc-editor.org/rfc/rfc8259" target="_blank" rel="noopener">RFC 8259</a> and <a href="https://ecma-international.org/publications-and-standards/standards/ecma-404/" target="_blank" rel="noopener">ECMA-404</a>. Files use the <code>.json</code> extension and the media type <code>application/json</code>.</p>
+
+<h2>A JSON example</h2>
+<pre><code>{
+  &quot;id&quot;: 101,
+  &quot;name&quot;: &quot;Ada Lovelace&quot;,
+  &quot;active&quot;: true,
+  &quot;balance&quot;: 250.75,
+  &quot;manager&quot;: null,
+  &quot;address&quot;: { &quot;city&quot;: &quot;London&quot;, &quot;postcode&quot;: &quot;N1 9GU&quot; },
+  &quot;tags&quot;: [&quot;admin&quot;, &quot;beta&quot;]
+}</code></pre>
+<p>The whole document is an object (curly braces). Each field is a <em>name</em> in double quotes, a colon and a value. <code>address</code> is a nested object and <code>tags</code> is an array (square brackets).</p>
+
+<h2>The six JSON data types</h2>
+<table>
+<thead><tr><th>Type</th><th>Example</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>String</td><td><code>"London"</code></td><td>Always double quotes. Escape quotes and backslashes with <code>\</code>.</td></tr>
+<tr><td>Number</td><td><code>101</code>, <code>250.75</code>, <code>-3e8</code></td><td>No leading zeros, no <code>NaN</code> or <code>Infinity</code>.</td></tr>
+<tr><td>Boolean</td><td><code>true</code>, <code>false</code></td><td>Lower case only.</td></tr>
+<tr><td>Null</td><td><code>null</code></td><td>"No value". There's no <code>undefined</code>.</td></tr>
+<tr><td>Object</td><td><code>{ "city": "London" }</code></td><td>Unordered name/value pairs; names are strings.</td></tr>
+<tr><td>Array</td><td><code>["admin", "beta"]</code></td><td>Ordered list; items can be any type.</td></tr>
+</tbody>
+</table>
+
+<h2>Syntax rules that cause most errors</h2>
+<ul>
+<li><strong>Double quotes only.</strong> <code>{'name': 'Ada'}</code> is not JSON; it must be <code>{"name": "Ada"}</code>.</li>
+<li><strong>No trailing commas.</strong> <code>[1, 2, 3,]</code> is invalid.</li>
+<li><strong>No comments.</strong> <code>//</code> and <code>/* */</code> aren't allowed. Formats such as JSON5 and JSONC add them, but a strict parser rejects them.</li>
+<li><strong>Names must be quoted.</strong> <code>{name: "Ada"}</code> is a JavaScript object literal, not JSON.</li>
+<li><strong>Special characters in strings must be escaped</strong>: <code>\"</code>, <code>\\</code>, <code>\n</code>, <code>\t</code>, or <code>\uXXXX</code>.</li>
+<li><strong>Use UTF-8.</strong> RFC 8259 requires UTF-8 for JSON exchanged between systems.</li>
+</ul>
+<p>Paste any JSON into the <a href="/json-validator">JSON validator</a> to see each error with its line and column.</p>
+
+<h2>Big numbers lose precision in JavaScript</h2>
+<p>JavaScript stores numbers as 64-bit floating point, so integers above 9,007,199,254,740,991 (2<sup>53</sup> − 1) can silently change when parsed: <code>JSON.parse('{"id": 9007199254740993}')</code> gives <code>9007199254740992</code>. APIs that use 64-bit IDs often send them as strings for this reason.</p>
+
+<h2>Reading JSON in code</h2>
+<p><strong>JavaScript</strong></p>
+<pre><code>const user = JSON.parse(text);
+console.log(user.address.city);
+const out = JSON.stringify(user, null, 2);</code></pre>
+<p><strong>Python</strong></p>
+<pre><code>import json
+user = json.loads(text)
+print(user[&quot;address&quot;][&quot;city&quot;])
+out = json.dumps(user, indent=2)</code></pre>
+<p><strong>Java (Jackson)</strong></p>
+<pre><code>ObjectMapper mapper = new ObjectMapper();
+JsonNode user = mapper.readTree(text);
+System.out.println(user.get(&quot;address&quot;).get(&quot;city&quot;).asText());</code></pre>
+<p>To work with typed objects instead, generate classes from a sample with <a href="/json-to-java">JSON to Java</a>, <a href="/json-to-typescript">JSON to TypeScript</a> or <a href="/json-to-python">JSON to Python</a>.</p>
+
+<h2>JSON vs XML in one table</h2>
+<table>
+<thead><tr><th></th><th>JSON</th><th>XML</th></tr></thead>
+<tbody>
+<tr><td>Typical use</td><td>Web APIs, configuration</td><td>Documents, SOAP, enterprise integration</td></tr>
+<tr><td>Data types</td><td>String, number, boolean, null, object, array</td><td>Everything is text unless a schema says otherwise</td></tr>
+<tr><td>Attributes, namespaces, comments</td><td>No</td><td>Yes</td></tr>
+<tr><td>Size</td><td>Smaller</td><td>Larger (closing tags)</td></tr>
+</tbody>
+</table>
+<p>Need to move between them? Use <a href="/xml-to-json">XML to JSON</a> or <a href="/json-to-xml">JSON to XML</a>, and read <a href="/blog/xml-to-json-conversion">XML to JSON conversion: the decisions that matter</a>.</p>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/json-validator">JSON Validator</a> · <a href="/json-parser">JSON Formatter</a> · <a href="/json-viewer">JSON Viewer</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/open-json-in-excel">How to open a JSON file in Excel</a></li>
+      <li><a href="/blog/what-is-jwt">What is a JWT? JSON Web Tokens explained</a></li>
+      <li><a href="/blog/json-schema-validation">JSON Schema validation: a practical guide</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>

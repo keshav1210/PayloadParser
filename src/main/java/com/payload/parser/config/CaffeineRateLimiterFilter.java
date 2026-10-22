@@ -30,8 +30,9 @@ public class CaffeineRateLimiterFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        // Keep-alive and uptime pings: no rate limit, no cookie
-        if ("/ping".equals(req.getRequestURI())) {
+        // Keep-alive and uptime pings, and static files: no rate limit, no cookie. A Set-Cookie header
+        // would stop Cloudflare and browsers from caching CSS, scripts and images.
+        if ("/ping".equals(req.getRequestURI()) || StaticCacheFilter.isStaticAsset(req.getRequestURI())) {
             chain.doFilter(request, response);
             return;
         }

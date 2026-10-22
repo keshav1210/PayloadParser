@@ -578,6 +578,12 @@ public class Address
       }
 
       document.addEventListener('DOMContentLoaded', () => {
+        const preset = document.body.dataset.output;
+        const outputSelect = document.getElementById('outputLang');
+        if (preset && outputSelect.querySelector(`option[value="${preset}"]`)) {
+          outputSelect.value = preset;
+          updateOutputPlaceholder();
+        }
         checkAndLoadSharedDrop();
       });
 

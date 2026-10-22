@@ -6,6 +6,8 @@ Disallow: /shared/
 Disallow: /actuator/
 Disallow: /error
 Disallow: /429
+# Article files are served at /blog/<slug>; block the duplicate file URLs
+Disallow: /articles/
 
 # Block AI training crawlers
 User-agent: GPTBot

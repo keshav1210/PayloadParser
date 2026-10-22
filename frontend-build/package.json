@@ -4,7 +4,8 @@
   "description": "Minifies and obfuscates src/main/resources/static for production builds",
   "type": "module",
   "scripts": {
-    "build": "node build.mjs ../src/main/resources/static ./dist"
+    "build": "node build.mjs ../src/main/resources/static ./dist",
+    "indexnow": "node indexnow.mjs"
   },
   "engines": {
     "node": ">=18"

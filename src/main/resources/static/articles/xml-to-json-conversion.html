@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XML to JSON Conversion: Attributes, Arrays and Types</title>
+  <meta name="description" content="XML and JSON don't map one to one. How to handle attributes, text, repeated elements, data types and namespaces when converting XML to JSON, with examples.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/xml-to-json-conversion">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-01-10">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="XML to JSON conversion: the decisions that matter">
+  <meta property="og:description" content="XML and JSON don't map one to one. How to handle attributes, text, repeated elements, data types and namespaces when converting XML to JSON, with examples.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/xml-to-json-conversion">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XML to JSON conversion: the decisions that matter">
+  <meta name="twitter:description" content="XML and JSON don't map one to one. How to handle attributes, text, repeated elements, data types and namespaces when converting XML to JSON, with examples.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "XML to JSON conversion: the decisions that matter",
+      "description": "XML and JSON don't map one to one. How to handle attributes, text, repeated elements, data types and namespaces when converting XML to JSON, with examples.",
+      "url": "https://jsonxmleditor.com/blog/xml-to-json-conversion",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/xml-to-json-conversion",
+      "datePublished": "2026-01-10",
+      "dateModified": "2026-10-22",
+      "articleSection": "XML",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "XML to JSON conversion: the decisions that matter",
+          "item": "https://jsonxmleditor.com/blog/xml-to-json-conversion"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › XML</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>XML to JSON conversion: the decisions that matter</h1>
+    <p class="meta" style="margin:0;">Updated 22 October 2026 · first published 10 January 2026 · 6 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p>Converting XML to JSON looks simple until you meet attributes, repeated elements and namespaces. XML has features JSON doesn't, so every converter makes choices. Knowing them helps you get JSON that your code can rely on.</p>
+
+<h2>Where XML and JSON differ</h2>
+<ul>
+<li>XML elements can have <strong>attributes</strong>; JSON only has fields.</li>
+<li>An XML element can hold <strong>text and child elements</strong> at the same time (mixed content).</li>
+<li>XML doesn't say whether an element is <strong>a list or a single item</strong>; JSON arrays do.</li>
+<li>XML values are all <strong>text</strong>; JSON has numbers, booleans and null.</li>
+<li>XML has <strong>namespaces</strong> and keeps element order; JSON objects are unordered.</li>
+</ul>
+
+<h2>Attributes</h2>
+<p>The common convention, and the one the <a href="/xml-to-json">XML to JSON converter</a> on this site uses, is to prefix attribute names with <code>@</code>:</p>
+<pre><code>&lt;person id=&quot;123&quot; name=&quot;Ada&quot;&gt;
+  &lt;age&gt;36&lt;/age&gt;
+&lt;/person&gt;
+
+{ &quot;person&quot;: { &quot;@id&quot;: &quot;123&quot;, &quot;@name&quot;: &quot;Ada&quot;, &quot;age&quot;: &quot;36&quot; } }</code></pre>
+
+<h2>Text next to attributes</h2>
+<p>When an element has attributes and text, the text needs a field of its own, usually <code>#text</code>:</p>
+<pre><code>&lt;price currency=&quot;EUR&quot;&gt;99.99&lt;/price&gt;
+
+{ &quot;price&quot;: { &quot;@currency&quot;: &quot;EUR&quot;, &quot;#text&quot;: &quot;99.99&quot; } }</code></pre>
+
+<h2>Repeated elements become arrays, single ones don't</h2>
+<pre><code>&lt;items&gt;&lt;item&gt;Apple&lt;/item&gt;&lt;item&gt;Banana&lt;/item&gt;&lt;/items&gt;
+{ &quot;items&quot;: { &quot;item&quot;: [&quot;Apple&quot;, &quot;Banana&quot;] } }
+
+&lt;items&gt;&lt;item&gt;Apple&lt;/item&gt;&lt;/items&gt;
+{ &quot;items&quot;: { &quot;item&quot;: &quot;Apple&quot; } }</code></pre>
+<p>This is the classic trap: the same field is an array in one response and a string in another, and code that loops over it breaks. Fix it where you consume the data (always wrap the value in an array if it isn't one), or use a converter that lets you list the elements that must always be arrays.</p>
+
+<h2>Data types</h2>
+<p>A converter that only sees XML can't know whether <code>&lt;zip&gt;01234&lt;/zip&gt;</code> is a number or text, and guessing breaks leading zeros and long IDs. Keeping values as strings (as above) is the safe default; convert the fields you know are numbers or booleans in your code, or use the XML Schema if there is one.</p>
+
+<h2>Namespaces</h2>
+<p>Prefixed names such as <code>soap:Envelope</code> are usually kept as they are, with the <code>xmlns</code> declarations as attributes:</p>
+<pre><code>{ &quot;soap:Envelope&quot;: { &quot;@xmlns:soap&quot;: &quot;http://schemas.xmlsoap.org/soap/envelope/&quot;, &quot;soap:Body&quot;: { } } }</code></pre>
+<p>If your code shouldn't depend on prefixes (they can change while the namespace stays the same), strip them in one place after converting.</p>
+
+<h2>A checklist</h2>
+<ol>
+<li>Validate the XML first; a broken document produces broken JSON. The <a href="/xml-parser">XML formatter</a> shows where.</li>
+<li>Agree on one convention for attributes and text, and document it.</li>
+<li>List the elements that can repeat and treat them as arrays everywhere.</li>
+<li>Convert types explicitly instead of trusting guesses.</li>
+<li>For round trips (JSON back to XML), keep the <code>@</code> and <code>#text</code> fields so <a href="/json-to-xml">JSON to XML</a> can rebuild attributes.</li>
+</ol>
+<p>In code, popular libraries are xml2js and fast-xml-parser (Node.js), xmltodict (Python) and Jackson's XmlMapper (Java). Check their options for attribute prefixes and forced arrays.</p>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/xml-to-json">XML to JSON</a> · <a href="/json-to-xml">JSON to XML</a> · <a href="/xml-parser">XML Formatter</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/what-is-json">What is JSON? Full form, syntax rules and examples</a></li>
+      <li><a href="/blog/open-json-in-excel">How to open a JSON file in Excel</a></li>
+      <li><a href="/blog/what-is-jwt">What is a JWT? JSON Web Tokens explained</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Is a JWT? JSON Web Tokens Explained with Examples</title>
+  <meta name="description" content="JWT stands for JSON Web Token. See how the header, payload and signature work, what claims like exp and aud mean, and how to decode a token safely.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/what-is-jwt">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-10-22">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="What is a JWT? JSON Web Tokens explained">
+  <meta property="og:description" content="JWT stands for JSON Web Token. See how the header, payload and signature work, what claims like exp and aud mean, and how to decode a token safely.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/what-is-jwt">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What is a JWT? JSON Web Tokens explained">
+  <meta name="twitter:description" content="JWT stands for JSON Web Token. See how the header, payload and signature work, what claims like exp and aud mean, and how to decode a token safely.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "What is a JWT? JSON Web Tokens explained",
+      "description": "JWT stands for JSON Web Token. See how the header, payload and signature work, what claims like exp and aud mean, and how to decode a token safely.",
+      "url": "https://jsonxmleditor.com/blog/what-is-jwt",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/what-is-jwt",
+      "datePublished": "2026-10-22",
+      "dateModified": "2026-10-22",
+      "articleSection": "Security",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What is a JWT? JSON Web Tokens explained",
+          "item": "https://jsonxmleditor.com/blog/what-is-jwt"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › Security</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>What is a JWT? JSON Web Tokens explained</h1>
+    <p class="meta" style="margin:0;">Published 22 October 2026 · 7 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p><strong>JWT stands for JSON Web Token</strong>, a compact way to pass a set of claims (facts such as "this is user 42, and this token expires at 10:30") between two parties, defined in <a href="https://www.rfc-editor.org/rfc/rfc7519" target="_blank" rel="noopener">RFC 7519</a>. Most JWTs are <em>signed</em>, so the receiver can check that nobody changed them. They're widely used as access tokens in OAuth 2.0 and OpenID Connect and in single sign-on.</p>
+
+<h2>What a JWT looks like</h2>
+<p>A signed JWT is three Base64URL-encoded parts joined by dots: <code>header.payload.signature</code>.</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.eyJzdWIiOiI0MiIsIm5hbWUiOiJBZGEiLCJpYXQiOjE3OTI0OTEyMDAsImV4cCI6MTc5MjQ5NDgwMH0
+.&lt;signature&gt;</code></pre>
+<p>Decoding the first two parts gives plain JSON:</p>
+<pre><code>Header:  { &quot;alg&quot;: &quot;HS256&quot;, &quot;typ&quot;: &quot;JWT&quot; }
+Payload: { &quot;sub&quot;: &quot;42&quot;, &quot;name&quot;: &quot;Ada&quot;, &quot;iat&quot;: 1792491200, &quot;exp&quot;: 1792494800 }</code></pre>
+<p>The <strong>header</strong> says how the token is signed. The <strong>payload</strong> holds the claims. The <strong>signature</strong> is computed over the first two parts with a secret (HS256) or a private key (RS256, ES256), so changing a single character of the payload makes it invalid.</p>
+
+<h2>The standard claims</h2>
+<table>
+<thead><tr><th>Claim</th><th>Name</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>iss</code></td><td>Issuer</td><td>Who created the token, e.g. your identity provider's URL</td></tr>
+<tr><td><code>sub</code></td><td>Subject</td><td>Who the token is about, usually a user ID</td></tr>
+<tr><td><code>aud</code></td><td>Audience</td><td>Which API or app the token is meant for</td></tr>
+<tr><td><code>exp</code></td><td>Expiration time</td><td>After this moment the token must be rejected</td></tr>
+<tr><td><code>nbf</code></td><td>Not before</td><td>Before this moment the token must be rejected</td></tr>
+<tr><td><code>iat</code></td><td>Issued at</td><td>When the token was created</td></tr>
+<tr><td><code>jti</code></td><td>JWT ID</td><td>A unique ID, useful for blocking replays</td></tr>
+</tbody>
+</table>
+<p>Times are <em>NumericDate</em> values: seconds since 1 January 1970 UTC. Paste one into the <a href="/timestamp-converter">timestamp converter</a> to see the date, or use the <a href="/jwt-decoder">JWT decoder</a>, which shows them as dates and tells you whether the token has expired.</p>
+
+<h2>Signed is not encrypted</h2>
+<p>Anyone who has a signed JWT can read its payload: Base64URL is an encoding, not encryption. Never put passwords, card numbers or other secrets in a JWT. If the contents must be hidden, use an encrypted token (JWE) instead.</p>
+
+<h2>Checking a JWT properly</h2>
+<p>Decoding only shows what a token says; it doesn't prove anything. Before trusting a token, a server must:</p>
+<ol>
+<li>Verify the signature with the expected key, and only accept the algorithm it expects. Never accept <code>"alg": "none"</code>.</li>
+<li>Check <code>exp</code> and <code>nbf</code>, allowing at most a minute or so of clock skew.</li>
+<li>Check that <code>iss</code> and <code>aud</code> are the values your API expects.</li>
+</ol>
+<p>Use a maintained library for this (for example jjwt or Nimbus in Java, jsonwebtoken or jose in Node.js, PyJWT in Python) instead of writing the checks yourself.</p>
+
+<h2>Is it safe to paste a token into a decoder?</h2>
+<p>Treat a valid token like a password until it expires: whoever holds it can call the API as that user. Only paste tokens into tools that decode locally. The <a href="/jwt-decoder">JWT decoder</a> on this site runs in your browser and doesn't send the token anywhere. Also keep tokens out of URLs and logs, where they're easily leaked.</p>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/jwt-decoder">JWT Decoder</a> · <a href="/timestamp-converter">Timestamp Converter</a> · <a href="/encode-decode">Base64 Decoder</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/what-is-json">What is JSON? Full form, syntax rules and examples</a></li>
+      <li><a href="/blog/open-json-in-excel">How to open a JSON file in Excel</a></li>
+      <li><a href="/blog/json-schema-validation">JSON Schema validation: a practical guide</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>

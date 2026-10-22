@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Open a JSON File in Excel (3 Easy Ways)</title>
+  <meta name="description" content="Three ways to get JSON into Excel: Power Query's From JSON import, converting JSON to an .xlsx file online, or JSON to CSV. With tips for nested data.">
+  <link rel="canonical" href="https://jsonxmleditor.com/blog/open-json-in-excel">
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2026-10-22">
+  <meta property="article:modified_time" content="2026-10-22">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="How to open a JSON file in Excel">
+  <meta property="og:description" content="Three ways to get JSON into Excel: Power Query's From JSON import, converting JSON to an .xlsx file online, or JSON to CSV. With tips for nested data.">
+  <meta property="og:url" content="https://jsonxmleditor.com/blog/open-json-in-excel">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to open a JSON file in Excel">
+  <meta name="twitter:description" content="Three ways to get JSON into Excel: Power Query's From JSON import, converting JSON to an .xlsx file online, or JSON to CSV. With tips for nested data.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/learnings.png">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+    <script src="/js/theme.js?v=1"></script>
+    <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "How to open a JSON file in Excel",
+      "description": "Three ways to get JSON into Excel: Power Query's From JSON import, converting JSON to an .xlsx file online, or JSON to CSV. With tips for nested data.",
+      "url": "https://jsonxmleditor.com/blog/open-json-in-excel",
+      "mainEntityOfPage": "https://jsonxmleditor.com/blog/open-json-in-excel",
+      "datePublished": "2026-10-22",
+      "dateModified": "2026-10-22",
+      "articleSection": "Excel",
+      "image": "https://jsonxmleditor.com/og/learnings.png",
+      "author": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "JSON XML Editor",
+        "url": "https://jsonxmleditor.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://jsonxmleditor.com/favicon.png"
+        }
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://jsonxmleditor.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://jsonxmleditor.com/blogs"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "How to open a JSON file in Excel",
+          "item": "https://jsonxmleditor.com/blog/open-json-in-excel"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+<div id="header"></div>
+
+<main class="page page-narrow">
+  <nav class="meta" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/blogs">Blog</a> › Excel</nav>
+  <section class="page-hero" style="text-align:left;padding-bottom:28px;">
+    <h1>How to open a JSON file in Excel</h1>
+    <p class="meta" style="margin:0;">Published 22 October 2026 · 5 min read · By the <a href="/about">JSON XML Editor</a> team</p>
+  </section>
+
+  <article class="prose">
+<p>Excel doesn't open <code>.json</code> files with a double-click the way it opens CSV, but there are three reliable ways to get JSON data into a spreadsheet. Which one is best depends on your Excel version and how nested the data is.</p>
+
+<h2>1. Power Query: Data → Get Data → From JSON</h2>
+<p>Excel for Microsoft 365 and Excel 2016 or later on Windows can import JSON with Power Query:</p>
+<ol>
+<li>Go to <strong>Data → Get Data → From File → From JSON</strong> and pick the file.</li>
+<li>The Power Query editor opens. If the file is a list, click <strong>To Table</strong> (accept the defaults).</li>
+<li>Click the <strong>expand</strong> button (two arrows) in the column header and choose the fields you want. Repeat for nested objects.</li>
+<li>Click <strong>Close &amp; Load</strong>. The data lands in a table, and <strong>Refresh</strong> re-reads the file later.</li>
+</ol>
+<p>This is the best choice when the same JSON file is updated regularly. Menu names differ slightly between versions, and on a Mac the JSON connector depends on your Excel version; if you don't see it, use one of the next two methods.</p>
+
+<h2>2. Convert JSON to an Excel file online</h2>
+<p>Paste the JSON into the <a href="/excel-converter">Excel converter</a> and download an <code>.xlsx</code> workbook. It works in any Excel version, including Excel for Mac and Excel on the web, and the conversion runs in your browser, so the data stays on your computer.</p>
+
+<h2>3. Convert JSON to CSV, then open the CSV</h2>
+<p>The <a href="/json-to-csv">JSON to CSV converter</a> flattens nested fields into columns such as <code>address.city</code>, so every value gets its own column. Download the CSV and open it in Excel, Google Sheets or LibreOffice.</p>
+
+<h2>What works best for which JSON</h2>
+<table>
+<thead><tr><th>Your JSON</th><th>Best method</th></tr></thead>
+<tbody>
+<tr><td>An array of flat objects (<code>[{"id":1,"name":"Ada"}, …]</code>)</td><td>Any of the three</td></tr>
+<tr><td>Nested objects (<code>address.city</code>)</td><td>JSON to CSV (flattens automatically) or Power Query (expand each level)</td></tr>
+<tr><td>Arrays inside each record (<code>"tags": ["a","b"]</code>)</td><td>Power Query (expand to new rows) or decide how to join them first</td></tr>
+<tr><td>A file that changes every day</td><td>Power Query, so you can refresh</td></tr>
+<tr><td>A one-off paste from an API response</td><td>Online converter</td></tr>
+</tbody>
+</table>
+
+<h2>Common problems</h2>
+<ul>
+<li><strong>"We found a problem with some content" or nothing loads:</strong> the JSON is probably invalid. Check it with the <a href="/json-validator">JSON validator</a> first.</li>
+<li><strong>Long numbers turn into 1.23E+15:</strong> Excel shows numbers with more than 11 digits in scientific notation and keeps only 15 significant digits. Format ID and phone columns as Text.</li>
+<li><strong>Accented characters look wrong in CSV:</strong> open the CSV through <strong>Data → From Text/CSV</strong> and pick UTF-8, or use the <code>.xlsx</code> route.</li>
+<li><strong>You only need one part of a big file:</strong> explore it in the <a href="/json-viewer">JSON viewer</a> and copy just that array.</li>
+</ul>
+
+    <div class="notice">
+      <p><strong>Try it:</strong> <a href="/excel-converter">Excel Converter</a> · <a href="/json-to-csv">JSON to CSV</a> · <a href="/json-viewer">JSON Viewer</a>. Free, no sign-up.</p>
+    </div>
+
+    <h2>More articles</h2>
+    <ul>
+      <li><a href="/blog/what-is-json">What is JSON? Full form, syntax rules and examples</a></li>
+      <li><a href="/blog/what-is-jwt">What is a JWT? JSON Web Tokens explained</a></li>
+      <li><a href="/blog/json-schema-validation">JSON Schema validation: a practical guide</a></li>
+    </ul>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=16"></script>
+</body>
+</html>
