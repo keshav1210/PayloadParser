@@ -168,6 +168,18 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
     setTimeout(() => { btn.textContent = t; }, 1300);
   }
 
+  function setExpanded(pane) {
+    els.layout.querySelectorAll('.pane').forEach(p => {
+      const on = p === pane;
+      p.classList.toggle('md-full', on);
+      const btn = p.querySelector('[data-expand]');
+      btn.setAttribute('aria-pressed', String(on));
+      btn.textContent = on ? '✕ Close' : '⤢ Expand';
+    });
+    document.body.classList.toggle('md-noscroll', !!pane);
+    if (pane && pane.contains(els.input)) els.input.focus();
+  }
+
   function setView(v) {
     els.layout.dataset.view = v;
     document.querySelectorAll('[data-md-view]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mdView === v)));
@@ -184,6 +196,13 @@ input[type=checkbox]{margin-right:6px}li:has(>input[type=checkbox]){list-style:n
     els.breaks.addEventListener('change', render);
     document.querySelectorAll('[data-md]').forEach(b => b.addEventListener('click', () => ACTIONS[b.dataset.md]()));
     document.querySelectorAll('[data-md-view]').forEach(b => b.addEventListener('click', () => setView(b.dataset.mdView)));
+    els.layout.querySelectorAll('[data-expand]').forEach(b => b.addEventListener('click', () => {
+      const pane = b.closest('.pane');
+      setExpanded(pane.classList.contains('md-full') ? null : pane);
+    }));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && els.layout.querySelector('.md-full')) setExpanded(null);
+    });
     els.input.addEventListener('keydown', e => {
       if (!(e.ctrlKey || e.metaKey)) {
         if (e.key === 'Tab') { e.preventDefault(); els.input.setRangeText('  ', els.input.selectionStart, els.input.selectionEnd, 'end'); schedule(); }

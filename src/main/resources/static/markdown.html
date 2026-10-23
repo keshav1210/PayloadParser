@@ -21,7 +21,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=10">
+  <link rel="stylesheet" href="/css/tools.css?v=11">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -181,12 +181,17 @@
           <label class="mini-btn file-btn">Open<input type="file" id="mdOpen" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden></label>
           <button type="button" class="mini-btn" id="mdSample">Sample</button>
           <button type="button" class="mini-btn" id="mdClear">Clear</button>
+          <button type="button" class="mini-btn md-expand" data-expand aria-pressed="false" title="Expand the editor (Esc to close)">⤢ Expand</button>
         </span>
       </div>
       <textarea id="mdInput" class="code-input md-input" spellcheck="true" aria-label="Markdown"></textarea>
     </section>
     <section class="pane md-view">
-      <div class="pane-head">Preview <span class="muted" id="mdStats"></span></div>
+      <div class="pane-head">Preview <span class="muted" id="mdStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn md-expand" data-expand aria-pressed="false" title="Expand the preview (Esc to close)">⤢ Expand</button>
+        </span>
+      </div>
       <div id="mdPreview" class="md-preview prose"></div>
     </section>
   </div>
@@ -320,6 +325,6 @@
 <script src="/js/layout-loader.js?v=16"></script>
 <script src="/js/vendor/marked.min.js?v=14.1.4"></script>
 <script src="/js/vendor/purify.min.js?v=3.2.4"></script>
-<script src="/js/markdown.js?v=2"></script>
+<script src="/js/markdown.js?v=3"></script>
 </body>
 </html>
