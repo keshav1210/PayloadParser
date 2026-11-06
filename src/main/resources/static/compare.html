@@ -17,6 +17,8 @@
   <meta property="og:url" content="https://jsonxmleditor.com/compare">
   <meta property="og:image" content="https://jsonxmleditor.com/og/compare.png">
   <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JSON &amp; XML Compare – JSON XML Editor">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JSON Diff Online – Compare Two JSON &amp; XML Files">
   <meta name="twitter:description" content="Semantic JSON and XML diff tool to compare two files side-by-side, ignoring key order and tracking path changes.">
@@ -24,7 +26,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=11">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -171,6 +173,23 @@
       <li>Finding why a snapshot test failed without scrolling through a thousand-line text diff.</li>
     </ul>
 
+    <h2>Comparing JSON responses in tests</h2>
+    <p>Once you know what should match, put the check in a test. These compare parsed data, so key order and formatting don't matter:</p>
+    <pre><code>// JavaScript (Jest)
+expect(actual).toEqual(expected);
+
+// Java (JSONAssert): LENIENT ignores extra fields and array order
+JSONAssert.assertEquals(expectedJson, actualJson, JSONCompareMode.LENIENT);
+
+# Python
+assert json.loads(actual) == json.loads(expected)
+from deepdiff import DeepDiff          # pip install deepdiff
+print(DeepDiff(old, new, ignore_order=True))
+
+# Command line: sort keys, then diff
+diff &lt;(jq -S . old.json) &lt;(jq -S . new.json)</code></pre>
+    <p>Fields that change on every call, such as timestamps, request IDs or tokens, will always show up as changed. Skip those paths when you read the result, or leave them out of the assertion.</p>
+
     <h2>Frequently asked questions</h2>
     <div class="faq">
       <details>
@@ -194,7 +213,7 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=16"></script>
+<script src="/js/layout-loader.js?v=17"></script>
 <script src="/js/repair.js?v=5"></script>
 <script src="/js/jsonxmlformatter.js?v=7"></script>
 <script src="/js/compare.js?v=1"></script>

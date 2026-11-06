@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/js/theme.js?v=1"></script>
-  <title>Number Base Converter – Hex, Binary, Decimal &amp; Octal</title>
+  <title>Hex, Binary &amp; Decimal Converter – Number Base Converter</title>
   <meta name="description" content="Free number base converter. Convert between binary, octal, decimal, hex and any base from 2 to 36, with two's complement and bit views.">
   <meta name="keywords" content="number base converter, hex to decimal, binary to decimal, decimal to binary converter, binary to hex, base converter online, octal to decimal, hex converter, two's complement converter">
   <link rel="canonical" href="https://jsonxmleditor.com/number-base-converter">
@@ -12,16 +12,21 @@
   <meta name="theme-color" content="#111317">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JSON XML Editor">
-  <meta property="og:title" content="Number Base Converter – Hex, Binary, Decimal &amp; Octal">
+  <meta property="og:title" content="Hex, Binary &amp; Decimal Converter – Number Base Converter">
   <meta property="og:description" content="Convert numbers between binary, octal, decimal, hex, and bases 2 through 36 with two's complement views.">
   <meta property="og:url" content="https://jsonxmleditor.com/number-base-converter">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/number-base-converter.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Number Base Converter – JSON XML Editor">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/number-base-converter.png">
   <meta name="twitter:title" content="Number Base Converter – Hex, Binary, Decimal &amp; Octal">
   <meta name="twitter:description" content="Convert numbers between binary, octal, decimal, hex, and bases 2 through 36 with two's complement views.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=11">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -165,6 +170,64 @@
 <h2>How number bases work</h2>
     <p>A base (or radix) is how many digits a number system uses. Decimal uses ten (0–9), binary two (0 and 1), octal eight (0–7) and hexadecimal sixteen (0–9 then A–F). Each position is worth the base times the position to its right, so hex <code>2F</code> is 2 × 16 + 15 = 47.</p>
 
+    <h2>Hex to decimal: the formula with an example</h2>
+    <p>Multiply each hex digit by 16 raised to its position, counting from 0 on the right, and add the results. A to F stand for 10 to 15. For <code>1A3F</code>:</p>
+    <pre><code>1 × 16³ = 1 × 4096 = 4096
+A × 16² = 10 × 256 = 2560
+3 × 16¹ =  3 × 16  =   48
+F × 16⁰ = 15 × 1   =   15
+                     ----
+                     6719</code></pre>
+
+    <h2>Binary to decimal with an example</h2>
+    <p>Same idea with powers of 2: write 1, 2, 4, 8, 16… under the digits from the right and add the ones that sit under a 1. For <code>101101</code>: 32 + 8 + 4 + 1 = <strong>45</strong>.</p>
+
+    <h2>Decimal to hex or binary</h2>
+    <p>Divide by the target base repeatedly and write down the remainders; read them from the last to the first. 6719 to hex: 6719 ÷ 16 = 419 remainder 15 (F), 419 ÷ 16 = 26 remainder 3, 26 ÷ 16 = 1 remainder 10 (A), 1 ÷ 16 = 0 remainder 1, so the answer is <code>1A3F</code>. For binary, divide by 2 instead: 45 gives the remainders 1, 0, 1, 1, 0, 1, read backwards as <code>101101</code>.</p>
+
+    <h2>Conversion table: 0 to 15</h2>
+    <p>One hex digit is exactly four binary digits, so this table is all you need to convert between hex and binary by hand: <code>0x2F</code> is <code>0010 1111</code>.</p>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Decimal</th><th>Binary</th><th>Octal</th><th>Hex</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td><code>0000</code></td><td>0</td><td><code>0</code></td></tr>
+        <tr><td>1</td><td><code>0001</code></td><td>1</td><td><code>1</code></td></tr>
+        <tr><td>2</td><td><code>0010</code></td><td>2</td><td><code>2</code></td></tr>
+        <tr><td>3</td><td><code>0011</code></td><td>3</td><td><code>3</code></td></tr>
+        <tr><td>4</td><td><code>0100</code></td><td>4</td><td><code>4</code></td></tr>
+        <tr><td>5</td><td><code>0101</code></td><td>5</td><td><code>5</code></td></tr>
+        <tr><td>6</td><td><code>0110</code></td><td>6</td><td><code>6</code></td></tr>
+        <tr><td>7</td><td><code>0111</code></td><td>7</td><td><code>7</code></td></tr>
+        <tr><td>8</td><td><code>1000</code></td><td>10</td><td><code>8</code></td></tr>
+        <tr><td>9</td><td><code>1001</code></td><td>11</td><td><code>9</code></td></tr>
+        <tr><td>10</td><td><code>1010</code></td><td>12</td><td><code>A</code></td></tr>
+        <tr><td>11</td><td><code>1011</code></td><td>13</td><td><code>B</code></td></tr>
+        <tr><td>12</td><td><code>1100</code></td><td>14</td><td><code>C</code></td></tr>
+        <tr><td>13</td><td><code>1101</code></td><td>15</td><td><code>D</code></td></tr>
+        <tr><td>14</td><td><code>1110</code></td><td>16</td><td><code>E</code></td></tr>
+        <tr><td>15</td><td><code>1111</code></td><td>17</td><td><code>F</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Hex values worth knowing</h2>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Hex</th><th>Decimal</th><th>Where you see it</th></tr></thead>
+      <tbody>
+        <tr><td><code>7F</code></td><td>127</td><td>Largest signed byte, the last ASCII character</td></tr>
+        <tr><td><code>FF</code></td><td>255</td><td>Largest byte; full colour channel in <code>#FFFFFF</code></td></tr>
+        <tr><td><code>100</code></td><td>256</td><td>Number of values in one byte</td></tr>
+        <tr><td><code>3E8</code></td><td>1000</td><td></td></tr>
+        <tr><td><code>FFFF</code></td><td>65,535</td><td>Largest 16-bit value, highest port number</td></tr>
+        <tr><td><code>7FFFFFFF</code></td><td>2,147,483,647</td><td>Largest 32-bit signed integer (Java <code>Integer.MAX_VALUE</code>)</td></tr>
+        <tr><td><code>FFFFFFFF</code></td><td>4,294,967,295</td><td>Largest 32-bit unsigned integer</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>A hex colour is three bytes: <code>#2F6FED</code> is red <code>2F</code> = 47, green <code>6F</code> = 111 and blue <code>ED</code> = 237.</p>
+
     <h2>Where you meet each base</h2>
     <ul>
       <li><strong>Binary</strong>: bit flags, network masks, bitwise operations and hardware registers.</li>
@@ -246,7 +309,7 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=16"></script>
+<script src="/js/layout-loader.js?v=17"></script>
 <script src="/js/numbase.js?v=1"></script>
 </body>
 </html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>URL Encode and Decode Online – Percent Encoding</title>
+  <meta name="description" content="URL encode and decode text online with UTF-8 percent encoding. Handles + as a space, query strings and clear errors for broken % codes.">
+  <meta name="keywords" content="url encode, url decode, url encoder, url decoder online, percent encoding, encode url online, decode url, urlencode, encodeURIComponent">
+  <link rel="canonical" href="https://jsonxmleditor.com/url-encode">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="URL Encode and Decode Online – Percent Encoding">
+  <meta property="og:description" content="URL encode and decode text online with UTF-8 percent encoding. Handles + as a space, query strings and clear errors for broken % codes.">
+  <meta property="og:url" content="https://jsonxmleditor.com/url-encode">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/url-encode.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="URL Encoder and Decoder – JSON XML Editor">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="URL Encode and Decode Online – Percent Encoding">
+  <meta name="twitter:description" content="URL encode and decode text online with UTF-8 percent encoding. Handles + as a space, query strings and clear errors for broken % codes.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/url-encode.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "URL Encoder and Decoder",
+      "url": "https://jsonxmleditor.com/url-encode",
+      "description": "URL encode and decode text online with UTF-8 percent encoding. Handles + as a space, query strings and clear errors for broken % codes.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "URL Encode / Decode", "item": "https://jsonxmleditor.com/url-encode" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "What is URL encoding?", "acceptedAnswer": { "@type": "Answer", "text": "URL encoding, or percent encoding, writes characters that aren&#39;t allowed in a URL as % followed by two hex digits for each UTF-8 byte. A space becomes %20 and € becomes %E2%82%AC." } },
+        { "@type": "Question", "name": "Should a space be %20 or +?", "acceptedAnswer": { "@type": "Answer", "text": "Use %20 in URL paths. In query strings sent by HTML forms, + also means a space. %20 is accepted in both places, so it is the safer choice." } },
+        { "@type": "Question", "name": "Why do I get an error when decoding?", "acceptedAnswer": { "@type": "Answer", "text": "The text contains a % that is not followed by two hex digits, for example a literal 100% in the value. Encode the % itself as %25." } },
+        { "@type": "Question", "name": "Which characters are not encoded?", "acceptedAnswer": { "@type": "Answer", "text": "Letters A–Z and a–z, digits 0–9 and - _ . ! ~ * &#39; ( ) are left as they are, the same as JavaScript&#39;s encodeURIComponent." } },
+        { "@type": "Question", "name": "Is the text sent to a server?", "acceptedAnswer": { "@type": "Answer", "text": "No. Encoding and decoding run in your browser." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body data-preset-mode="url" data-preset-dir="encode">
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>URL Encoder and Decoder</h1>
+    <p>Encode text so it is safe in a URL, or decode %20-style URLs back into readable text. Results update as you type, using UTF-8 like browsers and servers do.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Conversion">
+    <button type="button" class="tab-btn" role="tab" data-mode="base64">Base64</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="base64url">Base64URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="url">URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="html">HTML entities</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="json">JSON string</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="hex">Hex</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="time">Unix timestamp</button>
+  </div>
+
+  <div class="tool-bar">
+    <span id="encDir" role="group" aria-label="Direction" style="display:inline-flex;gap:6px">
+      <button type="button" class="btn tab-toggle" data-dir="encode" aria-selected="true">Encode</button>
+      <button type="button" class="btn tab-toggle" data-dir="decode" aria-selected="false">Decode</button>
+    </span>
+    <button type="button" class="btn" id="encNow" hidden>Now</button>
+    <button type="button" class="btn" id="encFile" title="Encode a file (up to 10 MB) as Base64">File to Base64</button>
+    <button type="button" class="btn" id="encSwap" title="Use the output as the new input and switch direction">⇄ Swap</button>
+    <button type="button" class="btn" id="encClear">Clear</button>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane">
+      <div class="pane-head">Input</div>
+      <textarea id="encInput" class="code-input" spellcheck="false" style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Output <span class="muted" id="encStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="encDownload" hidden>Download</button>
+          <button type="button" class="mini-btn" id="encCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="encOutput" class="code-input" spellcheck="false" readonly style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+  </div>
+  <p id="encNote" class="meta" style="margin-top:10px"></p>
+  <div id="encError" class="error-box" hidden style="margin-top:10px"></div>
+  <div id="encPreview" class="enc-preview" hidden></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to URL encode or decode</h2>
+    <p>Type or paste into <strong>Input</strong>. With <strong>Encode</strong> selected you get the percent-encoded value; switch to <strong>Decode</strong> to read an encoded URL. <strong>⇄ Swap</strong> sends the output back to the input so you can check a round trip.</p>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Text</th><th>URL encoded</th></tr></thead>
+      <tbody>
+        <tr><td><code>hello world</code></td><td><code>hello%20world</code></td></tr>
+        <tr><td><code>a&amp;b=c</code></td><td><code>a%26b%3Dc</code></td></tr>
+        <tr><td><code>price: €10</code></td><td><code>price%3A%20%E2%82%AC10</code></td></tr>
+        <tr><td><code>name@example.com</code></td><td><code>name%40example.com</code></td></tr>
+        <tr><td><code>/path?x=1</code></td><td><code>%2Fpath%3Fx%3D1</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>What percent encoding does</h2>
+    <p>A URL may only contain a limited set of characters, and some of them have a job: <code>?</code> starts the query, <code>&amp;</code> separates parameters, <code>#</code> starts the fragment. To put any other character, or one of these as plain data, into a URL, its UTF-8 bytes are written as <code>%</code> plus two hex digits. That's why <code>€</code>, three bytes in UTF-8, becomes <code>%E2%82%AC</code>.</p>
+    <p>This tool encodes like JavaScript's <code>encodeURIComponent</code>: everything except letters, digits and <code>- _ . ! ~ * ' ( )</code> is encoded. That's what you want for a single query parameter value or path segment.</p>
+
+    <h2>Spaces: %20 or +?</h2>
+    <p>Both mean a space, in different places. HTML forms send query strings as <code>application/x-www-form-urlencoded</code>, where a space is <code>+</code>. In the path of a URL, <code>+</code> is a literal plus sign and a space must be <code>%20</code>. The encoder here always writes <code>%20</code>, which works everywhere. The decoder treats <code>+</code> as a space, because encoded values you paste usually come from query strings.</p>
+
+    <h2>URL encoding in code</h2>
+    <pre><code>// JavaScript
+encodeURIComponent('a b&amp;c')        // "a%20b%26c"
+decodeURIComponent('a%20b%26c')      // "a b&amp;c"
+new URLSearchParams({ q: 'a b' }).toString()   // "q=a+b"
+
+// Java (form encoding: spaces become +)
+URLEncoder.encode("a b&amp;c", StandardCharsets.UTF_8)   // "a+b%26c"
+URLDecoder.decode("a+b%26c", StandardCharsets.UTF_8)   // "a b&amp;c"
+
+# Python
+from urllib.parse import quote, unquote, quote_plus
+quote('a b&amp;c', safe='')   # 'a%20b%26c'
+quote_plus('a b&amp;c')       # 'a+b%26c'
+unquote('a%20b%26c')      # 'a b&amp;c'</code></pre>
+    <p>Encode each parameter value on its own, not the whole URL. Encoding a full URL also encodes its <code>://</code>, <code>?</code> and <code>&amp;</code>, which breaks it. JavaScript's <code>encodeURI</code> is the variant that leaves those structural characters alone.</p>
+
+    <h2>Double encoding</h2>
+    <p>If you see <code>%2520</code>, the value was encoded twice: the <code>%</code> of <code>%20</code> was encoded again as <code>%25</code>. Decode it twice with Swap to get the original, then fix the code so it encodes only once, usually by not encoding a value that a library such as <code>URLSearchParams</code> or Spring's <code>UriComponentsBuilder</code> encodes for you.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>What is URL encoding?</summary>
+        <p>URL encoding, or percent encoding, writes characters that aren&#39;t allowed in a URL as % followed by two hex digits for each UTF-8 byte. A space becomes %20 and € becomes %E2%82%AC.</p>
+      </details>
+      <details>
+        <summary>Should a space be %20 or +?</summary>
+        <p>Use %20 in URL paths. In query strings sent by HTML forms, + also means a space. %20 is accepted in both places, so it is the safer choice.</p>
+      </details>
+      <details>
+        <summary>Why do I get an error when decoding?</summary>
+        <p>The text contains a % that is not followed by two hex digits, for example a literal 100% in the value. Encode the % itself as %25.</p>
+      </details>
+      <details>
+        <summary>Which characters are not encoded?</summary>
+        <p>Letters A–Z and a–z, digits 0–9 and - _ . ! ~ * &#39; ( ) are left as they are, the same as JavaScript&#39;s encodeURIComponent.</p>
+      </details>
+      <details>
+        <summary>Is the text sent to a server?</summary>
+        <p>No. Encoding and decoding run in your browser.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <p><a href="/encode-decode">Encode / Decode</a> for Base64, HTML entities and hex, <a href="/base64-decode">Base64 decoder</a>, <a href="/curl-to-code">cURL to code</a>, <a href="/json-escape">JSON escape</a> and <a href="/regex-tester">regex tester</a>.</p>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=17"></script>
+<script src="/js/encode.js?v=3"></script>
+</body>
+</html>

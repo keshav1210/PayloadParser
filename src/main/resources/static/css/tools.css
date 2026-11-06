@@ -184,6 +184,7 @@
 
 .tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
     margin: 16px 0 10px;
     border-bottom: 1px solid var(--border);
@@ -1483,3 +1484,7 @@ body.oc-busy .oc-drop { opacity: 0.6; pointer-events: none; }
 @media (max-width: 960px) {
     .oc-layout, .oc-sides { grid-template-columns: 1fr; }
 }
+
+.enc-preview { margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); text-align: center; }
+.enc-preview img { max-width: 100%; max-height: 480px; }
+.enc-preview iframe { width: 100%; height: 560px; border: 0; background: #fff; }

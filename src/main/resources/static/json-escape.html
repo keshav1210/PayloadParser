@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JSON Escape and Unescape Online – String Escaper</title>
+  <meta name="description" content="Escape text to use inside a JSON string, or unescape \&quot; and \n from logs back into readable JSON. Free, instant and runs in your browser.">
+  <meta name="keywords" content="json escape, json unescape, json escape online, json escape unescape, escape json string, unescape json, json escape characters, json escape double quotes, stringify json">
+  <link rel="canonical" href="https://jsonxmleditor.com/json-escape">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON Escape and Unescape Online – String Escaper">
+  <meta property="og:description" content="Escape text to use inside a JSON string, or unescape \&quot; and \n from logs back into readable JSON. Free, instant and runs in your browser.">
+  <meta property="og:url" content="https://jsonxmleditor.com/json-escape">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/json-escape.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JSON Escape and Unescape – JSON XML Editor">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="JSON Escape and Unescape Online – String Escaper">
+  <meta name="twitter:description" content="Escape text to use inside a JSON string, or unescape \&quot; and \n from logs back into readable JSON. Free, instant and runs in your browser.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/json-escape.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON Escape and Unescape",
+      "url": "https://jsonxmleditor.com/json-escape",
+      "description": "Escape text to use inside a JSON string, or unescape \\\" and \\n from logs back into readable JSON. Free, instant and runs in your browser.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JSON Escape / Unescape", "item": "https://jsonxmleditor.com/json-escape" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "How do I escape double quotes in JSON?", "acceptedAnswer": { "@type": "Answer", "text": "Put a backslash before each one: \\\". Paste your text here with Encode selected and every quote, backslash and line break is escaped for you." } },
+        { "@type": "Question", "name": "How do I unescape a JSON string?", "acceptedAnswer": { "@type": "Answer", "text": "Select Decode and paste the string, with or without its outer quotes. Escapes such as \\\", \\n and \\u00e9 are turned back into the real characters, and JSON inside is formatted." } },
+        { "@type": "Question", "name": "Do single quotes need to be escaped in JSON?", "acceptedAnswer": { "@type": "Answer", "text": "No. JSON strings use double quotes, so single quotes are ordinary characters. Writing \\&#39; is invalid JSON." } },
+        { "@type": "Question", "name": "Does JSON need non-ASCII characters escaped?", "acceptedAnswer": { "@type": "Answer", "text": "No. JSON text is UTF-8, so é, ü or emoji can be written directly. \\u escapes are only needed for control characters, or if a system can only handle ASCII." } },
+        { "@type": "Question", "name": "Is my data uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. Escaping and unescaping happen in your browser." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body data-preset-mode="json" data-preset-dir="encode">
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>JSON Escape and Unescape</h1>
+    <p>Escape quotes, backslashes and line breaks so text fits inside a JSON string, or choose Decode to turn an escaped payload from a log back into formatted JSON.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Conversion">
+    <button type="button" class="tab-btn" role="tab" data-mode="base64">Base64</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="base64url">Base64URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="url">URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="html">HTML entities</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="json">JSON string</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="hex">Hex</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="time">Unix timestamp</button>
+  </div>
+
+  <div class="tool-bar">
+    <span id="encDir" role="group" aria-label="Direction" style="display:inline-flex;gap:6px">
+      <button type="button" class="btn tab-toggle" data-dir="encode" aria-selected="true">Encode</button>
+      <button type="button" class="btn tab-toggle" data-dir="decode" aria-selected="false">Decode</button>
+    </span>
+    <button type="button" class="btn" id="encNow" hidden>Now</button>
+    <button type="button" class="btn" id="encFile" title="Encode a file (up to 10 MB) as Base64">File to Base64</button>
+    <button type="button" class="btn" id="encSwap" title="Use the output as the new input and switch direction">⇄ Swap</button>
+    <button type="button" class="btn" id="encClear">Clear</button>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane">
+      <div class="pane-head">Input</div>
+      <textarea id="encInput" class="code-input" spellcheck="false" style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Output <span class="muted" id="encStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="encDownload" hidden>Download</button>
+          <button type="button" class="mini-btn" id="encCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="encOutput" class="code-input" spellcheck="false" readonly style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+  </div>
+  <p id="encNote" class="meta" style="margin-top:10px"></p>
+  <div id="encError" class="error-box" hidden style="margin-top:10px"></div>
+  <div id="encPreview" class="enc-preview" hidden></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>Escape or unescape in one step</h2>
+    <ul>
+      <li><strong>Encode</strong> escapes the input and wraps it in quotes, ready to paste as a JSON value. A JSON document pasted here becomes a string containing that JSON, which is what you need when an API expects JSON inside a string field.</li>
+      <li><strong>Decode</strong> unescapes a JSON string. The surrounding quotes are optional. If the result is JSON itself, it's formatted with indentation so you can read it.</li>
+    </ul>
+    <p>Example: the two lines <code>He said "hi"</code> and <code>second line</code> become <code>"He said \"hi\"\nsecond line"</code>.</p>
+
+    <h2>Which characters JSON escapes</h2>
+    <p>Inside a JSON string, the double quote, the backslash and control characters (U+0000 to U+001F) must be escaped. Everything else, including accented letters and emoji, can appear as is in UTF-8.</p>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Character</th><th>Escape</th></tr></thead>
+      <tbody>
+        <tr><td>Double quote <code>"</code></td><td><code>\"</code></td></tr>
+        <tr><td>Backslash <code>\</code></td><td><code>\\</code></td></tr>
+        <tr><td>New line</td><td><code>\n</code></td></tr>
+        <tr><td>Carriage return</td><td><code>\r</code></td></tr>
+        <tr><td>Tab</td><td><code>\t</code></td></tr>
+        <tr><td>Backspace, form feed</td><td><code>\b</code>, <code>\f</code></td></tr>
+        <tr><td>Other control characters</td><td><code>\u0000</code> to <code>\u001f</code></td></tr>
+        <tr><td>Forward slash <code>/</code></td><td><code>\/</code> is allowed but not required</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Single quotes never need escaping in JSON, and <code>\'</code> is actually invalid. That's a common mistake when JSON is built by hand from JavaScript or SQL strings.</p>
+
+    <h2>Unescaping JSON from logs</h2>
+    <p>Logs, message queues and some APIs store JSON as a string, so you get something like:</p>
+    <pre><code>"{\"orderId\":1042,\"items\":[{\"sku\":\"A-17\",\"qty\":2}]}"</code></pre>
+    <p>Paste it with <strong>Decode</strong> selected and you get the formatted object back. If it was escaped twice (you still see <code>\"</code> after decoding), click <strong>⇄ Swap</strong> and decode again.</p>
+
+    <h2>Escaping JSON in code</h2>
+    <pre><code>// JavaScript
+JSON.stringify('He said "hi"')        // returns: "He said \"hi\""
+JSON.parse('"line\\nbreak"')            // "line\nbreak"
+
+// Java with Jackson
+String quoted = new ObjectMapper().writeValueAsString(text);
+
+# Python
+import json
+json.dumps('He said "hi"')            # '"He said \\"hi\\""'
+json.loads(escaped)</code></pre>
+    <p>Let the JSON library escape values for you when building payloads. Concatenating strings by hand is how unescaped quotes end up breaking requests.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>How do I escape double quotes in JSON?</summary>
+        <p>Put a backslash before each one: \". Paste your text here with Encode selected and every quote, backslash and line break is escaped for you.</p>
+      </details>
+      <details>
+        <summary>How do I unescape a JSON string?</summary>
+        <p>Select Decode and paste the string, with or without its outer quotes. Escapes such as \", \n and \u00e9 are turned back into the real characters, and JSON inside is formatted.</p>
+      </details>
+      <details>
+        <summary>Do single quotes need to be escaped in JSON?</summary>
+        <p>No. JSON strings use double quotes, so single quotes are ordinary characters. Writing \&#39; is invalid JSON.</p>
+      </details>
+      <details>
+        <summary>Does JSON need non-ASCII characters escaped?</summary>
+        <p>No. JSON text is UTF-8, so é, ü or emoji can be written directly. \u escapes are only needed for control characters, or if a system can only handle ASCII.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded?</summary>
+        <p>No. Escaping and unescaping happen in your browser.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <p><a href="/json-validator">JSON validator</a> to check the unescaped result, <a href="/json-parser">JSON formatter</a>, <a href="/json-minifier">JSON minifier</a>, <a href="/encode-decode">Encode / Decode</a> and <a href="/url-encode">URL encoder</a>.</p>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=17"></script>
+<script src="/js/encode.js?v=3"></script>
+</body>
+</html>

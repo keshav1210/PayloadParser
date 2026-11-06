@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>Base64 Decode Online – Base64 to Text, Image or PDF</title>
+  <meta name="description" content="Decode Base64 to text, an image or a PDF in your browser. Accepts data URLs and Base64URL, previews images and PDFs, and downloads the file.">
+  <meta name="keywords" content="base64 decode, base64 decoder, base64 to text, base64 to image, base64 to pdf, base64 decode online, decode base64 string, base64 to file">
+  <link rel="canonical" href="https://jsonxmleditor.com/base64-decode">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="Base64 Decode Online – Base64 to Text, Image or PDF">
+  <meta property="og:description" content="Decode Base64 to text, an image or a PDF in your browser. Accepts data URLs and Base64URL, previews images and PDFs, and downloads the file.">
+  <meta property="og:url" content="https://jsonxmleditor.com/base64-decode">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/base64-decode.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Base64 Decoder – JSON XML Editor">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Base64 Decode Online – Base64 to Text, Image or PDF">
+  <meta name="twitter:description" content="Decode Base64 to text, an image or a PDF in your browser. Accepts data URLs and Base64URL, previews images and PDFs, and downloads the file.">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/base64-decode.png">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/css/site.css?v=6">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Base64 Decoder",
+      "url": "https://jsonxmleditor.com/base64-decode",
+      "description": "Decode Base64 to text, an image or a PDF in your browser. Accepts data URLs and Base64URL, previews images and PDFs, and downloads the file.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Base64 Decode", "item": "https://jsonxmleditor.com/base64-decode" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is Base64 encryption?", "acceptedAnswer": { "@type": "Answer", "text": "No. Base64 only changes how bytes are written as text. Anyone can decode it, so never rely on it to hide passwords or tokens." } },
+        { "@type": "Question", "name": "Is my data uploaded?", "acceptedAnswer": { "@type": "Answer", "text": "No. Decoding, the image and PDF preview and the download all happen in your browser. Nothing is sent to our server." } },
+        { "@type": "Question", "name": "Can I decode a data URL?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Paste the full data:image/png;base64,… value and the prefix is stripped before decoding." } },
+        { "@type": "Question", "name": "Why does the output show hex instead of text?", "acceptedAnswer": { "@type": "Answer", "text": "The decoded bytes are a file or other binary data, not UTF-8 text. The tool shows the first bytes as hex, says what type of file it looks like and lets you download it." } },
+        { "@type": "Question", "name": "How do I encode a file to Base64?", "acceptedAnswer": { "@type": "Answer", "text": "Switch to Encode and click File to Base64. Files up to 10 MB are read in your browser and the Base64 appears in the output." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body data-preset-mode="base64" data-preset-dir="decode">
+<div id="header"></div>
+
+<main class="tool-page">
+  <section class="tool-head">
+    <h1>Base64 Decoder</h1>
+    <p>Paste Base64 to turn it back into text, an image, a PDF or any other file. Images and PDFs are previewed below the output, and nothing is uploaded.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Conversion">
+    <button type="button" class="tab-btn" role="tab" data-mode="base64">Base64</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="base64url">Base64URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="url">URL</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="html">HTML entities</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="json">JSON string</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="hex">Hex</button>
+    <button type="button" class="tab-btn" role="tab" data-mode="time">Unix timestamp</button>
+  </div>
+
+  <div class="tool-bar">
+    <span id="encDir" role="group" aria-label="Direction" style="display:inline-flex;gap:6px">
+      <button type="button" class="btn tab-toggle" data-dir="encode" aria-selected="true">Encode</button>
+      <button type="button" class="btn tab-toggle" data-dir="decode" aria-selected="false">Decode</button>
+    </span>
+    <button type="button" class="btn" id="encNow" hidden>Now</button>
+    <button type="button" class="btn" id="encFile" title="Encode a file (up to 10 MB) as Base64">File to Base64</button>
+    <button type="button" class="btn" id="encSwap" title="Use the output as the new input and switch direction">⇄ Swap</button>
+    <button type="button" class="btn" id="encClear">Clear</button>
+  </div>
+
+  <div class="pane-grid">
+    <section class="pane">
+      <div class="pane-head">Input</div>
+      <textarea id="encInput" class="code-input" spellcheck="false" style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+    <section class="pane">
+      <div class="pane-head">Output <span class="muted" id="encStats"></span>
+        <span class="actions">
+          <button type="button" class="mini-btn" id="encDownload" hidden>Download</button>
+          <button type="button" class="mini-btn" id="encCopy">Copy</button>
+        </span>
+      </div>
+      <textarea id="encOutput" class="code-input" spellcheck="false" readonly style="white-space:pre-wrap;word-break:break-all"></textarea>
+    </section>
+  </div>
+  <p id="encNote" class="meta" style="margin-top:10px"></p>
+  <div id="encError" class="error-box" hidden style="margin-top:10px"></div>
+  <div id="encPreview" class="enc-preview" hidden></div>
+
+  <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
+<h2>How to decode Base64</h2>
+    <ol>
+      <li>Paste the Base64 string into <strong>Input</strong>. Line breaks and spaces are ignored, so MIME and PEM style Base64 split over many lines works as is.</li>
+      <li>If the data is text, the decoded text appears in <strong>Output</strong> straight away.</li>
+      <li>If it's a file, you'll see its type, a preview for images and PDFs, and a <strong>Download</strong> button that saves it with the right extension.</li>
+    </ol>
+    <p>For example, <code>SGVsbG8sIHdvcmxkIQ==</code> decodes to <code>Hello, world!</code>, and <code>Y2Fmw6k=</code> decodes to <code>café</code>, because the bytes are read as UTF-8.</p>
+
+    <h2>Base64 to image</h2>
+    <p>Images embedded in HTML, CSS or JSON usually come as a data URL such as <code>data:image/png;base64,iVBORw0KGgo…</code>. Paste the whole thing: the <code>data:…;base64,</code> prefix is removed for you. PNG, JPEG, GIF and WebP images are shown as a preview and can be downloaded as a real image file.</p>
+
+    <h2>Base64 to PDF</h2>
+    <p>APIs often return documents such as invoices and labels as a Base64 field in JSON. A PDF in Base64 starts with <code>JVBERi0</code>, which is <code>%PDF-</code> encoded. Paste the value without the surrounding quotes and the PDF opens in the preview, ready to download as <code>decoded.pdf</code>.</p>
+
+    <h2>Recognise the data by its first characters</h2>
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr><th>Base64 starts with</th><th>Decoded data</th></tr></thead>
+      <tbody>
+        <tr><td><code>iVBORw0KGgo</code></td><td>PNG image</td></tr>
+        <tr><td><code>/9j/</code></td><td>JPEG image</td></tr>
+        <tr><td><code>R0lGOD</code></td><td>GIF image</td></tr>
+        <tr><td><code>JVBERi0</code></td><td>PDF document</td></tr>
+        <tr><td><code>UEsDB</code></td><td>ZIP archive, or a .docx, .xlsx or .jar file</td></tr>
+        <tr><td><code>H4sI</code></td><td>gzip-compressed data</td></tr>
+        <tr><td><code>eyJ</code></td><td>JSON starting with <code>{"</code>, for example a JWT header (use the <a href="/jwt-decoder">JWT decoder</a> for tokens)</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Decoding Base64 in code</h2>
+    <p>When you need the same result in a program or script:</p>
+    <pre><code>// JavaScript (browser), UTF-8 safe
+const bytes = Uint8Array.from(atob(b64), c =&gt; c.charCodeAt(0));
+const text = new TextDecoder().decode(bytes);
+
+// Node.js
+const text = Buffer.from(b64, 'base64').toString('utf8');
+
+// Java
+byte[] bytes = Base64.getDecoder().decode(b64);
+String text = new String(bytes, StandardCharsets.UTF_8);
+
+// Python
+import base64
+text = base64.b64decode(b64).decode('utf-8')
+
+# Linux and macOS shell
+echo 'SGVsbG8=' | base64 --decode
+base64 --decode input.txt &gt; output.pdf</code></pre>
+    <p>For Base64URL (with <code>-</code> and <code>_</code>), use <code>Base64.getUrlDecoder()</code> in Java and <code>base64.urlsafe_b64decode</code> in Python. Java's <code>getDecoder()</code> rejects line breaks; use <code>getMimeDecoder()</code> for Base64 split over lines.</p>
+
+    <h2>Common errors</h2>
+    <ul>
+      <li><strong>Invalid characters</strong>: the input contains something other than A–Z, a–z, 0–9, <code>+</code>, <code>/</code>, <code>-</code>, <code>_</code> and <code>=</code>. Often it's JSON quotes or an escaped <code>\/</code> copied along with the value.</li>
+      <li><strong>Incomplete Base64</strong>: the string was cut off. Missing <code>=</code> padding is fine and is added for you, but a length that leaves one stray character can't be decoded.</li>
+      <li><strong>Garbled text</strong>: the original wasn't UTF-8 text. Binary data is shown as hex instead of as broken characters.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details>
+        <summary>Is Base64 encryption?</summary>
+        <p>No. Base64 only changes how bytes are written as text. Anyone can decode it, so never rely on it to hide passwords or tokens.</p>
+      </details>
+      <details>
+        <summary>Is my data uploaded?</summary>
+        <p>No. Decoding, the image and PDF preview and the download all happen in your browser. Nothing is sent to our server.</p>
+      </details>
+      <details>
+        <summary>Can I decode a data URL?</summary>
+        <p>Yes. Paste the full data:image/png;base64,… value and the prefix is stripped before decoding.</p>
+      </details>
+      <details>
+        <summary>Why does the output show hex instead of text?</summary>
+        <p>The decoded bytes are a file or other binary data, not UTF-8 text. The tool shows the first bytes as hex, says what type of file it looks like and lets you download it.</p>
+      </details>
+      <details>
+        <summary>How do I encode a file to Base64?</summary>
+        <p>Switch to Encode and click File to Base64. Files up to 10 MB are read in your browser and the Base64 appears in the output.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <p><a href="/encode-decode">Encode / Decode</a> for Base64URL, hex and HTML entities, <a href="/jwt-decoder">JWT decoder</a>, <a href="/url-encode">URL encoder and decoder</a>, <a href="/json-escape">JSON escape and unescape</a> and <a href="/hash-generator">hash generator</a>.</p>
+  </article>
+</main>
+
+<div id="footer"></div>
+<script src="/js/layout-loader.js?v=17"></script>
+<script src="/js/encode.js?v=3"></script>
+</body>
+</html>

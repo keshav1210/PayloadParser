@@ -313,6 +313,12 @@ public class ViewHandler {
     public String jsonToLanguage(HttpServletRequest request) {
         return request.getRequestURI().substring(1) + ".html";
     }
+
+    // Single-purpose pages for popular searches, each a preset of an existing tool
+    @GetMapping({"/base64-decode", "/url-encode", "/json-escape", "/yaml-to-json", "/json-to-yaml"})
+    public String intentPage(HttpServletRequest request) {
+        return request.getRequestURI().substring(1) + ".html";
+    }
     @GetMapping("/429")
     public String tooManyRequests() {
         return "429.html";

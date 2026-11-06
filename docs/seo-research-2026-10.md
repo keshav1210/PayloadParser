@@ -35,8 +35,33 @@ Done:
 - Sitemap: 14 new URLs, lastmod updated. IndexNow key file plus `npm run indexnow` in `frontend-build/`.
 
 Still to do (needs you): Search Console and Bing Webmaster Tools, then run `npm run indexnow` after deploying.
-Next build steps: `/json-to-excel`, `/csv-to-excel`, `/xml-to-csv`, `/base64-decode`, `/json-escape`, XML validator
-with XSD, JSONPath and XPath testers, cron and regex reference pages.
+
+## Progress (2026-11-05, on master)
+
+Autocomplete re-checked on 2026-11-05: "base64 decode image/pdf", "url decoder", "json escape unescape",
+"yaml to json converter (swagger)", "json to yaml" are still top suggestions.
+
+Done:
+- Five intent pages, each a preset of an existing tool with its own examples, code snippets and FAQ:
+  `/base64-decode`, `/url-encode`, `/json-escape` (from `/encode-decode`), `/yaml-to-json`, `/json-to-yaml`
+  (from `/yaml-converter`). Linked from the home page, footer and Ctrl+K palette; in the sitemap.
+- `/yaml-converter` retitled to "YAML Validator / Properties to YAML" and `/encode-decode` to the general
+  "Encode Decode Online", so they don't compete with the new pages.
+- Base64 decoding now previews images and PDFs and downloads with the right extension (`decoded.png`, `.pdf`).
+- Bug fixes found while testing: YAML anchors and `<<` merge keys were output as the anchor's name, an empty
+  value became `""` instead of `null` (YAML now read with SnakeYAML directly, with tests); the encode page tabs
+  overflowed on phones.
+
+- Content audit of all pages: 28 tool pages had lost their `og:image` tags (images existed in `/og`); restored,
+  with `summary_large_image` cards. New social images for Image to Text, the five new pages and the six
+  JSON-to-language pages. Leftover `index.html` and `newjsoneditor.html` set to noindex.
+- Content added where autocomplete showed unanswered searches: hex/binary to decimal formula, worked examples
+  and table (`/number-base-converter`, retitled "Hex, Binary & Decimal Converter"); comparing JSON responses
+  in tests (`/compare`); a full JSON Schema example and REST Assured/Python/Ajv validation (`/json-schema`);
+  Base64 encoding in code, command line and images (`/encode-decode`); Excel/CSV pointer (`/text-diff`).
+
+Next build steps: `/json-to-excel`, `/csv-to-excel`, `/xml-to-csv`, XML validator with XSD, JSONPath and XPath
+testers, cron and regex reference pages.
 
 ## What I measured
 

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="/js/theme.js?v=1"></script>
+  <title>JSON to YAML Converter Online – Clean, Readable YAML</title>
+  <meta name="description" content="Convert JSON to YAML online. Keeps key order, quotes values like &quot;no&quot; and &quot;0123&quot; so they stay strings, and writes multi-line text as YAML blocks.">
+  <meta name="keywords" content="json to yaml, json to yaml converter, json to yaml online, convert json to yaml, json to yml, json to yaml swagger, openapi json to yaml, json to yaml kubernetes">
+  <link rel="canonical" href="https://jsonxmleditor.com/json-to-yaml">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#111317">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JSON XML Editor">
+  <meta property="og:title" content="JSON to YAML Converter Online – Clean, Readable YAML">
+  <meta property="og:description" content="Convert JSON to YAML online. Keeps key order, quotes values like &quot;no&quot; and &quot;0123&quot; so they stay strings, and writes multi-line text as YAML blocks.">
+  <meta property="og:url" content="https://jsonxmleditor.com/json-to-yaml">
+  <meta property="og:image" content="https://jsonxmleditor.com/og/json-to-yaml.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JSON to YAML Converter – JSON XML Editor">
+  <meta name="twitter:image" content="https://jsonxmleditor.com/og/json-to-yaml.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="JSON to YAML Converter Online – Clean, Readable YAML">
+  <meta name="twitter:description" content="Convert JSON to YAML online. Keeps key order, quotes values like &quot;no&quot; and &quot;0123&quot; so they stay strings, and writes multi-line text as YAML blocks.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="stylesheet" href="/css/jsonxmlformatter.css?v=8">
+  <link rel="stylesheet" href="/css/sharemodel.css?v=4">
+  <link rel="stylesheet" href="/css/theme-light.css?v=1">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "JSON to YAML Converter",
+      "url": "https://jsonxmleditor.com/json-to-yaml",
+      "description": "Convert JSON to YAML online. Keeps key order, quotes values like \"no\" and \"0123\" so they stay strings, and writes multi-line text as YAML blocks.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://jsonxmleditor.com/" },
+        { "@type": "ListItem", "position": 2, "name": "JSON to YAML", "item": "https://jsonxmleditor.com/json-to-yaml" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is JSON valid YAML?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. YAML 1.2 is a superset of JSON, so a JSON file is already valid YAML. Converting simply rewrites it in the indented YAML style, which is easier to read and edit." } },
+        { "@type": "Question", "name": "Does the converter keep the order of keys?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Keys appear in the YAML in the same order as in the JSON." } },
+        { "@type": "Question", "name": "Why does \"no\" get quotes in the YAML?", "acceptedAnswer": { "@type": "Answer", "text": "Many YAML parsers read an unquoted no, yes, on or off as a boolean. The quotes make sure the value stays the text you had in the JSON." } },
+        { "@type": "Question", "name": "Can I convert XML to YAML?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Paste XML instead of JSON and click Convert to YAML. Attributes and repeated elements are converted the same way as in the XML to JSON tool." } },
+        { "@type": "Question", "name": "Is my JSON stored?", "acceptedAnswer": { "@type": "Answer", "text": "No. It is sent to our server only to be converted and is not saved. The YAML comes straight back to your browser." } }
+      ]
+    }
+  ]
+}
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LPTNYNJB94"></script>
+  <script>
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LPTNYNJB94');
+    }
+  </script>
+</head>
+<body>
+
+<div id="header"></div>
+
+<section class="tool-intro">
+  <h1>JSON to YAML Converter</h1>
+  <p>Paste JSON and click <strong>Convert to YAML</strong>. You get indented YAML that keeps your key order, with quotes only where they are needed. XML works too.</p>
+</section>
+
+<div class="controls">
+    <button class="btn btn-primary" onclick="formatData('YAML')">Convert to YAML</button>
+    <button title="Check and re-indent the data (Ctrl+Enter)" class="btn" onclick="formatCode(false,null,null)">Format</button>
+    <button title="Remove all whitespace so the data fits on one line" class="btn" onclick="minifyCode()">Minify</button>
+    <button title="Fix broken JSON or XML: missing commas, quotes, brackets or closing tags" class="btn" onclick="formatData('REPAIR')">Repair</button>
+    <button data-for="json" title="Sort object keys alphabetically" class="btn" onclick="formatData('JSON_SORT')">Sort JSON</button>
+    <button data-for="xml" title="Sort elements alphabetically" class="btn" onclick="formatData('XML_SORT')">Sort XML</button>
+    <button title="Clear both panels" class="btn btn-secondary" onclick="clearAll()">Clear</button>
+    <button title="Load example data to try the tool" class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+    <label class="indent-control" title="Indentation used by Format">Indent
+        <select id="indentSize">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="tab">Tab</option>
+        </select>
+    </label>
+</div>
+
+<div class="container" id="mainContainer">
+
+    <div class="panel" id="leftPanel">
+        <div class="panel-header" id="leftPanelHeader">
+            <span>Editor (Formatted View)</span>
+            <button class="expand-btn" onclick="toggleExpand('left')" id="leftExpandBtn">
+                <span id="leftExpandIcon">⛶</span>
+            </button>
+        </div>
+        <div class="editor-wrapper">
+            <div class="line-numbers-area">
+                <div class="fold-icons" id="foldIcons"></div>
+                <div class="line-numbers" id="lineNumbers">1</div>
+            </div>
+            <div class="code-editor" id="codeEditor" contenteditable="true" spellcheck="false"></div>
+        </div>
+        <div class="status" id="inputStatus">Ready — paste or type JSON or XML here</div>
+    </div>
+
+    <div class="middle-controls" id="middleControls">
+        <select id="formatType">
+            <option value="json">JSON</option>
+            <option value="xml">XML</option>
+            <option value="yaml">YAML</option>
+        </select>
+        <select id="formatType2" style="display:none;"><option value="json">JSON</option></select>
+        <button class="btn btn-share" onclick="openShareModal('input')">⚡ Share</button>
+        <button class="btn" onclick="formatData('YAML')">Convert to YAML</button>
+        <button class="btn" onclick="formatData('PROPERTY_TO_YAML')">Property to YAML</button>
+        <button class="btn" onclick="formatData('YAML_TO_PROPERTY')">YAML to Property</button>
+        <button class="btn" onclick="formatData('YAML_FORMAT')" title="Check the YAML and show any error with its line and column">Validate YAML</button>
+        <button class="btn" onclick="formatData('YAML_TO_JSON')" title="Convert YAML to JSON">YAML to JSON</button>
+    </div>
+
+    <div class="panel" id="rightPanel">
+        <div class="panel-header" id="rightPanelHeader">
+            <span>Viewer</span>
+            <select id="viewType" style="display:none;"><option value="formated">Text View</option></select>
+            <button class="expand-btn" onclick="toggleExpand('right')" id="rightExpandBtn">
+                <span id="rightExpandIcon">⛶</span>
+            </button>
+        </div>
+
+        <div class="tree-view" id="treeView">
+            <div class="editor-wrapper" id="rightEditorWrapper">
+                <div class="line-numbers-area" id="rightLineNumbersArea">
+                    <div class="fold-icons" id="rightFoldIcons"></div>
+                    <div class="line-numbers" id="rightLineNumbers"></div>
+                </div>
+                <div class="code-editor" id="rightCodeEditor"></div>
+            </div>
+            <div id="rightTreeContent" style="padding:20px;color:#858585;">
+                Converted output will appear here
+            </div>
+        </div>
+
+        <div class="status" id="outputStatus">Ready</div>
+    </div>
+
+</div>
+
+<article class="content-section">
+<h2>How to convert JSON to YAML</h2>
+<ol>
+  <li>Paste your JSON, open a <code>.json</code> file, or click <strong>Load Sample</strong>.</li>
+  <li>Click <strong>Convert to YAML</strong>. If the JSON has a syntax error, the line is highlighted, and <strong>Repair</strong> can fix common mistakes such as trailing commas.</li>
+  <li>Copy the YAML or download it as a <code>.yaml</code> file.</li>
+</ol>
+
+<h2>Example</h2>
+<pre><code>{
+  "service": "orders",
+  "replicas": 3,
+  "env": { "LOG_LEVEL": "info", "REGION": "no" },
+  "ports": [8080, 9090],
+  "motd": "Welcome\nRead the docs first"
+}</code></pre>
+<p>becomes</p>
+<pre><code>service: orders
+replicas: 3
+env:
+  LOG_LEVEL: info
+  REGION: "no"
+ports:
+- 8080
+- 9090
+motd: |-
+  Welcome
+  Read the docs first</code></pre>
+<p>Objects become indented blocks, arrays become <code>-</code> lists, and a string with line breaks becomes a <code>|-</code> block that's easy to read and edit. Key order stays the same as in your JSON.</p>
+
+<h2>Why some values get quotes</h2>
+<p>Quotes are added only where leaving them out would change the meaning when the YAML is read back:</p>
+<ul>
+  <li><code>"no"</code>, <code>"yes"</code>, <code>"on"</code>, <code>"off"</code>, <code>"y"</code> and <code>"n"</code>, which older YAML parsers read as booleans (Norway's country code is the classic example).</li>
+  <li>Strings that look like numbers, such as <code>"55000"</code>, <code>"0123"</code> or <code>"1.10"</code>, so IDs, ZIP codes and versions stay strings.</li>
+  <li><code>"true"</code> and <code>"null"</code> as text, and strings containing <code>: </code> or starting with characters like <code>*</code>, <code>&amp;</code>, <code>#</code> or <code>@</code>.</li>
+  <li>The empty string, written as <code>""</code>.</li>
+</ul>
+<p>Real numbers, booleans and <code>null</code> from the JSON are written without quotes.</p>
+
+<h2>Kubernetes, OpenAPI and CI files</h2>
+<p>Most tools accept JSON, but people read YAML. Converting is handy when you:</p>
+<ul>
+  <li>Turn <code>kubectl get deployment app -o json</code> output into a manifest you can edit and commit.</li>
+  <li>Convert an OpenAPI or Swagger spec exported as JSON into the YAML your docs repo uses.</li>
+  <li>Write a GitHub Actions, GitLab CI or Docker Compose file starting from JSON a script produced.</li>
+</ul>
+<p>Since YAML 1.2 is a superset of JSON, the conversion never loses data. Going back with the <a href="/yaml-to-json">YAML to JSON converter</a> gives you the same JSON.</p>
+
+<h2>Converting JSON to YAML in code</h2>
+<pre><code># Python (pip install pyyaml)
+import json, yaml
+print(yaml.safe_dump(json.load(open('data.json')), sort_keys=False))
+
+// Node.js (npm install js-yaml)
+const yaml = require('js-yaml');
+console.log(yaml.dump(JSON.parse(fs.readFileSync('data.json', 'utf8'))));
+
+# Command line with yq
+yq -P data.json</code></pre>
+<p>Pass <code>sort_keys=False</code> in Python, otherwise PyYAML sorts the keys alphabetically.</p>
+
+<h2>Frequently asked questions</h2>
+<div class="faq">
+  <details>
+    <summary>Is JSON valid YAML?</summary>
+    <p>Yes. YAML 1.2 is a superset of JSON, so a JSON file is already valid YAML. Converting simply rewrites it in the indented YAML style, which is easier to read and edit.</p>
+  </details>
+  <details>
+    <summary>Does the converter keep the order of keys?</summary>
+    <p>Yes. Keys appear in the YAML in the same order as in the JSON.</p>
+  </details>
+  <details>
+    <summary>Why does "no" get quotes in the YAML?</summary>
+    <p>Many YAML parsers read an unquoted no, yes, on or off as a boolean. The quotes make sure the value stays the text you had in the JSON.</p>
+  </details>
+  <details>
+    <summary>Can I convert XML to YAML?</summary>
+    <p>Yes. Paste XML instead of JSON and click Convert to YAML. Attributes and repeated elements are converted the same way as in the XML to JSON tool.</p>
+  </details>
+  <details>
+    <summary>Is my JSON stored?</summary>
+    <p>No. It is sent to our server only to be converted and is not saved. The YAML comes straight back to your browser.</p>
+  </details>
+</div>
+
+<h2>Other tools</h2>
+<ul class="related-tools">
+  <li><a href="/parser"><strong>JSON &amp; XML Formatter</strong>Format, validate and convert JSON or XML in one place.</a></li>
+  <li><a href="/json-parser"><strong>JSON Formatter</strong>Beautify, validate, minify and repair JSON.</a></li>
+  <li><a href="/xml-parser"><strong>XML Formatter</strong>Pretty-print XML and check that it is well-formed.</a></li>
+  <li><a href="/csv-converter"><strong>CSV Converter</strong>Turn CSV into JSON, XML or SQL INSERT statements.</a></li>
+  <li><a href="/toml-converter"><strong>TOML Converter</strong>Convert JSON or XML to TOML config files.</a></li>
+  <li><a href="/mapper"><strong>Object Mapper</strong>Turn JSON into Java, TypeScript, Go, Kotlin, Rust or Pydantic types.</a></li>
+  <li><a href="/compare"><strong>JSON &amp; XML Compare</strong>See what changed between two versions, by path.</a></li>
+  <li><a href="/json-schema"><strong>JSON Schema</strong>Generate a schema from a sample, or validate against one.</a></li>
+  <li><a href="/jwt-decoder"><strong>JWT Decoder</strong>Read claims, check expiry and verify signatures.</a></li>
+  <li><a href="/encode-decode"><strong>Encode / Decode</strong>Base64, URL, JSON strings, hex and timestamps.</a></li>
+  <li><a href="/sql-formatter"><strong>SQL Formatter</strong>Beautify or minify SQL for every major database.</a></li>
+  <li><a href="/regex-tester"><strong>Regex Tester</strong>Test regular expressions with live matches and explanations.</a></li>
+  <li><a href="/uuid-generator"><strong>UUID Generator</strong>UUID v4, v7, ULID and Nano ID in bulk.</a></li>
+  <li><a href="/json-validator"><strong>JSON Validator</strong>Check JSON syntax and see the exact line of every error.</a></li>
+  <li><a href="/json-viewer"><strong>JSON Viewer</strong>Explore JSON as a collapsible tree with search and JSONPath.</a></li>
+  <li><a href="/json-minifier"><strong>JSON Minifier</strong>Strip whitespace from JSON for smaller payloads.</a></li>
+  <li><a href="/json-to-xml"><strong>JSON to XML</strong>Convert JSON into well-formed XML.</a></li>
+  <li><a href="/xml-to-json"><strong>XML to JSON</strong>Convert XML, attributes and all, into JSON.</a></li>
+  <li><a href="/json-to-csv"><strong>JSON to CSV</strong>Turn a JSON array into an Excel-ready CSV file.</a></li>
+  <li><a href="/yaml-to-json"><strong>YAML to JSON</strong>Convert YAML back to JSON, anchors and all.</a></li>
+  <li><a href="/yaml-converter"><strong>YAML Validator</strong>Check YAML for errors and convert Spring Boot properties to YAML.</a></li>
+  <li><a href="/tools"><strong>All tools</strong>Every formatter, converter and generator on the site.</a></li>
+</ul>
+</article>
+
+<div id="footer"></div>
+<div class="sd-overlay" id="sdOverlay">
+    <div class="sd-modal">
+
+        <div id="sdForm">
+            <h3>Share Content</h3>
+            <p class="sd-sub">Choose what to share and generate an instant link</p>
+
+            <div class="sd-source-row">
+                <button class="sd-src-btn active" id="sdSrcInput" onclick="setSdSource('input')">📝 Input (Editor)</button>
+                <button class="sd-src-btn" id="sdSrcOutput" onclick="setSdSource('output')">📤 Output (Viewer)</button>
+            </div>
+
+            <div class="sd-toggle-row">
+                <div class="sd-toggle-label">
+                    <strong>🔥 One-time link</strong>
+                    Content deleted from server after first view
+                </div>
+                <label class="sd-toggle">
+                    <input type="checkbox" id="sdOneTime">
+                    <span class="sd-toggle-slider"></span>
+                </label>
+            </div>
+
+            <div class="sd-email-box">
+                <label for="sdEmail">Recipient Email (Optional)</label>
+                <div class="sd-email-input-wrapper">
+                    <span class="sd-email-icon">✉️</span>
+                    <input type="email" id="sdEmail" class="sd-email-input" placeholder="recipient@example.com">
+                </div>
+            </div>
+
+            <div class="sd-error" id="sdError"></div>
+
+            <div class="sd-actions" style="flex-wrap: wrap;">
+                <button onclick="closeSdModal()" style="flex: 1 1 25%;">✕ Cancel</button>
+                <button onclick="doShare(false)" style="flex: 1 1 35%; border-color:#4f8cff;color:#4f8cff;font-weight:700">⚡ Generate Link</button>
+                <button onclick="doShare(true)" class="sd-btn-mail" style="flex: 1 1 100%;">✉️ Upload & Send on Mail</button>
+            </div>
+        </div>
+
+        <div class="sd-loader" id="sdLoader">
+            <div class="sd-spinner"></div>
+            Uploading to server…
+        </div>
+
+        <div id="sdSuccess" style="display:none">
+            <div class="sd-check">✓</div>
+            <h3>Share Drop Ready!</h3>
+            <p class="sd-sub" id="sdSuccessSub">—</p>
+
+            <div class="sd-key-card">
+                <div class="sd-key-label">
+                    <span>🔑 Drop Key</span>
+                    <span style="font-size:.68rem;color:#6e6e88">Use in Receive Drop</span>
+                </div>
+                <div class="sd-key-row">
+                    <div class="sd-key-badge" id="sdKeyText">-----</div>
+                    <button class="sd-btn-copy-key" id="sdCopyKeyBtn" onclick="sdCopyKey()">⎘ Copy Key</button>
+                </div>
+            </div>
+
+            <div class="sd-url-row">
+                <span class="sd-url-text" id="sdUrlText">—</span>
+                <button class="sd-copy-btn" id="sdCopyBtn" onclick="sdCopyUrl()">⎘ Copy Link</button>
+            </div>
+
+            <div class="sd-email-status" id="sdEmailStatus"></div>
+
+            <div class="sd-actions" style="margin-top: 14px;">
+                <button onclick="window.open(document.getElementById('sdUrlText').textContent,'_blank')">👁 Open</button>
+                <button onclick="closeSdModal()">✕ Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/js/layout-loader.js?v=17"></script>
+<script src="/js/repair.js?v=5"></script>
+<script src="/js/jsonxmlformatter.js?v=7"></script>
+<script src="/js/jsonpath.js?v=1"></script>
+<script src="/js/editor-tools.js?v=3"></script>
+</body>
+</html>

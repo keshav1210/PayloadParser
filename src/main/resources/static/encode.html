@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/js/theme.js?v=1"></script>
-  <title>Base64 &amp; URL Encode Decode Online – Base64, HTML, Hex</title>
+  <title>Encode Decode Online – Base64, URL, HTML Entities, Hex</title>
   <meta name="description" content="Free Base64 encoder and decoder, URL encoder and decoder, HTML entities and hex converter. UTF-8 safe and runs entirely in your browser.">
   <meta name="keywords" content="base64 encode decode, base64 encoder, base64 decoder online, url encode decode, url encoder decoder, html entity encoder, hex encoder, encode decode online, base64 to text">
   <link rel="canonical" href="https://jsonxmleditor.com/encode-decode">
@@ -12,19 +12,21 @@
   <meta name="theme-color" content="#111317">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="JSON XML Editor">
-  <meta property="og:title" content="Base64 &amp; URL Encode Decode Online – Multi-Format Tool">
+  <meta property="og:title" content="Encode Decode Online – Base64, URL, HTML Entities, Hex">
   <meta property="og:description" content="Encode and decode Base64, URL, HTML entities, and Hex strings directly in your browser.">
   <meta property="og:url" content="https://jsonxmleditor.com/encode-decode">
   <meta property="og:image" content="https://jsonxmleditor.com/og/encode-decode.png">
   <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Encode / Decode – JSON XML Editor">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Base64 &amp; URL Encode Decode Online – Multi-Format Tool">
+  <meta name="twitter:title" content="Encode Decode Online – Base64, URL, HTML Entities, Hex">
   <meta name="twitter:description" content="Encode and decode Base64, URL, HTML entities, and Hex strings directly in your browser.">
   <meta name="twitter:image" content="https://jsonxmleditor.com/og/encode-decode.png">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=11">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -116,6 +118,7 @@
   </div>
   <p id="encNote" class="meta" style="margin-top:10px"></p>
   <div id="encError" class="error-box" hidden style="margin-top:10px"></div>
+  <div id="encPreview" class="enc-preview" hidden></div>
 
   <article class="tool-article prose page-narrow" style="margin-left:auto;margin-right:auto;">
     <h2>What each conversion is for</h2>
@@ -134,6 +137,8 @@
     </table>
     </div>
 
+    <p>Pages for the most common jobs: <a href="/base64-decode">Base64 decoder</a> (with image and PDF preview), <a href="/url-encode">URL encoder and decoder</a> and <a href="/json-escape">JSON escape and unescape</a>.</p>
+
     <h2>Unicode works properly</h2>
     <p>JavaScript's built-in <code>btoa()</code> fails on text like <code>café</code> or emoji. This tool converts text to UTF-8 bytes first, so every character round-trips correctly and the Base64 matches what Java, Python and most servers produce.</p>
 
@@ -142,6 +147,27 @@
 
     <h2>Decoding files</h2>
     <p>When Base64 or hex decodes to something that isn't text, such as an image or a zip archive, you'll see the bytes as hex, a hint about the file type, and a <strong>Download</strong> button. Going the other way, <strong>File to Base64</strong> encodes any file up to 10 MB without uploading it.</p>
+
+    <h2>Base64 encoding in code and on the command line</h2>
+    <pre><code>// JavaScript (browser), UTF-8 safe
+const b64 = btoa(String.fromCharCode(...new TextEncoder().encode(text)));
+
+// Node.js
+Buffer.from(text, 'utf8').toString('base64');
+
+// Java
+Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
+
+# Python
+base64.b64encode(text.encode('utf-8')).decode('ascii')
+
+# Linux and macOS
+echo -n 'Hello' | base64          # SGVsbG8=
+base64 -w 0 logo.png &gt; logo.txt   # GNU coreutils; on macOS: base64 -i logo.png</code></pre>
+    <p>Use <code>echo -n</code>: without it the trailing newline is encoded too, and you get <code>SGVsbG8K</code> instead of <code>SGVsbG8=</code>.</p>
+
+    <h2>Base64 encode an image</h2>
+    <p>Choose <strong>Base64</strong>, then <strong>File to Base64</strong>, and pick the image. To embed it in HTML or CSS, put the data URL prefix shown under the output in front of it: <code>&lt;img src="data:image/png;base64,iVBORw0…"&gt;</code>. Base64 makes a file about a third larger, so it suits icons and small images rather than photos. To go the other way, use the <a href="/base64-decode">Base64 decoder</a>, which previews the image.</p>
 
     <h2>Frequently asked questions</h2>
     <div class="faq">
@@ -166,7 +192,7 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=16"></script>
-<script src="/js/encode.js?v=1"></script>
+<script src="/js/layout-loader.js?v=17"></script>
+<script src="/js/encode.js?v=3"></script>
 </body>
 </html>

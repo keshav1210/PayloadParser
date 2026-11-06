@@ -26,7 +26,7 @@ const Codec = (() => {
   }
 
   function bytesToDisplay(bytes) {
-    try {
+    if (!fileInfo(bytes)) try {
       const text = dec.decode(bytes);
       const binary = /[\x00-\x08\x0e-\x1f]/.test(text.slice(0, 4000));
       if (!binary) return { text };
@@ -41,15 +41,25 @@ const Codec = (() => {
     };
   }
 
+  const SIGNATURES = [
+    ['89504e47', 'a PNG image', 'png', 'image/png'],
+    ['ffd8ff', 'a JPEG image', 'jpg', 'image/jpeg'],
+    ['47494638', 'a GIF image', 'gif', 'image/gif'],
+    ['52494646', 'a WebP image', 'webp', 'image/webp'],
+    ['25504446', 'a PDF document', 'pdf', 'application/pdf'],
+    ['504b0304', 'a ZIP archive (or .docx/.xlsx/.jar)', 'zip', 'application/zip'],
+    ['1f8b', 'gzip-compressed data', 'gz', 'application/gzip'],
+  ];
+
+  function fileInfo(b) {
+    const h = Array.from(b.subarray(0, 12), x => x.toString(16).padStart(2, '0')).join('');
+    const hit = SIGNATURES.find(([sig, , ext]) => h.startsWith(sig) && (ext !== 'webp' || h.slice(16, 24) === '57454250'));
+    return hit ? { label: hit[1], ext: hit[2], mime: hit[3] } : null;
+  }
+
   function sniff(b) {
-    const h = Array.from(b.subarray(0, 8), x => x.toString(16).padStart(2, '0')).join('');
-    if (h.startsWith('89504e47')) return 'a PNG image';
-    if (h.startsWith('ffd8ff')) return 'a JPEG image';
-    if (h.startsWith('47494638')) return 'a GIF image';
-    if (h.startsWith('25504446')) return 'a PDF document';
-    if (h.startsWith('504b0304')) return 'a ZIP archive (or .docx/.xlsx/.jar)';
-    if (h.startsWith('1f8b')) return 'gzip-compressed data';
-    return '';
+    const info = fileInfo(b);
+    return info ? info.label : '';
   }
 
   const HTML_ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -182,19 +192,36 @@ const Codec = (() => {
     els.note.textContent = '';
     lastBinary = null;
     els.download.hidden = true;
-    if (!input) { els.output.value = ''; els.stats.textContent = ''; return; }
+    if (!input) { els.output.value = ''; els.stats.textContent = ''; showPreview(null); return; }
     try {
       const r = (direction === 'encode' ? m.encode : m.decode)(input);
       els.output.value = r.text;
       els.note.textContent = r.note || '';
       if (r.bytes) { lastBinary = r.bytes; els.download.hidden = false; }
+      showPreview(r.bytes);
       els.stats.textContent = `${input.length.toLocaleString()} → ${r.text.length.toLocaleString()} characters`;
     } catch (e) {
       els.output.value = '';
       els.stats.textContent = '';
+      showPreview(null);
       els.error.hidden = false;
       els.error.textContent = e.message;
     }
+  }
+
+  let previewUrl = null;
+
+  function showPreview(bytes) {
+    if (!els.preview) return;
+    if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+    const info = bytes && fileInfo(bytes);
+    if (!info || !/^image\/|pdf$/.test(info.mime)) { els.preview.hidden = true; els.preview.replaceChildren(); return; }
+    previewUrl = URL.createObjectURL(new Blob([bytes], { type: info.mime }));
+    const view = info.mime.startsWith('image/')
+      ? Object.assign(document.createElement('img'), { src: previewUrl, alt: 'Decoded image' })
+      : Object.assign(document.createElement('iframe'), { src: previewUrl, title: 'Decoded PDF' });
+    els.preview.replaceChildren(view);
+    els.preview.hidden = false;
   }
 
   function setMode(m) {
@@ -219,7 +246,7 @@ const Codec = (() => {
     els = {
       input: $('encInput'), output: $('encOutput'), error: $('encError'), note: $('encNote'), stats: $('encStats'),
       modeBtns: [...document.querySelectorAll('[data-mode]')], dirBtns: [...document.querySelectorAll('[data-dir]')],
-      dirWrap: $('encDir'), now: $('encNow'), file: $('encFile'), download: $('encDownload'),
+      dirWrap: $('encDir'), now: $('encNow'), file: $('encFile'), download: $('encDownload'), preview: $('encPreview'),
     };
     if (!els.input) return;
     els.modeBtns.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -263,14 +290,18 @@ const Codec = (() => {
     });
     els.download.addEventListener('click', () => {
       if (!lastBinary) return;
-      const url = URL.createObjectURL(new Blob([lastBinary]));
-      const a = Object.assign(document.createElement('a'), { href: url, download: 'decoded.bin' });
+      const info = fileInfo(lastBinary);
+      const url = URL.createObjectURL(new Blob([lastBinary], { type: info ? info.mime : 'application/octet-stream' }));
+      const a = Object.assign(document.createElement('a'), { href: url, download: 'decoded.' + (info ? info.ext : 'bin') });
       document.body.append(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
 
+    const preset = document.body.dataset;
+    if (preset.presetDir === 'decode') direction = 'decode';
+    els.dirBtns.forEach(b => b.setAttribute('aria-selected', String(b.dataset.dir === direction)));
     const fromHash = location.hash.slice(1);
-    if (MODES[fromHash]) setMode(fromHash); else setMode('base64');
+    if (MODES[fromHash]) setMode(fromHash); else setMode(MODES[preset.presetMode] ? preset.presetMode : 'base64');
   }
 
   document.addEventListener('DOMContentLoaded', init);

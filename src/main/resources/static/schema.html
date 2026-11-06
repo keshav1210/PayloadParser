@@ -18,6 +18,7 @@
   <meta property="og:image" content="https://jsonxmleditor.com/og/json-schema.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="JSON Schema Generator &amp; Validator – JSON XML Editor">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="JSON Schema Generator &amp; Validator Online">
   <meta name="twitter:description" content="Generate JSON Schema from sample JSON or validate data against schema drafts with path-level error reporting.">
@@ -25,7 +26,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/site.css?v=6">
-  <link rel="stylesheet" href="/css/tools.css?v=11">
+  <link rel="stylesheet" href="/css/tools.css?v=13">
   <link rel="stylesheet" href="/css/theme-light.css?v=1">
   <script type="application/ld+json">
 {
@@ -152,6 +153,58 @@
     <p>Supported keywords: <code>type</code>, <code>enum</code>, <code>const</code>, <code>properties</code>, <code>required</code>, <code>additionalProperties</code>, <code>patternProperties</code>, <code>propertyNames</code>, <code>minProperties</code>/<code>maxProperties</code>, <code>dependentRequired</code>, <code>items</code>, <code>prefixItems</code>, <code>additionalItems</code>, <code>contains</code>, <code>minItems</code>/<code>maxItems</code>, <code>uniqueItems</code>, <code>minLength</code>/<code>maxLength</code>, <code>pattern</code>, <code>format</code>, <code>minimum</code>/<code>maximum</code> and their exclusive forms, <code>multipleOf</code>, <code>allOf</code>, <code>anyOf</code>, <code>oneOf</code>, <code>not</code>, <code>if</code>/<code>then</code>/<code>else</code> and <code>$ref</code> within the same schema.</p>
     <p>For production use, validate in your application with a full implementation such as Ajv (JavaScript), networknt json-schema-validator (Java) or jsonschema (Python). This page is for quick checks while you work.</p>
 
+    <h2>JSON Schema example</h2>
+    <p>A schema for an order, using the keywords you'll need most often:</p>
+    <pre><code>{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order",
+  "type": "object",
+  "properties": {
+    "id":     { "type": "string", "pattern": "^ORD-[0-9]{6}$" },
+    "status": { "enum": ["pending", "paid", "shipped"] },
+    "email":  { "type": "string", "format": "email" },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "sku": { "type": "string" },
+          "qty": { "type": "integer", "minimum": 1 }
+        },
+        "required": ["sku", "qty"]
+      }
+    },
+    "note": { "type": ["string", "null"], "maxLength": 200 }
+  },
+  "required": ["id", "status", "items"],
+  "additionalProperties": false
+}</code></pre>
+    <p>This document passes:</p>
+    <pre><code>{ "id": "ORD-000123", "status": "paid", "email": "ada@example.com",
+  "items": [{ "sku": "A-17", "qty": 2 }], "note": null }</code></pre>
+    <p>It would fail with <code>"qty": 0</code> (below <code>minimum</code>), <code>"status": "cancelled"</code> (not in the <code>enum</code>), a missing <code>items</code> array (<code>required</code>), or an extra field such as <code>"coupon"</code> (<code>additionalProperties: false</code>). Paste both into <strong>Validate JSON</strong> above and change a value to see the error messages.</p>
+
+    <h2>Validating API responses in tests</h2>
+    <pre><code>// Java, REST Assured (io.rest-assured:json-schema-validator)
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
+given().get("/orders/123")
+    .then().assertThat()
+    .body(matchesJsonSchemaInClasspath("schemas/order.json"));
+
+# Python (pip install jsonschema)
+from jsonschema import validate
+validate(instance=response.json(), schema=schema)   # raises ValidationError
+
+// JavaScript (npm install ajv ajv-formats)
+const Ajv2020 = require('ajv/dist/2020');
+const ajv = new Ajv2020();
+require('ajv-formats')(ajv);
+const valid = ajv.validate(schema, data);
+if (!valid) console.log(ajv.errors);</code></pre>
+    <p>REST Assured's schema module is built on an older validator that understands draft-04. Change <code>$schema</code> to <code>http://json-schema.org/draft-04/schema#</code> and avoid newer keywords such as <code>prefixItems</code> and <code>dependentRequired</code>, or validate with networknt json-schema-validator inside the test. In Ajv, <code>format</code> checks need the ajv-formats plugin, as shown.</p>
+
     <h2>Frequently asked questions</h2>
     <div class="faq">
       <details>
@@ -175,7 +228,7 @@
 </main>
 
 <div id="footer"></div>
-<script src="/js/layout-loader.js?v=16"></script>
+<script src="/js/layout-loader.js?v=17"></script>
 <script src="/js/jsonxmlformatter.js?v=7"></script>
 <script src="/js/schema.js?v=1"></script>
 </body>
